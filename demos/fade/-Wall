@@ -1,0 +1,5 @@
+main.o: main.c libheart.h gbfs.h
+
+libheart.h:
+
+gbfs.h:
