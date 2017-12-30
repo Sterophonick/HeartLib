@@ -1,3 +1,4 @@
+#pragma once
 //File: libheart.h
 //Main file for HeartGBA Lib
 
@@ -89,19 +90,19 @@ volatile u16* ScanlineCounter;
 #define REG_TMSDCNT      *(volatile unsigned short *) 0x04000102 
 
 //colors
-#define CLR_WHITE 0xFFFF
-#define CLR_RED 0x001F
-#define CLR_BLUE 0x7C00
-#define CLR_CYAN 0x7FE0
-#define CLR_GREEN 0x03E0
-#define CLR_MAGENTA 0x7c1f
-#define CLR_BROWN 0x0110
-#define CLR_BLACK 0x0000
-#define CLR_BRICK 0x011B
-#define CLR_PINK 0x7EDD
-#define CLR_ORANGE 0x029F
-#define CLR_YELLOW 0x03FF
-#define CLR_GREY 0x4210
+#define WHITE 0xFFFF
+#define RED 0x001F
+#define BLUE 0x7C00
+#define CYAN 0x7FE0
+#define GREEN 0x03E0
+#define MAGENTA 0x7c1f
+#define BROWN 0x0110
+#define BLACK 0x0000
+#define BRICK 0x011B
+#define PINK 0x7EDD
+#define ORANGE 0x029F
+#define YELLOW 0x03FF
+#define GREY 0x4210
 
 //registries
 #define hrt_SetMode(mode) REG_DISPCNT = (mode) 
@@ -719,7 +720,7 @@ void hrt_initsound16(int a, int f, int e, u16* d);
 void htr_initsound32(int a, int f, int e, u32* d);
 void hrt_initsound8(int a, int f, int e, u8* d);
 void hrt_playSoundUntilDone(int s, int end);
-void playSound(int s);
+void hrt_playSound(int s);
 void hrt_CopyOAM();
 void hrt_CreateOBJ(int spr, int stx, int sty, int size, int affine, int hflip, int vflip, int shape, int dblsize, int mosaic, int pal, int color, int alpha, int mode, int offset);
 void hrt_updateSprite(int spr,int offset,int sprsize, int ani);
@@ -730,13 +731,13 @@ void hrt_SetOBJXY(OAMEntry* sp, int x, int y);
 void hrt_resetOffset(void);
 void hrt_cloneOBJ(int ospr, int nspr);
 void hrt_glideSpritetoPos(int spr, int x1, int y1, int x2, int y2, u32 frames);
-void SaveInt(u16 offset, int value);
-int LoadInt(u16 offset);
+void hrt_SaveInt(u16 offset, int value);
+int hrt_LoadInt(u16 offset);
 void hrt_DrawChar(int mode, int left, int top, char letter, unsigned short color1, unsigned short color2);
 void hrt_Print(int mode, int left, int top, char *str, unsigned short color1, unsigned short color2);
-void SleepF(double i);
-void Sleep(u32 frames);
-void SleepQ(int i);
+void hrt_SleepF(double i);
+void hrt_Sleep(u32 frames);
+void hrt_SleepQ(int i);
 void hrt_DrawPixel(int Mode, int x, int y, unsigned short color);
 int hrt_GetPixel(u8 mode, int x, int y);
 void hrt_CycleBGPalette(void);
@@ -754,9 +755,27 @@ void hrt_bottomwipe(u16 color, float time, int mode);
 void hrt_circlewipe(u16 color, float time, int mode);
 void hrt_coolscanlines(u16 color, float time, int mode);
 int hrt_GetBGPalEntry(int slot);
-int GetOBJPalPoint(int slot);
-int GetOBJPalPoint(int slot);
+int hrt_GetOBJPalEntry(int slot);
 void hrt_SetBGPalEntry(int slot, u16 color);
 void hrt_SetOBJPalEntry(int slot, u16 color);
 void hrt_loadBGTiles(u16* data, int length);
+void hrt_ColdReset();
+void hrt_SoftReset();
+void hrt_FadeOut(u32 frames);
+void hrt_FadeIn(u32 frames);
+void hrt_FadeOutWhite(u32 frames);
+void hrt_FadeInWhite(u32 frames);
+int hrt_GetPixel3(int x, int y);
+void hrt_setbg2simple(u16* image, u16* pal);
+void hrt_setbg2novbsimple(u16* image, u16* pal);
+static inline u32 hrt_GetBiosChecksum()
+{
+   register u32 result; 
+   #if   defined   ( __thumb__ ) 
+      __asm ("SWI   0x0d\nmov %0,r0\n" :  "=r"(result) :: "r1", "r2", "r3"); 
+   #else 
+      __asm ("SWI   0x0d<<16\nmov %0,r0\n" : "=r"(result) :: "r1", "r2", "r3"); 
+   #endif 
+	return result;
+}
 #include "gbfs.h"
