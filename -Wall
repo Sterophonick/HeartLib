@@ -1,0 +1,3 @@
+build/hrt_start.o: hrt_start.c libheart.h
+
+libheart.h:

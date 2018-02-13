@@ -119,89 +119,95 @@ const double RAD[360] = { 0 , 0.0174533 , 0.0349066 , 0.0523598 , 0.0698131 , 0.
 
 void hrt_CopyOAM()
 {
-	u16 loop;
-	u16* temp;
-	temp = (u16*)sprites;
-	for(loop = 0; loop < 128*4; loop++)
-	{
-		OAM[loop] = temp[loop];
+	if (hrt_start == 1) {
+		u16 loop;
+		u16* temp;
+		temp = (u16*)sprites;
+		for (loop = 0; loop < 128 * 4; loop++)
+		{
+			OAM[loop] = temp[loop];
+		}
 	}
 }
-void hrt_CreateOBJ(int spr, int stx, int sty, int size, int affine, int hflip, int vflip, int shape, int dblsize, int mosaic, int pal, int color, int alpha, int mode, int offset)
+void hrt_CreateOBJ(int spr, int stx, int sty, int size, int affine, int hflip, int vflip, int shape, int dblsize, int mosaic, int pal, int color, int mode, int offset)
 {
-	if(affine==1){
-		// set sprite offscreen, and set it up (size,etc)
-		sprites[spr].attribute0 = color*8192 | shape*0x4000 | mode*0x400 | mosaic*0x1000 | ROTATION_FLAG | dblsize*0x200 | stx;
-		sprites[spr].attribute1 = size*16384 | ROTDATA(spr) | hflip*4096 | vflip*8192 | sty;
-		sprites[spr].attribute2 = 512 + offset;
-	}else{
-		// set sprite offscreen, and set it up (size,etc)
-		sprites[spr].attribute0 = color*8192 | shape*0x4000 | mode*0x400 | mosaic*0x1000 | dblsize*0x200 | stx;
-		sprites[spr].attribute1 = size*16384 | hflip*4096 | vflip*8192 | sty;
-		sprites[spr].attribute2 = 512 + offset;
+	if (hrt_start == 1) {
+		if (affine == 1) {
+			sprites[spr].attribute0 = color * 8192 | shape * 0x4000 | mode * 0x400 | mosaic * 0x1000 | ROTATION_FLAG | dblsize * 0x200 | sty;
+			sprites[spr].attribute1 = size * 16384 | ROTDATA(spr) | hflip * 4096 | vflip * 8192 | stx;
+			sprites[spr].attribute2 = 512 + offset;
+		}
+		else {
+			sprites[spr].attribute0 = color * 8192 | shape * 0x4000 | mode * 0x400 | mosaic * 0x1000 | dblsize * 0x200 | sty;
+			sprites[spr].attribute1 = size * 16384 | hflip * 4096 | vflip * 8192 | stx;
+			sprites[spr].attribute2 = 512 + offset;
+		}
 	}
 }
-void hrt_updateSprite(int spr,int offset,int sprsize, int ani)
+void hrt_updateSprite(int spr, int offset, int sprsize, int ani)
 {
-	int frame;
-	int size;
+	if (hrt_start == 1) {
+		int frame;
+		int size;
 
-	size = sprsize * 2;
+		size = sprsize * 2;
 
-	frame = size * ani;
+		frame = size * ani;
 
-	sprites[spr].attribute2 = (512 + offset) + frame;
+		sprites[spr].attribute2 = (512 + offset) + frame;
+	}
 }
 
-void hrt_loadOBJPal(unsigned int * pal)
+void hrt_loadOBJPal(unsigned int * pal, int size)
 {
-	int 	x;
-
-	for(x = 0; x < 256; x++)
-		OBJPaletteMem[x] = ((unsigned short*)pal)[x];
+	if (hrt_start == 1) {
+		int 	x;
+		for (x = 0; x < size; x++)
+			OBJPaletteMem[x + hrt_offsetOAMPal] = ((unsigned short*)pal)[x];
+		hrt_offsetOAMPal += size;
+	}
 }
 
 void hrt_loadOBJGFX(unsigned int * gfx,int size)
 { 
-	int 	x;
-
-	//offset = size * place;
-
-	for(x = 0; x < size; x++)
-      	OAMData[(8192 + offsetOAM) + x] = ((unsigned short*)gfx)[x];
-
-	offsetOAM +=size;
+	if (hrt_start == 1) {
+		int 	x;
+		for (x = 0; x < size; x++)
+			OAMData[(8192 + offsetOAM) + x] = ((unsigned short*)gfx)[x];
+		offsetOAM += size;
+	}
 }	
 
 
-void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale,s32 y_scale)
+void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale, s32 y_scale)
 {
-
-	s32 pa,pb,pc,pd;
-
-	pa = ((x_scale) * (s32)COS[angle%360])>>8;    //(do my fixed point multiplies and shift back down)
-	pb = ((y_scale) * (s32)SIN[angle%360])>>8;
-	pc = ((x_scale) * (s32)-SIN[angle%360])>>8;
-	pd = ((y_scale) * (s32)COS[angle%360])>>8;
-
-	rotData[rotDataIndex].pa = pa;  //put them in my data struct
-	rotData[rotDataIndex].pb = pb;
-	rotData[rotDataIndex].pc = pc;
-	rotData[rotDataIndex].pd = pd;
+	if (hrt_start == 1) {
+		s32 pa, pb, pc, pd;
+		pa = ((x_scale) * (s32)COS[angle % 360]) >> 8;
+		pb = ((y_scale) * (s32)SIN[angle % 360]) >> 8;
+		pc = ((x_scale) * (s32)-SIN[angle % 360]) >> 8;
+		pd = ((y_scale) * (s32)COS[angle % 360]) >> 8;
+		rotData[rotDataIndex].pa = pa;
+		rotData[rotDataIndex].pb = pb;
+		rotData[rotDataIndex].pc = pc;
+		rotData[rotDataIndex].pd = pd;
+	}
 }
 
 void hrt_SetOBJXY(OAMEntry* sp, int x, int y)
 {
-	if(x < 0)			
-		x = 512 + x;
-	if(y < 0)			
-		y = 256 + y;
+	if (hrt_start == 1) {
+		if (x < 0)
+			x = 512 + x;
+		if (y < 0)
+			y = 256 + y;
 
-	sp->attribute1 = sp->attribute1 & 0xFE00;  
-	sp->attribute1 = sp->attribute1 | x;
+		sp->attribute1 = sp->attribute1 & 0xFE00;
+		sp->attribute1 = sp->attribute1 | x;
 
-	sp->attribute0 = sp->attribute0 & 0xFF00;  
-	sp->attribute0 = sp->attribute0 | y;
+		sp->attribute0 = sp->attribute0 & 0xFF00;
+		sp->attribute0 = sp->attribute0 | y;
+	}
 }
 
 void hrt_resetOffset(void)
@@ -210,87 +216,80 @@ void hrt_resetOffset(void)
 }
 void hrt_cloneOBJ(int ospr, int nspr) //duplicates a Sprite
 {
-	// set sprite offscreen, and set it up (size,etc)
-	sprites[nspr].attribute0 = sprites[ospr].attribute0;
-	sprites[nspr].attribute1 = sprites[ospr].attribute1;
-	sprites[nspr].attribute2 = sprites[ospr].attribute2; // NOTE: mode4 doesn't support the first tiles, so offset of 512 is requirerd
+	if (hrt_start == 1) {
+		// set sprite offscreen, and set it up (size,etc)
+		sprites[nspr].attribute0 = sprites[ospr].attribute0;
+		sprites[nspr].attribute1 = sprites[ospr].attribute1;
+		sprites[nspr].attribute2 = sprites[ospr].attribute2; // NOTE: mode4 doesn't support the first tiles, so offset of 512 is requirerd
+	}
 }
 void hrt_glideSpritetoPos(int spr, int x1, int y1, int x2, int y2, u32 frames)
 {
-	hrt_SetOBJXY(&sprites[spr], x1, y1);
-int i, deltax, deltay, numpixels;
-int d, dinc1, dinc2;
-int x, xinc1, xinc2;
-int y, yinc1, yinc2;
-//calculate deltaX and deltaY
-deltax = abs(x2 - x1);
-deltay = abs(y2 - y1);
-//initialize
-if(deltax >= deltay)
-{
-//If x is independent variable
-numpixels = deltax + 1;
-d = (2 * deltay) - deltax;
-dinc1 = deltay << 1;
-dinc2 = (deltay - deltax) << 1;
-xinc1 = 1;
-xinc2 = 1;
-yinc1 = 0;
-yinc2 = 1;
-}
-else{
-//if y is independent variable
-numpixels = deltay + 1;
-d = (2 * deltax) - deltay;
-dinc1 = deltax << 1;
-dinc2 = (deltax - deltay) << 1;
-xinc1 = 0;
-xinc2 = 1;
-yinc1 = 1;
-yinc2 = 1;
-}
-//move the right direction
-if(x1 > x2)
-{
-xinc1 = -xinc1;
-xinc2 = -xinc2;
-}
-if(y1 > y2)
-{
-yinc1 = -yinc1;
-yinc2 = -yinc2;
-}
-x = x1;
-y = y1;
-//draw the pixels
-for(i = 1; i < numpixels; i++)
-{
-	while(REG_VCOUNT>160);
-	hrt_CopyOAM();
-hrt_SetOBJXY(&sprites[spr], x, y);
-if(d < 0)
-{d = d + dinc1;
-x = x + xinc1;
-y = y + yinc1;
-}
-else
-{
-d = d + dinc2;
-x = x + xinc2;
-y = y + yinc2;
-}
-}
-hrt_Sleep(frames);
-}
-void hrt_initSpriteSimple(int spr,int size,int offset)
-{
-	int 	x,y;
-
-	x = 240;
-	y = 160;
-
-	// set sprite offscreen, and set it up (size,etc)
-	sprites[spr].attribute0 = COLOR_256 | SQUARE | x;
-	sprites[spr].attribute1 = size | y;
-	sprites[spr].attribute2 = 512 + offset; // NOTE: mode4 doesn't support the first tiles, so offset of 512 is requirerd
+	if (hrt_start == 1) {
+		hrt_SetOBJXY(&sprites[spr], x1, y1);
+		int i, deltax, deltay, numpixels;
+		int d, dinc1, dinc2;
+		int x, xinc1, xinc2;
+		int y, yinc1, yinc2;
+		//calculate deltaX and deltaY
+		deltax = abs(x2 - x1);
+		deltay = abs(y2 - y1);
+		//initialize
+		if (deltax >= deltay)
+		{
+			//If x is independent variable
+			numpixels = deltax + 1;
+			d = (2 * deltay) - deltax;
+			dinc1 = deltay << 1;
+			dinc2 = (deltay - deltax) << 1;
+			xinc1 = 1;
+			xinc2 = 1;
+			yinc1 = 0;
+			yinc2 = 1;
+		}
+		else {
+			//if y is independent variable
+			numpixels = deltay + 1;
+			d = (2 * deltax) - deltay;
+			dinc1 = deltax << 1;
+			dinc2 = (deltax - deltay) << 1;
+			xinc1 = 0;
+			xinc2 = 1;
+			yinc1 = 1;
+			yinc2 = 1;
+		}
+		//move the right direction
+		if (x1 > x2)
+		{
+			xinc1 = -xinc1;
+			xinc2 = -xinc2;
+		}
+		if (y1 > y2)
+		{
+			yinc1 = -yinc1;
+			yinc2 = -yinc2;
+		}
+		x = x1;
+		y = y1;
+		//draw the pixels
+		for (i = 1; i < numpixels; i++)
+		{
+			while (REG_VCOUNT > 160);
+			hrt_CopyOAM();
+			hrt_SetOBJXY(&sprites[spr], x, y);
+			if (d < 0)
+			{
+				d = d + dinc1;
+				x = x + xinc1;
+				y = y + yinc1;
+			}
+			else
+			{
+				d = d + dinc2;
+				x = x + xinc2;
+				y = y + yinc2;
+			}
+		}
+		hrt_Sleep(frames);
+	}
 }

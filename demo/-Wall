@@ -1,0 +1,5 @@
+main.o: main.c libheart.h defs.h
+
+libheart.h:
+
+defs.h:
