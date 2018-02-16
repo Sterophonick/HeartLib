@@ -129,55 +129,21 @@ void hrt_CopyOAM()
 		}
 	}
 }
-void hrt_CreateOBJ(int spr, int stx, int sty, int size, int affine, int hflip, int vflip, int shape, int dblsize, int mosaic, int pal, int color, int mode, int offset)
+void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset)
 {
 	if (hrt_start == 1) {
 		if (affine == 1) {
 			sprites[spr].attribute0 = color * 8192 | shape * 0x4000 | mode * 0x400 | mosaic * 0x1000 | ROTATION_FLAG | dblsize * 0x200 | sty;
 			sprites[spr].attribute1 = size * 16384 | ROTDATA(spr) | hflip * 4096 | vflip * 8192 | stx;
-			sprites[spr].attribute2 = 512 + offset;
+			sprites[spr].attribute2 = 512 + offset | ((priority) << 10) | ((pal) << 12);
 		}
 		else {
 			sprites[spr].attribute0 = color * 8192 | shape * 0x4000 | mode * 0x400 | mosaic * 0x1000 | dblsize * 0x200 | sty;
 			sprites[spr].attribute1 = size * 16384 | hflip * 4096 | vflip * 8192 | stx;
-			sprites[spr].attribute2 = 512 + offset;
+			sprites[spr].attribute2 = 512 + offset | ((priority) << 10) | ((pal) << 12);
 		}
 	}
 }
-void hrt_updateSprite(int spr, int offset, int sprsize, int ani)
-{
-	if (hrt_start == 1) {
-		int frame;
-		int size;
-
-		size = sprsize * 2;
-
-		frame = size * ani;
-
-		sprites[spr].attribute2 = (512 + offset) + frame;
-	}
-}
-
-void hrt_loadOBJPal(unsigned int * pal, int size)
-{
-	if (hrt_start == 1) {
-		int 	x;
-		for (x = 0; x < size; x++)
-			OBJPaletteMem[x + hrt_offsetOAMPal] = ((unsigned short*)pal)[x];
-		hrt_offsetOAMPal += size;
-	}
-}
-
-void hrt_loadOBJGFX(unsigned int * gfx,int size)
-{ 
-	if (hrt_start == 1) {
-		int 	x;
-		for (x = 0; x < size; x++)
-			OAMData[(8192 + offsetOAM) + x] = ((unsigned short*)gfx)[x];
-		offsetOAM += size;
-	}
-}	
-
 
 void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale, s32 y_scale)
 {
@@ -210,10 +176,6 @@ void hrt_SetOBJXY(OAMEntry* sp, int x, int y)
 	}
 }
 
-void hrt_resetOffset(void)
-{
-	offsetOAM = 0;
-}
 void hrt_cloneOBJ(int ospr, int nspr) //duplicates a Sprite
 {
 	if (hrt_start == 1) {

@@ -1,10 +1,37 @@
-#pragma once
 //File: libheart.h
-//Main file for HeartGBA Lib
-
+//Main file for HeartLib
 //Use this file often if you're a beginner, even a pro, as it makes GBA development easier, like any other lib. Edit this if you want.
+//Date: February 2018
+#ifndef LIBHEART_H
+#define LIBHEART_H
+#pragma once
+
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
+#include <malloc.h>
+#include <string.h>
+#include <stdbool.h>
+#include <math.h>
+#include <assert.h>
+#include <ctype.h>
+#include <setjmp.h>
+#include <signal.h>
+#include <stdarg.h>
+#include <time.h>
+#include <complex.h>
+#include <stdalign.h>
+#include <locale.h>
+#include <stdatomic.h>
+#include <stdnoreturn.h>
+#include <wchar.h>
+#include <tgmath.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <wctype.h>
+#include <stdfix.h>
+#include <ctype.h>
+#include <fastmath.h>
 
 typedef unsigned char u8;
 typedef unsigned short u16;
@@ -38,20 +65,8 @@ typedef signed char s8;
 typedef signed short s16;
 typedef signed long s32;
 
-typedef unsigned char byte;
-typedef unsigned short hword;
-typedef unsigned long word;
-typedef void (*fp)(void);
-
-typedef float int8;
-typedef double int16;
-typedef volatile int vint; 
-typedef volatile double vint16;
-typedef volatile float vint8;
-
 u32* OAMmem;
-u16* VideoBuffer;
-u8* VideoBuffer4;
+u16* videoBuffer;
 u16* OAMData;
 u16* BGPaletteMem;
 u16* OBJPaletteMem;
@@ -65,10 +80,10 @@ int loop;
 
 u16* FrontBuffer;
 u16* BackBuffer;
-u16* videoBuffer;
 u16* paletteMem;
 volatile u16* ScanlineCounter;
 u8 hrt_start;
+extern void(*IntrTable[14])();
 
 //gates
 #define NOT  !
@@ -78,9 +93,6 @@ u8 hrt_start;
 #define NAND !&
 #define XOR  ^
 #define XNOR !^
-
-#define us   (void*)
-
 
 #define REG_SOUNDCNT1_H  *(volatile unsigned short *) 0x04000082
 #define REG_SOUNDCNT1_X  *(volatile unsigned short *) 0x04000084
@@ -104,6 +116,36 @@ u8 hrt_start;
 #define ORANGE 0x029F
 #define YELLOW 0x03FF
 #define GREY 0x4210
+
+#define IRQ_VBL		0
+#define IRQ_HBL		1
+#define IRQ_VCOUNT	2
+#define IRQ_TIM0	3
+#define IRQ_TIM1	4
+#define IRQ_TIM2	5
+#define IRQ_TIM3	6
+#define IRQ_COMM	7
+#define IRQ_DMA0	8
+#define IRQ_DMA1	9
+#define IRQ_DMA2	10
+#define IRQ_DMA3	11
+#define IRQ_KEY		12
+#define IRQ_CART	13
+
+#define _IRQ_VBL_BITS		0x0001
+#define _IRQ_HBL_BITS		0x0002
+#define _IRQ_VCOUNT_BITS	0x0004
+#define _IRQ_TIM0_BITS		0x0008
+#define _IRQ_TIM1_BITS		0x0010
+#define _IRQ_TIM2_BITS		0x0020
+#define _IRQ_TIM3_BITS		0x0040
+#define _IRQ_COMM_BITS		0x0080
+#define _IRQ_DMA0_BITS		0x0100
+#define _IRQ_DMA1_BITS		0x0200
+#define _IRQ_DMA2_BITS		0x0400
+#define _IRQ_DMA3_BITS		0x0800
+#define _IRQ_KEY_BITS		0x1000
+#define _IRQ_CART_BITS		0x2000
 
 //bios calls
 #define SoftReset 0x00
@@ -149,11 +191,11 @@ u8 hrt_start;
 #define SoundDriverVSyncOff 0x28
 #define SoundDriverVSyncOn 0x29
 #define GetJumpList 0x2A
+#define VBAAGBPrint 0xFF
 
 //registries
-#define hrt_SetMode(mode) REG_DISPCNT = (mode) 
 
-#define hrt_MULTIBOOT const int __gba_multiboot; //Type 'MULTIBOOT' at the beginning of a project, and the file will be compiled as a multiboot ROM.
+#define MULTIBOOT const int __gba_multiboot; //Type 'MULTIBOOT' at the beginning of a project, and the file will be compiled as a multiboot ROM.
 
 #define W 1
 #define BIT00 1
@@ -181,22 +223,6 @@ u8 hrt_start;
 #define TMR_ENABLE              0x0080  // Run Timer
 
 #define REG_TM0D       *(vu16*) 0x04000100
-
-#define INT_VBLANK 0x0001
-#define INT_HBLANK 0x0002
-#define INT_VCOUNT 0x0004 //you can set the display to generate an interrupt when it reaches a particular line on the screen
-#define INT_TIMER0 0x0008
-#define INT_TIMER1 0x0010
-#define INT_TIMER2 0x0020
-#define INT_TIMER3 0x0040
-#define INT_COMUNICATION 0x0080 //serial communication interupt
-#define INT_DMA0 0x0100
-#define INT_DMA1 0x0200
-#define INT_DMA2 0x0400
-#define INT_DMA3 0x0800
-#define INT_KEYBOARD 0x1000
-#define INT_CART 0x2000 //the cart can actually generate an interupt
-#define INT_ALL 0x4000 //this is just a flag we can set to allow the my function to enable or disable all interrupts. Doesn't actually correspond to a bit in REG_IE
 
 #define SOUNDINIT			0x8000	// makes the sound restart
 #define SOUNDDUTY87			0x0000	//87.5% wave duty
@@ -318,13 +344,9 @@ u8 hrt_start;
 #define REG_SOUND2CNT_L *(vu16*)0x4000068		//sound 2 lenght & wave duty
 #define REG_SOUND2CNT_H *(vu16*)0x400006C		//sound 2 frequency+loop+reset
 
-#define REG_SG30       *(vu32*)0x4000070		//???
 #define REG_SOUND3CNT  *(vu32*)0x4000070		//???
-#define REG_SG30_L     *(vu16*)0x4000070		//???
 #define REG_SOUND3CNT_L *(vu16*)0x4000070	//???
-#define REG_SG30_H     *(vu16*)0x4000072		//???
 #define REG_SOUND3CNT_H *(vu16*)0x4000072	//???
-#define REG_SG31       *(vu16*)0x4000074		//???
 #define REG_SOUND3CNT_X *(vu16*)0x4000074	//???
 
 #define REG_SOUND4CNT_L *(vu16*)0x4000078		//???
@@ -468,26 +490,9 @@ u8 hrt_start;
 #define MULTIBOOT_ERROR_BOOT_FAILURE      0x70
 #define MULTIBOOT_ERROR_HANDSHAKE_FAILURE 0x71
 
-#define MODE_0 0x0
-#define MODE_1 0x1
-#define MODE_2 0x2
-#define MODE_3 0x3
-#define MODE_4 0x4
-#define MODE_5 0x5
-
 #define BACKBUFFER 0x10
 #define H_BLANK_OAM 0x20 
 
-#define OBJ_MAP_2D 0x0
-#define OBJ_MAP_1D 0x40
-
-#define FORCE_BLANK 0x80 //Makes the screen white
-
-#define BG0_ENABLE 0x100
-#define BG1_ENABLE 0x200 
-#define BG2_ENABLE 0x400
-#define BG3_ENABLE 0x800
-#define OBJ_ENABLE 0x1000 
 #define BG_MOSAIC_ENABLE		0x40
 #define MOS_BG_H(x)					(x)
 #define MOS_BG_V(x)					(x<<4)
@@ -513,6 +518,7 @@ u8 hrt_start;
 #define KEY_R 256
 #define KEY_L 512
 #define KEY_ALL 0x03FF
+#define REG_KEYCNT			*(vu16 *)0x04000132
 
 #define KEYS        *(volatile u16*)0x04000130
 
@@ -627,8 +633,6 @@ u8 hrt_start;
 //atrribute2 #defines
 #define PRIORITY(n)	        ((n)<<10)
 #define PALETTE(n)			((n)<<12)
-
-
 // --------------------------------------------------------------------
 // GLOBALS 
 // --------------------------------------------------------------------
@@ -691,11 +695,13 @@ u8 hrt_start;
 #define DMA_DEST_DECREMENT			0x00200000
 #define DMA_DEST_FIXED				0x00400000
 #define DMA_DEST_RELOAD				0x00600000
-#define hrt_SetFXMode(mode) REG_BLDMOD = mode
-#define hrt_SetFXLevel(lvl) REG_COLEY = lvl
 #define WRAPAROUND		0x2000
 #define CHAR_BASE(n)		n<<2
 #define BG_COLOR_256		0x80
+#define disable_irq()  DISABLE_IRQ();
+#define enable_irq()  ENABLE_IRQ();
+#define ENABLE_IRQ()   REG_IME = 1;
+#define DISABLE_IRQ()  REG_IME = 0;
 
 typedef struct tagOAMEntry
 {
@@ -769,7 +775,6 @@ void hrt_RLUnCompVram(u32 source, u32 dest);
 void hrt_initsound16(int a, int f, int e, u16* d);
 void htr_initsound32(int a, int f, int e, u32* d);
 void hrt_initsound8(int a, int f, int e, u8* d);
-void hrt_playSoundUntilDone(int s, int end);
 void hrt_playSound(int s);
 void hrt_CopyOAM();
 void hrt_CreateOBJ(int spr, int stx, int sty, int size, int affine, int hflip, int vflip, int shape, int dblsize, int mosaic, int pal, int color, int mode, int offset);
@@ -789,8 +794,8 @@ void hrt_Sleep(double i);
 void hrt_SleepF(u32 frames);
 void hrt_SleepQ(int i);
 void hrt_DrawPixel(int Mode, int x, int y, unsigned short color);
-int hrt_GetPixel(u8 mode, int x, int y);
-void hrt_CycleBGPalette(void);
+u16 hrt_GetPixel(u8 mode, int x, int y);
+void hrt_CycleBGPalette(int amount);
 void hrt_loadBGMap(u16* data, int length);
 void hrt_loadBGPal(u16* data);
 void hrt_InvertBGPalette(void);
@@ -799,14 +804,14 @@ void hrt_fillscreen(u16 color, int mode);
 void hrt_DrawLine(int x1, int y1, int x2, int y2, unsigned short color, int mode);
 void hrt_DrawCircle(int xCenter, int yCenter, int radius, u16 color, int mode);
 void hrt_scanlines(u16 color, float time, int mode);
-void hrt_leftwipe(u16 color, float time, int mode);
-void hrt_rightwipe(u16 color, float time, int mode);
-void hrt_topwipe(u16 color, float time, int mode);
-void hrt_bottomwipe(u16 color, float time, int mode);
-void hrt_circlewipe(u16 color, float time, int mode);
-void hrt_coolscanlines(u16 color, float time, int mode);
-int hrt_GetBGPalEntry(int slot);
-int hrt_GetOBJPalEntry(int slot);
+void hrt_leftwipe(u16 color, int time, int mode);
+void hrt_rightwipe(u16 color, int time, int mode);
+void hrt_topwipe(u16 color, int time, int mode);
+void hrt_bottomwipe(u16 color, int time, int mode);
+void hrt_circlewipe(u16 color, int time, int mode);
+void hrt_coolscanlines(u16 color, int time, int mode);
+u16 hrt_GetBGPalEntry(int slot);
+u16 hrt_GetOBJPalEntry(int slot);
 void hrt_SetBGPalEntry(int slot, u16 color);
 void hrt_SetOBJPalEntry(int slot, u16 color);
 void hrt_loadBGTiles(u16* data, int length);
@@ -818,4 +823,21 @@ void hrt_FadeOutWhite(u32 frames);
 void hrt_FadeInWhite(u32 frames);
 extern u32 hrt_GetBiosChecksum();
 void hrt_WaitForVblank();
-void hrt_Init();
+void hrt_Init(int mode);
+void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode);
+void hrt_vba_agbprint_arm(char *msg);
+void hrt_vba_agbprint_thumb(char *msg);
+void hrt_SetFXLevel(u8 level);
+void hrt_SetFXMode(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 backdrop, u8 mode, u8 bg0_2, u8 bg1_2, u8 bg2_2, u8 bg3_2, u8 obj_2, u8 backdrop_2);
+void hrt_StopInt(u8 type);
+void hrt_StartInt(u8 type);
+void hrt_SetIntMode(u8 type, bool enable);
+extern void(*hrt_GetIntFunc(u8 type))();
+extern void hrt_StartIntHandler(u8 type, void(*func)());
+void hrt_InitInt();
+void hrt_ClearInt();
+void hrt_SetDSPMode(u8 mode, u8 CGB, u8 framesel, u8 unlockedhblank, u8 objmap, u8 forceblank, u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 win0, u8 win1, u8 objwin);
+void hrt_assert(u8 error, char* func, int arg, char* desc);
+void hrt_ConfigBG(u8 bg, u8 priority, u8 tilebase, u8 mosaic, u8 color256, u8 tilemapbase, u8 wraparound, u8 dimensions);
+
+#endif

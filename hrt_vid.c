@@ -1,14 +1,38 @@
 #include "libheart.h"
-u16* VideoBuffer 	=(u16*)0x6000000;
+u16* videoBuffer 	=(u16*)0x6000000;
 u16* BGPaletteMem 	=(u16*)0x5000000;
 u16* BGTileMem = (u16*)0x6004000;
-u8* VideoBuffer4 	=(u8*)0x6000000;
 u16* FrontBuffer = (u16*)0x6000000;
 u16* BackBuffer = (u16*)0x600A000;
 volatile u16* ScanlineCounter = (u16*)0x4000006;
+char* ee = "In loving memory of the HAMLib and ngine.de. HeartLib by Sterophonick. 2018.";
 void hrt_WaitForVblank() {
-	while (REG_VCOUNT >= 160);   // wait till VDraw
-	while (REG_VCOUNT < 160);    // wait till VBlank
+    if (hrt_start == 1) {
+        while (REG_VCOUNT >= 160);   // wait till VDraw
+        while (REG_VCOUNT < 160);    // wait till VBlank
+    }
+}
+
+void hrt_ResetOffset(u8 no) {
+    if (hrt_start == 1) {
+        switch (no) {
+        case 0:
+            hrt_offsetOAMData = 0;
+            break;
+        case 1:
+            hrt_offsetOAMPal = 0;
+            break;
+        case 2:
+            hrt_offsetBGMap = 0;
+            break;
+        case 3:
+            hrt_offsetBGPal = 0;
+            break;
+        case 4:
+            hrt_offsetBGTile = 0;
+            break;
+        }
+    }
 }
 
 void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode) {
@@ -40,118 +64,117 @@ void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode)
     }
 }
 
-void hrt_EditBG(BG *bg) {
+void hrt_EditBG(u8 bg, int x, int y, int x_size, int y_size, int angle) {
     if (hrt_start == 1) {
-        switch (bg->n) {
+        switch (bg) {
         case 0:
-            REG_BG0HOFS = bg->x;
-            REG_BG0VOFS = bg->y;
+            REG_BG0HOFS = x;
+            REG_BG0VOFS = y;
             break;
         case 1:
-            REG_BG1HOFS = bg->x;
-            REG_BG1VOFS = bg->y;
+            REG_BG1HOFS = x;
+            REG_BG1VOFS = y;
             break;
         case 2:
-            REG_BG2HOFS = bg->x;
-            REG_BG2VOFS = bg->y;
-            REG_BG2PA = ((bg->x_size) * (s32)COS[bg->angle % 360]) >> 8;    //(do my fixed point multiplies and shift back down)
-            REG_BG2PB = ((bg->y_size) * (s32)SIN[bg->angle % 360]) >> 8;
-            REG_BG2PC = ((bg->x_size) * (s32)-SIN[bg->angle % 360]) >> 8;
-            REG_BG2PD = ((bg->y_size) * (s32)COS[bg->angle % 360]) >> 8;
+            REG_BG2HOFS = x;
+            REG_BG2VOFS = y;
+            REG_BG2PA = ((x_size) * (s32)COS[angle % 360]) >> 8;    //(do my fixed point multiplies and shift back down)
+            REG_BG2PB = ((y_size) * (s32)SIN[angle % 360]) >> 8;
+            REG_BG2PC = ((x_size) * (s32)-SIN[angle % 360]) >> 8;
+            REG_BG2PD = ((y_size) * (s32)COS[angle % 360]) >> 8;
             break;
         case 3:
-            REG_BG3HOFS = bg->x;
-            REG_BG3VOFS = bg->y;
-            REG_BG3PA = ((bg->x_size) * (s32)COS[bg->angle % 360]) >> 8;    //(do my fixed point multiplies and shift back down)
-            REG_BG3PB = ((bg->y_size) * (s32)SIN[bg->angle % 360]) >> 8;
-            REG_BG3PC = ((bg->x_size) * (s32)-SIN[bg->angle % 360]) >> 8;
-            REG_BG3PD = ((bg->y_size) * (s32)COS[bg->angle % 360]) >> 8;
-            break;
+            REG_BG3HOFS = x;
+            REG_BG3VOFS = y;
+            REG_BG3PA = ((x_size) * (s32)COS[angle % 360]) >> 8;    //(do my fixed point multiplies and shift back down)
+            REG_BG3PB = ((y_size) * (s32)SIN[angle % 360]) >> 8;
+            REG_BG3PC = ((x_size) * (s32)-SIN[angle % 360]) >> 8;
+            REG_BG3PD = ((y_size) * (s32)COS[angle % 360]) >> 8;
         default:
             break;
         }
     }
 }
-void hrt_loadBGPal(u16* data) {
+
+void hrt_loadBGPal(u16* data, u8 length) {
     if (hrt_start == 1) {
         int i;
-        for (i = 0; i > 255; i++) {
-            BGPaletteMem[i] = data[i];
+        for (i = 0; i < 255; i++) {
+            BGPaletteMem[i+hrt_offsetBGPal] = data[i];
         }
+        hrt_offsetBGPal += length;
     }
 }
+
 void hrt_DrawPixel(int Mode, int x, int y, unsigned short color) {
     if (hrt_start == 1) {
         if (Mode == 3) {
-            VideoBuffer[y * 240 + x] = color;
+            videoBuffer[y * 240 + x] = color;
         } else if (Mode == 4) {
-            VideoBuffer4[y * 120 + x] = color;
+            videoBuffer[y * 120 + x] = color;
         } else if (Mode == 5) {
-            VideoBuffer[y * 120 + x] = color;
+            videoBuffer[y * 120 + x] = color;
         }
     }
 }
-int hrt_GetPixel(u8 mode, int x, int y) {
+u16 hrt_GetPixel(u8 mode, int x, int y) {
     if (hrt_start == 1) {
         u16 temp;
         switch (mode) {
         case 3:
-            return VideoBuffer[y * 240 + x]; //returns the pixel color at the position given
+            return videoBuffer[y * 240 + x]; //returns the pixel color at the position given
             break;
         case 4:
-            temp = VideoBuffer4[y * 120 + x]; //returns the pixel color at the position given
+            temp = videoBuffer[y * 120 + x]; //returns the pixel color at the position given
             return BGPaletteMem[temp];
             break;
         case 5:
-            return VideoBuffer[y * 120 + x]; //returns the pixel color at the position given
+            return videoBuffer[y * 120 + x]; //returns the pixel color at the position given
             break;
         }
         return 0;
     }
 }
-void hrt_CycleBGPalette(void) {
+void hrt_CyclePalette(int start, int amount, int pal) {
     if (hrt_start == 1) {
-        int i;
-        /*
-        	Output from gfx2gba:
-
-        	Saving masterpalette to..: master.pal.c ... ok
-
-        	Total files read & converted.:   1
-        	Colors used before converting: 240
-        	Colors used after converting.: 187
-        	Colors saved.................:  53
-        */
-#define COLORS_AFTER_CONVERTING 255
-
-
-        // Save the last colorvalue
-        ACCESS_16(MEM_PAL_COL_PTR(COLORS_AFTER_CONVERTING)) = ACCESS_16(MEM_PAL_COL_PTR(1));
-
-        // go trough all indices
-        for (i = 0; i < COLORS_AFTER_CONVERTING; i++) {
-            // Swap color of index
-            ACCESS_16(MEM_PAL_COL_PTR(i)) = ACCESS_16(MEM_PAL_COL_PTR((i + 1)));
+        if (pal == 0) {
+            int i;
+            ACCESS_16(MEM_PAL_COL_PTR(amount)) = ACCESS_16(MEM_PAL_COL_PTR(1));
+            for (i = 0; i < amount; i++) {
+                ACCESS_16(MEM_PAL_COL_PTR(i+start)) = ACCESS_16(MEM_PAL_COL_PTR((i + 1 + start)));
+            }
+        }
+        if (pal == 1) {
+            int i;
+            ACCESS_16(MEM_PAL_OBJ_PTR(amount - start)) = ACCESS_16(MEM_PAL_OBJ_PTR(1));
+            for (i = 0; i < amount; i++) {
+                ACCESS_16(MEM_PAL_OBJ_PTR(i+start)) = ACCESS_16(MEM_PAL_OBJ_PTR((i + 1 + start)));
+            }
         }
     }
     return;
 }
-void hrt_InvertBGPalette(void) {
+void hrt_InvertPalette(int start, int amount, int pal) {
     if (hrt_start == 1) {
-        int i;
-
-        // go trough all 256 colors
-        for (i = 0; i < 256; i++) {
-            // Invert color of index i
-            u16 Color = ACCESS_16(MEM_PAL_COL_PTR(i));
-
-            // Calc new R,G,B Values
-            u8 R = 255 - RGB_GET_R_VALUE(Color);
-            u8 G = 255 - RGB_GET_G_VALUE(Color);
-            u8 B = 255 - RGB_GET_B_VALUE(Color);
-
-            // Set new color
-            ACCESS_16(MEM_PAL_COL_PTR(i)) = RGB(R, G, B);
+        if (pal == 0) {
+            int i;
+            for (i = 0; i < amount; i++) {
+                u16 Color = ACCESS_16(MEM_PAL_COL_PTR(i+start));
+                u8 R = 255 - RGB_GET_R_VALUE(Color);
+                u8 G = 255 - RGB_GET_G_VALUE(Color);
+                u8 B = 255 - RGB_GET_B_VALUE(Color);
+                ACCESS_16(MEM_PAL_COL_PTR(i+start)) = RGB(R, G, B);
+            }
+        }
+        if (pal == 1) {
+            int i;
+            for (i = 0; i < 256; i++) {
+                u16 Color = ACCESS_16(MEM_PAL_OBJ_PTR(i+start));
+                u8 R = 255 - RGB_GET_R_VALUE(Color);
+                u8 G = 255 - RGB_GET_G_VALUE(Color);
+                u8 B = 255 - RGB_GET_B_VALUE(Color);
+                ACCESS_16(MEM_PAL_OBJ_PTR(i+start)) = RGB(R, G, B);
+            }
         }
     }
     return;
@@ -168,151 +191,162 @@ void hrt_drawRect(int r, int c, int width, int height, u16 color, int mode) { //
 }
 void hrt_fillscreen(u16 color, int mode) { //fills screen with a solid color in mode 3
     if (hrt_start == 1) {
-        int x1, y1;
-        for (y1 = 0; y1 < 160; y1++) {
-            for (x1 = 0; x1 < 240; x1++) {
-                hrt_DrawPixel(mode, x1, y1, color);
-            }
+        int i;
+        for (i = 0; i < 38400; i++) {
+            videoBuffer[i] = color;
         }
     }
 }
 void hrt_DrawLine(int x1, int y1, int x2, int y2, unsigned short color, int mode) {
-    int i, deltax, deltay, numpixels;
-    int d, dinc1, dinc2;
-    int x, xinc1, xinc2;
-    int y, yinc1, yinc2;
-//calculate deltaX and deltaY
-    deltax = abs(x2 - x1);
-    deltay = abs(y2 - y1);
-//initialize
-    if(deltax >= deltay) {
-//If x is independent variable
-        numpixels = deltax + 1;
-        d = (2 * deltay) - deltax;
-        dinc1 = deltay << 1;
-        dinc2 = (deltay - deltax) << 1;
-        xinc1 = 1;
-        xinc2 = 1;
-        yinc1 = 0;
-        yinc2 = 1;
-    } else {
-//if y is independent variable
-        numpixels = deltay + 1;
-        d = (2 * deltax) - deltay;
-        dinc1 = deltax << 1;
-        dinc2 = (deltax - deltay) << 1;
-        xinc1 = 0;
-        xinc2 = 1;
-        yinc1 = 1;
-        yinc2 = 1;
-    }
-//move the right direction
-    if(x1 > x2) {
-        xinc1 = -xinc1;
-        xinc2 = -xinc2;
-    }
-    if(y1 > y2) {
-        yinc1 = -yinc1;
-        yinc2 = -yinc2;
-    }
-    x = x1;
-    y = y1;
-//draw the pixels
-    for(i = 1; i < numpixels; i++) {
-        hrt_DrawPixel(mode, x, y, color);
-        if(d < 0) {
-            d = d + dinc1;
-            x = x + xinc1;
-            y = y + yinc1;
+    if (hrt_start == 1) {
+        int i, deltax, deltay, numpixels;
+        int d, dinc1, dinc2;
+        int x, xinc1, xinc2;
+        int y, yinc1, yinc2;
+        //calculate deltaX and deltaY
+        deltax = abs(x2 - x1);
+        deltay = abs(y2 - y1);
+        //initialize
+        if (deltax >= deltay) {
+            //If x is independent variable
+            numpixels = deltax + 1;
+            d = (2 * deltay) - deltax;
+            dinc1 = deltay << 1;
+            dinc2 = (deltay - deltax) << 1;
+            xinc1 = 1;
+            xinc2 = 1;
+            yinc1 = 0;
+            yinc2 = 1;
         } else {
-            d = d + dinc2;
-            x = x + xinc2;
-            y = y + yinc2;
+            //if y is independent variable
+            numpixels = deltay + 1;
+            d = (2 * deltax) - deltay;
+            dinc1 = deltax << 1;
+            dinc2 = (deltax - deltay) << 1;
+            xinc1 = 0;
+            xinc2 = 1;
+            yinc1 = 1;
+            yinc2 = 1;
+        }
+        //move the right direction
+        if (x1 > x2) {
+            xinc1 = -xinc1;
+            xinc2 = -xinc2;
+        }
+        if (y1 > y2) {
+            yinc1 = -yinc1;
+            yinc2 = -yinc2;
+        }
+        x = x1;
+        y = y1;
+        //draw the pixels
+        for (i = 1; i < numpixels; i++) {
+            hrt_DrawPixel(mode, x, y, color);
+            if (d < 0) {
+                d = d + dinc1;
+                x = x + xinc1;
+                y = y + yinc1;
+            } else {
+                d = d + dinc2;
+                x = x + xinc2;
+                y = y + yinc2;
+            }
         }
     }
 }
 void hrt_DrawCircle(int xCenter, int yCenter, int radius, u16 color, int mode) {
-    int x = 0;
-    int y = radius;
-    int p = 3 - 2 * radius;
-    while (x <= y) {
-        hrt_DrawPixel(mode, xCenter + x, yCenter + y, color);
-        hrt_DrawPixel(mode, xCenter - x, yCenter + y, color);
-        hrt_DrawPixel(mode, xCenter + x, yCenter - y, color);
-        hrt_DrawPixel(mode, xCenter - x, yCenter - y, color);
-        hrt_DrawPixel(mode, xCenter + y, yCenter + x, color);
-        hrt_DrawPixel(mode, xCenter - y, yCenter + x, color);
-        hrt_DrawPixel(mode, xCenter + y, yCenter - x, color);
-        hrt_DrawPixel(mode, xCenter - y, yCenter - x, color);
-        if (p < 0) {
-            p += 4 * x++ + 6;
-        } else {
-            p += 4 * (x++ - y--) + 10;
-        }
-    }
-}
-void hrt_scanlines(u16 color, float time, int mode) {
-    int x,y;
-
-    for(x=0; x<240; x+=2) {
-        while(REG_VCOUNT>160);
-        for(y=0; y<160; y+=2) {
-            hrt_DrawPixel(mode, x-1,y,color);
-            hrt_DrawPixel(mode, x,y,color);
-            hrt_DrawPixel(mode, 240-x+1,y-1,color);
-            hrt_DrawPixel(mode, 240-x,y-1,color);
-        }
-        hrt_SleepF(time);
-    }
-}
-void hrt_leftwipe(u16 color, float time, int mode) {
-    int x1,y1;
-    for(x1=0; x1<240; x1++) {
-        for(y1=0; y1<160; y1++) {
-            hrt_DrawPixel(mode, x1,y1,color);
-        }
-        hrt_SleepF(time);
-    }
-}
-
-void hrt_rightwipe(u16 color, float time, int mode) {
-    int x1,y1;
-    for(x1=240; x1>0; x1--) {
-        for(y1=0; y1<160; y1++) {
-            hrt_DrawPixel(mode, x1,y1,color);
-        }
-        hrt_SleepF(time);
-    }
-}
-void hrt_topwipe(u16 color, float time, int mode) {
-    int x1,y1;
-    for(y1=0; y1<160; y1++) {
-        for(x1=240; x1!=-1; x1--) {
-            hrt_DrawPixel(mode, x1,y1,color);
-        }
-        hrt_SleepF(time);
-    }
-}
-void hrt_bottomwipe(u16 color, float time, int mode) {
-    int x1,y1;
-    for(y1=160; y1>0; y1--) {
-        for(x1=240; x1>0; x1--) {
-            hrt_DrawPixel(mode, x1,y1,color);
-        }
-        hrt_SleepF(time);
-    }
-}
-void hrt_circlewipe(u16 color, float time, int mode) {
     if (hrt_start == 1) {
-        int r;
-        for (r = 0; r < 120; r++) {
-            hrt_DrawCircle(mode, 120, 80, r, color);
+        int x = 0;
+        int y = radius;
+        int p = 3 - 2 * radius;
+        while (x <= y) {
+            hrt_DrawPixel(mode, xCenter + x, yCenter + y, color);
+            hrt_DrawPixel(mode, xCenter - x, yCenter + y, color);
+            hrt_DrawPixel(mode, xCenter + x, yCenter - y, color);
+            hrt_DrawPixel(mode, xCenter - x, yCenter - y, color);
+            hrt_DrawPixel(mode, xCenter + y, yCenter + x, color);
+            hrt_DrawPixel(mode, xCenter - y, yCenter + x, color);
+            hrt_DrawPixel(mode, xCenter + y, yCenter - x, color);
+            hrt_DrawPixel(mode, xCenter - y, yCenter - x, color);
+            if (p < 0) {
+                p += 4 * x++ + 6;
+            } else {
+                p += 4 * (x++ - y--) + 10;
+            }
+        }
+    }
+}
+void hrt_scanlines(u16 color, int time, int mode) {
+    if (hrt_start == 1) {
+        int x, y;
+
+        for (x = 0; x < 240; x += 2) {
+            for (y = 0; y < 160; y += 2) {
+                hrt_DrawPixel(mode, x - 1, y, color);
+                hrt_DrawPixel(mode, x, y, color);
+                hrt_DrawPixel(mode, 240 - x + 1, y - 1, color);
+                hrt_DrawPixel(mode, 240 - x, y - 1, color);
+            }
+            hrt_SleepF(time);
+        }
+    }
+}
+void hrt_leftwipe(u16 color, int time, int mode) {
+    if (hrt_start == 1) {
+        int x1, y1;
+        for (x1 = 0; x1 < 240; x1++) {
+            for (y1 = 0; y1 < 160; y1++) {
+                hrt_DrawPixel(mode, x1, y1, color);
+            }
             hrt_SleepF(time);
         }
     }
 }
 
-void hrt_coolscanlines(u16 color, float time, int mode) {
+void hrt_rightwipe(u16 color,int time, int mode) {
+    if (hrt_start == 1) {
+        int x1, y1;
+        for (x1 = 240; x1 > 0; x1--) {
+            for (y1 = 0; y1 < 160; y1++) {
+                hrt_DrawPixel(mode, x1, y1, color);
+            }
+            hrt_SleepF(time);
+        }
+    }
+}
+void hrt_topwipe(u16 color, int time, int mode) {
+    if (hrt_start == 1) {
+        int x1, y1;
+        for (y1 = 0; y1 < 160; y1++) {
+            for (x1 = 240; x1 != -1; x1--) {
+                hrt_DrawPixel(mode, x1, y1, color);
+            }
+            hrt_SleepF(time);
+        }
+    }
+}
+void hrt_bottomwipe(u16 color, int time, int mode) {
+    if (hrt_start == 1) {
+        int x1, y1;
+        for (y1 = 160; y1 > 0; y1--) {
+            for (x1 = 240; x1 > 0; x1--) {
+                hrt_DrawPixel(mode, x1, y1, color);
+            }
+            hrt_SleepF(time);
+        }
+    }
+}
+void hrt_circlewipe(u16 color, int time, int mode) {
+    if (hrt_start == 1) {
+        int r;
+        for (r = 0; r < 120; r++) {
+            hrt_DrawCircle(120, 80, r, color, mode);
+            hrt_SleepF(time);
+        }
+    }
+}
+
+void hrt_coolscanlines(u16 color, int time, int mode) {
     if (hrt_start == 1) {
         int i;
         for (i = 1; i < 160; i += 2) {
@@ -325,19 +359,13 @@ void hrt_coolscanlines(u16 color, float time, int mode) {
         }
     }
 }
-int hrt_GetBGPalEntry(int slot) {
+u16 hrt_GetBGPalEntry(int slot) {
     if (hrt_start == 1) {
         return BGPaletteMem[slot];
     }
 }
 
-int hrt_GetVCOUNT() {
-    if (hrt_start == 1) {
-        return REG_VCOUNT;
-    }
-}
-
-int hrt_GetOBJPalEntry(int slot) {
+u16 hrt_GetOBJPalEntry(int slot) {
     if (hrt_start == 1) {
         return OBJPaletteMem[slot];
     }
@@ -357,20 +385,20 @@ void hrt_SetOBJPalEntry(int slot, u16 color) {
 void hrt_loadBGTiles(u16* data, int length) {
     if (hrt_start == 1) {
         int i;
-        for (i = 0; i != length; i++) {
-            data++;
-            BGTileMem[i] = data[i];
+        for (i = 0; i < length; i++) {
+            BGTileMem[i+hrt_offsetBGTile] = data[i];
         }
+        hrt_offsetBGTile += length;
     }
 }
 
 void hrt_loadBGMap(u16* data, int length) {
     if (hrt_start == 1) {
         int i;
-        for (i = 0; i != length; i++) {
-            data++;
-            videoBuffer[i] = data[i];
+        for (i = 0; i < length; i++) {
+            videoBuffer[i+hrt_offsetBGMap] = data[i];
         }
+        hrt_offsetBGMap += length;
     }
 }
 void hrt_Sleep(double i) {
@@ -385,11 +413,13 @@ void hrt_Sleep(double i) {
     }
 }
 void hrt_SleepF(u32 frames) {
+    if (hrt_start == 1) {
         int i;
         i = frames;
         while (i--) {
             hrt_WaitForVblank();
         }
+    }
 }
 
 void hrt_fillpal(int paltype, u16 color) { //fills a palette of the selection with the same color for each slot
@@ -405,15 +435,106 @@ void hrt_fillpal(int paltype, u16 color) { //fills a palette of the selection wi
                     OBJPaletteMem[pixpos] = color;
                 }
             } else { //if no kind of mem is selected
-                hrt_SetMode(MODE_3 | BG2_ENABLE); //resets everyhing
-                for (pixpos = 0; pixpos < 256; pixpos++) {
-                    BGPaletteMem[pixpos] = 0x0000;
-                    OBJPaletteMem[pixpos] = 0x0000;
-                }
-                hrt_fillscreen(0x0000, 3);
-                hrt_Print(3, 8, 8, "ERROR. INVALID PAL TYPE.", RED, BLACK); //error messgae
+                hrt_SetDSPMode(3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                hrt_Assert(0, "HRT-FILLPAL", 1, "INVALID ARGUMENT");
                 while (1); //stops the program due to an invalid type
             }
         }
     }
+}
+
+void hrt_SetFXMode(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 backdrop, u8 mode, u8 bg0_2, u8 bg1_2, u8 bg2_2, u8 bg3_2, u8 obj_2, u8 backdrop_2) {
+    if (hrt_start == 1) {
+        REG_BLDMOD = 1 * bg0 | 2 * bg1 | 4 * bg2 | 8 * bg3 | 0x10 * obj | 0x20 * backdrop | 0x40 * mode | 0x100 * bg0_2 | 0x200 * bg1_2 | 0x400 * bg2_2 | 0x800 * bg3_2 | 0x1000 * obj_2 | 0x2000 * backdrop_2;
+    }
+}
+
+void hrt_SetFXLevel(u8 level) {
+    if (hrt_start == 1) {
+        REG_COLEY = level;
+    }
+}
+
+void hrt_SetDSPMode(u8 mode, u8 CGB, u8 framesel, u8 unlockedhblank, u8 objmap, u8 forceblank, u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 win0, u8 win1, u8 objwin) {
+    if (hrt_start == 1) {
+        REG_DISPCNT = 0x1 * mode | 0x8 * CGB | 0x10 * framesel | 0x20 * unlockedhblank | 0x40 * objmap | 0x80 * forceblank | 0x100 * bg0 | 0x200 * bg1 | 0x400 * bg2 | 0x800 * bg3 | 0x1000 * obj | 0x2000 * win0 | 0x4000 * win1 | 0x8000 * objwin;
+    }
+}
+
+void hrt_ConfigBG(u8 bg, u8 priority, u8 tilebase, u8 mosaic, u8 color256, u8 tilemapbase, u8 wraparound, u8 dimensions) {
+    if (hrt_start == 1) {
+        if (bg == 0) {
+            REG_BG0CNT = 0x01 * priority | 0x04 * tilebase | 0x40 * mosaic | 0x80 * color256 | 0x100 * tilemapbase | 0x4000 * dimensions;
+        } else if (bg == 1) {
+            REG_BG1CNT = 0x01 * priority | 0x04 * tilebase | 0x40 * mosaic | 0x80 * color256 | 0x100 * tilemapbase | 0x4000 * dimensions;
+        } else if (bg == 2) {
+            REG_BG2CNT = 0x01 * priority | 0x04 * tilebase | 0x40 * mosaic | 0x80 * color256 | 0x100 * tilemapbase | 0x2000 * wraparound | 0x4000 * dimensions;
+        } else if (bg == 3) {
+            REG_BG3CNT = 0x01 * priority | 0x04 * tilebase | 0x40 * mosaic | 0x80 * color256 | 0x100 * tilemapbase | 0x2000 * wraparound | 0x4000 * dimensions;
+        } else {
+            hrt_Assert(0, "HRT_CONFIGBG()", 1, "INVALID ARGUMENT");
+        }
+    }
+}
+
+void hrt_Assert(u8 error, char* func, int arg, char* desc) {
+    if (hrt_start == 1) {
+        u8* buf[256];
+        u8* buf2 = "FUNCTION: ";
+        hrt_SetDSPMode(3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
+        hrt_fillscreen(0x0000, 3);
+        hrt_PrintOnBitmap(0, 0, "HEARTLIB HAS CRASHED!");
+        hrt_PrintOnBitmap(0, 9, "FUNCTION: ");
+        hrt_PrintOnBitmap(80, 9, (char*)func);
+		sprintf((char*)buf, "ARG: %d", arg);
+        hrt_PrintOnBitmap(0, 18, (char*)buf);
+        hrt_PrintOnBitmap(0, 27, (char*)desc);
+        while (1);
+    }
+}
+
+void hrt_LineWipe(u16 color, int time, u8 mode) {
+    if (hrt_start == 1) {
+        int x, y;
+        for (y = 0; y < 160; y++) {
+            hrt_DrawLine(240, 0, 0, y, color, mode);
+            hrt_SleepF(time);
+        }
+        for (x = 0; x < 240; x++) {
+            hrt_DrawLine(240, 0, x, 160, color, mode);
+            hrt_SleepF(time);
+        }
+    }
+}
+
+void hrt_SetMosaic(u8 level) {
+    if (hrt_start == 1) {
+        REG_MOSAIC = level;
+    }
+}
+void hrt_loadOBJPal(unsigned int * pal, int size)
+{
+	if (hrt_start == 1) {
+		int 	x;
+		for (x = 0; x < size; x++)
+			OBJPaletteMem[x + hrt_offsetOAMPal] = ((unsigned short*)pal)[x];
+		hrt_offsetOAMPal += size;
+	}
+}
+
+void hrt_loadOBJGFX(unsigned int * gfx, int size)
+{
+	if (hrt_start == 1) {
+		int 	x;
+		for (x = 0; x < size; x++)
+			OAMData[(8192 + hrt_offsetOAMData) + x] = ((unsigned short*)gfx)[x];
+		hrt_offsetOAMData += size;
+	}
+}
+
+void hrt_SetTile(u8 x, u8 y, int tileno)
+{
+	if (hrt_start == 1) {
+		videoBuffer[y * 256 + x] = tileno;
+	}
 }
