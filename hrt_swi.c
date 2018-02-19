@@ -102,36 +102,16 @@ inline void hrt_RLUnCompWram(u32 source, u32 dest) {
             : "r0", "r1");
     }
 }
-void hrt_PrintToVBA_ARM(char *msg) {
-    if (hrt_start == 1) {
-        __asm__ volatile (
-            "mov r0, %0;"
-            "swi 0xFF;"
-            : // no output
-            : "r" (msg)
-            : "r0"
-        );
-    }
-}
 
-void hrt_PrintToVBA_TMB (char *msg) {
-    if (hrt_start == 1) {
-        __asm__ volatile (
-            "mov r0, %0;"
-            "swi 0xFF;"
-            : // no output
-            : "r" (msg)
-            : "r0"
-        );
-    }
-}
-
-double hrt_Distance(int x1, int y1, int x2, int y2)
+void hrt_AGBPrint(const char *msg)
 {
-	return sqrt(((x2 - x1)^2) + ((y2-y1)^2));
-}
-
-double hrt_Slope(int x1, int y1, int x2, int y2)
-{
-	return ((x2 - x1) / (y2 - y1));
+	asm volatile(
+		"mov r2, %0\n"
+		"ldr r0, =0xc0ded00d\n"
+		"mov r1, #0\n"
+		"and r0, r0, r0\n"
+		:
+	:
+		"r" (msg) :
+		"r0", "r1", "r2");
 }

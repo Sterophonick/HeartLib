@@ -8,6 +8,8 @@ extern const unsigned short hrt_objPal[7];
 void hrt_Init(int mode) {
 	hrt_start = 1;
     if(mode==1) {
+		hrt_AGBPrint("Starting HeartLib... \n");
+		hrt_AGBPrint("Shoutout to Emanuel Schleussinger.\n");
         int i;
         u8 fade;
 		u8 dir;
@@ -22,7 +24,7 @@ void hrt_Init(int mode) {
         hrt_DMA_Copy(3, (u16*)hrt_logoBitmap, videoBuffer, 19220, 0x80000000);
         hrt_loadBGPal((void*)hrt_logoPal, 255);
         hrt_loadOBJGFX((void*)hrt_objTiles, 768);
-        hrt_loadOBJPal((void*)hrt_objPal, 12);
+        hrt_loadOBJPal((void*)hrt_objPal, 14);
         hrt_CreateOBJ(0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
         hrt_cloneOBJ(0, 1);
         hrt_SetOBJXY(&sprites[1], 0, 128);
@@ -68,11 +70,11 @@ void hrt_Init(int mode) {
 			{
 				if (dir == 0)
 				{
-					angle += 2;
+					angle += 4;
 				}
 				if (dir == 1)
 				{
-					angle -= 2;
+					angle -= 4;
 				}
 			}
             if ((!(frames % 4))AND(fadecnt < 17)) {
@@ -113,22 +115,24 @@ void hrt_Init(int mode) {
                 bsy = 2;
             }
 
-            if (bx >= 224) {
-                bsx = -2;
-            }
-            if (bx <= 0) {
-                bsx = 2;
-            }
+			if (bx >= 224) {
+				bsx = -2;
+				dir = 1;
+			}
+			if (bx <= 0) {
+				bsx = 2;
+				dir = 0;
+			}
 			hrt_AffineOBJ(4, angle, 256, 256);
 			if (!(frames % 1))
 			{
 				if (dir == 0)
 				{
-					angle += 2;
+					angle += 4;
 				}
 				if (dir == 1)
 				{
-					angle -= 2;
+					angle -= 4;
 				}
 			}
             if (!(frames % 10)) {
@@ -164,22 +168,24 @@ void hrt_Init(int mode) {
                 bsy = 2;
             }
 
-            if (bx >= 224) {
-                bsx = -2;
-            }
-            if (bx <= 0) {
-                bsx = 2;
-            }
+			if (bx >= 224) {
+				bsx = -2;
+				dir = 1;
+			}
+			if (bx <= 0) {
+				bsx = 2;
+				dir = 0;
+			}
 			hrt_AffineOBJ(4, angle, 256, 256);
 			if (!(frames % 1))
 			{
 				if (dir == 0)
 				{
-					angle += 2;
+					angle += 4;
 				}
 				if (dir == 1)
 				{
-					angle -= 2;
+					angle -= 4;
 				}
 			}
             if ((!(frames % 4))AND(fadecnt < 17)) {
@@ -225,10 +231,6 @@ void hrt_Init(int mode) {
         hrt_offsetOAMPal = 0;
 		hrt_offsetBGMap = 0;
 		hrt_offsetBGPal = 0;
-		if (keyDown(KEY_A))
-		{
-			hrt_PrintToVBA_ARM("Testing AGBPrint for VBA...");
-		}
 		hrt_irqInit();
 		hrt_irqEnable(IRQ_VBLANK);
 		REG_IME = 1;

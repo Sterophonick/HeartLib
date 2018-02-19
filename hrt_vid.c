@@ -6,6 +6,8 @@ u16* FrontBuffer = (u16*)0x6000000;
 u16* BackBuffer = (u16*)0x600A000;
 volatile u16* ScanlineCounter = (u16*)0x4000006;
 char* ee = "In loving memory of the HAMLib and ngine.de. HeartLib by Sterophonick. 2018.";
+char* ee2 = "I would like to thank Mark Holloway, Tubooboo, Dwedit, gauauu, DevKitPro, and DekuTree64 for helping me create this library.";
+char* ee3 = "Without them, this project couldn't have been completed.";
 void hrt_WaitForVblank() {
     if (hrt_start == 1) {
         while (REG_VCOUNT >= 160);   // wait till VDraw
@@ -53,13 +55,11 @@ void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode)
             REG_DM2DAD = (u32)dest;
             REG_DM2CNT = WordCount | mode;
             break;
-
         case 3:
             REG_DM3SAD = (u32)source;
             REG_DM3DAD = (u32)dest;
             REG_DM3CNT = WordCount | mode;
             break;
-
         }
     }
 }
@@ -117,6 +117,7 @@ void hrt_DrawPixel(int Mode, int x, int y, unsigned short color) {
         }
     }
 }
+
 u16 hrt_GetPixel(u8 mode, int x, int y) {
     if (hrt_start == 1) {
         u16 temp;
@@ -135,6 +136,7 @@ u16 hrt_GetPixel(u8 mode, int x, int y) {
         return 0;
     }
 }
+
 void hrt_CyclePalette(int start, int amount, int pal) {
     if (hrt_start == 1) {
         if (pal == 0) {
@@ -154,6 +156,7 @@ void hrt_CyclePalette(int start, int amount, int pal) {
     }
     return;
 }
+
 void hrt_InvertPalette(int start, int amount, int pal) {
     if (hrt_start == 1) {
         if (pal == 0) {
@@ -179,6 +182,7 @@ void hrt_InvertPalette(int start, int amount, int pal) {
     }
     return;
 }
+
 void hrt_drawRect(int r, int c, int width, int height, u16 color, int mode) { //draws rectangle
     if (hrt_start == 1) {
         int i, j;
@@ -189,6 +193,7 @@ void hrt_drawRect(int r, int c, int width, int height, u16 color, int mode) { //
         }
     }
 }
+
 void hrt_fillscreen(u16 color, int mode) { //fills screen with a solid color in mode 3
     if (hrt_start == 1) {
         int i;
@@ -197,6 +202,7 @@ void hrt_fillscreen(u16 color, int mode) { //fills screen with a solid color in 
         }
     }
 }
+
 void hrt_DrawLine(int x1, int y1, int x2, int y2, unsigned short color, int mode) {
     if (hrt_start == 1) {
         int i, deltax, deltay, numpixels;
@@ -254,6 +260,7 @@ void hrt_DrawLine(int x1, int y1, int x2, int y2, unsigned short color, int mode
         }
     }
 }
+
 void hrt_DrawCircle(int xCenter, int yCenter, int radius, u16 color, int mode) {
     if (hrt_start == 1) {
         int x = 0;
@@ -276,6 +283,7 @@ void hrt_DrawCircle(int xCenter, int yCenter, int radius, u16 color, int mode) {
         }
     }
 }
+
 void hrt_scanlines(u16 color, int time, int mode) {
     if (hrt_start == 1) {
         int x, y;
@@ -291,6 +299,7 @@ void hrt_scanlines(u16 color, int time, int mode) {
         }
     }
 }
+
 void hrt_leftwipe(u16 color, int time, int mode) {
     if (hrt_start == 1) {
         int x1, y1;
@@ -314,6 +323,7 @@ void hrt_rightwipe(u16 color,int time, int mode) {
         }
     }
 }
+
 void hrt_topwipe(u16 color, int time, int mode) {
     if (hrt_start == 1) {
         int x1, y1;
@@ -325,6 +335,7 @@ void hrt_topwipe(u16 color, int time, int mode) {
         }
     }
 }
+
 void hrt_bottomwipe(u16 color, int time, int mode) {
     if (hrt_start == 1) {
         int x1, y1;
@@ -336,6 +347,7 @@ void hrt_bottomwipe(u16 color, int time, int mode) {
         }
     }
 }
+
 void hrt_circlewipe(u16 color, int time, int mode) {
     if (hrt_start == 1) {
         int r;
@@ -359,6 +371,7 @@ void hrt_coolscanlines(u16 color, int time, int mode) {
         }
     }
 }
+
 u16 hrt_GetBGPalEntry(int slot) {
     if (hrt_start == 1) {
         return BGPaletteMem[slot];
@@ -382,6 +395,7 @@ void hrt_SetOBJPalEntry(int slot, u16 color) {
         OBJPaletteMem[slot] = color;
     }
 }
+
 void hrt_loadBGTiles(u16* data, int length) {
     if (hrt_start == 1) {
         int i;
@@ -401,6 +415,7 @@ void hrt_loadBGMap(u16* data, int length) {
         hrt_offsetBGMap += length;
     }
 }
+
 void hrt_Sleep(double i) {
     if (hrt_start == 1) {
         int x, y;
@@ -412,6 +427,7 @@ void hrt_Sleep(double i) {
         }
     }
 }
+
 void hrt_SleepF(u32 frames) {
     if (hrt_start == 1) {
         int i;
@@ -489,6 +505,7 @@ void hrt_Assert(u8 error, char* func, int arg, char* desc) {
 		sprintf((char*)buf, "ARG: %d", arg);
         hrt_PrintOnBitmap(0, 18, (char*)buf);
         hrt_PrintOnBitmap(0, 27, (char*)desc);
+		hrt_PrintOnBitmap(0, 54, "PLEASE RESET THE CONSOLE");
         while (1);
     }
 }
@@ -512,6 +529,7 @@ void hrt_SetMosaic(u8 level) {
         REG_MOSAIC = level;
     }
 }
+
 void hrt_loadOBJPal(unsigned int * pal, int size)
 {
 	if (hrt_start == 1) {
@@ -536,5 +554,14 @@ void hrt_SetTile(u8 x, u8 y, int tileno)
 {
 	if (hrt_start == 1) {
 		videoBuffer[y * 256 + x] = tileno;
+	}
+}
+
+void hrt_SetFXAlphaLevel(u8 src, u8 dst)
+{
+	if (hrt_start == 1)
+	{
+		REG_BLDALPHA_L = src;
+		REG_BLDALPHA_H = dst;
 	}
 }

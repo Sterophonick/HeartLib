@@ -18,10 +18,13 @@
 	Blending
 	BIOS Calls
 	*/
+#pragma once
 
 #ifndef LIBHEART_H
 #define LIBHEART_H
-#pragma once
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <stdio.h>
 #include <stdint.h>
@@ -194,7 +197,7 @@ enum LCDC_IRQ {
 
 //registries
 
-#define MULTIBOOT const int __gba_multiboot; //Type 'MULTIBOOT' at the beginning of a project, and the file will be compiled as a multiboot ROM.
+#define hrt_MULTIBOOT const int __gba_multiboot; //Type 'MULTIBOOT' at the beginning of a project, and the file will be compiled as a multiboot ROM.
 
 #define W 1
 #define BIT00 1
@@ -534,7 +537,9 @@ enum LCDC_IRQ {
 #define	SRAM		0x0E000000
 #define	REG_BASE	0x04000000
 #define	VRAM		0x06000000
-#define	REG_BLDALPHA	*((vu16 *)(REG_BASE + 0x52))
+
+#define	REG_BLDALPHA_H	 *((vu8 *)(REG_BASE + 0x52))
+#define	REG_BLDALPHA_L	 *((vu8 *)(REG_BASE + 0x53))
 
 /*Winodws*/
 #define WIN0_ENABLE      0x2000 
@@ -583,23 +588,6 @@ enum LCDC_IRQ {
 #define MEM_PAL_OBJ_PTR(x)		 (u16*) (0x05000200+(x<<1))	// Palette color pointer
 #define RGB(r,g,b) ((((b)>>3)<<10)+(((g)>>3)<<5)+((r)>>3))
 
-#define DMA_ENABLE				0x80000000
-#define DMA_INTERUPT_ENABLE			0x40000000
-#define DMA_TIMEING_IMMEDIATE			0x00000000
-#define DMA_TIMEING_VBLANK			0x10000000
-#define DMA_TIMEING_HBLANK			0x20000000
-#define DMA_TIMEING_SYNC_TO_DISPLAY		0x30000000
-#define DMA_16					0x00000000
-#define DMA_32					0x04000000
-#define DMA_REPEATE				0x02000000
-#define DMA_SOURCE_INCREMENT			0x00000000
-#define DMA_SOURCE_DECREMENT			0x00800000
-#define DMA_SOURCE_FIXED			0x01000000
-#define DMA_DEST_INCREMENT			0x00000000
-#define DMA_DEST_DECREMENT			0x00200000
-#define DMA_DEST_FIXED				0x00400000
-#define DMA_DEST_RELOAD				0x00600000
-
 typedef struct tagOAMEntry
 {
 
@@ -638,9 +626,6 @@ typedef struct tagRotData
 
 OAMEntry sprites[128];
 
-#define DMA_32NOW              DMA_ENABLE | DMA_TIMEING_IMMEDIATE |DMA_32 
-#define DMA_16NOW	   DMA_ENABLE | DMA_TIMEING_IMMEDIATE |DMA_16 
-
 typedef struct                                                                  //sound variables
 {
  const unsigned char* song;                                                     //pointer to sound's data array	
@@ -652,6 +637,8 @@ const double SIN[360];
 const double COS[360];
 const double RAD[360];
 const unsigned char font_matrix[3968];
+const unsigned short font_milkbottleTiles[2304];
+const unsigned short font_milkbottlePal[4];
 typedef void(*IntFn)(void);
 struct IntTable { IntFn handler; u32 mask; };
 #define MAX_INTS	15
@@ -675,6 +662,55 @@ typedef enum irqMASKS {
 extern struct IntTable IntrTable[];
 const unsigned short font_matrixBitmap[4608];
 
+typedef struct GBFS_FILE
+{
+	char magic[16];    /* "PinEightGBFS\r\n\032\n" */
+	u32  total_len;    /* total length of archive */
+	u16  dir_off;      /* offset in bytes to directory */
+	u16  dir_nmemb;    /* number of files */
+	char reserved[8];  /* for future use */
+} GBFS_FILE;
+typedef struct GBFS_ENTRY
+{
+	char name[24];     /* filename, nul-padded */
+	u32  len;          /* length of object in bytes */
+	u32  data_offset;  /* in bytes from beginning of file */
+} GBFS_ENTRY;
+const GBFS_FILE *find_first_gbfs_file(const void *start);
+const void *skip_gbfs_file(const GBFS_FILE *file);
+const void *gbfs_get_obj(const GBFS_FILE *file,
+	const char *name,
+	u32 *len);
+void *gbfs_copy_obj(void *dst,
+	const GBFS_FILE *file,
+	const char *name);
+
+typedef	struct {
+	u32	reserved1[5];
+	u8	handshake_data;
+	u8	padding;
+	u16	handshake_timeout;
+	u8	probe_count;
+	u8	client_data[3];
+	u8	palette_data;
+	u8	response_bit;
+	u8	client_bit;
+	u8	reserved2;
+	u8	*boot_srcp;
+	u8	*boot_endp;
+	u8	*masterp;
+	u8	*reserved3[3];
+	u32	system_work2[4];
+	u8	sendflag;
+	u8	probe_target_bit;
+	u8	check_wait;
+	u8	server_type;
+} MultiBootParam;
+
+enum MULTIBOOT_MODES { MODE32_NORMAL, MODE16_MULTI, MODE32_2MHZ };
+
+u32 hrt_MultiBoot(MultiBootParam *mp, u32 mode);
+
 void hrt_InitInterrupt(void) __attribute__((deprecated));
 void hrt_irqInit();
 IntFn *hrt_SetInterrupt(irqMASK mask, IntFn function) __attribute__((deprecated));
@@ -684,45 +720,44 @@ void hrt_irqEnable(int mask);
 void hrt_DisableInterrupt(irqMASK mask) __attribute__((deprecated));
 void hrt_irqDisable(int mask);
 void hrt_IntrMain();
-void hrt_EditBG(u8 bg, int x, int y, int x_scale, int y_scale, int angle);
-void hrt_Diff8bitUnFilterWram(u32 source, u32 dest);
-void hrt_Diff8bitUnFilterVram(u32 source, u32 dest);
-void hrt_Diff16bitUnFilter(u32 source, u32 dest);
-void hrt_HuffUnComp(u32 source, u32 dest);
-void hrt_LZ77UnCompWRAM(u32 source, u32 dest);
-void hrt_LZ77UnCompVRAM(u32 source, u32 dest);
-void hrt_RLUnCompVram(u32 source, u32 dest);
-void hrt_initsound16(int a, int f, int e, u16* d);
-void htr_initsound32(int a, int f, int e, u32* d);
-void hrt_initsound8(int a, int f, int e, u8* d);
-void hrt_playSound(int s);
-void hrt_CopyOAM();
-void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset);
-void hrt_loadOBJPal(unsigned int * pal, int size);
-void hrt_loadOBJGFX(unsigned int * gfx,int size);
-void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale,s32 y_scale);
-void hrt_SetOBJXY(OAMEntry* sp, int x, int y);
-void hrt_resetOffset(void);
-void hrt_cloneOBJ(int ospr, int nspr);
-void hrt_glideSpritetoPos(int spr, int x1, int y1, int x2, int y2, u32 frames);
-void hrt_SaveInt(u16 offset, int value);
-int hrt_LoadInt(u16 offset);
-void hrt_DrawChar(int mode, int left, int top, char letter);
-void hrt_PrintOnBitmap(int left, int top, char *str);
-void hrt_Sleep(double i);
-void hrt_SleepF(u32 frames);
-void hrt_SleepQ(int i);
-void hrt_DrawPixel(int Mode, int x, int y, unsigned short color);
-u16 hrt_GetPixel(u8 mode, int x, int y);
-void hrt_CyclePalette(int start, int amount, int pal);
-void hrt_loadBGMap(u16* data, int length);
-void hrt_loadBGPal(u16* data, u8 length);
-void hrt_InvertPalette(int start, int amount, int pal);
-void hrt_drawRect(int r, int c, int width, int height, u16 color, int mode);
-void hrt_fillscreen(u16 color, int mode);
-void hrt_DrawLine(int x1, int y1, int x2, int y2, unsigned short color, int mode);
-void hrt_DrawCircle(int xCenter, int yCenter, int radius, u16 color, int mode);
-void hrt_scanlines(u16 color, int time, int mode);
+void hrt_EditBG(u8 bg, int x, int y, int x_scale, int y_scale, int angle); //Edits background attributes
+void hrt_Diff8bitUnFilterWram(u32 source, u32 dest); //Decompresses Diff8bit to EWRAM
+void hrt_Diff8bitUnFilterVram(u32 source, u32 dest); //Decompresses Diff8bit to VRAM
+void hrt_Diff16bitUnFilter(u32 source, u32 dest); //Decompresses Diff16bit
+void hrt_HuffUnComp(u32 source, u32 dest); //Decompresses Huff
+void hrt_LZ77UnCompWRAM(u32 source, u32 dest); //LZ77 Decompresses to EWRAM
+void hrt_LZ77UnCompVRAM(u32 source, u32 dest); //LZ77 Decompresses to VRAM
+void hrt_RLUnCompVram(u32 source, u32 dest); //RLE Uncompresses
+void hrt_initsound16(int a, int f, int e, u16* d); //creates sound object
+void htr_initsound32(int a, int f, int e, u32* d); //creates sound object
+void hrt_initsound8(int a, int f, int e, u8* d);  //creates sound object
+void hrt_playSound(int s); //plays sound using DMA
+void hrt_CopyOAM(); //Copies OBJ Attributes to OAM
+void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset); //Creates a sprite
+void hrt_loadOBJPal(unsigned int * pal, int size); //Loads OBJ Palette
+void hrt_loadOBJGFX(unsigned int * gfx,int size); //loads OBJ GFX
+void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale,s32 y_scale); //Scales and Rotates an object
+void hrt_SetOBJXY(OAMEntry* sp, int x, int y); // Sets Position of a Sprite
+void hrt_resetOffset(u8 no); //Resets offset of gfx or pal data for BG or OBJ
+void hrt_cloneOBJ(int ospr, int nspr); //Creates clone of sprite
+void hrt_glideSpritetoPos(int spr, int x1, int y1, int x2, int y2, u32 frames); //glides sprite to a position. WIP
+void hrt_SaveInt(u16 offset, int value); //Saves to SRAM
+int hrt_LoadInt(u16 offset); //Loads from SRAM
+void hrt_DrawChar(int mode, int left, int top, char letter); //Draws text on Bitmap
+void hrt_PrintOnBitmap(int left, int top, char *str); //Draws text on Bitmap
+void hrt_Sleep(double i); //Sleeps
+void hrt_SleepF(u32 frames); //sleeps for set amount of frames
+void hrt_DrawPixel(int Mode, int x, int y, unsigned short color); //Draws pixel on screen
+u16 hrt_GetPixel(u8 mode, int x, int y); //Gets pixel Color of screen
+void hrt_CyclePalette(int start, int amount, int pal); //Cycles BG Palette
+void hrt_loadBGMap(u16* data, int length); //Loads BG Map
+void hrt_loadBGPal(u16* data, u8 length); //Loads BG Palette
+void hrt_InvertPalette(int start, int amount, int pal); //Inverts Palette
+void hrt_drawRect(int r, int c, int width, int height, u16 color, int mode); //Draws rectangle
+void hrt_fillscreen(u16 color, int mode); // fills screen with specified color
+void hrt_DrawLine(int x1, int y1, int x2, int y2, unsigned short color, int mode); //Draws line of specified color
+void hrt_DrawCircle(int xCenter, int yCenter, int radius, u16 color, int mode); //Draws circle of specified color.
+void hrt_scanlines(u16 color, int time, int mode); //scanlines wipe
 void hrt_leftwipe(u16 color, int time, int mode);
 void hrt_rightwipe(u16 color, int time, int mode);
 void hrt_topwipe(u16 color, int time, int mode);
@@ -744,8 +779,6 @@ extern u32 hrt_GetBiosChecksum();
 void hrt_WaitForVblank();
 void hrt_Init(int mode);
 void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode);
-void hrt_PrintToVBA_ARM(char *msg);
-void hrt_PrintToVBA_TMB(char *msg);
 void hrt_SetFXLevel(u8 level);
 void hrt_SetFXMode(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 backdrop, u8 mode, u8 bg0_2, u8 bg1_2, u8 bg2_2, u8 bg3_2, u8 obj_2, u8 backdrop_2);
 void hrt_SetDSPMode(u8 mode, u8 CGB, u8 framesel, u8 unlockedhblank, u8 objmap, u8 forceblank, u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 win0, u8 win1, u8 objwin);
@@ -756,5 +789,14 @@ void hrt_SetMosaic(u8 level);
 double hrt_Distance(int x1, int y1, int x2, int y2);
 double hrt_Slope(int x1, int y1, int x2, int y2);
 void hrt_SetTile(u8 x, u8 y, int tileno);
+void hrt_SetFXAlphaLevel(u8 src, u8 dst);
+void hrt_DrawTextTile(int x, int y, char* str);
+void hrt_InitTextTile();
+void hrt_fillpal(int paltype, u16 color);
+void hrt_AGBPrint(const char *msg);
+void *hrt_memcpy(void *dest, const void *src, size_t len);
 
+#ifdef __cplusplus
+}
+#endif
 #endif

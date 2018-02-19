@@ -23,3 +23,26 @@ void hrt_PrintOnBitmap(int left, int top, char *str) {
         }
     }
 }
+
+void hrt_InitTextTile()
+{
+	int i;
+	if (hrt_start == 1) {
+		for (i = 0; i < 2304; i++)
+		{
+			BGTileMem[i] = font_milkbottleTiles[i];
+		}
+		hrt_offsetBGTile = 2304;
+	}
+}
+
+void hrt_DrawTextTile(int x, int y, char* str)
+{
+	if (hrt_start == 1) {
+		int pos;
+		while (*str) {
+			videoBuffer[y * 120 + x] = *str++;
+		}
+		pos++;
+	}
+}
