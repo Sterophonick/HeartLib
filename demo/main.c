@@ -58,22 +58,26 @@ int main()
 
 	hrt_PrintOnBitmap(56, //X position
 		152, //Y position
-		"HEART GBA LIB DEMO V1.O"); // String
+		"HeartLib Demo v1.0"); // String
 
 	hrt_SetDSPMode(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0); //Sets REG_DISPCNT, like above
-	hrt_PrintOnBitmap(8, 0, "SPRITE"); //draws text
-	hrt_PrintOnBitmap(8, 9, "SCROLL");//draws text
-	hrt_PrintOnBitmap(8, 18, "FADE");//draws text
-	hrt_PrintOnBitmap(8, 27, "COMPRESSION");//draws text
-	hrt_PrintOnBitmap(8, 36, "PALETTE CYCLE");//draws text
-	hrt_PrintOnBitmap(8, 45, "DMA");//draws text
-	hrt_PrintOnBitmap(8, 54, "GETPIXEL");//draws text
-	hrt_PrintOnBitmap(8, 63, "SOUND");//draws text
-	hrt_PrintOnBitmap(8, 72, "WIPE");//draws text
-	hrt_PrintOnBitmap(8, 81, "ALPHA BLENDING");//draws text
-	hrt_PrintOnBitmap(8, 90, "INTERRUPT");//draws text
-	hrt_PrintOnBitmap(8, 99, "ASSERT");//draws text
-	hrt_PrintOnBitmap(8, 108, "AGBPRINT");//draws text
+	hrt_PrintOnBitmap(8, 0, "Sprite"); //draws text
+	hrt_PrintOnBitmap(8, 9, "Scroll");//draws text
+	hrt_PrintOnBitmap(8, 18, "Fade");//draws text
+	hrt_PrintOnBitmap(8, 27, "LZ77 Compression");//draws text
+	hrt_PrintOnBitmap(8, 36, "Palette Cycle");//draws text
+	hrt_PrintOnBitmap(8, 45, "DMA Transfer");//draws text
+	hrt_PrintOnBitmap(8, 54, "GetPixel");//draws text
+	hrt_PrintOnBitmap(8, 63, "DMA Sound");//draws text
+	hrt_PrintOnBitmap(8, 72, "Mode 3 Wipes");//draws text
+	hrt_PrintOnBitmap(8, 81, "Alpha Blending");//draws text
+	hrt_PrintOnBitmap(8, 90, "Interrupt");//draws text
+	hrt_PrintOnBitmap(8, 99, "Assert");//draws text
+	hrt_PrintOnBitmap(8, 108, "AGBPrint");//draws text
+	hrt_PrintOnBitmap(8, 117, "Sleep");//draws text
+	hrt_PrintOnBitmap(8, 126, "EZ-Flash IV Exit");//draws text
+	hrt_PrintOnBitmap(8, 135, "Cold Reset");//draws text
+	hrt_PrintOnBitmap(8, 144, "Parallax Scrolling");//draws text
 	hrt_CopyOAM(); //Copies OBJ Data to OAM
 	while (1)
 	{
@@ -90,9 +94,9 @@ int main()
 		if (keyDown(KEY_DOWN))
 		{
 			arpos++;
-			if (arpos == 13)
+			if (arpos == 17)
 			{
-				arpos = 12;
+				arpos = 16;
 			}
 			while (keyDown(KEY_DOWN));
 		}
@@ -103,6 +107,66 @@ int main()
 
 		if (keyDown(KEY_A))
 		{
+			if (arpos == 16)
+			{
+				hrt_offsetOAMData = 0;
+				hrt_ConfigBG(2, 0, 1, 0, 1, 0, 0, 0);
+				hrt_ConfigBG(3, 0, 2, 0, 1, 1, 0, 0);
+				hrt_SetDSPMode(0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0);
+				hrt_loadBGPal((void*)master_Palette, 255);
+				hrt_loadBGTiles((void*)l1_Tiles, 1664);
+				hrt_offsetBGTile = 0x2000;
+				hrt_loadBGTiles((void*)l2_Tiles, 1664);
+				hrt_loadBGMap((void*)l1_Map, 1024);
+				hrt_loadBGMap((void*)l2_Map, 1024);
+				hrt_EditBG(2, bgx, bgy, 256, 256, 0);
+				hrt_EditBG(3, bgx/2, bgy/2, 256, 256, 0);
+				hrt_WaitForVblank();
+				while (1)
+				{
+					frames++;
+					hrt_WaitForVblank();
+					hrt_EditBG(2, bgx, bgy, 256, 256, 0);
+					hrt_EditBG(3, bgx / 2, bgy / 2, 256, 256, 0);
+					if (keyDown(KEY_LEFT))
+					{
+						bgx--;
+					}
+					if (keyDown(KEY_RIGHT))
+					{
+						bgx++;
+					}
+					if (keyDown(KEY_UP))
+					{
+						bgy--;
+					}
+					if (keyDown(KEY_DOWN))
+					{
+						bgy++;
+					}
+					if (keyDown(KEY_START))
+					{
+						hrt_SetDSPMode(4, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0);
+						asm volatile("swi 0x01"::);
+						asm volatile("swi 0x00"::);
+					}
+				}
+			}
+			if (arpos == 15)
+			{
+				hrt_ColdReset();
+			}
+			if (arpos == 14)
+			{
+				hrt_EZ4Exit();
+			}
+			if (arpos == 13)
+			{
+				hrt_Suspend();
+				while (KEY_ANY_PRESSED);
+				while (!(KEY_ANY_PRESSED));
+				hrt_Suspend();
+			}
 			if (arpos == 12)
 			{
 				hrt_AGBPrint("Hello. This is a test for AGBPrint in HeartLib. Kudos to DevKitPro for getting this function.");
@@ -174,6 +238,10 @@ int main()
 					g_EffectValueA += g_EffectIncrease;
 					g_EffectValueB += g_EffectIncrease;
 					hrt_CopyOAM();
+					if (keyDown(KEY_START))
+					{
+						asm volatile("swi 0x00"::);
+					}
 				}
 			}
 			if (arpos == 8)
@@ -260,7 +328,7 @@ int main()
 			}
 			if (arpos == 2)
 			{
-				hrt_DMA_Copy(3, (u16*)conceptBitmap, videoBuffer,  38400, 0x80000000);
+				hrt_DMA_Copy(3, (u16*)suchBitmap, videoBuffer,  38400, 0x80000000);
 				hrt_SetDSPMode(3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
 				hrt_SetFXMode(0, //BG 0 Target 1
 					0,                             //BG 1 Target 1
@@ -275,8 +343,8 @@ int main()
 					0,                             //BG 3 Target 2
 					0,                             //OBJ Target 2
 					0);                           //Backdrop Target 2
-				hrt_PrintOnBitmap(0, 144, "HEARTLIB FADE DEMO");
-				hrt_PrintOnBitmap(0, 152, "A TO FADE OUT, B TO FADE IN");
+				hrt_PrintOnBitmap(0, 144, "HeartLib Fade Demo");
+				hrt_PrintOnBitmap(0, 152, "A to Fade Out, B to Fade In ");
 				while (1)
 				{
 					if (keyDown(KEY_A))
@@ -355,7 +423,7 @@ int main()
 				x_scale = 255;
 				g_newframe = 1;
 				hrt_fillscreen(0x0000, 3);
-				hrt_PrintOnBitmap(0, 0, "HEARTLIB SPRITE DEMO");
+				hrt_PrintOnBitmap(0, 0, "HeartLib Sprite Demo");
 				while (1)
 				{
 						frames++;
@@ -413,10 +481,11 @@ int main()
 			}
 			if (arpos == 10)
 			{
+				hrt_fillscreen(0x0000, 3);
 				hrt_offsetOAMPal = 0;
 				hrt_offsetOAMData = 0;
 				hrt_CreateOBJ(0, 120, 80, 2, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
-				hrt_SetDSPMode(4, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0);
+				hrt_SetDSPMode(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0);
 				hrt_loadOBJGFX((void*)blockTiles, 2048);
 				hrt_loadOBJPal((void*)blockPal, 255);
 				hrt_CopyOAM();
@@ -427,9 +496,8 @@ int main()
 				g_newframe = 1;
 				hrt_irqInit();
 				hrt_irqEnable(IRQ_VBLANK);
-				hrt_irqSet(IRQ_VBLANK, *vblfunc);
-				hrt_IntrMain();
 				REG_IME = 1;
+				hrt_PrintOnBitmap(0, 0, "HeartLib Sprite Interrupt Demo");
 				while (1)
 				{
 					if (g_newframe == 1)
@@ -485,6 +553,8 @@ int main()
 						hrt_AffineOBJ(0, rot % 360, x_scale, x_scale);
 						g_newframe = 0;
 					}
+					asm volatile("swi 0x05"::);
+					vblfunc();
 				}
 			}
 		}

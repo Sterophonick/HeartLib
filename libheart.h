@@ -3,7 +3,8 @@
 //Use this file often if you're a beginner, even a pro, as it makes GBA development easier, like any other lib. Edit this if you want.
 //Date: February 2018
 //Author: Sterophonick
-/*Possibilities with this library
+/*
+Possibilities with this library:
 	Screen Wipes (Mode 3 at the moment)
 	Sprites
 	Affine Transformation
@@ -17,11 +18,20 @@
 	Interrupts
 	Blending
 	BIOS Calls
-	*/
+	AGBPrint
+	GBFS
+*/
+
+/*
+	TODO:
+		Implement Tiled Text
+		Implement Easy System Call functions
+*/
 #pragma once
 
 #ifndef LIBHEART_H
 #define LIBHEART_H
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -636,8 +646,8 @@ typedef struct                                                                  
 const double SIN[360];
 const double COS[360];
 const double RAD[360];
-const unsigned char font_matrix[3968];
-const unsigned short font_milkbottleTiles[2304];
+const unsigned char font_matrix[12160];
+const unsigned short font_milkbottleTiles[3072];
 const unsigned short font_milkbottlePal[4];
 typedef void(*IntFn)(void);
 struct IntTable { IntFn handler; u32 mask; };
@@ -795,6 +805,12 @@ void hrt_InitTextTile();
 void hrt_fillpal(int paltype, u16 color);
 void hrt_AGBPrint(const char *msg);
 void *hrt_memcpy(void *dest, const void *src, size_t len);
+void hrt_VblankIntrWait();
+void hrt_ColdReset();
+void hrt_SoftReset();
+void hrt_RegisterRamReset();
+void hrt_Suspend();
+void hrt_EZ4Exit();
 
 #ifdef __cplusplus
 }

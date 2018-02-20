@@ -18,3 +18,8 @@ extern const unsigned short balls_Map[1024];
 extern const unsigned short balls_Palette[256];
 extern const unsigned short busterTiles[512];
 extern const unsigned short busterPal[16];
+extern const unsigned short l1_Map[1024];
+extern const unsigned short l2_Map[1024];
+extern const unsigned char l2_Tiles[1664];
+extern const unsigned char l1_Tiles[1664];
+extern const unsigned short master_Palette[256];

@@ -10,6 +10,10 @@ void hrt_Init(int mode) {
     if(mode==1) {
 		hrt_AGBPrint("Starting HeartLib... \n");
 		hrt_AGBPrint("Shoutout to Emanuel Schleussinger.\n");
+		hrt_offsetOAMData = 0;
+		hrt_offsetOAMPal = 0;
+		hrt_offsetBGMap = 0;
+		hrt_offsetBGPal = 0;
         int i;
         u8 fade;
 		u8 dir;

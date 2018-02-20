@@ -11,16 +11,7 @@ u32 hrt_GetBiosChecksum() {
         return result;
     }
 }
-void hrt_ColdReset() {
-    if (hrt_start == 1) {
-        asm volatile("swi 0x26"::);
-    }
-}
-void hrt_SoftReset() {
-    if (hrt_start == 1) {
-        asm volatile("swi 0x00"::);
-    }
-}
+
 inline void hrt_Diff8bitUnFilterWram(u32 source, u32 dest) {
     if (hrt_start == 1) {
         asm("mov r0, %0\n"
@@ -114,4 +105,12 @@ void hrt_AGBPrint(const char *msg)
 	:
 		"r" (msg) :
 		"r0", "r1", "r2");
+}
+
+void hrt_ColdReset()
+{
+	if (hrt_start == 1)
+	{
+		asm volatile("swi 0x26"::);
+	}
 }

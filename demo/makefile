@@ -1,6 +1,6 @@
 HEADERS = defs.h
-OBJECTS = build/arrow.o build/block.o build/main.o build/bg_hill.o build/such.o build/plasma.o build/hrt_snd.o build/concept.o build/buster.o build/balls.o
-SOURCES = main.c block.o arrow.o bg_hill.c such.c plasma.c concept.c buster.c balls.c
+OBJECTS = build/arrow.o build/block.o build/main.o build/bg_hill.o build/such.o build/plasma.o build/hrt_snd.o build/concept.o build/buster.o build/balls.o build/parallax.o
+SOURCES = main.c block.o arrow.o bg_hill.c such.c plasma.c concept.c buster.c balls.c parallax.c
 ELFS = build/main.elf
 CFLAGS = -g -MMD -MP -MF -Wall -Og -O1 -O2 -O3 -O -Os -ffast-math -mlong-calls -mcpu=arm7tdmi -mtune=arm7tdmi -fomit-frame-pointer -marm
 ARCH = -mthumb -mthumb-interwork
