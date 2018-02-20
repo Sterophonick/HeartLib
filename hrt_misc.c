@@ -10,7 +10,7 @@ double hrt_Slope(int x1, int y1, int x2, int y2)
 	return ((x2 - x1) / (y2 - y1));
 }
 
-void *hrt_memcpy(void *dest, const void *src, size_t len)
+void *hrt_Memcpy(void *dest, const void *src, size_t len)
 {
 	char *d = dest;
 	const char *s = src;

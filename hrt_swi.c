@@ -114,3 +114,27 @@ void hrt_ColdReset()
 		asm volatile("swi 0x26"::);
 	}
 }
+
+void hrt_SoftReset()
+{
+	if (hrt_start == 1)
+	{
+		asm volatile("swi 0x00"::);
+	}
+}
+
+void hrt_VblankIntrWait()
+{
+	if (hrt_start == 1)
+	{
+		asm volatile("swi 0x05"::);
+	}
+}
+
+void hrt_RegisterRamReset()
+{
+	if (hrt_start == 1)
+	{
+		asm volatile("swi 0x01"::);
+	}
+}

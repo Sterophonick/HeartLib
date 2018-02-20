@@ -1,6 +1,6 @@
 //File: libheart.h
 //Main file for HeartLib
-//Use this file often if you're a beginner, even a pro, as it makes GBA development easier, like any other lib. Edit this if you want.
+//Use this file often if you're a beginner, even a pro, as it makes GBA development easier, like any other library. Edit this if you want.
 //Date: February 2018
 //Author: Sterophonick
 /*
@@ -19,7 +19,9 @@ Possibilities with this library:
 	Blending
 	BIOS Calls
 	AGBPrint
-	GBFS
+	GBFS (kudos to Damian Yerrick)
+	Access To Undocumented Functions and Registers
+	
 */
 
 /*
@@ -136,6 +138,9 @@ u8 hrt_start;
 #define REG_TM0SD        *(volatile unsigned short *) 0x04000100
 #define REG_TMSDCNT      *(volatile unsigned short *) 0x04000102 
 
+#define REG_TM0D        *(unsigned short *) 0x04000100
+#define REG_TM0CNT      *(unsigned short *) 0x04000102 
+
 //colors
 #define WHITE 0xFFFF
 #define RED 0x001F
@@ -203,9 +208,7 @@ enum LCDC_IRQ {
 #define SoundDriverVSyncOff 0x28
 #define SoundDriverVSyncOn 0x29
 #define GetJumpList 0x2A
-#define VBAAGBPrint 0xFF
-
-//registries
+#define AGBPrint 0xFF
 
 #define hrt_MULTIBOOT const int __gba_multiboot; //Type 'MULTIBOOT' at the beginning of a project, and the file will be compiled as a multiboot ROM.
 
@@ -234,151 +237,70 @@ enum LCDC_IRQ {
 #define TMR_IF_ENABLE           0x0040  // Interrupt Request Enable
 #define TMR_ENABLE              0x0080  // Run Timer
 
-#define REG_TM0D       *(vu16*) 0x04000100
-
-#define SOUNDINIT			0x8000	// makes the sound restart
-#define SOUNDDUTY87			0x0000	//87.5% wave duty
-#define SOUNDDUTY75			0x0040	//75% wave duty
-#define SOUNDDUTY50			0x0080	//50% wave duty
-#define SOUNDDUTY25			0x00C0	//25% wave duty
-
-#define SOUND1PLAYONCE		0x4000	// play sound once
-#define SOUND1PLAYLOOP		0x0000	// play sound looped
-#define SOUND1INIT			0x8000	// makes the sound restart
-#define SOUND1SWEEPSHIFTS(n)	n	// number of sweep shifts (0-7)
-#define SOUND1SWEEPINC		0x0000	// sweep add (freq increase)
-#define SOUND1SWEEPDEC		0x0008	// sweep dec (freq decrese)
-#define SOUND1SWEEPTIME(n)	(n<<4)	// time of sweep (0-7)
-#define SOUND1ENVSTEPS(n)	(n<<8)	// envelope steps (0-7)
-#define SOUND1ENVINC		0x0800	// envellope increase
-#define SOUND1ENVDEC		0x0000	// envellope decrease
-#define SOUND1ENVINIT(n)	(n<<12) // initial envelope volume (0-15)
-
-
-#define SOUND2PLAYONCE		0x4000	// play sound once
-#define SOUND2PLAYLOOP		0x0000	// play sound looped
-#define SOUND2INIT			0x8000	// makes the sound restart
-#define SOUND2ENVSTEPS(n)	(n<<8)	// envelope steps (0-7)
-#define SOUND2ENVINC		0x0800	// envellope increase
-#define SOUND2ENVDEC		0x0000	// envellope decrease
-#define SOUND2ENVINIT(n)	(n<<12) // initial envelope volume (0-15)
-
-
-
-#define SOUND3BANK32		0x0000	// Use two banks of 32 steps each
-#define SOUND3BANK64		0x0020	// Use one bank of 64 steps
-#define SOUND3SETBANK0		0x0000	// Bank to play 0 or 1 (non set bank is written to)
-#define SOUND3SETBANK1		0x0040
-#define SOUND3PLAY			0x0080	// Output sound
-
-#define SOUND3OUTPUT0		0x0000	// Mute output
-#define SOUND3OUTPUT1		0x2000	// Output unmodified
-#define SOUND3OUTPUT12		0x4000	// Output 1/2 
-#define SOUND3OUTPUT14		0x6000	// Output 1/4 
-#define SOUND3OUTPUT34		0x8000  // Output 3/4
-
-#define SOUND3PLAYONCE		0x4000	// Play sound once
-#define SOUND3PLAYLOOP		0x0000	// Play sound looped
-#define SOUND3INIT			0x8000	// Makes the sound restart
-
-
-#define SOUND4PLAYONCE		0x4000	// play sound once
-#define SOUND4PLAYLOOP		0x0000	// play sound looped
-#define SOUND4INIT			0x8000	// makes the sound restart
-#define SOUND4ENVSTEPS(n)	(n<<8)	// envelope steps (0-7)
-#define SOUND4ENVINC		0x0800	// envellope increase
-#define SOUND4ENVDEC		0x0000	// envellope decrease
-#define SOUND4ENVINIT(n)	(n<<12) // initial envelope volume (0-15)
-
-
-#define SOUND4STEPS7		0x0004
-#define SOUND4STEPS15		0x0000
-#define SOUND4PLAYONCE		0x4000
-#define SOUND4PLAYLOOP		0x0000
-#define SOUND4INIT			0x8000
-
-#define REG_INTERUPT   *(u32*)0x3007FFC		//Interrupt Register
-#define REG_DISPCNT    *(u32*)0x4000000		//Display Control (Mode)
-#define REG_DISPCNT_L  *(u16*)0x4000000		//???
-#define REG_DISPCNT_H  *(u16*)0x4000002		//???
-#define REG_DISPSTAT   *(u16*)0x4000004		//???
-#define REG_VCOUNT     *(vu16*)0x4000006		//Vertical Control (Sync)
-#define REG_BG0CNT     *(u16*)0x4000008		//Background 0
-#define REG_BG1CNT     *(u16*)0x400000A		//Background 1
-#define REG_BG2CNT     *(u16*)0x400000C		//Background 2
-#define REG_BG3CNT     *(u16*)0x400000E		//Background 3
-#define REG_BG0HOFS    *(u16*)0x4000010		//Background 0 Horizontal Offset
-#define REG_BG0VOFS    *(u16*)0x4000012		//Background 0 Vertical Offset
-#define REG_BG1HOFS    *(u16*)0x4000014		//Background 1 Horizontal Offset
-#define REG_BG1VOFS    *(u16*)0x4000016		//Background 1 Vertical Offset
-#define REG_BG2HOFS    *(u16*)0x4000018		//Background 2 Horizontal Offset
-#define REG_BG2VOFS    *(u16*)0x400001A		//Background 2 Vertical Offset
-#define REG_BG3HOFS    *(u16*)0x400001C		//Background 3 Horizontal Offset
-#define REG_BG3VOFS    *(u16*)0x400001E		//Background 3 Vertical Offset
-#define REG_BG2PA      *(u16*)0x4000020		//Background 2 PA Rotation (pa = x_scale * cos(angle);)
-#define REG_BG2PB      *(u16*)0x4000022		//Background 2 PB Rotation (pb = y_scale * sin(angle);)
-#define REG_BG2PC      *(u16*)0x4000024		//Background 2 PC Rotation (pc = x_scale * -sin(angle);)
-#define REG_BG2PD      *(u16*)0x4000026		//Background 2 PD Rotation (pd = y_scale * cos(angle);)
-#define REG_BG2X       *(u32*)0x4000028		//Background 2 X Location
-#define REG_BG2X_L     *(u16*)0x4000028		//???
-#define REG_BG2X_H     *(u16*)0x400002A		//???
-#define REG_BG2Y       *(u32*)0x400002C		//Background 2 Y Location
-#define REG_BG2Y_L     *(u16*)0x400002C		//???
-#define REG_BG2Y_H     *(u16*)0x400002E		//???
-#define REG_BG3PA      *(u16*)0x4000030		//Background 3 PA Rotation (pa = x_scale * cos(angle);)
-#define REG_BG3PB      *(u16*)0x4000032		//Background 3 PB Rotation (pb = y_scale * sin(angle);)
-#define REG_BG3PC      *(u16*)0x4000034		//Background 3 PC Rotation (pc = x_scale * -sin(angle);)
-#define REG_BG3PD      *(u16*)0x4000036		//Background 3 PD Rotation (pd = y_scale * cos(angle);)
-#define REG_BG3X       *(u32*)0x4000038		//Background 3 X Location
-#define REG_BG3X_L     *(u16*)0x4000038		//???
-#define REG_BG3X_H     *(u16*)0x400003A		//???
-#define REG_BG3Y       *(u32*)0x400003C		//Background 3 Y Location
-#define REG_BG3Y_L     *(u16*)0x400003C		//???
-#define REG_BG3Y_H     *(u16*)0x400003E		//???
-#define REG_WIN0H      *(u16*)0x4000040		//Window 0 X coords (bits 0-7 right, bits 8-16 left)
-#define REG_WIN1H      *(u16*)0x4000042		//Window 1 X coords (bits 0-7 right, bits 8-16 left)
-#define REG_WIN0V      *(u16*)0x4000044		//Window 0 Y coords (bits 0-7 bottom, bits 8-16 top)
-#define REG_WIN1V      *(u16*)0x4000046		//Window 1 Y coords (bits 0-7 bottom, bits 8-16 top)
-#define REG_WININ      *(u16*)0x4000048		//Inside Window Settings
-#define REG_WINOUT     *(u16*)0x400004A		//Outside Window Settings
-#define REG_MOSAIC     *(u32*)0x400004C		//Mosaic Mode
-#define REG_MOSAIC_L   *(u32*)0x400004C		//???
-#define REG_MOSAIC_H   *(u32*)0x400004E		//???
-#define REG_BLDMOD     *(u16*)0x4000050		//Blend Mode
-#define REG_COLEV      *(u16*)0x4000052		//???
-#define REG_COLEY      *(u16*)0x4000054		//???
-
-#define REG_SOUND1CNT   *(vu32*)0x4000060	//sound 1
-#define REG_SOUND1CNT_L *(vu16*)0x4000060	//
-#define REG_SOUND1CNT_H *(vu16*)0x4000062	//
-#define REG_SOUND1CNT_X *(vu16*)0x4000064	//
-
-#define REG_SOUND2CNT_L *(vu16*)0x4000068		//sound 2 lenght & wave duty
-#define REG_SOUND2CNT_H *(vu16*)0x400006C		//sound 2 frequency+loop+reset
-
-#define REG_SOUND3CNT  *(vu32*)0x4000070		//???
-#define REG_SOUND3CNT_L *(vu16*)0x4000070	//???
-#define REG_SOUND3CNT_H *(vu16*)0x4000072	//???
-#define REG_SOUND3CNT_X *(vu16*)0x4000074	//???
-
-#define REG_SOUND4CNT_L *(vu16*)0x4000078		//???
-#define REG_SOUND4CNT_H *(vu16*)0x400007C		//???
-
-#define REG_SGCNT0     *(vu32*)0x4000080		
-#define REG_SGCNT0_L   *(vu16*)0x4000080		
-#define REG_SOUNDCNT   *(vu32*)0x4000080
-#define REG_SOUNDCNT_L *(vu16*)0x4000080		//DMG sound control
-
-#define REG_SGCNT0_H   *(vu16*)0x4000082		
-#define REG_SOUNDCNT_H *(vu16*)0x4000082		//Direct sound control
-
-#define REG_SGCNT1     *(vu16*)0x4000084		
-#define REG_SOUNDCNT_X *(vu16*)0x4000084	    //Extended sound control
-
-#define REG_SGBIAS     *(vu16*)0x4000088		
-#define REG_SOUNDBIAS  *(vu16*)0x4000088		//bit rate+sound bias
-
-#define REG_WAVE_RAM0  *(vu32*)0x4000090		//???
+//All GBA Register
+#define REG_DISPCNT *(u16*)0x04000000 //Display Control
+#define REG_UNKNOWN0 *(u16*)0x04000002 //Unknown - Green Swap?
+#define REG_DISPSTAT *(u16*)0x04000004 //General LCD Status
+#define REG_VCOUNT *(vu16*)0x04000006 //Vertical Counter
+#define REG_BG0CNT *(u16*)0x04000008 //BG0 Control
+#define REG_BG1CNT *(u16*)0x0400000A //BG1 Control
+#define REG_BG2CNT *(u16*)0x0400000C //BG2 Control
+#define REG_BG3CNT *(u16*)0x0400000E //BG3 Control
+#define REG_BG0HOFS *(u16*)0x04000010 //BG0 X-Offset
+#define REG_BG0VOFS *(u16*)0x04000012 //BG0 Y-Offset
+#define REG_BG1HOFS *(u16*)0x04000014 //BG1 X-Offset
+#define REG_BG1VOFS *(u16*)0x04000016 //BG1 Y-Offset
+#define REG_BG2HOFS *(u16*)0x04000018 //BG2 X-Offset
+#define REG_BG2VOFS *(u16*)0x0400001A //BG2 Y-Offset
+#define REG_BG3HOFS *(u16*)0x0400001C //BG3 X-Offset
+#define REG_BG3VOFS *(u16*)0x0400001E //BG3 Y-Offset
+#define REG_BG2PA *(u16*)0x04000020 //BG2 Rotation/Scaling Paramater A
+#define REG_BG2PB *(u16*)0x04000022 //BG2 Rotation/Scaling Paramater B
+#define REG_BG2PC *(u16*)0x04000024 //BG2 Rotation/Scaling Paramater C
+#define REG_BG2PD *(u16*)0x04000026 //BG2 Rotation/Scaling Paramater D
+#define REG_BG2X *(u32*)0x04000028 //BG2 Reference Point X-Coordinate
+#define REG_BG2Y *(u32*)0x0400002C //BG2 Reference Point Y-Coordinate
+#define REG_BG3PA *(u16*)0x04000030 //BG3 Rotation/Scaling Paramater A
+#define REG_BG3PB *(u16*)0x04000032 //BG3 Rotation/Scaling Paramater B
+#define REG_BG3PC *(u16*)0x04000034 //BG3 Rotation/Scaling Paramater C
+#define REG_BG3PD *(u16*)0x04000036 //BG3 Rotation/Scaling Paramater D
+#define REG_BG3X *(u32*)0x04000038 //BG3 Reference Point X-Coordinate
+#define REG_BG3Y *(u32*)0x0400003C //BG3 Reference Point Y-Coordinate
+#define REG_WIN0H *(u16*)0x04000040 //Window 0 Horizontal Dimensions
+#define REG_WIN1H *(u16*)0x04000042 //Window 1 Horizontal Dimensions
+#define REG_WIN0V *(u16*)0x04000044 //Window 0 Vertical Dimensions
+#define REG_WIN1V *(u16*)0x04000046 //Window 1 Vertical Dimensions
+#define REG_WININ *(u16*)0x04000048 //Inside of Window 0 and 1
+#define REG_WINOUT *(u16*)0x0400004A //Inside of OBJ Window and Outside of Windows
+#define REG_MOSAIC *(u16*)0x0400004C //Mosaic Size
+#define REG_UNKNOWN1 *(u16*)0x0400004E //Not Used
+#define REG_BLDCNT *(u16*)0x04000050 //Color Special Effects Selection
+#define REG_BLDALPHA_H	 *(u8*)0x04000052 //Alpha Blending Coefficient High
+#define REG_BLDALPHA_L	 *(u8*)0x04000053 //Alpha Blending Coefficient Low
+#define REG_BLDY *(u16*)0x04000054 //Brightness Coefficient
+#define REG_UNKNOWN2 *(u16*)0x04000056 //Not Used
+#define REG_SOUND1CNT_L  *(u16*)0x04000060 //Channel 1 Sweep Register
+#define REG_SOUND1CNT_H  *(u16*)0x04000062 //Channel 1 Duty/Length/Envelope
+#define REG_SOUND1CNT_X  *(u16*)0x04000064 //Channel 1 Frequency / Control
+#define REG_UNKNOWN3 *(u16*)0x04000066 //Not Used
+#define REG_SOUND2CNT_L *(u16*)0x04000068 //Channel 2 Duty/Length/Envelope
+#define REG_UNKNOWN4 *(u16*)0x0400006A //Not Used
+#define REG_SOUND2CNT_H *(u16*)0x0400006C //Channel 2 Frequency/Control
+#define REG_UNKNOWN24 *(u16*)0x0400006E //Not Used
+#define REG_SOUND3CNT_L  *(u16*)0x04000070 //Channel 3 Stop/Wave RAM Select
+#define REG_SOUND3CNT_H  *(u16*)0x04000072 //Channel 3 Length/Volume
+#define REG_SOUND3CNT_X  *(u16*)0x04000074 //Channel 3 Frequency / Control
+#define REG_UNKNOWN5 *(u16*)0x04000076 //Not Used
+#define REG_SOUND4CNT_L *(u16*)0x04000078 //Channel 4 Length/Envelope
+#define REG_UNKNOWN6 *(u16*)0x0400007A //Not Used
+#define REG_SOUND4CNT_H *(u16*)0x0400007C //Channel 4 Frequency/Control
+#define REG_UNKNOWN7 *(u16*)0x0400007E //Not Used
+#define REG_SOUNDCNT_L  *(u16*)0x04000080 //Control Stero/Volume/Enable
+#define REG_SOUNDCNT_H  *(u16*)0x04000082 //Control Mixing/DMA Control
+#define REG_SOUNDCNT_X  *(u16*)0x04000084 //Control Sound on/off
+#define REG_UNKNOWN8 *(u16*)0x04000086 //Not Used
+#define REG_SOUNDBIAS *(u16*)0x04000088 //Sound PWN Control ****CONTROLLED BY BIOS****
+#define REG_UNKNOWN9 *(u16*)0x0400008A //Not Used
 #define REG_SGWR0_L    *(vu16*)0x4000090		//???
 #define REG_SGWR0_H    *(vu16*)0x4000092		//???
 #define REG_WAVE_RAM1  *(vu32*)0x4000094		//???
@@ -390,98 +312,78 @@ enum LCDC_IRQ {
 #define REG_WAVE_RAM3  *(vu32*)0x400009C		//???
 #define REG_SGWR3_L    *(vu16*)0x400009C		//???
 #define REG_SGWR3_H    *(vu16*)0x400009E		//???
+#define REG_FIFO_A       *(vu32*)0x040000A0 //Channel A FIFO, Data 0-3
+#define REG_FIFO_B       *(vu32*)0x040000A4 //Channel B FIFO, Data 0-3
+#define REG_UNKNOWN10 *(u16*)0x040000A8 //Not Used
+#define REG_DMA0SAD     *(u32*)0x40000B0	//DMA0 Source Address
+#define REG_DMA0DAD     *(u32*)0x40000B4	//DMA0 Destination Address
+#define REG_DMA0CNT     *(u32*)0x40000B8	//DMA0 Control (Amount)
+#define REG_DMA0CNT_L   *(u16*)0x40000B8	//DMA0 Control Low Value
+#define REG_DMA0CNT_H   *(u16*)0x40000BA	//DMA0 Control High Value
+#define REG_DMA1SAD     *(u32*)0x40000BC	//DMA1 Source Address
+#define REG_DMA1DAD     *(u32*)0x40000C0	//DMA1 Desination Address
+#define REG_DMA1CNT     *(u32*)0x40000C4	//DMA1 Control (Amount)
+#define REG_DMA1CNT_L   *(u16*)0x40000C4	//DMA1 Control Low Value
+#define REG_DMA1CNT_H   *(u16*)0x40000C6	//DMA1 Control High Value
+#define REG_DMA2SAD     *(u32*)0x40000C8	//DMA2 Source Address
+#define REG_DMA2DAD     *(u32*)0x40000CC	//DMA2 Destination Address
+#define REG_DMA2CNT     *(u32*)0x40000D0	//DMA2 Control (Amount)
+#define REG_DMA2CNT_L   *(u16*)0x40000D0	//DMA2 Control Low Value
+#define REG_DMA2CNT_H   *(u16*)0x40000D2	//DMA2 Control High Value
+#define REG_DMA3SAD     *(u32*)0x40000D4	//DMA3 Source Address
+#define REG_DMA3DAD     *(u32*)0x40000D8	//DMA3 Destination Address
+#define REG_DMA3CNT     *(u32*)0x40000DC	//DMA3 Control (Amount)
+#define REG_DMA3CNT_L   *(u16*)0x40000DC	//DMA3 Control Low Value
+#define REG_DMA3CNT_H   *(u16*)0x40000DE	//DMA3 Control High Value
+#define REG_UNKNOWN11 *(u16*)0x040000E0 // Not Used
+#define REG_TM0CNT_L *(u16*)0x04000100 //Timer 0 Counter/Reload
+#define REG_TM0CNT_H *(u16*)0x04000102 //Timer 0 Control
+#define REG_TM1CNT_L *(u16*)0x04000104 //Timer 1 Counter/Reload
+#define REG_TM1CNT_H *(u16*)0x04000106 //Timer 1 Control
+#define REG_TM2CNT_L *(u16*)0x04000108 //Timer 2 Counter/Reload
+#define REG_TM2CNT_H *(u16*)0x0400010A //Timer 2 Control
+#define REG_TM3CNT_L *(u16*)0x0400010C //Timer 3 Counter/Reload
+#define REG_TM3CNT_H *(u16*)0x0400010E //Timer 3 Control
+#define REG_UNKNOWN12 *(u16*)0x04000110 // Not Used
+#define REG_SIODATA32 *(u32*)0x04000120
+#define REG_SIOMULTI0 *(u16*)0x04000120 //Data 0
+#define REG_SIOMULTI1 *(u16*)0x04000122 //Data 1
+#define REG_SIOMULTI2 *(u16*)0x04000124 //Data 2
+#define REG_SIOMULTI3 *(u16*)0x04000126 //Data 3
+#define REG_SIOCNT *(u16*)0x04000128 //SIO Control Register
+#define REG_SIOMLT_SEND *(u16*)0x0400012A //SIO Data
+#define REG_SIODATA8 *(u16*)0x0400012A //SIO Data
+#define REG_UNKNOWN13 *(u16*)0x0400012C //Not Used
+#define REG_KEYINPUT *(u16*)0x04000130 //Key Status
+#define REG_KEYCNT *(u16*)0x04000132 //Key Interrupt Control
+#define REG_RCNT *(u16*)0x04000134 //SIO Mode Select/General Purpose Data
+#define REG_IR *(u16*)0x04000136 //Ancient - Infrared Register (Prototypes Only)
+#define REG_UNKNOWN14  *(u16*)0x04000138 //Not Used
+#define REG_JOYCNT *(u16*)0x04000140 //SIO Joy Bus Control
+#define REG_UNKNOWN15  *(u16*)0x04000142 //Not Used
+#define REG_JOY_RECV *(u32*)0x04000150 //SIO JOY Bus Recieve Data
+#define REG_JOY_TRANS *(u32*)0x04000154 //SIO JOY Bus Transmit Data
+#define REG_JOYSTAT *(u16*)0x04000158 //SIO JOY Bus Recieve Status
+#define REG_UNKNOWN16  *(u16*)0x0400015A //Not Used
+#define REG_IE *(u16*)0x04000200 //Interrupt Enable Register
+#define REG_IF *(u16*)0x04000202 //Interrupt Request Flags / IRQ Acknowledge
+#define REG_WAITCNT *(u16*)0x04000204 //Game Pak Waitstate Control
+#define REG_UNKNOWN17  *(u16*)0x04000206 //Not Used
+#define REG_IME *(u16*)0x04000208 //Interrupt Master Enable Register
+#define REG_UNKNOWN18  *(u16*)0x0400020A //Not Used
+#define REG_POSTFLG *(u8*)0x04000300 //Undocumented - Post Boot Flag
+#define REG_HALTCNT *(u8*)0x04000301 //Undocumented - Power Down Control
+#define REG_UNKNOWN19  *(u16*)0x04000302 //Not Used
+#define REG_UNKNOWN20  *(u16*)0x04000410 //Undocumented - Purpose Unknown / Bug ??? 0FFh
+#define REG_UNKNOWN21  *(u16*)0x04000411 //Not Used
+#define REG_UNKNOWN22  *(u32*)0x04000800 //Undocumented - Internal Memory Control(R/W)
+#define REG_UNKNOWN23  *(u16*)0x04000804 //Not Used
 
-#define REG_SGFIFOA    *(vu32*)0x40000A0		//???
-#define REG_SGFIFOA_L  *(vu16*)0x40000A0		//???
-#define REG_SGFIFOA_H  *(vu16*)0x40000A2		//???
-#define REG_SGFIFOB    *(vu32*)0x40000A4		//???
-#define REG_SGFIFOB_L  *(vu16*)0x40000A4		//???
-#define REG_SGFIFOB_H  *(vu16*)0x40000A6		//???
-#define REG_DM0SAD     *(u32*)0x40000B0	//DMA0 Source Address
-#define REG_DM0SAD_L   *(u16*)0x40000B0	//DMA0 Source Address Low Value
-#define REG_DM0SAD_H   *(u16*)0x40000B2	//DMA0 Source Address High Value
-#define REG_DM0DAD     *(u32*)0x40000B4	//DMA0 Destination Address
-#define REG_DM0DAD_L   *(u16*)0x40000B4	//DMA0 Destination Address Low Value
-#define REG_DM0DAD_H   *(u16*)0x40000B6	//DMA0 Destination Address High Value
-#define REG_DM0CNT     *(u32*)0x40000B8	//DMA0 Control (Amount)
-#define REG_DM0CNT_L   *(u16*)0x40000B8	//DMA0 Control Low Value
-#define REG_DM0CNT_H   *(u16*)0x40000BA	//DMA0 Control High Value
-
-#define REG_DM1SAD     *(u32*)0x40000BC	//DMA1 Source Address
-#define REG_DM1SAD_L   *(u16*)0x40000BC	//DMA1 Source Address Low Value
-#define REG_DM1SAD_H   *(u16*)0x40000BE	//DMA1 Source Address High Value
-#define REG_DM1DAD     *(u32*)0x40000C0	//DMA1 Desination Address
-#define REG_DM1DAD_L   *(u16*)0x40000C0	//DMA1 Destination Address Low Value
-#define REG_DM1DAD_H   *(u16*)0x40000C2	//DMA1 Destination Address High Value
-#define REG_DM1CNT     *(u32*)0x40000C4	//DMA1 Control (Amount)
-#define REG_DM1CNT_L   *(u16*)0x40000C4	//DMA1 Control Low Value
-#define REG_DM1CNT_H   *(u16*)0x40000C6	//DMA1 Control High Value
-
-#define REG_DM2SAD     *(u32*)0x40000C8	//DMA2 Source Address
-#define REG_DM2SAD_L   *(u16*)0x40000C8	//DMA2 Source Address Low Value
-#define REG_DM2SAD_H   *(u16*)0x40000CA	//DMA2 Source Address High Value
-#define REG_DM2DAD     *(u32*)0x40000CC	//DMA2 Destination Address
-#define REG_DM2DAD_L   *(u16*)0x40000CC	//DMA2 Destination Address Low Value
-#define REG_DM2DAD_H   *(u16*)0x40000CE	//DMA2 Destination Address High Value
-#define REG_DM2CNT     *(u32*)0x40000D0	//DMA2 Control (Amount)
-#define REG_DM2CNT_L   *(u16*)0x40000D0	//DMA2 Control Low Value
-#define REG_DM2CNT_H   *(u16*)0x40000D2	//DMA2 Control High Value
-
-#define REG_DM3SAD     *(u32*)0x40000D4	//DMA3 Source Address
-#define REG_DM3SAD_L   *(u16*)0x40000D4	//DMA3 Source Address Low Value
-#define REG_DM3SAD_H   *(u16*)0x40000D6	//DMA3 Source Address High Value
-#define REG_DM3DAD     *(u32*)0x40000D8	//DMA3 Destination Address
-#define REG_DM3DAD_L   *(u16*)0x40000D8	//DMA3 Destination Address Low Value
-#define REG_DM3DAD_H   *(u16*)0x40000DA	//DMA3 Destination Address High Value
-#define REG_DM3CNT     *(u32*)0x40000DC	//DMA3 Control (Amount)
-#define REG_DM3CNT_L   *(u16*)0x40000DC	//DMA3 Control Low Value
-#define REG_DM3CNT_H   *(u16*)0x40000DE	//DMA3 Control High Value
-
-#define REG_TM0CNT      *(u32*)0x4000100	//Timer 0
-#define REG_TM0CNT_L	*(u16*)0x4000100	//Timer 0 count value
-#define REG_TM0CNT_H    *(u16*)0x4000102	//Timer 0 Control
-
-#define REG_TM1CNT     *(u32*)0x4000104		//Timer 2
-#define REG_TM1CNT_L   *(u16*)0x4000104		//Timer 2 count value
-#define REG_TM1CNT_H   *(u16*)0x4000106		//Timer 2 control
-
-#define REG_TM2D       *(u16*)0x4000108		//Timer 3?
-#define REG_TM2CNT     *(u16*)0x400010A		//Timer 3 Control
-
-#define REG_TM3D       *(u16*)0x400010C		//Timer 4?
-#define REG_TM3CNT     *(u16*)0x400010E		//Timer 4 Control
 #define DMA_ENABLE		0x80000000
 #define DMA_IMMEDIATE	0x00000000
 
 #define DMA_16			0x00000000
 #define DMA_32			0x04000000
-#define REG_SCD0       *(u16*)0x4000120		//32-bit Normal Serial Communication Data 0 / Multi-play
-#define REG_SCD1       *(u16*)0x4000122		//32-bit Normal Serial Communication Data 1 /Multi-play
-#define REG_SCD2       *(u16*)0x4000124		//Multi-play Communication Data 2
-#define REG_SCD3       *(u16*)0x4000126		//Multi-play Communication Data 3
-#define REG_SCCNT      *(u32*)0x4000128		//???
-#define REG_SCCNT_L    *(u16*)0x4000128		//???
-#define REG_SCCNT_H    *(u16*)0x400012A		//???
-#define REG_P1         *(vu16*)0x4000130		//Player 1 Input
-#define REG_KEYPAD     *(vu16*)0x4000130		//Player 1 Input
-#define REG_P1CNT      *(vu16*)0x4000132		//Player 1 Input Interrupt Status
-#define REG_R          *(u16*)0x4000134		//???
-#define REG_HS_CTRL    *(u16*)0x4000140		//???
-#define REG_JOYRE      *(u32*)0x4000150		//???
-#define REG_JOYRE_L    *(u16*)0x4000150		//???
-#define REG_JOYRE_H    *(u16*)0x4000152		//???
-#define REG_JOYTR      *(u32*)0x4000154		//???
-#define REG_JOYTR_L    *(u16*)0x4000154		//???
-#define REG_JOYTR_H    *(u16*)0x4000156		//???
-#define REG_JSTAT      *(u32*)0x4000158		//???
-#define REG_JSTAT_L    *(u16*)0x4000158		//???
-#define REG_JSTAT_H    *(u16*)0x400015A		//???
-#define REG_IE         *(u16*)0x4000200		//Interrupt Enable
-#define REG_IF         *(vu16*)0x4000202		//Interrupt Flags
-#define REG_WSCNT      *(u16*)0x4000204		//???
-#define REG_IME        *(u16*)0x4000208		//Interrupt Master Enable
-#define REG_PAUSE      *(u16*)0x4000300		//Pause
-
 #define MULTIBOOT_NCHILD 3              // Maximum number of slaves
 #define MULTIBOOT_HEADER_SIZE 0xc0      // Header size
 #define MULTIBOOT_SEND_SIZE_MIN 0x100   // Minimum transmission size
@@ -530,7 +432,6 @@ enum LCDC_IRQ {
 #define KEY_R 256
 #define KEY_L 512
 #define KEY_ALL 0x03FF
-#define REG_KEYCNT			*(vu16 *)0x04000132
 
 #define KEYS        *(volatile u16*)0x04000130
 
@@ -547,10 +448,6 @@ enum LCDC_IRQ {
 #define	SRAM		0x0E000000
 #define	REG_BASE	0x04000000
 #define	VRAM		0x06000000
-
-#define	REG_BLDALPHA_H	 *((vu8 *)(REG_BASE + 0x52))
-#define	REG_BLDALPHA_L	 *((vu8 *)(REG_BASE + 0x53))
-
 /*Winodws*/
 #define WIN0_ENABLE      0x2000 
 #define WINOBJ_ENABLE    0x8000
@@ -738,19 +635,17 @@ void hrt_HuffUnComp(u32 source, u32 dest); //Decompresses Huff
 void hrt_LZ77UnCompWRAM(u32 source, u32 dest); //LZ77 Decompresses to EWRAM
 void hrt_LZ77UnCompVRAM(u32 source, u32 dest); //LZ77 Decompresses to VRAM
 void hrt_RLUnCompVram(u32 source, u32 dest); //RLE Uncompresses
-void hrt_initsound16(int a, int f, int e, u16* d); //creates sound object
-void htr_initsound32(int a, int f, int e, u32* d); //creates sound object
-void hrt_initsound8(int a, int f, int e, u8* d);  //creates sound object
-void hrt_playSound(int s); //plays sound using DMA
+void hrt_InitSound(int a, int f, int e, u8* d);  //creates sound object
+void hrt_PlaySoundFIFO(int s); //plays sound using DMA
 void hrt_CopyOAM(); //Copies OBJ Attributes to OAM
 void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset); //Creates a sprite
-void hrt_loadOBJPal(unsigned int * pal, int size); //Loads OBJ Palette
-void hrt_loadOBJGFX(unsigned int * gfx,int size); //loads OBJ GFX
+void hrt_LoadOBJPal(unsigned int * pal, int size); //Loads OBJ Palette
+void hrt_LoadOBJGFX(unsigned int * gfx,int size); //loads OBJ GFX
 void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale,s32 y_scale); //Scales and Rotates an object
 void hrt_SetOBJXY(OAMEntry* sp, int x, int y); // Sets Position of a Sprite
-void hrt_resetOffset(u8 no); //Resets offset of gfx or pal data for BG or OBJ
-void hrt_cloneOBJ(int ospr, int nspr); //Creates clone of sprite
-void hrt_glideSpritetoPos(int spr, int x1, int y1, int x2, int y2, u32 frames); //glides sprite to a position. WIP
+void hrt_ResetOffset(u8 no); //Resets offset of gfx or pal data for BG or OBJ
+void hrt_CloneOBJ(int ospr, int nspr); //Creates clone of sprite
+void hrt_GlideSpritetoPos(int spr, int x1, int y1, int x2, int y2, u32 frames); //glides sprite to a position. WIP
 void hrt_SaveInt(u16 offset, int value); //Saves to SRAM
 int hrt_LoadInt(u16 offset); //Loads from SRAM
 void hrt_DrawChar(int mode, int left, int top, char letter); //Draws text on Bitmap
@@ -760,33 +655,28 @@ void hrt_SleepF(u32 frames); //sleeps for set amount of frames
 void hrt_DrawPixel(int Mode, int x, int y, unsigned short color); //Draws pixel on screen
 u16 hrt_GetPixel(u8 mode, int x, int y); //Gets pixel Color of screen
 void hrt_CyclePalette(int start, int amount, int pal); //Cycles BG Palette
-void hrt_loadBGMap(u16* data, int length); //Loads BG Map
-void hrt_loadBGPal(u16* data, u8 length); //Loads BG Palette
+void hrt_LoadBGMap(u16* data, int length); //Loads BG Map
+void hrt_LoadBGPal(u16* data, u8 length); //Loads BG Palette
 void hrt_InvertPalette(int start, int amount, int pal); //Inverts Palette
-void hrt_drawRect(int r, int c, int width, int height, u16 color, int mode); //Draws rectangle
-void hrt_fillscreen(u16 color, int mode); // fills screen with specified color
+void hrt_DrawRectangle(int r, int c, int width, int height, u16 color, int mode); //Draws rectangle
+void hrt_FillScreen(u16 color, int mode); // fills screen with specified color
 void hrt_DrawLine(int x1, int y1, int x2, int y2, unsigned short color, int mode); //Draws line of specified color
 void hrt_DrawCircle(int xCenter, int yCenter, int radius, u16 color, int mode); //Draws circle of specified color.
-void hrt_scanlines(u16 color, int time, int mode); //scanlines wipe
-void hrt_leftwipe(u16 color, int time, int mode);
-void hrt_rightwipe(u16 color, int time, int mode);
-void hrt_topwipe(u16 color, int time, int mode);
-void hrt_bottomwipe(u16 color, int time, int mode);
-void hrt_circlewipe(u16 color, int time, int mode);
-void hrt_coolscanlines(u16 color, int time, int mode);
+void hrt_ScanLines(u16 color, int time, int mode); //scanlines wipe
+void hrt_LeftWipe(u16 color, int time, int mode);
+void hrt_RightWipe(u16 color, int time, int mode);
+void hrt_TopWipe(u16 color, int time, int mode);
+void hrt_BottomWipe(u16 color, int time, int mode);
+void hrt_CircleWipe(u16 color, int time, int mode);
+void hrt_CoolScanLines(u16 color, int time, int mode);
 u16 hrt_GetBGPalEntry(int slot);
 u16 hrt_GetOBJPalEntry(int slot);
 void hrt_SetBGPalEntry(int slot, u16 color);
 void hrt_SetOBJPalEntry(int slot, u16 color);
-void hrt_loadBGTiles(u16* data, int length);
+void hrt_LoadBGTiles(u16* data, int length);
 void hrt_ColdReset();
 void hrt_SoftReset();
-void hrt_FadeOut(u32 frames);
-void hrt_FadeIn(u32 frames);
-void hrt_FadeOutWhite(u32 frames);
-void hrt_FadeInWhite(u32 frames);
 extern u32 hrt_GetBiosChecksum();
-void hrt_WaitForVblank();
 void hrt_Init(int mode);
 void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode);
 void hrt_SetFXLevel(u8 level);
@@ -802,15 +692,16 @@ void hrt_SetTile(u8 x, u8 y, int tileno);
 void hrt_SetFXAlphaLevel(u8 src, u8 dst);
 void hrt_DrawTextTile(int x, int y, char* str);
 void hrt_InitTextTile();
-void hrt_fillpal(int paltype, u16 color);
+void hrt_FillPalette(int paltype, u16 color);
 void hrt_AGBPrint(const char *msg);
-void *hrt_memcpy(void *dest, const void *src, size_t len);
+void *hrt_Memcpy(void *dest, const void *src, size_t len);
 void hrt_VblankIntrWait();
 void hrt_ColdReset();
 void hrt_SoftReset();
 void hrt_RegisterRamReset();
 void hrt_Suspend();
 void hrt_EZ4Exit();
+void hrt_ConfigTimer(u8 channel, u8 scale, u8 irq, u8 enable, u16 start);
 
 #ifdef __cplusplus
 }

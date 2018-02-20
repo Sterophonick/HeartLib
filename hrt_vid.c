@@ -8,12 +8,6 @@ volatile u16* ScanlineCounter = (u16*)0x4000006;
 char* ee = "In loving memory of the HAMLib and ngine.de. HeartLib by Sterophonick. 2018.";
 char* ee2 = "I would like to thank Mark Holloway, Tubooboo, Dwedit, gauauu, DevKitPro, and DekuTree64 for helping me create this library.";
 char* ee3 = "Without them, this project couldn't have been completed.";
-void hrt_WaitForVblank() {
-    if (hrt_start == 1) {
-        while (REG_VCOUNT >= 160);   // wait till VDraw
-        while (REG_VCOUNT < 160);    // wait till VBlank
-    }
-}
 
 void hrt_ResetOffset(u8 no) {
     if (hrt_start == 1) {
@@ -41,24 +35,24 @@ void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode)
     if (hrt_start == 1) {
         switch (channel) {
         case 0:
-            REG_DM0SAD = (u32)source;
-            REG_DM0DAD = (u32)dest;
-            REG_DM0CNT = WordCount | mode;
+            REG_DMA0SAD = (u32)source;
+            REG_DMA0DAD = (u32)dest;
+            REG_DMA0CNT = WordCount | mode;
             break;
         case 1:
-            REG_DM1SAD = (u32)source;
-            REG_DM1DAD = (u32)dest;
-            REG_DM1CNT = WordCount | mode;
+            REG_DMA1SAD = (u32)source;
+            REG_DMA1DAD = (u32)dest;
+            REG_DMA1CNT = WordCount | mode;
             break;
         case 2:
-            REG_DM2SAD = (u32)source;
-            REG_DM2DAD = (u32)dest;
-            REG_DM2CNT = WordCount | mode;
+            REG_DMA2SAD = (u32)source;
+            REG_DMA2DAD = (u32)dest;
+            REG_DMA2CNT = WordCount | mode;
             break;
         case 3:
-            REG_DM3SAD = (u32)source;
-            REG_DM3DAD = (u32)dest;
-            REG_DM3CNT = WordCount | mode;
+            REG_DMA3SAD = (u32)source;
+            REG_DMA3DAD = (u32)dest;
+            REG_DMA3CNT = WordCount | mode;
             break;
         }
     }
@@ -96,7 +90,7 @@ void hrt_EditBG(u8 bg, int x, int y, int x_size, int y_size, int angle) {
     }
 }
 
-void hrt_loadBGPal(u16* data, u8 length) {
+void hrt_LoadBGPal(u16* data, u8 length) {
     if (hrt_start == 1) {
         int i;
         for (i = 0; i < 255; i++) {
@@ -183,7 +177,7 @@ void hrt_InvertPalette(int start, int amount, int pal) {
     return;
 }
 
-void hrt_drawRect(int r, int c, int width, int height, u16 color, int mode) { //draws rectangle
+void hrt_DrawRectangle(int r, int c, int width, int height, u16 color, int mode) { //draws rectangle
     if (hrt_start == 1) {
         int i, j;
         for (i = 0; i < height; i++) {
@@ -194,7 +188,7 @@ void hrt_drawRect(int r, int c, int width, int height, u16 color, int mode) { //
     }
 }
 
-void hrt_fillscreen(u16 color, int mode) { //fills screen with a solid color in mode 3
+void hrt_FillScreen(u16 color, int mode) { //fills screen with a solid color in mode 3
     if (hrt_start == 1) {
         int i;
         for (i = 0; i < 38400; i++) {
@@ -284,7 +278,7 @@ void hrt_DrawCircle(int xCenter, int yCenter, int radius, u16 color, int mode) {
     }
 }
 
-void hrt_scanlines(u16 color, int time, int mode) {
+void hrt_ScanLines(u16 color, int time, int mode) {
     if (hrt_start == 1) {
         int x, y;
 
@@ -300,7 +294,7 @@ void hrt_scanlines(u16 color, int time, int mode) {
     }
 }
 
-void hrt_leftwipe(u16 color, int time, int mode) {
+void hrt_LeftWipe(u16 color, int time, int mode) {
     if (hrt_start == 1) {
         int x1, y1;
         for (x1 = 0; x1 < 240; x1++) {
@@ -312,7 +306,7 @@ void hrt_leftwipe(u16 color, int time, int mode) {
     }
 }
 
-void hrt_rightwipe(u16 color,int time, int mode) {
+void hrt_RightWipe(u16 color,int time, int mode) {
     if (hrt_start == 1) {
         int x1, y1;
         for (x1 = 240; x1 > 0; x1--) {
@@ -324,7 +318,7 @@ void hrt_rightwipe(u16 color,int time, int mode) {
     }
 }
 
-void hrt_topwipe(u16 color, int time, int mode) {
+void hrt_TopWipe(u16 color, int time, int mode) {
     if (hrt_start == 1) {
         int x1, y1;
         for (y1 = 0; y1 < 160; y1++) {
@@ -336,7 +330,7 @@ void hrt_topwipe(u16 color, int time, int mode) {
     }
 }
 
-void hrt_bottomwipe(u16 color, int time, int mode) {
+void hrt_BottomWipe(u16 color, int time, int mode) {
     if (hrt_start == 1) {
         int x1, y1;
         for (y1 = 160; y1 > 0; y1--) {
@@ -348,7 +342,7 @@ void hrt_bottomwipe(u16 color, int time, int mode) {
     }
 }
 
-void hrt_circlewipe(u16 color, int time, int mode) {
+void hrt_CircleWipe(u16 color, int time, int mode) {
     if (hrt_start == 1) {
         int r;
         for (r = 0; r < 120; r++) {
@@ -358,7 +352,7 @@ void hrt_circlewipe(u16 color, int time, int mode) {
     }
 }
 
-void hrt_coolscanlines(u16 color, int time, int mode) {
+void hrt_CoolScanLines(u16 color, int time, int mode) {
     if (hrt_start == 1) {
         int i;
         for (i = 1; i < 160; i += 2) {
@@ -396,7 +390,7 @@ void hrt_SetOBJPalEntry(int slot, u16 color) {
     }
 }
 
-void hrt_loadBGTiles(u16* data, int length) {
+void hrt_LoadBGTiles(u16* data, int length) {
     if (hrt_start == 1) {
         int i;
         for (i = 0; i < length; i++) {
@@ -406,7 +400,7 @@ void hrt_loadBGTiles(u16* data, int length) {
     }
 }
 
-void hrt_loadBGMap(u16* data, int length) {
+void hrt_LoadBGMap(u16* data, int length) {
     if (hrt_start == 1) {
         int i;
         for (i = 0; i < length; i++) {
@@ -433,12 +427,12 @@ void hrt_SleepF(u32 frames) {
         int i;
         i = frames;
         while (i--) {
-            hrt_WaitForVblank();
+            hrt_VblankIntrWait();
         }
     }
 }
 
-void hrt_fillpal(int paltype, u16 color) { //fills a palette of the selection with the same color for each slot
+void hrt_FillPalette(int paltype, u16 color) { //fills a palette of the selection with the same color for each slot
     if (hrt_start == 1) {
         int pixpos;
         if (paltype == 0) { //BGPaletteMem
@@ -461,13 +455,13 @@ void hrt_fillpal(int paltype, u16 color) { //fills a palette of the selection wi
 
 void hrt_SetFXMode(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 backdrop, u8 mode, u8 bg0_2, u8 bg1_2, u8 bg2_2, u8 bg3_2, u8 obj_2, u8 backdrop_2) {
     if (hrt_start == 1) {
-        REG_BLDMOD = 1 * bg0 | 2 * bg1 | 4 * bg2 | 8 * bg3 | 0x10 * obj | 0x20 * backdrop | 0x40 * mode | 0x100 * bg0_2 | 0x200 * bg1_2 | 0x400 * bg2_2 | 0x800 * bg3_2 | 0x1000 * obj_2 | 0x2000 * backdrop_2;
+        REG_BLDCNT = 1 * bg0 | 2 * bg1 | 4 * bg2 | 8 * bg3 | 0x10 * obj | 0x20 * backdrop | 0x40 * mode | 0x100 * bg0_2 | 0x200 * bg1_2 | 0x400 * bg2_2 | 0x800 * bg3_2 | 0x1000 * obj_2 | 0x2000 * backdrop_2;
     }
 }
 
 void hrt_SetFXLevel(u8 level) {
     if (hrt_start == 1) {
-        REG_COLEY = level;
+        REG_BLDY = level;
     }
 }
 
@@ -498,7 +492,7 @@ void hrt_Assert(u8 error, char* func, int arg, char* desc) {
         u8* buf[256];
         u8* buf2 = "FUNCTION: ";
         hrt_SetDSPMode(3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
-        hrt_fillscreen(0x0000, 3);
+        hrt_FillScreen(0x0000, 3);
         hrt_PrintOnBitmap(0, 0, "HEARTLIB HAS CRASHED!");
         hrt_PrintOnBitmap(0, 9, "FUNCTION: ");
         hrt_PrintOnBitmap(80, 9, (char*)func);
@@ -530,7 +524,7 @@ void hrt_SetMosaic(u8 level) {
     }
 }
 
-void hrt_loadOBJPal(unsigned int * pal, int size)
+void hrt_LoadOBJPal(unsigned int * pal, int size)
 {
 	if (hrt_start == 1) {
 		int 	x;
@@ -540,7 +534,7 @@ void hrt_loadOBJPal(unsigned int * pal, int size)
 	}
 }
 
-void hrt_loadOBJGFX(unsigned int * gfx, int size)
+void hrt_LoadOBJGFX(unsigned int * gfx, int size)
 {
 	if (hrt_start == 1) {
 		int 	x;

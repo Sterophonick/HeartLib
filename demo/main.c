@@ -18,7 +18,7 @@ int main()
 {
 	hrt_Init(1); //Initializes Heartlib. If number is set to 1 it plays an intro. REQUIRED FOR USING THIS LIBRARY. IF THIS IS NOT EXECUTED IT WILL NOT WORK!!!!
 	const GBFS_FILE *dat = find_first_gbfs_file(find_first_gbfs_file); //defines GBFS file
-	hrt_initsound8(0, 22050, 5252832, (void*)hrt_snd); //initialises sound
+	hrt_InitSound(0, 22050, 5252832, (void*)hrt_snd); //initialises sound
 	//Sets the Display Mode, like which mode, OBJ Settings, and which backgrounds are enabled.
 	hrt_SetDSPMode(3, //Mode
 		0,								  //CGB Mode
@@ -51,8 +51,8 @@ int main()
 		0,								 //Priority
 		0);							 //Offset
 
-	hrt_loadOBJGFX((void*)arrowTiles, 32); //loads Sprite Graphics
-	hrt_loadOBJPal((void*)arrowPal, 255); //loads Sprite palette
+	hrt_LoadOBJGFX((void*)arrowTiles, 32); //loads Sprite Graphics
+	hrt_LoadOBJPal((void*)arrowPal, 255); //loads Sprite palette
 	frames = 0; //Sets frames to 0
 	arpos = 0; //Sets arrow position to 0
 
@@ -113,19 +113,19 @@ int main()
 				hrt_ConfigBG(2, 0, 1, 0, 1, 0, 0, 0);
 				hrt_ConfigBG(3, 0, 2, 0, 1, 1, 0, 0);
 				hrt_SetDSPMode(0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0);
-				hrt_loadBGPal((void*)master_Palette, 255);
-				hrt_loadBGTiles((void*)l1_Tiles, 1664);
+				hrt_LoadBGPal((void*)master_Palette, 255);
+				hrt_LoadBGTiles((void*)l1_Tiles, 1664);
 				hrt_offsetBGTile = 0x2000;
-				hrt_loadBGTiles((void*)l2_Tiles, 1664);
-				hrt_loadBGMap((void*)l1_Map, 1024);
-				hrt_loadBGMap((void*)l2_Map, 1024);
+				hrt_LoadBGTiles((void*)l2_Tiles, 1664);
+				hrt_LoadBGMap((void*)l1_Map, 1024);
+				hrt_LoadBGMap((void*)l2_Map, 1024);
 				hrt_EditBG(2, bgx, bgy, 256, 256, 0);
 				hrt_EditBG(3, bgx/2, bgy/2, 256, 256, 0);
-				hrt_WaitForVblank();
+				hrt_VblankIntrWait();
 				while (1)
 				{
 					frames++;
-					hrt_WaitForVblank();
+					hrt_VblankIntrWait();
 					hrt_EditBG(2, bgx, bgy, 256, 256, 0);
 					hrt_EditBG(3, bgx / 2, bgy / 2, 256, 256, 0);
 					if (keyDown(KEY_LEFT))
@@ -177,7 +177,7 @@ int main()
 			}
 			if (arpos == 9)
 			{
-				hrt_fillpal(1, 0x0000);
+				hrt_FillPalette(1, 0x0000);
 				hrt_SetDSPMode(0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0);
 				hrt_offsetOAMData = 0;
 				hrt_offsetOAMPal = 0;
@@ -198,12 +198,12 @@ int main()
 					0,                             //BG 3 Target 2
 					0,                             //OBJ Target 2
 					1);                           //Backdrop Target 2
-				hrt_fillscreen(0x0000, 3);
-				hrt_loadBGPal((void*)balls_Palette, 16);
-				hrt_loadBGTiles((void*)balls_Tiles, 1088);
-				hrt_loadBGMap((void*)balls_Map, 2048);
-				hrt_loadOBJGFX((void*)busterTiles, 512); //loads Sprite Graphics
-				hrt_loadOBJPal((void*)busterPal, 16); //loads Sprite palette
+				hrt_FillScreen(0x0000, 3);
+				hrt_LoadBGPal((void*)balls_Palette, 16);
+				hrt_LoadBGTiles((void*)balls_Tiles, 1088);
+				hrt_LoadBGMap((void*)balls_Map, 2048);
+				hrt_LoadOBJGFX((void*)busterTiles, 512); //loads Sprite Graphics
+				hrt_LoadOBJPal((void*)busterPal, 16); //loads Sprite palette
 				hrt_EditBG(2, bgx, bgy, 256, 256, 0);
 				hrt_CreateOBJ(0,   //Sprite ID
 					0,							     //Start X
@@ -232,7 +232,7 @@ int main()
 					if (16 == g_EffectValueA) g_EffectIncrease = -1;
 					if (0 == g_EffectValueA) g_EffectIncrease = 1;
 					hrt_EditBG(2, bgx, bgy, 256, 256, 0);
-					hrt_WaitForVblank();
+					hrt_VblankIntrWait();
 					hrt_SetFXAlphaLevel(g_EffectValueA,             // Source intensity
 						16 - g_EffectValueB);
 					g_EffectValueA += g_EffectIncrease;
@@ -246,17 +246,17 @@ int main()
 			}
 			if (arpos == 8)
 			{
-				hrt_fillscreen(0xFFFF, 3); //Fills Screen with white in mode 3.
+				hrt_FillScreen(0xFFFF, 3); //Fills Screen with white in mode 3.
 				hrt_SetDSPMode(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0); //Sets REG_DISPCNT, like above
 				while (1)
 				{
-					hrt_scanlines(0x0000, 1, 3);
-					hrt_leftwipe(RED, 1, 3);
-					hrt_rightwipe(BLUE, 1, 3);
-					hrt_bottomwipe(BROWN, 1, 3);
-					hrt_topwipe(GREEN, 1, 3);
-					hrt_coolscanlines(MAGENTA, 1, 3);
-					hrt_circlewipe(ORANGE, 1, 3);
+					hrt_ScanLines(0x0000, 1, 3);
+					hrt_LeftWipe(RED, 1, 3);
+					hrt_RightWipe(BLUE, 1, 3);
+					hrt_BottomWipe(BROWN, 1, 3);
+					hrt_TopWipe(GREEN, 1, 3);
+					hrt_CoolScanLines(MAGENTA, 1, 3);
+					hrt_CircleWipe(ORANGE, 1, 3);
 					hrt_LineWipe(CYAN, 0, 3);
 				}
 			}
@@ -271,7 +271,7 @@ int main()
 			if (arpos == 7)
 			{
 				frames = 0;
-				hrt_playSound(0);
+				hrt_PlaySoundFIFO(0);
 				while (1)
 				{
 					hrt_SleepF(14280);
@@ -282,14 +282,14 @@ int main()
 					REG_SD1CNT_H = 0;                                                       //REG_DM1CNT_H = 1011 0110 0100 0000, DMA destination is fixed, repeat transfer of 4 bytes when FIFO , buffer is empty, enable DMA 1 (number of DMA transfers is ignored), INTERRUPT
 					REG_TM0SD = 0;                          //REG_TM0D = 65536-(16777216/frequency);, play sample every 16777216/frequency CPU cycles
 					REG_TMSDCNT = 0;
-					hrt_playSound(0);
+					hrt_PlaySoundFIFO(0);
 				}
 			}
 			if (arpos == 5)
 			{
 				hrt_SetDSPMode(4, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
 				hrt_DMA_Copy(3, (u16*)conceptBitmap, videoBuffer, 19200, 0x80000000);
-				hrt_loadBGPal((void*)conceptPal, 255);
+				hrt_LoadBGPal((void*)conceptPal, 255);
 				while (1)
 				{
 					if (keyDown(KEY_START))
@@ -315,10 +315,10 @@ int main()
 			{
 				hrt_SetDSPMode(4, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
 				hrt_DMA_Copy(3, (u16*)plasmaBitmap, videoBuffer, 19200, 0x80000000); //DMA Copy
-				hrt_loadBGPal((void*)plasmaPalette, 255);
+				hrt_LoadBGPal((void*)plasmaPalette, 255);
 				while (1)
 				{
-					hrt_WaitForVblank();
+					hrt_VblankIntrWait();
 					hrt_CyclePalette(0, 187, 0);
 					if (keyDown(KEY_START))
 					{
@@ -374,15 +374,15 @@ int main()
 				hrt_offsetOAMData = 0;
 				hrt_ConfigBG(2, 0, 1, 1, 1, 0, 1, 0);
 				hrt_SetDSPMode(0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
-				hrt_loadBGPal((void*)bg_hillPal, 255);
-				hrt_loadBGTiles((void*)bg_hillTiles, 32800);
-				hrt_loadBGMap((void*)bg_hillMap, 2048);
+				hrt_LoadBGPal((void*)bg_hillPal, 255);
+				hrt_LoadBGTiles((void*)bg_hillTiles, 32800);
+				hrt_LoadBGMap((void*)bg_hillMap, 2048);
 				hrt_EditBG(2, bgx, bgy, 256, 256, 0);
-				hrt_WaitForVblank();
+				hrt_VblankIntrWait();
 				while (1)
 				{
 					frames++;
-					hrt_WaitForVblank();
+					hrt_VblankIntrWait();
 					hrt_EditBG(2, bgx, bgy, 256, 256, 0);
 					if (keyDown(KEY_LEFT))
 					{
@@ -414,15 +414,15 @@ int main()
 				hrt_offsetOAMData = 0;
 				hrt_CreateOBJ(0, 120, 80, 2, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
 				hrt_SetDSPMode(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0);
-				hrt_loadOBJGFX((void*)blockTiles, 2048);
-				hrt_loadOBJPal((void*)blockPal, 255);
+				hrt_LoadOBJGFX((void*)blockTiles, 2048);
+				hrt_LoadOBJPal((void*)blockPal, 255);
 				hrt_CopyOAM();
 				x = 120;
 				y = 80;
 				hrt_AffineOBJ(0, 0, 255, 255);
 				x_scale = 255;
 				g_newframe = 1;
-				hrt_fillscreen(0x0000, 3);
+				hrt_FillScreen(0x0000, 3);
 				hrt_PrintOnBitmap(0, 0, "HeartLib Sprite Demo");
 				while (1)
 				{
@@ -475,28 +475,25 @@ int main()
 						}
 						hrt_SetOBJXY(&sprites[0], x, y);
 						hrt_AffineOBJ(0, rot % 360, x_scale, x_scale);
-						hrt_WaitForVblank();
+						hrt_VblankIntrWait();
 						hrt_CopyOAM();
 				}
 			}
 			if (arpos == 10)
 			{
-				hrt_fillscreen(0x0000, 3);
+				hrt_FillScreen(0x0000, 3);
 				hrt_offsetOAMPal = 0;
 				hrt_offsetOAMData = 0;
 				hrt_CreateOBJ(0, 120, 80, 2, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
 				hrt_SetDSPMode(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0);
-				hrt_loadOBJGFX((void*)blockTiles, 2048);
-				hrt_loadOBJPal((void*)blockPal, 255);
+				hrt_LoadOBJGFX((void*)blockTiles, 2048);
+				hrt_LoadOBJPal((void*)blockPal, 255);
 				hrt_CopyOAM();
 				x = 120;
 				y = 80;
 				hrt_AffineOBJ(0, 0, 255, 255);
 				x_scale = 255;
 				g_newframe = 1;
-				hrt_irqInit();
-				hrt_irqEnable(IRQ_VBLANK);
-				REG_IME = 1;
 				hrt_PrintOnBitmap(0, 0, "HeartLib Sprite Interrupt Demo");
 				while (1)
 				{
@@ -559,7 +556,7 @@ int main()
 			}
 		}
 		hrt_CopyOAM();
-		hrt_WaitForVblank();
+		hrt_VblankIntrWait();
 	}
 	return 0;
 }

@@ -176,7 +176,7 @@ void hrt_SetOBJXY(OAMEntry* sp, int x, int y)
 	}
 }
 
-void hrt_cloneOBJ(int ospr, int nspr) //duplicates a Sprite
+void hrt_CloneOBJ(int ospr, int nspr) //duplicates a Sprite
 {
 	if (hrt_start == 1) {
 		// set sprite offscreen, and set it up (size,etc)
@@ -185,7 +185,7 @@ void hrt_cloneOBJ(int ospr, int nspr) //duplicates a Sprite
 		sprites[nspr].attribute2 = sprites[ospr].attribute2; // NOTE: mode4 doesn't support the first tiles, so offset of 512 is requirerd
 	}
 }
-void hrt_glideSpritetoPos(int spr, int x1, int y1, int x2, int y2, u32 frames)
+void hrt_GlideSpritetoPos(int spr, int x1, int y1, int x2, int y2, u32 frames)
 {
 	if (hrt_start == 1) {
 		hrt_SetOBJXY(&sprites[spr], x1, y1);
