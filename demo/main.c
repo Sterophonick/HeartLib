@@ -250,6 +250,7 @@ int main()
             }
             if (arpos == 7) {
                 frames = 0;
+				hrt_ConfigSOUNDCNT(0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0);
                 hrt_PlaySoundFIFO(0);
                 while (1) {
                     hrt_SleepF(14280);
@@ -260,6 +261,7 @@ int main()
                     REG_SD1CNT_H = 0;                                                       //REG_DM1CNT_H = 1011 0110 0100 0000, DMA destination is fixed, repeat transfer of 4 bytes when FIFO , buffer is empty, enable DMA 1 (number of DMA transfers is ignored), INTERRUPT
                     REG_TM0SD = 0;                          //REG_TM0D = 65536-(16777216/frequency);, play sample every 16777216/frequency CPU cycles
                     REG_TMSDCNT = 0;
+					hrt_ConfigSOUNDCNT(0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0);
                     hrt_PlaySoundFIFO(0);
                 }
             }

@@ -1,3 +1,3 @@
-build/hrt_txt.o: hrt_txt.c libheart.h
+build/hrt_tmr.o: hrt_tmr.c libheart.h
 
 libheart.h:

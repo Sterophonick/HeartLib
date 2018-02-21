@@ -1,0 +1,24 @@
+STATUS: Validatating gr.
+WARNING:   No explicit src path.
+STATUS: Validation succeeded.
+STATUS: Started run at: 2018-02-21, 11:01:22
+STATUS: Validatating gr.
+STATUS: Validation succeeded.
+STATUS: Preparing data.
+STATUS: Work-DIB creation.
+STATUS: Work-DIB creation complete: 256x256@8.
+STATUS: Tile preparation.
+STATUS:   tiling to 8x8 tiles.
+STATUS: Tile preparation complete.
+STATUS: Map preparation.
+STATUS:   Performing tile reduction: tiles
+STATUS: Creating new tileset.
+STATUS:   Converting to affine layout.
+STATUS: Map preparation complete.
+STATUS: Graphics preparation.
+STATUS: Graphics preparation complete.
+STATUS: Palette preparation.
+STATUS: Palette preparation complete.
+STATUS: Data preparation complete.
+STATUS: Export to C: l1 into C:\Users\nickm\Desktop\Code\Game Boy Advance\Heart GBA Lib\demo 2\l1.c .
+STATUS: Run completed :).

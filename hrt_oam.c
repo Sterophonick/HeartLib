@@ -133,8 +133,8 @@ void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hflip, u8 vfli
 {
 	if (hrt_start == 1) {
 		if (affine == 1) {
-			sprites[spr].attribute0 = color * 8192 | shape * 0x4000 | mode * 0x400 | mosaic * 0x1000 | ROTATION_FLAG | dblsize * 0x200 | sty;
-			sprites[spr].attribute1 = size * 16384 | ROTDATA(spr) | hflip * 4096 | vflip * 8192 | stx;
+			sprites[spr].attribute0 = color * 8192 | shape * 0x4000 | mode * 0x400 | mosaic * 0x1000 | 0x100 | dblsize * 0x200 | sty;
+			sprites[spr].attribute1 = size * 16384 | ((spr) << 9) | hflip * 4096 | vflip * 8192 | stx;
 			sprites[spr].attribute2 = 512 + offset | ((priority) << 10) | ((pal) << 12);
 		}
 		else {

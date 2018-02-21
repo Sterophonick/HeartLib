@@ -21,13 +21,13 @@ Possibilities with this library:
 	AGBPrint
 	GBFS (kudos to Damian Yerrick)
 	Access To Undocumented Functions and Registers
+	Color Conversion
 */
 
 /*
 	TODO:
 		Implement Tiled Text
 		Implement Easy System Call functions
-
 */
 #pragma once
 
@@ -129,14 +129,6 @@ u8 hrt_start;
 
 #define BACKBUFFER      0x10
 
-#define REG_SOUNDCNT1_H  *(volatile unsigned short *) 0x04000082
-#define REG_SOUNDCNT1_X  *(volatile unsigned short *) 0x04000084
-#define REG_SD1SAD      *(volatile unsigned long  *) 0x040000BC
-#define REG_SD1DAD      *(volatile unsigned long  *) 0x040000C0
-#define REG_SD1CNT_H    *(volatile unsigned short *) 0x040000C6
-#define REG_TM0SD        *(volatile unsigned short *) 0x04000100
-#define REG_TMSDCNT      *(volatile unsigned short *) 0x04000102
-
 #define REG_TM0D        *(unsigned short *) 0x04000100
 #define REG_TM0CNT      *(unsigned short *) 0x04000102
 
@@ -229,14 +221,7 @@ enum LCDC_IRQ {
 #define BIT14 16384
 #define BIT15 32768
 
-#define TMR_PRESCALER_1CK       0x0000  // Prescaler 1 Clock
-#define TMR_PRESCALER_64CK      0x0001  //            64 clocks
-#define TMR_PRESCALER_256CK     0x0002  //          256 clocks
-#define TMR_PRESCALER_1024CK    0x0003  //        1024 clocks
-#define TMR_IF_ENABLE           0x0040  // Interrupt Request Enable
-#define TMR_ENABLE              0x0080  // Run Timer
-
-//All GBA Register
+//All GBA Registers - Copied from GBATek
 #define REG_DISPCNT *(u16*)0x04000000 //Display Control
 #define REG_UNKNOWN0 *(u16*)0x04000002 //Unknown - Green Swap?
 #define REG_DISPSTAT *(u16*)0x04000004 //General LCD Status
@@ -383,42 +368,9 @@ enum LCDC_IRQ {
 
 #define DMA_16			0x00000000
 #define DMA_32			0x04000000
-#define MULTIBOOT_NCHILD 3              // Maximum number of slaves
-#define MULTIBOOT_HEADER_SIZE 0xc0      // Header size
-#define MULTIBOOT_SEND_SIZE_MIN 0x100   // Minimum transmission size
-#define MULTIBOOT_SEND_SIZE_MAX 0x40000 // Maximum transmission size
-#define MULTIBOOT_ERROR_04                0x04
-#define MULTIBOOT_ERROR_08                0x08
-#define MULTIBOOT_ERROR_0c                0x0c
-#define MULTIBOOT_ERROR_40                0x40
-#define MULTIBOOT_ERROR_44                0x44
-#define MULTIBOOT_ERROR_48                0x48
-#define MULTIBOOT_ERROR_4c                0x4c
-#define MULTIBOOT_ERROR_80                0x80
-#define MULTIBOOT_ERROR_84                0x84
-#define MULTIBOOT_ERROR_88                0x88
-#define MULTIBOOT_ERROR_8c                0x8c
-#define MULTIBOOT_ERROR_NO_PROBE_TARGET   0x50
-#define MULTIBOOT_ERROR_NO_DLREADY        0x60
-#define MULTIBOOT_ERROR_BOOT_FAILURE      0x70
-#define MULTIBOOT_ERROR_HANDSHAKE_FAILURE 0x71
 
 #define BACKBUFFER 0x10
 #define H_BLANK_OAM 0x20
-
-#define BG_MOSAIC_ENABLE		0x40
-#define MOS_BG_H(x)					(x)
-#define MOS_BG_V(x)					(x<<4)
-#define MOS_OBJ_H(x)				(x<<8)
-#define MOS_OBJ_V(x)				(x<<12)
-
-#define WIN1_ENABLE 0x2000
-#define WIN2_ENABLE 0x4000
-#define WINOBJ_ENABLE 0x8000
-
-#define  fixedfont_WIDTH   128
-#define  fixedfont_HEIGHT  128
-#define SET_MOSAIC(bh,bv,oh,ov)		REG_MOSAIC = ((bh)+(bv<<4)+(oh<<8)+(ov<<12))
 
 #define KEY_A 1
 #define KEY_B 2
@@ -437,10 +389,6 @@ enum LCDC_IRQ {
 #define keyDown(k)  (~KEYS & k)
 #define KEY_ANY_PRESSED (keyDown(KEY_A))OR(keyDown(KEY_B))OR(keyDown(KEY_L))OR(keyDown(KEY_R))OR(keyDown(KEY_SELECT))OR(keyDown(KEY_START))OR(keyDown(KEY_UP))OR(keyDown(KEY_DOWN))OR(keyDown(KEY_LEFT))OR(keyDown(KEY_RIGHT))
 
-
-#define WIN_H(r, l)		(r | l<<8) //calculates REG_WINxH value, r=right coor, l=left coor
-#define WIN_V(b, t)		(b | t<<8) //calculates REG_WINxV value, b=bottom coor, t=top coor
-
 #define	IWRAM		0x03000000
 #define	EWRAM		0x02000000
 #define	EWRAM_END	0x02040000
@@ -454,26 +402,8 @@ enum LCDC_IRQ {
 #define BOTTOM(n)   (n)
 #define TOP(n)      (n) << 8
 
-// définition de l'intérieur des fenêtres
-#define WIN0_BG0      1
-#define WIN0_BG1      2
-#define WIN0_BG2      4
-#define WIN0_BG3      8
-#define WIN0_SPRITES  16
-#define WIN0_BLENDS   32
-#define WIN1_BG0      256
-#define WIN1_BG1      512
-#define WIN1_BG2      1024
-#define WIN1_BG3      2048
-#define WIN1_SPRITES  4096
-#define WIN1_BLENDS   8192
-
 #define PI                   22/7
 #define RADIAN(n)    (((float) n)/ (float) 180 * PI)
-
-//Affine OBJ Defines
-#define ROTATION_FLAG		0x100
-#define ROTDATA(n)			((n)<<9)
 
 //Taken from HAM's mygba.h
 #ifndef RGB_GET_R_VALUE
@@ -492,6 +422,7 @@ enum LCDC_IRQ {
 #define MEM_PAL_COL_PTR(x)		 (u16*) (0x05000000+(x<<1))	// Palette color pointer
 #define MEM_PAL_OBJ_PTR(x)		 (u16*) (0x05000200+(x<<1))	// Palette color pointer
 #define RGB(r,g,b) ((((b)>>3)<<10)+(((g)>>3)<<5)+((r)>>3))
+//
 
 typedef struct tagOAMEntry {
 
@@ -538,7 +469,7 @@ sounds sound[25];
 const double SIN[360];
 const double COS[360];
 const double RAD[360];
-const unsigned char font_matrixBitmap[12160];
+const unsigned short font_matrixBitmap[12160];
 const unsigned short font_milkbottleTiles[3072];
 const unsigned short font_milkbottlePal[16];
 typedef void(*IntFn)(void);
@@ -672,7 +603,7 @@ void hrt_SetDSPMode(u8 mode, u8 CGB, u8 framesel, u8 unlockedhblank, u8 objmap, 
 void hrt_Assert(u8 error, char* func, int arg, char* desc);
 void hrt_ConfigBG(u8 bg, u8 priority, u8 tilebase, u8 mosaic, u8 color256, u8 tilemapbase, u8 wraparound, u8 dimensions);
 void hrt_LineWipe(u16 color, int time, u8 mode);
-void hrt_SetMosaic(u8 level);
+void hrt_SetMosaic(u8 bh, u8 bv, u8 oh, u8 ov);
 double hrt_Distance(int x1, int y1, int x2, int y2);
 double hrt_Slope(int x1, int y1, int x2, int y2);
 void hrt_SetTile(u8 x, u8 y, int tileno);
@@ -695,6 +626,7 @@ void hrt_Flip();
 const void *skip_gbfs_file(const GBFS_FILE *file);
 const void *gbfs_get_obj(const GBFS_FILE *file, const char *name, u32 *len);
 void *gbfs_copy_obj(void *dst, const GBFS_FILE *file, const char *name);
+void hrt_ConfigSOUNDCNT(u8 psgmasvol, u8 loudA, u8 loudB, u8 enablear, u8 enableal, u8 atimer, u8 areset, u8 enablebr, u8 enablebl, u8 btimer, u8 breset);
 
 #ifdef __cplusplus
 }

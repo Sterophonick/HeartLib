@@ -511,9 +511,9 @@ void hrt_LineWipe(u16 color, int time, u8 mode) {
     }
 }
 
-void hrt_SetMosaic(u8 level) {
+void hrt_SetMosaic(u8 bh, u8 bv, u8 oh, u8 ov) {
     if (hrt_start == 1) {
-        REG_MOSAIC = level;
+		REG_MOSAIC = ((bh)+(bv << 4) + (oh << 8) + (ov << 12));
     }
 }
 
