@@ -1,4 +1,5 @@
 #include "libheart.h"
+
 void hrt_DrawChar(int mode, int left, int top, char letter) {
     if (hrt_start == 1) {
         int x, y;
@@ -41,7 +42,7 @@ void hrt_DrawTextTile(int x, int y, char* str)
 	if (hrt_start == 1) {
 		int pos;
 		while (*str) {
-			videoBuffer[y * 120 + x] = *str++;
+			VRAM[y * 120 + x] = *str++;
 		}
 		pos++;
 	}

@@ -21,13 +21,13 @@ Possibilities with this library:
 	AGBPrint
 	GBFS (kudos to Damian Yerrick)
 	Access To Undocumented Functions and Registers
-	
 */
 
 /*
 	TODO:
 		Implement Tiled Text
 		Implement Easy System Call functions
+
 */
 #pragma once
 
@@ -100,13 +100,12 @@ typedef signed short s16;
 typedef signed long s32;
 
 u32* OAMmem;
-u16* videoBuffer;
+u16* VRAM;
 u16* OAMData;
 u16* BGPaletteMem;
 u16* OBJPaletteMem;
 u16* BGTileMem;
-unsigned short *v_buffer;
-int vframe;
+u8* SaveData;
 int	hrt_offsetOAMData;
 int hrt_offsetOAMPal;
 int hrt_offsetBGMap;
@@ -117,8 +116,6 @@ int loop;
 
 u16* FrontBuffer;
 u16* BackBuffer;
-u16* paletteMem;
-volatile u16* ScanlineCounter;
 u8 hrt_start;
 
 //gates
@@ -130,16 +127,18 @@ u8 hrt_start;
 #define XOR  ^
 #define XNOR !^
 
+#define BACKBUFFER      0x10
+
 #define REG_SOUNDCNT1_H  *(volatile unsigned short *) 0x04000082
 #define REG_SOUNDCNT1_X  *(volatile unsigned short *) 0x04000084
 #define REG_SD1SAD      *(volatile unsigned long  *) 0x040000BC
 #define REG_SD1DAD      *(volatile unsigned long  *) 0x040000C0
 #define REG_SD1CNT_H    *(volatile unsigned short *) 0x040000C6
 #define REG_TM0SD        *(volatile unsigned short *) 0x04000100
-#define REG_TMSDCNT      *(volatile unsigned short *) 0x04000102 
+#define REG_TMSDCNT      *(volatile unsigned short *) 0x04000102
 
 #define REG_TM0D        *(unsigned short *) 0x04000100
-#define REG_TM0CNT      *(unsigned short *) 0x04000102 
+#define REG_TM0CNT      *(unsigned short *) 0x04000102
 
 //colors
 #define WHITE 0xFFFF
@@ -157,12 +156,12 @@ u8 hrt_start;
 #define GREY 0x4210
 
 enum LCDC_IRQ {
-	LCDC_VBL_FLAG = (1 << 0),
-	LCDC_HBL_FLAG = (1 << 1),
-	LCDC_VCNT_FLAG = (1 << 2),
-	LCDC_VBL = (1 << 3),
-	LCDC_HBL = (1 << 4),
-	LCDC_VCNT = (1 << 5)
+    LCDC_VBL_FLAG = (1 << 0),
+    LCDC_HBL_FLAG = (1 << 1),
+    LCDC_VCNT_FLAG = (1 << 2),
+    LCDC_VBL = (1 << 3),
+    LCDC_HBL = (1 << 4),
+    LCDC_VCNT = (1 << 5)
 };
 //bios calls
 #define SoftReset 0x00
@@ -405,7 +404,7 @@ enum LCDC_IRQ {
 #define MULTIBOOT_ERROR_HANDSHAKE_FAILURE 0x71
 
 #define BACKBUFFER 0x10
-#define H_BLANK_OAM 0x20 
+#define H_BLANK_OAM 0x20
 
 #define BG_MOSAIC_ENABLE		0x40
 #define MOS_BG_H(x)					(x)
@@ -413,7 +412,7 @@ enum LCDC_IRQ {
 #define MOS_OBJ_H(x)				(x<<8)
 #define MOS_OBJ_V(x)				(x<<12)
 
-#define WIN1_ENABLE 0x2000 
+#define WIN1_ENABLE 0x2000
 #define WIN2_ENABLE 0x4000
 #define WINOBJ_ENABLE 0x8000
 
@@ -447,9 +446,8 @@ enum LCDC_IRQ {
 #define	EWRAM_END	0x02040000
 #define	SRAM		0x0E000000
 #define	REG_BASE	0x04000000
-#define	VRAM		0x06000000
 /*Winodws*/
-#define WIN0_ENABLE      0x2000 
+#define WIN0_ENABLE      0x2000
 #define WINOBJ_ENABLE    0x8000
 #define RIGHT(n)    (n)
 #define LEFT(n)     (n) << 8
@@ -479,13 +477,13 @@ enum LCDC_IRQ {
 
 //Taken from HAM's mygba.h
 #ifndef RGB_GET_R_VALUE
- #define RGB_GET_R_VALUE(rgb)    ((rgb & 0x001f) << 3)
+#define RGB_GET_R_VALUE(rgb)    ((rgb & 0x001f) << 3)
 #endif
 #ifndef RGB_GET_G_VALUE
- #define RGB_GET_G_VALUE(rgb)    (((rgb >> 5) & 0x001f) << 3)
+#define RGB_GET_G_VALUE(rgb)    (((rgb >> 5) & 0x001f) << 3)
 #endif
 #ifndef RGB_GET_B_VALUE
- #define RGB_GET_B_VALUE(rgb)    (((rgb >> 10) & 0x001f) << 3)
+#define RGB_GET_B_VALUE(rgb)    (((rgb >> 10) & 0x001f) << 3)
 #endif
 
 #define ACCESS_8(location)		*(volatile u8 *)  (location)
@@ -495,129 +493,118 @@ enum LCDC_IRQ {
 #define MEM_PAL_OBJ_PTR(x)		 (u16*) (0x05000200+(x<<1))	// Palette color pointer
 #define RGB(r,g,b) ((((b)>>3)<<10)+(((g)>>3)<<5)+((r)>>3))
 
-typedef struct tagOAMEntry
-{
+typedef struct tagOAMEntry {
 
-	u16 attribute0;
-	u16 attribute1;
-	u16 attribute2;
-	u16 attribute3;
+    u16 attribute0;
+    u16 attribute1;
+    u16 attribute2;
+    u16 attribute3;
 
-}OAMEntry, *pOAMEntry;
+} OAMEntry, *pOAMEntry;
 
 //create the array of sprites (128 is the maximum)
 
-typedef struct
-{
+typedef struct {
 
-	u16 x;
-	u16 y;
-	u16 OAMSpriteNum;
-	u16 *SpriteData;
+    u16 x;
+    u16 y;
+    u16 OAMSpriteNum;
+    u16 *SpriteData;
 
-}Sprite, *pSprite;
+} Sprite, *pSprite;
 
-typedef struct tagRotData
-{
+typedef struct tagRotData {
 
-	u16 filler1[3];
-	u16 pa;
-	u16 filler2[3];
-	u16 pb;
-	u16 filler3[3];
-	u16 pc;
-	u16 filler4[3];
-	u16 pd;
+    u16 filler1[3];
+    u16 pa;
+    u16 filler2[3];
+    u16 pb;
+    u16 filler3[3];
+    u16 pc;
+    u16 filler4[3];
+    u16 pd;
 
-}RotData, *pRotData;
+} RotData, *pRotData;
 
 OAMEntry sprites[128];
 
-typedef struct                                                                  //sound variables
-{
- const unsigned char* song;                                                     //pointer to sound's data array	
- int frequency;                                                                 //sound frequency
- int tic;                                                                       //increase up to sounds end
- int end;                                                                       //end of sound
-}sounds; sounds sound[25];
+typedef struct {                                                                //sound variables
+    const unsigned char* song;                                                     //pointer to sound's data array
+    int frequency;                                                                 //sound frequency
+    int tic;                                                                       //increase up to sounds end
+    int end;                                                                       //end of sound
+} sounds;
+sounds sound[25];
 const double SIN[360];
 const double COS[360];
 const double RAD[360];
-const unsigned char font_matrix[12160];
+const unsigned char font_matrixBitmap[12160];
 const unsigned short font_milkbottleTiles[3072];
-const unsigned short font_milkbottlePal[4];
+const unsigned short font_milkbottlePal[16];
 typedef void(*IntFn)(void);
-struct IntTable { IntFn handler; u32 mask; };
+struct IntTable {
+    IntFn handler;
+    u32 mask;
+};
 #define MAX_INTS	15
 #define INT_VECTOR	*(IntFn *)(0x03007ffc)		// BIOS Interrupt vector
 typedef enum irqMASKS {
-	IRQ_VBLANK = (1 << 0),		/*!< vertical blank interrupt mask */
-	IRQ_HBLANK = (1 << 1),		/*!< horizontal blank interrupt mask */
-	IRQ_VCOUNT = (1 << 2),		/*!< vcount match interrupt mask */
-	IRQ_TIMER0 = (1 << 3),		/*!< timer 0 interrupt mask */
-	IRQ_TIMER1 = (1 << 4),		/*!< timer 1 interrupt mask */
-	IRQ_TIMER2 = (1 << 5),		/*!< timer 2 interrupt mask */
-	IRQ_TIMER3 = (1 << 6),		/*!< timer 3 interrupt mask */
-	IRQ_SERIAL = (1 << 7),		/*!< serial interrupt mask */
-	IRQ_DMA0 = (1 << 8),		/*!< DMA 0 interrupt mask */
-	IRQ_DMA1 = (1 << 9),		/*!< DMA 1 interrupt mask */
-	IRQ_DMA2 = (1 << 10),	/*!< DMA 2 interrupt mask */
-	IRQ_DMA3 = (1 << 11),	/*!< DMA 3 interrupt mask */
-	IRQ_KEYPAD = (1 << 12),	/*!< Keypad interrupt mask */
-	IRQ_GAMEPAK = (1 << 13)		/*!< horizontal blank interrupt mask */
+    IRQ_VBLANK = (1 << 0),		/*!< vertical blank interrupt mask */
+    IRQ_HBLANK = (1 << 1),		/*!< horizontal blank interrupt mask */
+    IRQ_VCOUNT = (1 << 2),		/*!< vcount match interrupt mask */
+    IRQ_TIMER0 = (1 << 3),		/*!< timer 0 interrupt mask */
+    IRQ_TIMER1 = (1 << 4),		/*!< timer 1 interrupt mask */
+    IRQ_TIMER2 = (1 << 5),		/*!< timer 2 interrupt mask */
+    IRQ_TIMER3 = (1 << 6),		/*!< timer 3 interrupt mask */
+    IRQ_SERIAL = (1 << 7),		/*!< serial interrupt mask */
+    IRQ_DMA0 = (1 << 8),		/*!< DMA 0 interrupt mask */
+    IRQ_DMA1 = (1 << 9),		/*!< DMA 1 interrupt mask */
+    IRQ_DMA2 = (1 << 10),	/*!< DMA 2 interrupt mask */
+    IRQ_DMA3 = (1 << 11),	/*!< DMA 3 interrupt mask */
+    IRQ_KEYPAD = (1 << 12),	/*!< Keypad interrupt mask */
+    IRQ_GAMEPAK = (1 << 13)		/*!< horizontal blank interrupt mask */
 } irqMASK;
 extern struct IntTable IntrTable[];
-const unsigned short font_matrixBitmap[4608];
 
-typedef struct GBFS_FILE
-{
-	char magic[16];    /* "PinEightGBFS\r\n\032\n" */
-	u32  total_len;    /* total length of archive */
-	u16  dir_off;      /* offset in bytes to directory */
-	u16  dir_nmemb;    /* number of files */
-	char reserved[8];  /* for future use */
+typedef struct GBFS_FILE {
+    char magic[16];    /* "PinEightGBFS\r\n\032\n" */
+    u32  total_len;    /* total length of archive */
+    u16  dir_off;      /* offset in bytes to directory */
+    u16  dir_nmemb;    /* number of files */
+    char reserved[8];  /* for future use */
 } GBFS_FILE;
-typedef struct GBFS_ENTRY
-{
-	char name[24];     /* filename, nul-padded */
-	u32  len;          /* length of object in bytes */
-	u32  data_offset;  /* in bytes from beginning of file */
+typedef struct GBFS_ENTRY {
+    char name[24];     /* filename, nul-padded */
+    u32  len;          /* length of object in bytes */
+    u32  data_offset;  /* in bytes from beginning of file */
 } GBFS_ENTRY;
 const GBFS_FILE *find_first_gbfs_file(const void *start);
-const void *skip_gbfs_file(const GBFS_FILE *file);
-const void *gbfs_get_obj(const GBFS_FILE *file,
-	const char *name,
-	u32 *len);
-void *gbfs_copy_obj(void *dst,
-	const GBFS_FILE *file,
-	const char *name);
 
 typedef	struct {
-	u32	reserved1[5];
-	u8	handshake_data;
-	u8	padding;
-	u16	handshake_timeout;
-	u8	probe_count;
-	u8	client_data[3];
-	u8	palette_data;
-	u8	response_bit;
-	u8	client_bit;
-	u8	reserved2;
-	u8	*boot_srcp;
-	u8	*boot_endp;
-	u8	*masterp;
-	u8	*reserved3[3];
-	u32	system_work2[4];
-	u8	sendflag;
-	u8	probe_target_bit;
-	u8	check_wait;
-	u8	server_type;
+    u32	reserved1[5];
+    u8	handshake_data;
+    u8	padding;
+    u16	handshake_timeout;
+    u8	probe_count;
+    u8	client_data[3];
+    u8	palette_data;
+    u8	response_bit;
+    u8	client_bit;
+    u8	reserved2;
+    u8	*boot_srcp;
+    u8	*boot_endp;
+    u8	*masterp;
+    u8	*reserved3[3];
+    u32	system_work2[4];
+    u8	sendflag;
+    u8	probe_target_bit;
+    u8	check_wait;
+    u8	server_type;
 } MultiBootParam;
 
 enum MULTIBOOT_MODES { MODE32_NORMAL, MODE16_MULTI, MODE32_2MHZ };
 
 u32 hrt_MultiBoot(MultiBootParam *mp, u32 mode);
-
 void hrt_InitInterrupt(void) __attribute__((deprecated));
 void hrt_irqInit();
 IntFn *hrt_SetInterrupt(irqMASK mask, IntFn function) __attribute__((deprecated));
@@ -702,6 +689,12 @@ void hrt_RegisterRamReset();
 void hrt_Suspend();
 void hrt_EZ4Exit();
 void hrt_ConfigTimer(u8 channel, u8 scale, u8 irq, u8 enable, u16 start);
+void hrt_SaveByte(int offset, u8 value);
+u8 hrt_LoadByte(int offset);
+void hrt_Flip();
+const void *skip_gbfs_file(const GBFS_FILE *file);
+const void *gbfs_get_obj(const GBFS_FILE *file, const char *name, u32 *len);
+void *gbfs_copy_obj(void *dst, const GBFS_FILE *file, const char *name);
 
 #ifdef __cplusplus
 }

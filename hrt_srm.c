@@ -1,4 +1,5 @@
 #include "libheart.h"
+u8* SaveData = (u8*)0xE000000;
 void hrt_SaveInt(u16 offset, int value) //saves to SRAM
 {
 	if (hrt_start == 1) {
@@ -25,5 +26,19 @@ int hrt_LoadInt(u16 offset) //Loads from SRAM
 			string[i] = *(u8 *)(SRAM + offset + i);
 		}
 		return atoi(string);
+	}
+}
+
+void hrt_SaveByte(int offset, u8 value)
+{
+	if (hrt_start == 1) {
+		SaveData[offset] = value;
+	}
+}
+
+u8 hrt_LoadByte(int offset)
+{
+	if (hrt_start == 1) {
+		return SaveData[offset];
 	}
 }

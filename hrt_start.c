@@ -28,7 +28,7 @@ void hrt_Init(int mode) {
 		hrt_SetFXMode(0, 0, 1, 0, 1, 1, 2, 0, 0, 0, 0, 0, 0);
         hrt_SetFXLevel(17);
 		hrt_SetDSPMode(4, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0);
-        hrt_DMA_Copy(3, (u16*)hrt_logoBitmap, videoBuffer, 19220, 0x80000000);
+        hrt_DMA_Copy(3, (u16*)hrt_logoBitmap, VRAM, 19200, 0x80000000);
         hrt_LoadBGPal((void*)hrt_logoPal, 255);
         hrt_LoadOBJGFX((void*)hrt_objTiles, 768);
         hrt_LoadOBJPal((void*)hrt_objPal, 14);
@@ -221,7 +221,7 @@ void hrt_Init(int mode) {
 		hrt_SetFXMode(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         hrt_SetFXLevel(0);
 		hrt_FillScreen(0x0000, 3);
-		memcpy(videoBuffer, (char*)0x06000ED0, 98304);
+		memcpy(VRAM, (char*)0x06000ED0, 98304);
         for (i = 0; i < 255; i++) {
             BGPaletteMem[i] = 0x0000;
         }

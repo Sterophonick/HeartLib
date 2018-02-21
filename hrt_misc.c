@@ -18,3 +18,25 @@ void *hrt_Memcpy(void *dest, const void *src, size_t len)
 		*d++ = *s++;
 	return dest;
 }
+
+void hrt_Sleep(double i) {
+	if (hrt_start == 1) {
+		int x, y;
+		int c;
+		for (y = 0; y < i; y++) {
+			for (x = 0; x < 4000; x++) {
+				c = c + 2;    // do something to slow things down
+			}
+		}
+	}
+}
+
+void hrt_SleepF(u32 frames) {
+	if (hrt_start == 1) {
+		int i;
+		i = frames;
+		while (i--) {
+			hrt_VblankIntrWait();
+		}
+	}
+}

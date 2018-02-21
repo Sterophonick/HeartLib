@@ -1,5 +1,5 @@
 #include "libheart.h"
-u16* videoBuffer 	=(u16*)0x6000000;
+u16* VRAM 	=(u16*)0x6000000;
 u16* BGPaletteMem 	=(u16*)0x5000000;
 u16* BGTileMem = (u16*)0x6004000;
 u16* FrontBuffer = (u16*)0x6000000;
@@ -8,6 +8,21 @@ volatile u16* ScanlineCounter = (u16*)0x4000006;
 char* ee = "In loving memory of the HAMLib and ngine.de. HeartLib by Sterophonick. 2018.";
 char* ee2 = "I would like to thank Mark Holloway, Tubooboo, Dwedit, gauauu, DevKitPro, and DekuTree64 for helping me create this library.";
 char* ee3 = "Without them, this project couldn't have been completed.";
+
+void hrt_Flip() {
+	if (hrt_start == 1) {
+		if (REG_DISPCNT & BACKBUFFER)                                                   //back buffer is current buffer, switch to font buffer
+		{
+			REG_DISPCNT &= ~BACKBUFFER;                                                   //flip active buffer to front buffer
+			VRAM = BackBuffer;                                                     //point drawing buffer to the back buffer
+		}
+		else                                                                           //front buffer is active so switch it to backbuffer
+		{
+			REG_DISPCNT |= BACKBUFFER;                                                    //flip active buffer to back buffer by setting back buffer bit
+			VRAM = FrontBuffer;                                                    //now we point our drawing buffer to the front buffer
+		}
+	}
+}
 
 void hrt_ResetOffset(u8 no) {
     if (hrt_start == 1) {
@@ -103,11 +118,11 @@ void hrt_LoadBGPal(u16* data, u8 length) {
 void hrt_DrawPixel(int Mode, int x, int y, unsigned short color) {
     if (hrt_start == 1) {
         if (Mode == 3) {
-            videoBuffer[y * 240 + x] = color;
+            VRAM[y * 240 + x] = color;
         } else if (Mode == 4) {
-            videoBuffer[y * 120 + x] = color;
+            VRAM[y * 120 + x] = color;
         } else if (Mode == 5) {
-            videoBuffer[y * 120 + x] = color;
+            VRAM[y * 120 + x] = color;
         }
     }
 }
@@ -117,14 +132,14 @@ u16 hrt_GetPixel(u8 mode, int x, int y) {
         u16 temp;
         switch (mode) {
         case 3:
-            return videoBuffer[y * 240 + x]; //returns the pixel color at the position given
+            return VRAM[y * 240 + x]; //returns the pixel color at the position given
             break;
         case 4:
-            temp = videoBuffer[y * 120 + x]; //returns the pixel color at the position given
+            temp = VRAM[y * 120 + x]; //returns the pixel color at the position given
             return BGPaletteMem[temp];
             break;
         case 5:
-            return videoBuffer[y * 120 + x]; //returns the pixel color at the position given
+            return VRAM[y * 120 + x]; //returns the pixel color at the position given
             break;
         }
         return 0;
@@ -192,7 +207,7 @@ void hrt_FillScreen(u16 color, int mode) { //fills screen with a solid color in 
     if (hrt_start == 1) {
         int i;
         for (i = 0; i < 38400; i++) {
-            videoBuffer[i] = color;
+            VRAM[i] = color;
         }
     }
 }
@@ -404,31 +419,9 @@ void hrt_LoadBGMap(u16* data, int length) {
     if (hrt_start == 1) {
         int i;
         for (i = 0; i < length; i++) {
-            videoBuffer[i+hrt_offsetBGMap] = data[i];
+            VRAM[i+hrt_offsetBGMap] = data[i];
         }
         hrt_offsetBGMap += length;
-    }
-}
-
-void hrt_Sleep(double i) {
-    if (hrt_start == 1) {
-        int x, y;
-        int c;
-        for (y = 0; y < i; y++) {
-            for (x = 0; x < 4000; x++) {
-                c = c + 2;    // do something to slow things down
-            }
-        }
-    }
-}
-
-void hrt_SleepF(u32 frames) {
-    if (hrt_start == 1) {
-        int i;
-        i = frames;
-        while (i--) {
-            hrt_VblankIntrWait();
-        }
     }
 }
 
@@ -547,7 +540,7 @@ void hrt_LoadOBJGFX(unsigned int * gfx, int size)
 void hrt_SetTile(u8 x, u8 y, int tileno)
 {
 	if (hrt_start == 1) {
-		videoBuffer[y * 256 + x] = tileno;
+		VRAM[y * 256 + x] = tileno;
 	}
 }
 
