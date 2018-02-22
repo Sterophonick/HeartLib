@@ -6,10 +6,10 @@ u16* FrontBuffer = (u16*)0x6000000;
 u16* BackBuffer = (u16*)0x600A000;
 volatile u16* ScanlineCounter = (u16*)0x4000006;
 char* ee = "In loving memory of the HAMLib and ngine.de. HeartLib by Sterophonick. 2018.";
-char* ee2 = "I would like to thank Mark Holloway, Tubooboo, Dwedit, gauauu, DevKitPro, and DekuTree64 for helping me create this library.";
+char* ee2 = "I would like to thank Mark Holloway, Tubooboo, Dwedit, gauauu, DevKitPro, Nintendo, and DekuTree64 for helping me create this library.";
 char* ee3 = "Without them, this project couldn't have been completed.";
 
-void hrt_Flip() {
+void hrt_FlipBGBuffer() {
 	if (hrt_start == 1) {
 		if (REG_DISPCNT & BACKBUFFER)                                                   //back buffer is current buffer, switch to font buffer
 		{
@@ -105,7 +105,7 @@ void hrt_EditBG(u8 bg, int x, int y, int x_size, int y_size, int angle) {
     }
 }
 
-void hrt_LoadBGPal(u16* data, u8 length) {
+void hrt_LoadBGPal(u16* data, u16 length) {
     if (hrt_start == 1) {
         int i;
         for (i = 0; i < 255; i++) {
@@ -517,7 +517,7 @@ void hrt_SetMosaic(u8 bh, u8 bv, u8 oh, u8 ov) {
     }
 }
 
-void hrt_LoadOBJPal(unsigned int * pal, int size)
+void hrt_LoadOBJPal(unsigned int * pal, u16 size)
 {
 	if (hrt_start == 1) {
 		int 	x;
@@ -551,4 +551,9 @@ void hrt_SetFXAlphaLevel(u8 src, u8 dst)
 		REG_BLDALPHA_L = src;
 		REG_BLDALPHA_H = dst;
 	}
+}
+
+int hrt_ConfigDMA(u8 dstoff, u8 srcoff, u8 repeat, u8 b32, u8 starttiming, u8 irq, u8 enable)
+{
+	return 0x20 * dstoff | 0x80 * srcoff | 0x200 * repeat | 0x400 * b32 | 0x1000 * starttiming | 0x4000 * irq | 0x8000 * enable;
 }

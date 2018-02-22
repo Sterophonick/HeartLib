@@ -50,6 +50,7 @@ int main()
     hrt_SetDSPMode(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0); //Sets REG_DISPCNT, like above
     hrt_PrintOnBitmap(8, 0, "OBJ Window"); //draws text
 	hrt_PrintOnBitmap(8, 9, "Rotate Background"); //draws text
+	hrt_PrintOnBitmap(8, 18, "JPEG"); //draws text
     hrt_CopyOAM(); //Copies OBJ Data to OAM
     while (1) {
         if (keyDown(KEY_UP)) {
@@ -62,8 +63,8 @@ int main()
         }
         if (keyDown(KEY_DOWN)) {
             arpos++;
-            if (arpos == 2) {
-                arpos = 1;
+            if (arpos == 4) {
+                arpos = 3;
             }
             while (keyDown(KEY_DOWN));
         }
@@ -73,6 +74,12 @@ int main()
                      9*arpos); //Y Position
 
         if (keyDown(KEY_A)) {
+			if (arpos == 2)
+			{
+				hrt_SetDSPMode(1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0); //Sets REG_DISPCNT, like above
+				hrt_FillScreen(0x0000, 3);
+				JPEG_DecompressImage(gbfs_get_obj(dat, "such.jpg", NULL), VRAM, 240, 160);
+			}
 			if (arpos == 1)
 			{
 				hrt_SetDSPMode(1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0); //Sets REG_DISPCNT, like above

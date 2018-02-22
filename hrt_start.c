@@ -1,23 +1,23 @@
 #include "libheart.h"
-extern const unsigned short hrt_logoBitmap[19220];
+extern const unsigned short hrt_logoBitmap[2716];
 extern const unsigned short hrt_logoPal[256];
-extern const unsigned short hrt_objTiles[768];
-extern const unsigned short hrt_objPal[7];
-
+extern const unsigned short hrt_objTiles[164];
+extern const unsigned short hrt_objPal[14];
+u16* temp = (u16*)0x6014000;
 
 void hrt_Init(int mode) {
-	hrt_start = 1;
-	hrt_irqInit();
-	hrt_irqEnable(IRQ_VBLANK);
-	REG_IME = 1;
-    if(mode==1) {
+	int i;
+    if((mode==1)OR(hrt_start == 0)) {
+		hrt_start = 1;
+		hrt_irqInit();
+		hrt_irqEnable(IRQ_VBLANK);
+		REG_IME = 1;
 		hrt_AGBPrint("Starting HeartLib... \n");
 		hrt_AGBPrint("Shoutout to Emanuel Schleussinger.\n");
 		hrt_offsetOAMData = 0;
 		hrt_offsetOAMPal = 0;
 		hrt_offsetBGMap = 0;
 		hrt_offsetBGPal = 0;
-        int i;
         u8 fade;
 		u8 dir;
 		u16 angle;
@@ -28,9 +28,9 @@ void hrt_Init(int mode) {
 		hrt_SetFXMode(0, 0, 1, 0, 1, 1, 2, 0, 0, 0, 0, 0, 0);
         hrt_SetFXLevel(17);
 		hrt_SetDSPMode(4, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0);
-        hrt_DMA_Copy(3, (u16*)hrt_logoBitmap, VRAM, 19200, 0x80000000);
-        hrt_LoadBGPal((void*)hrt_logoPal, 255);
-        hrt_LoadOBJGFX((void*)hrt_objTiles, 768);
+		hrt_LZ77UnCompVRAM((u32)hrt_logoBitmap, (u32)VRAM);
+        hrt_LoadBGPal((void*)hrt_logoPal, 159);
+		hrt_LZ77UnCompVRAM((u32)hrt_objTiles, (u32)temp);
         hrt_LoadOBJPal((void*)hrt_objPal, 14);
         hrt_CreateOBJ(0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
         hrt_CloneOBJ(0, 1);
@@ -217,26 +217,27 @@ void hrt_Init(int mode) {
             }
             hrt_CopyOAM();
         }
-		hrt_SetDSPMode(0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0);
-		hrt_SetFXMode(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        hrt_SetFXLevel(0);
-		hrt_FillScreen(0x0000, 3);
-		memcpy(VRAM, (char*)0x06000ED0, 98304);
-        for (i = 0; i < 255; i++) {
-            BGPaletteMem[i] = 0x0000;
-        }
-		for (i = 0; i < 255; i++) {
-			OBJPaletteMem[i] = 0x0000;
-		}
-        hrt_SetOBJXY(&sprites[0], 220, 160);
-        hrt_SetOBJXY(&sprites[1], 220, 160);
-        hrt_SetOBJXY(&sprites[2], 220, 160);
-        hrt_SetOBJXY(&sprites[3], 220, 160);
-        hrt_SetOBJXY(&sprites[4], 220, 160);
-        hrt_CopyOAM();
-        hrt_offsetOAMData = 0;
-        hrt_offsetOAMPal = 0;
-		hrt_offsetBGMap = 0;
-		hrt_offsetBGPal = 0;
     }
+	hrt_start = 1;
+	hrt_SetDSPMode(0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0);
+	hrt_SetFXMode(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	hrt_SetFXLevel(0);
+	hrt_FillScreen(0x0000, 3);
+	memcpy(VRAM, (char*)0x06000ED0, 98304);
+	for (i = 0; i < 255; i++) {
+		BGPaletteMem[i] = 0x0000;
+	}
+	for (i = 0; i < 255; i++) {
+		OBJPaletteMem[i] = 0x0000;
+	}
+	hrt_SetOBJXY(&sprites[0], 220, 160);
+	hrt_SetOBJXY(&sprites[1], 220, 160);
+	hrt_SetOBJXY(&sprites[2], 220, 160);
+	hrt_SetOBJXY(&sprites[3], 220, 160);
+	hrt_SetOBJXY(&sprites[4], 220, 160);
+	hrt_CopyOAM();
+	hrt_offsetOAMData = 0;
+	hrt_offsetOAMPal = 0;
+	hrt_offsetBGMap = 0;
+	hrt_offsetBGPal = 0;
 }
