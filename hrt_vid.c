@@ -5,10 +5,16 @@ u16* BGPaletteMem 	=(u16*)0x5000000;
 u16* BGTileMem = (u16*)0x6004000;
 u16* FrontBuffer = (u16*)0x6000000;
 u16* BackBuffer = (u16*)0x600A000;
+
 volatile u16* ScanlineCounter = (u16*)0x4000006;
 const char* ee = "In loving memory of the HAMLib and ngine.de. HeartLib by Sterophonick. 2018.";
 const char* ee2 = "I would like to thank Mark Holloway, Tubooboo, Dwedit, gauauu, DevKitPro, Nintendo, sverx, and DekuTree64 for helping me create this library.";
 const char* ee3 = "Without them, this project couldn't have been completed.";
+extern int	hrt_offsetOAMData;
+extern int hrt_offsetOAMPal;
+extern int hrt_offsetBGMap;
+extern int hrt_offsetBGTile;
+extern int hrt_offsetBGPal;
 
 void hrt_FlipBGBuffer() {
 	if (hrt_start == 1) {

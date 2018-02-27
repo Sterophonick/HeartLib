@@ -5,6 +5,11 @@ extern const unsigned short hrt_logoPal[256];
 extern const unsigned short hrt_objTiles[164];
 extern const unsigned short hrt_objPal[14];
 u16* temp = (u16*)0x6014000;
+extern int	hrt_offsetOAMData;
+extern int hrt_offsetOAMPal;
+extern int hrt_offsetBGMap;
+extern int hrt_offsetBGTile;
+extern int hrt_offsetBGPal;
 
 void hrt_Init(int mode) {
 	int i;
@@ -13,8 +18,6 @@ void hrt_Init(int mode) {
 		hrt_irqInit();
 		hrt_irqEnable(IRQ_VBLANK);
 		REG_IME = 1;
-		hrt_AGBPrint("Starting HeartLib... \n");
-		hrt_AGBPrint("Shoutout to Emanuel Schleussinger.\n");
 		hrt_offsetOAMData = 0;
 		hrt_offsetOAMPal = 0;
 		hrt_offsetBGMap = 0;
@@ -26,9 +29,9 @@ void hrt_Init(int mode) {
         int frames = 0;
         u8 bx, by, bsy, bsx;
         int ys1;
-		hrt_SetFXMode(0, 0, 1, 0, 1, 1, 2, 0, 0, 0, 0, 0, 0);
-        hrt_SetFXLevel(17);
-		hrt_SetDSPMode(4, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0);
+		REG_BLDCNT = 0x00B4;
+		REG_BLDY = 17;
+		REG_DISPCNT = 0x1444;
 		hrt_LZ77UnCompVRAM((u32)hrt_logoBitmap, (u32)VRAM);
         hrt_LoadBGPal((void*)hrt_logoPal, 159);
 		hrt_LZ77UnCompVRAM((u32)hrt_objTiles, (u32)temp);
@@ -86,7 +89,7 @@ void hrt_Init(int mode) {
 				}
 			}
             if ((!(frames % 4))AND(fadecnt < 17)) {
-                hrt_SetFXLevel(16 - i / 4);
+				REG_BLDY = 16 - i / 4;
                 fadecnt++;
             }
             if (!(frames % 10)) {
@@ -197,7 +200,7 @@ void hrt_Init(int mode) {
 				}
 			}
             if ((!(frames % 4))AND(fadecnt < 17)) {
-                hrt_SetFXLevel(i / 4);
+				REG_BLDY = i / 4;
                 fadecnt++;
             }
             if (!(frames % 10)) {
@@ -220,9 +223,9 @@ void hrt_Init(int mode) {
         }
     }
 	hrt_start = 1;
-	hrt_SetDSPMode(0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0);
-	hrt_SetFXMode(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-	hrt_SetFXLevel(0);
+	REG_DISPCNT = 0x0080;
+	REG_BLDCNT = 0;
+	REG_BLDY = 0;
 	hrt_FillScreen(0x0000, 3);
 	memcpy(VRAM, (char*)0x06000ED0, 98304);
 	for (i = 0; i < 255; i++) {

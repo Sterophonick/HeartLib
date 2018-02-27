@@ -1,4 +1,9 @@
 #include "libheart.h"
+extern int	hrt_offsetOAMData;
+extern int hrt_offsetOAMPal;
+extern int hrt_offsetBGMap;
+extern int hrt_offsetBGTile;
+extern int hrt_offsetBGPal;
 
 void hrt_ConfigTimer(u8 channel, u8 scale, u8 irq, u8 enable, u16 start)
 {

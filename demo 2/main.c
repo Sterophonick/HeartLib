@@ -1,6 +1,8 @@
 #include <libheart.h>
 #include "defs.h"
 
+char buf[255];
+
 void vblFunc()
 {
 	hrt_CopyOAM();
@@ -59,8 +61,10 @@ int main()
 	hrt_PrintOnBitmap(8, 9, "Rotate Background"); //draws text
 	hrt_PrintOnBitmap(8, 18, "PCX"); //draws text
 	hrt_PrintOnBitmap(8, 27, "Interrupt Dispatcher"); //draws text
+	hrt_PrintOnBitmap(8, 36, "Random Number Generator"); //draws text
     hrt_CopyOAM(); //Copies OBJ Data to OAM
     while (1) {
+		frames++;
         if (keyDown(KEY_UP)) {
             arpos--;
             if (arpos == -1) {
@@ -71,8 +75,8 @@ int main()
         }
         if (keyDown(KEY_DOWN)) {
             arpos++;
-            if (arpos == 4) {
-                arpos = 3;
+            if (arpos == 5) {
+                arpos = 4;
             }
             while (keyDown(KEY_DOWN));
         }
@@ -82,6 +86,41 @@ int main()
                      9*arpos); //Y Position
 
         if (keyDown(KEY_A)) {
+			if (arpos == 4)
+			{
+				hrt_irqInit();
+				hrt_irqSet(IRQ_VBLANK, vblFunc);
+				hrt_irqEnable(IRQ_VBLANK);
+				REG_IME = 1;
+				int x_scale;
+				int x, y;
+				int fxlevel;
+				int rot;
+				hrt_ResetOffset(1);
+				hrt_ResetOffset(0);
+				hrt_CreateOBJ(0, 120, 80, 2, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
+				hrt_SetDSPMode(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0);
+				x = 120;
+				y = 80;
+				hrt_AffineOBJ(0, 0, 255, 255);
+				x_scale = 255;
+				g_newframe = 1;
+				hrt_FillScreen(0x0000, 3);
+				hrt_PrintOnBitmap(0, 0, "0");
+				int j;
+				hrt_SeedRNG(frames);
+				int g_sram;
+				while (1)
+				{
+					if (keyDown(KEY_A))
+					{
+						g_sram = hrt_CreateRNG();
+						hrt_Memcpy(VRAM, (char*)0x06000ED0, 240 * 16);
+						sprintf((char*)buf, "%d", g_sram);
+						hrt_PrintOnBitmap(0, 0, (char*)buf);
+					}
+				}
+			}
 			if (arpos == 2)
 			{
 				hrt_SetDSPMode(4, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0); //Sets REG_DISPCNT, like above
@@ -98,8 +137,8 @@ int main()
 				int x, y;
 				int fxlevel;
 				int rot;
-				hrt_offsetOAMPal = 0;
-				hrt_offsetOAMData = 0;
+				hrt_ResetOffset(1);
+				hrt_ResetOffset(0);
 				hrt_CreateOBJ(0, 120, 80, 2, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
 				hrt_SetDSPMode(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0);
 				hrt_LoadOBJGFX((void*)blockTiles, 2048);

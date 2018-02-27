@@ -1,5 +1,5 @@
 //File: libheart.h - The NEW Definitive GBA Header File
-//Date: February 2018
+//Date: March 2018
 //Author: Sterophonick
 //Derived from gba.h by eloist
 //This library is designed to make GBA Programming easy to do, and for everyone to be able to do it, not unlike HAMLib (rip 2001-2011 =( )
@@ -26,13 +26,14 @@ Possibilities with this library:
 	Timers
 	Bitmaps
 	Keys
-	PCX Decoding
+	PCX Decoding (Shoutouts to libGBA)
+	Random Number Generation (Uses Merssene Twister method)
 	
 TODO:
 		Implement Tiled Text
 		Implement Easy System Call functions
 		Implement JPEG Decoding -- For now it goes unused. rip
-		Test Compatability with Apex Audio System, if I can get it to work.
+		Test Compatability with Krawall, if I can get it to work.
 
 Recommended Tools for development with this library:
 gfx2gba
@@ -121,14 +122,7 @@ u16* BGPaletteMem;
 u16* OBJPaletteMem;
 u16* BGTileMem;
 u8* SaveData;
-int	hrt_offsetOAMData;
-int hrt_offsetOAMPal;
-int hrt_offsetBGMap;
-int hrt_offsetBGTile;
-int hrt_offsetBGPal;
 u16* OAM;
-int loop;
-
 u16* FrontBuffer;
 u16* BackBuffer;
 
@@ -547,6 +541,8 @@ sounds sound[25];
 #define NULL ((void *)0)
 #endif
 
+const GBFS_FILE *find_first_gbfs_file(const void *start);
+
 const double SIN[360];
 const double COS[360];
 const double RAD[360];
@@ -554,7 +550,6 @@ const unsigned short font_matrixBitmap[6080];
 const unsigned short font_milkbottleTiles[3072];
 const unsigned short font_milkbottlePal[16];
 
-const GBFS_FILE *find_first_gbfs_file(const void *start);
 u32 hrt_MultiBoot(MultiBootParam *mp, u32 mode);
 void hrt_InitInterrupt(void) __attribute__((deprecated));
 void hrt_irqInit();
@@ -649,6 +644,9 @@ void *gbfs_copy_obj(void *dst, const GBFS_FILE *file, const char *name);
 void hrt_ConfigSOUNDCNT(u8 psgmasvol, u8 loudA, u8 loudB, u8 enablear, u8 enableal, u8 atimer, u8 areset, u8 enablebr, u8 enablebl, u8 btimer, u8 breset);
 int hrt_ConfigDMA(u8 dstoff, u8 srcoff, u8 repeat, u8 b32, u8 starttiming, u8 irq, u8 enable);
 void hrt_DecodePCX(const u8 *PCXBuffer, u16 *ScreenAddr, u16 *Palette);
+void hrt_SeedRNG(u32 seed);
+u32 hrt_ReloadRNG(void);
+u32 hrt_CreateRNG(void);
 
 #ifdef __cplusplus
 }

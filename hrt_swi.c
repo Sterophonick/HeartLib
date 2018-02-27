@@ -1,5 +1,10 @@
 #include "libheart.h"
 extern u8 hrt_start;
+extern int	hrt_offsetOAMData;
+extern int hrt_offsetOAMPal;
+extern int hrt_offsetBGMap;
+extern int hrt_offsetBGTile;
+extern int hrt_offsetBGPal;
 
 u32 hrt_GetBiosChecksum() {
     if (hrt_start == 1) {

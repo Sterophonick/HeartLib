@@ -1,3 +1,9 @@
+
+extern int	hrt_offsetOAMData;
+extern int hrt_offsetOAMPal;
+extern int hrt_offsetBGMap;
+extern int hrt_offsetBGTile;
+extern int hrt_offsetBGPal;
 /*
 Copyright 2002 Damian Yerrick
 Permission is hereby granted, free of charge, to any person obtaining
