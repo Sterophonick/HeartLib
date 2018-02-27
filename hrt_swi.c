@@ -1,4 +1,5 @@
 #include "libheart.h"
+extern u8 hrt_start;
 
 u32 hrt_GetBiosChecksum() {
     if (hrt_start == 1) {

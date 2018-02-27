@@ -1,8 +1,8 @@
-//File: libheart.h
-//Main file for HeartLib
-//Use this file often if you're a beginner, even a pro, as it makes GBA development easier, like any other library. Edit this if you want.
+//File: libheart.h - The NEW Definitive GBA Header File
 //Date: February 2018
 //Author: Sterophonick
+//Derived from gba.h by eloist
+//This library is designed to make GBA Programming easy to do, and for everyone to be able to do it, not unlike HAMLib (rip 2001-2011 =( )
 
 /*
 Possibilities with this library:
@@ -26,6 +26,7 @@ Possibilities with this library:
 	Timers
 	Bitmaps
 	Keys
+	PCX Decoding
 	
 TODO:
 		Implement Tiled Text
@@ -39,7 +40,6 @@ usenti
 gbfs
 mid2s3m
 */
-#pragma once
 
 #ifndef LIBHEART_H
 #define LIBHEART_H
@@ -112,6 +112,7 @@ typedef signed char s8;
 typedef signed short s16;
 typedef signed long s32;
 typedef signed long long s64;
+typedef void(*IntFn)(void);
 
 u32* OAMmem;
 u16* VRAM;
@@ -130,7 +131,122 @@ int loop;
 
 u16* FrontBuffer;
 u16* BackBuffer;
-u8 hrt_start;
+
+typedef struct {
+	char		manufacturer;
+	char		version;
+	char		encoding;
+	char		bpp;
+	short int	x1, y1;
+	short int	x2, y2;
+	short int	hres;
+	short int	vres;
+	char		palette[48];
+	char		reserved;
+	char		color_planes;
+	short int	BytesPerLine;
+	short int	PaletteType;
+	char		dummy[58];
+}__attribute__((packed)) pcx_header;
+enum LCDC_IRQ {
+	LCDC_VBL_FLAG = (1 << 0),
+	LCDC_HBL_FLAG = (1 << 1),
+	LCDC_VCNT_FLAG = (1 << 2),
+	LCDC_VBL = (1 << 3),
+	LCDC_HBL = (1 << 4),
+	LCDC_VCNT = (1 << 5)
+};
+typedef struct GBFS_FILE {
+	char magic[16];    /* "PinEightGBFS\r\n\032\n" */
+	u32  total_len;    /* total length of archive */
+	u16  dir_off;      /* offset in bytes to directory */
+	u16  dir_nmemb;    /* number of files */
+	char reserved[8];  /* for future use */
+} GBFS_FILE;
+typedef struct GBFS_ENTRY {
+	char name[24];     /* filename, nul-padded */
+	u32  len;          /* length of object in bytes */
+	u32  data_offset;  /* in bytes from beginning of file */
+} GBFS_ENTRY;
+typedef	struct {
+	u32	reserved1[5];
+	u8	handshake_data;
+	u8	padding;
+	u16	handshake_timeout;
+	u8	probe_count;
+	u8	client_data[3];
+	u8	palette_data;
+	u8	response_bit;
+	u8	client_bit;
+	u8	reserved2;
+	u8	*boot_srcp;
+	u8	*boot_endp;
+	u8	*masterp;
+	u8	*reserved3[3];
+	u32	system_work2[4];
+	u8	sendflag;
+	u8	probe_target_bit;
+	u8	check_wait;
+	u8	server_type;
+} MultiBootParam;
+enum MULTIBOOT_MODES { MODE32_NORMAL, MODE16_MULTI, MODE32_2MHZ };
+typedef enum irqMASKS {
+	IRQ_VBLANK = (1 << 0),		/*!< vertical blank interrupt mask */
+	IRQ_HBLANK = (1 << 1),		/*!< horizontal blank interrupt mask */
+	IRQ_VCOUNT = (1 << 2),		/*!< vcount match interrupt mask */
+	IRQ_TIMER0 = (1 << 3),		/*!< timer 0 interrupt mask */
+	IRQ_TIMER1 = (1 << 4),		/*!< timer 1 interrupt mask */
+	IRQ_TIMER2 = (1 << 5),		/*!< timer 2 interrupt mask */
+	IRQ_TIMER3 = (1 << 6),		/*!< timer 3 interrupt mask */
+	IRQ_SERIAL = (1 << 7),		/*!< serial interrupt mask */
+	IRQ_DMA0 = (1 << 8),		/*!< DMA 0 interrupt mask */
+	IRQ_DMA1 = (1 << 9),		/*!< DMA 1 interrupt mask */
+	IRQ_DMA2 = (1 << 10),	/*!< DMA 2 interrupt mask */
+	IRQ_DMA3 = (1 << 11),	/*!< DMA 3 interrupt mask */
+	IRQ_KEYPAD = (1 << 12),	/*!< Keypad interrupt mask */
+	IRQ_GAMEPAK = (1 << 13)		/*!< horizontal blank interrupt mask */
+} irqMASK;
+struct IntTable {
+	IntFn handler;
+	u32 mask;
+};
+extern struct IntTable IntrTable[];
+typedef struct tagOAMEntry {
+
+	u16 attribute0;
+	u16 attribute1;
+	u16 attribute2;
+	u16 attribute3;
+
+} OAMEntry, *pOAMEntry;
+typedef struct {
+
+	u16 x;
+	u16 y;
+	u16 OAMSpriteNum;
+	u16 *SpriteData;
+
+} Sprite, *pSprite;
+typedef struct tagRotData {
+
+	u16 filler1[3];
+	u16 pa;
+	u16 filler2[3];
+	u16 pb;
+	u16 filler3[3];
+	u16 pc;
+	u16 filler4[3];
+	u16 pd;
+
+} RotData, *pRotData;
+OAMEntry sprites[128];
+typedef struct {                                                                //sound variables
+	const unsigned char* song;                                                     //pointer to sound's data array
+	int frequency;                                                                 //sound frequency
+	int tic;                                                                       //increase up to sounds end
+	int end;                                                                       //end of sound
+} sounds;
+sounds sound[25];
 
 //gates
 #define NOT  !
@@ -158,14 +274,6 @@ u8 hrt_start;
 #define YELLOW 0x03FF
 #define GREY 0x4210
 
-enum LCDC_IRQ {
-    LCDC_VBL_FLAG = (1 << 0),
-    LCDC_HBL_FLAG = (1 << 1),
-    LCDC_VCNT_FLAG = (1 << 2),
-    LCDC_VBL = (1 << 3),
-    LCDC_HBL = (1 << 4),
-    LCDC_VCNT = (1 << 5)
-};
 //bios calls
 #define SoftReset 0x00
 #define RegisterRamReset 0x01
@@ -214,264 +322,7 @@ enum LCDC_IRQ {
 
 #define hrt_MULTIBOOT const int __gba_multiboot; //Type 'MULTIBOOT' at the beginning of a project, and the file will be compiled as a multiboot ROM.
 
-#ifndef JPEG_DEBUG
-#define JPEG_DEBUG 0
-#endif
-#ifndef JPEG_HANDLE_ANY_FACTORS
-#define JPEG_HANDLE_ANY_FACTORS 1
-#endif
-#ifndef JPEG_FASTER_M211
-#define JPEG_FASTER_M211 1
-#endif
-#ifndef JPEG_USE_IWRAM
-#define JPEG_USE_IWRAM 1
-#endif
-#define JPEG_DCTSIZE 8
-#define JPEG_DCTSIZE2 (JPEG_DCTSIZE * JPEG_DCTSIZE)
-#ifndef JPEG_MAXIMUM_COMPONENTS
-#define JPEG_MAXIMUM_COMPONENTS 4
-#endif
-#ifndef JPEG_FIXSHIFT
-#define JPEG_FIXSHIFT 8
-#endif
-#ifndef JPEG_MAXIMUM_SCAN_COMPONENT_FACTORS
-#define JPEG_MAXIMUM_SCAN_COMPONENT_FACTORS 10
-#endif
-#ifndef JPEG_FIXED_TYPE
-#define JPEG_FIXED_TYPE long int
-#endif
-#if JPEG_OUTPUT_RGB8
-#define JPEG_OUTPUT_TYPE unsigned int
-
-#define JPEG_Convert_Limit(VALUE) ((VALUE) < 0 ? 0 : (VALUE) > 255 ? 255 : (VALUE))
-
-#define JPEG_Convert(OUT, Y, Cb, Cr) \
-        do { \
-            int eY = (Y) + 63; \
-            int R = ((eY) + ((Cr) * 359 >> 8)) * 2; \
-            int G = ((eY) - ((Cb) * 88 >> 8) - ((Cr) * 183 >> 8)) * 2; \
-            int B = ((eY) + ((Cb) * 454 >> 8)) * 2; \
-            \
-            R = JPEG_Convert_Limit (R); \
-            G = JPEG_Convert_Limit (G) << 8; \
-            B = JPEG_Convert_Limit (B) << 16; \
-            (OUT) = R | G | B; \
-        } while (0)
-
-#define JPEG_Convert_From(IN, Y, Cb, Cr) \
-        do { \
-            int R = IN & 255; \
-            int G = (IN >> 8) & 255; \
-            int B = (IN >> 16) & 255; \
-            \
-            Y = (((R * 66 >> 8) + (G * 129 >> 8) + (B * 25 >> 8)) >> 1) - 63; \
-            Cb = ((R * -38 >> 8) + (G * -74 >> 8) + (B * 112 >> 8)) >> 1; \
-            Cr = ((R * 112 >> 8) + (G * -94 >> 8) + (B * 18 >> 8)) >> 1; \
-        } while (0)
-#endif
-#ifndef JPEG_OUTPUT_TYPE
-#define JPEG_OUTPUT_TYPE unsigned short
-#endif
-#ifndef JPEG_Convert
-#define JPEG_Convert(OUT, Y, Cb, Cr) \
-    do { \
-        int eY = (Y) + 63; \
-        int R = (eY) + ((Cr) * 359 >> 8); \
-        int G = (eY) - ((Cb) * 88 >> 8) - ((Cr) * 183 >> 8); \
-        int B = (eY) + ((Cb) * 454 >> 8); \
-        \
-        R = ComponentRange [R >> 2]; \
-        G = ComponentRange [G >> 2] << 5; \
-        B = ComponentRange [B >> 2] << 10; \
-        (OUT) = R | G | B; \
-    } while (0)
-
-#endif
-#ifndef JPEG_Assert
-#if JPEG_DEBUG
-#define JPEG_Assert(TEST) \
-            do { \
-                if (TEST) \
-                    break; \
-                fprintf (stderr, __FILE__ "(%d): " #TEST "\n", __LINE__); \
-                return 0; \
-            } while (0)
-#else
-#define JPEG_Assert(TEST) do { } while (0)
-#endif
-#endif
-
-enum JPEG_Marker
-{
-	JPEG_Marker_APP0 = 0xFFE0,
-	JPEG_Marker_APP1 = 0xFFE1,
-	JPEG_Marker_APP2 = 0xFFE2,
-	JPEG_Marker_APP3 = 0xFFE3,
-	JPEG_Marker_APP4 = 0xFFE4,
-	JPEG_Marker_APP5 = 0xFFE5,
-	JPEG_Marker_APP6 = 0xFFE6,
-	JPEG_Marker_APP7 = 0xFFE7,
-	JPEG_Marker_APP8 = 0xFFE8,
-	JPEG_Marker_APP9 = 0xFFE9,
-	JPEG_Marker_APP10 = 0xFFEA,
-	JPEG_Marker_APP11 = 0xFFEB,
-	JPEG_Marker_APP12 = 0xFFEC,
-	JPEG_Marker_APP13 = 0xFFED,
-	JPEG_Marker_APP14 = 0xFFEE,
-	JPEG_Marker_APP15 = 0xFFEF,
-	JPEG_Marker_COM = 0xFFFE,
-	JPEG_Marker_DHT = 0xFFC4,
-	JPEG_Marker_DQT = 0xFFDB,
-	JPEG_Marker_DRI = 0xFFDD,
-	JPEG_Marker_EOI = 0xFFD9,
-	JPEG_Marker_SOF0 = 0xFFC0,
-	JPEG_Marker_SOI = 0xFFD8,
-	JPEG_Marker_SOS = 0xFFDA
-};
-typedef enum JPEG_Marker JPEG_Marker;
-typedef JPEG_FIXED_TYPE JPEG_QuantizationTable[JPEG_DCTSIZE2];
-#define JPEG_FIXMUL(A, B) ((A) * (B) >> JPEG_FIXSHIFT)
-#define JPEG_FIXTOI(A) ((A) >> JPEG_FIXSHIFT)
-#define JPEG_ITOFIX(A) ((A) << JPEG_FIXSHIFT)
-#define JPEG_FTOFIX(A) ((int) ((A) * JPEG_ITOFIX (1)))
-#define JPEG_FIXTOF(A) ((A) / (float) JPEG_ITOFIX (1))
-typedef struct JPEG_HuffmanTable JPEG_HuffmanTable;
-typedef struct JPEG_Decoder JPEG_Decoder;
-typedef struct JPEG_FrameHeader JPEG_FrameHeader;
-typedef struct JPEG_FrameHeader_Component JPEG_FrameHeader_Component;
-typedef struct JPEG_ScanHeader JPEG_ScanHeader;
-typedef struct JPEG_ScanHeader_Component JPEG_ScanHeader_Component;
-struct JPEG_HuffmanTable
-{
-	const unsigned char *huffval;
-	int maxcode[16];
-	const unsigned char *valptr[16];
-
-	unsigned char look_nbits[256];
-	unsigned char look_sym[256];
-};
-struct JPEG_FrameHeader_Component
-{
-	unsigned char selector;
-	unsigned char horzFactor;
-	unsigned char vertFactor;
-	unsigned char quantTable;
-};
-struct JPEG_FrameHeader
-{
-	JPEG_Marker marker;
-	int encoding;
-	char differential;
-
-	unsigned char precision;
-	unsigned short height;
-	unsigned short width;
-	JPEG_FrameHeader_Component componentList[JPEG_MAXIMUM_COMPONENTS];
-	int componentCount;
-};
-struct JPEG_ScanHeader_Component
-{
-	unsigned char selector;
-	unsigned char dcTable;
-	unsigned char acTable;
-};
-struct JPEG_ScanHeader
-{
-	JPEG_ScanHeader_Component componentList[JPEG_MAXIMUM_COMPONENTS];
-	int componentCount;
-	unsigned char spectralStart;
-	unsigned char spectralEnd;
-	unsigned char successiveApproximationBitPositionHigh;
-	unsigned char successiveApproximationBitPositionLow;
-};
-
-
-struct JPEG_Decoder
-{
-	const unsigned char *acTables[4];
-	const unsigned char *dcTables[4];
-	JPEG_QuantizationTable quantTables[4];
-	unsigned int restartInterval;
-	JPEG_FrameHeader frame;
-	JPEG_ScanHeader scan;
-};
-
-
-#define JPEG_BITS_START() \
-    unsigned int bits_left = 0; \
-    unsigned long int bits_data = 0
-
-
-#define JPEG_BITS_REWIND() \
-    do { \
-        int count = bits_left >> 3; \
-        \
-        while (count --) \
-        { \
-            data --; \
-            if (data [-1] == 0xFF) \
-                data --; \
-        } \
-        \
-        bits_left = 0; \
-        bits_data = 0; \
-    } while (0)
-
-
-#define JPEG_BITS_CHECK() \
-    do { \
-        while (bits_left < 32 - 7) \
-        { \
-            bits_data = (bits_data << 8) | (*data ++); \
-            if (data [-1] == 0xFF) \
-                data ++; \
-            bits_left += 8; \
-        } \
-    } while (0)
-
-
-#define JPEG_BITS_GET(COUNT) \
-    ((bits_data >> (bits_left -= (COUNT))) & ((1 << (COUNT)) - 1))
-
-
-#define JPEG_BITS_PEEK(COUNT) \
-    ((bits_data >> (bits_left - (COUNT))) & ((1 << (COUNT)) - 1))
-
-
-#define JPEG_BITS_DROP(COUNT) \
-    (bits_left -= (COUNT))
-
-
-#define JPEG_HuffmanTable_Decode(TABLE,OUT) \
-    do { \
-        int bitcount, result; \
-        \
-        result = JPEG_BITS_PEEK (8); \
-        \
-        if ((bitcount = (TABLE)->look_nbits [result]) != 0) \
-        { \
-            JPEG_BITS_DROP (bitcount); \
-            result = (TABLE)->look_sym [result]; \
-        } \
-        else \
-        { \
-            int i = 7; \
-            \
-            JPEG_BITS_DROP (8); \
-            do result = (result << 1) | JPEG_BITS_GET (1); \
-            while (result > (TABLE)->maxcode [++ i]); \
-            \
-            result = (TABLE)->valptr [i] [result]; \
-        } \
-        \
-        (OUT) = result; \
-    } while (0)
-
-extern const unsigned char JPEG_ToZigZag[JPEG_DCTSIZE2];
-extern const unsigned char JPEG_FromZigZag[JPEG_DCTSIZE2];
-extern const JPEG_FIXED_TYPE JPEG_AANScaleFactor[JPEG_DCTSIZE2];
-extern const unsigned char JPEG_ComponentRange[32 * 3];
-
+//Bits
 #define W 1
 #define BIT00 1
 #define BIT01 2
@@ -489,7 +340,7 @@ extern const unsigned char JPEG_ComponentRange[32 * 3];
 #define BIT13 8192
 #define BIT14 16384
 #define BIT15 32768
-
+//
 //All GBA Registers - Copied from GBATek
 #define REG_DISPCNT *(u16*)0x04000000 //Display Control
 #define REG_UNKNOWN0 *(u16*)0x04000002 //Unknown - Green Swap?
@@ -631,16 +482,13 @@ extern const unsigned char JPEG_ComponentRange[32 * 3];
 #define REG_UNKNOWN21  *(u16*)0x04000411 //Not Used
 #define REG_UNKNOWN22  *(u32*)0x04000800 //Undocumented - Internal Memory Control(R/W)
 #define REG_UNKNOWN23  *(u16*)0x04000804 //Not Used
-
 #define DMA_ENABLE		0x80000000
 #define DMA_IMMEDIATE	0x00000000
-
 #define DMA_16			0x00000000
 #define DMA_32			0x04000000
-
 #define BACKBUFFER 0x10
 #define H_BLANK_OAM 0x20
-
+//keys
 #define KEY_A 1
 #define KEY_B 2
 #define KEY_SELECT 4
@@ -652,28 +500,21 @@ extern const unsigned char JPEG_ComponentRange[32 * 3];
 #define KEY_R 256
 #define KEY_L 512
 #define KEY_ALL 0x03FF
-
 #define KEYS        *(volatile u16*)0x04000130
-
 #define keyDown(k)  (~KEYS & k)
 #define KEY_ANY_PRESSED (keyDown(KEY_A))OR(keyDown(KEY_B))OR(keyDown(KEY_L))OR(keyDown(KEY_R))OR(keyDown(KEY_SELECT))OR(keyDown(KEY_START))OR(keyDown(KEY_UP))OR(keyDown(KEY_DOWN))OR(keyDown(KEY_LEFT))OR(keyDown(KEY_RIGHT))
-
+//
 #define	IWRAM		0x03000000
 #define	EWRAM		0x02000000
 #define	EWRAM_END	0x02040000
 #define	SRAM		0x0E000000
 #define	REG_BASE	0x04000000
-/*Winodws*/
-#define WIN0_ENABLE      0x2000
-#define WINOBJ_ENABLE    0x8000
 #define RIGHT(n)    (n)
 #define LEFT(n)     (n) << 8
 #define BOTTOM(n)   (n)
 #define TOP(n)      (n) << 8
-
 #define PI                   22/7
 #define RADIAN(n)    (((float) n)/ (float) 180 * PI)
-
 //Taken from HAM's mygba.h
 #ifndef RGB_GET_R_VALUE
 #define RGB_GET_R_VALUE(rgb)    ((rgb & 0x001f) << 3)
@@ -684,7 +525,6 @@ extern const unsigned char JPEG_ComponentRange[32 * 3];
 #ifndef RGB_GET_B_VALUE
 #define RGB_GET_B_VALUE(rgb)    (((rgb >> 10) & 0x001f) << 3)
 #endif
-
 #define ACCESS_8(location)		*(volatile u8 *)  (location)
 #define ACCESS_16(location)		*(volatile u16 *) (location)
 #define ACCESS_32(location)		*(volatile u32 *) (location)
@@ -693,6 +533,8 @@ extern const unsigned char JPEG_ComponentRange[32 * 3];
 #define RGB(r,g,b) ((((b)>>3)<<10)+(((g)>>3)<<5)+((r)>>3))
 //
 
+#define MAX_INTS	15
+#define INT_VECTOR	*(IntFn *)(0x03007ffc)		// BIOS Interrupt vector
 #ifndef TRUE
 #define TRUE 1
 #endif
@@ -705,117 +547,14 @@ extern const unsigned char JPEG_ComponentRange[32 * 3];
 #define NULL ((void *)0)
 #endif
 
-typedef struct tagOAMEntry {
-
-    u16 attribute0;
-    u16 attribute1;
-    u16 attribute2;
-    u16 attribute3;
-
-} OAMEntry, *pOAMEntry;
-
-//create the array of sprites (128 is the maximum)
-
-typedef struct {
-
-    u16 x;
-    u16 y;
-    u16 OAMSpriteNum;
-    u16 *SpriteData;
-
-} Sprite, *pSprite;
-
-typedef struct tagRotData {
-
-    u16 filler1[3];
-    u16 pa;
-    u16 filler2[3];
-    u16 pb;
-    u16 filler3[3];
-    u16 pc;
-    u16 filler4[3];
-    u16 pd;
-
-} RotData, *pRotData;
-
-OAMEntry sprites[128];
-
-typedef struct {                                                                //sound variables
-    const unsigned char* song;                                                     //pointer to sound's data array
-    int frequency;                                                                 //sound frequency
-    int tic;                                                                       //increase up to sounds end
-    int end;                                                                       //end of sound
-} sounds;
-sounds sound[25];
 const double SIN[360];
 const double COS[360];
 const double RAD[360];
 const unsigned short font_matrixBitmap[6080];
 const unsigned short font_milkbottleTiles[3072];
 const unsigned short font_milkbottlePal[16];
-typedef void(*IntFn)(void);
-struct IntTable {
-    IntFn handler;
-    u32 mask;
-};
-#define MAX_INTS	15
-#define INT_VECTOR	*(IntFn *)(0x03007ffc)		// BIOS Interrupt vector
-typedef enum irqMASKS {
-    IRQ_VBLANK = (1 << 0),		/*!< vertical blank interrupt mask */
-    IRQ_HBLANK = (1 << 1),		/*!< horizontal blank interrupt mask */
-    IRQ_VCOUNT = (1 << 2),		/*!< vcount match interrupt mask */
-    IRQ_TIMER0 = (1 << 3),		/*!< timer 0 interrupt mask */
-    IRQ_TIMER1 = (1 << 4),		/*!< timer 1 interrupt mask */
-    IRQ_TIMER2 = (1 << 5),		/*!< timer 2 interrupt mask */
-    IRQ_TIMER3 = (1 << 6),		/*!< timer 3 interrupt mask */
-    IRQ_SERIAL = (1 << 7),		/*!< serial interrupt mask */
-    IRQ_DMA0 = (1 << 8),		/*!< DMA 0 interrupt mask */
-    IRQ_DMA1 = (1 << 9),		/*!< DMA 1 interrupt mask */
-    IRQ_DMA2 = (1 << 10),	/*!< DMA 2 interrupt mask */
-    IRQ_DMA3 = (1 << 11),	/*!< DMA 3 interrupt mask */
-    IRQ_KEYPAD = (1 << 12),	/*!< Keypad interrupt mask */
-    IRQ_GAMEPAK = (1 << 13)		/*!< horizontal blank interrupt mask */
-} irqMASK;
-extern struct IntTable IntrTable[];
 
-typedef struct GBFS_FILE {
-    char magic[16];    /* "PinEightGBFS\r\n\032\n" */
-    u32  total_len;    /* total length of archive */
-    u16  dir_off;      /* offset in bytes to directory */
-    u16  dir_nmemb;    /* number of files */
-    char reserved[8];  /* for future use */
-} GBFS_FILE;
-typedef struct GBFS_ENTRY {
-    char name[24];     /* filename, nul-padded */
-    u32  len;          /* length of object in bytes */
-    u32  data_offset;  /* in bytes from beginning of file */
-} GBFS_ENTRY;
 const GBFS_FILE *find_first_gbfs_file(const void *start);
-
-typedef	struct {
-    u32	reserved1[5];
-    u8	handshake_data;
-    u8	padding;
-    u16	handshake_timeout;
-    u8	probe_count;
-    u8	client_data[3];
-    u8	palette_data;
-    u8	response_bit;
-    u8	client_bit;
-    u8	reserved2;
-    u8	*boot_srcp;
-    u8	*boot_endp;
-    u8	*masterp;
-    u8	*reserved3[3];
-    u32	system_work2[4];
-    u8	sendflag;
-    u8	probe_target_bit;
-    u8	check_wait;
-    u8	server_type;
-} MultiBootParam;
-
-enum MULTIBOOT_MODES { MODE32_NORMAL, MODE16_MULTI, MODE32_2MHZ };
-
 u32 hrt_MultiBoot(MultiBootParam *mp, u32 mode);
 void hrt_InitInterrupt(void) __attribute__((deprecated));
 void hrt_irqInit();
@@ -909,15 +648,7 @@ const void *gbfs_get_obj(const GBFS_FILE *file, const char *name, u32 *len);
 void *gbfs_copy_obj(void *dst, const GBFS_FILE *file, const char *name);
 void hrt_ConfigSOUNDCNT(u8 psgmasvol, u8 loudA, u8 loudB, u8 enablear, u8 enableal, u8 atimer, u8 areset, u8 enablebr, u8 enablebl, u8 btimer, u8 breset);
 int hrt_ConfigDMA(u8 dstoff, u8 srcoff, u8 repeat, u8 b32, u8 starttiming, u8 irq, u8 enable);
-int JPEG_Match(const unsigned char *data, int length);
-int JPEG_FrameHeader_Read(JPEG_FrameHeader *frame, const unsigned char **data, JPEG_Marker marker);
-int JPEG_HuffmanTable_Read(JPEG_HuffmanTable *table, const unsigned char **data);
-int JPEG_HuffmanTable_Skip(const unsigned char **data);
-int JPEG_ScanHeader_Read(JPEG_ScanHeader *scan, const unsigned char **data);
-int JPEG_Decoder_ReadHeaders(JPEG_Decoder *decoder, const unsigned char **data);
-int JPEG_Decoder_ReadImage(JPEG_Decoder *decoder, const unsigned char **data, volatile JPEG_OUTPUT_TYPE *out, int outWidth, int outHeight);
-void JPEG_IDCT(JPEG_FIXED_TYPE *zz, signed char *chunk, int chunkStride);
-int JPEG_DecompressImage(const unsigned char *data, volatile JPEG_OUTPUT_TYPE *out, int outWidth, int outHeight);
+void hrt_DecodePCX(const u8 *PCXBuffer, u16 *ScreenAddr, u16 *Palette);
 
 #ifdef __cplusplus
 }

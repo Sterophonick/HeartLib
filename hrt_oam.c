@@ -1,4 +1,5 @@
 #include "libheart.h"
+extern u8 hrt_start;
 pRotData rotData = (pRotData)sprites;
 u16* OBJPaletteMem 	=(u16*)0x5000200;
 u16* OAMData		=(u16*)0x6010000;

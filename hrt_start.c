@@ -1,4 +1,5 @@
 #include "libheart.h"
+extern u8 hrt_start;
 extern const unsigned short hrt_logoBitmap[2716];
 extern const unsigned short hrt_logoPal[256];
 extern const unsigned short hrt_objTiles[164];

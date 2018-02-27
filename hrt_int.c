@@ -1,5 +1,6 @@
 #include "libheart.h"
 //NOTE: TAKEN FROM LIBGBA. COULDN'T FIND ANY OTHER WAY TO PULL IT OFF.
+extern u8 hrt_start;
 
 struct IntTable IntrTable[MAX_INTS];
 

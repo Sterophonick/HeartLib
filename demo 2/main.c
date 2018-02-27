@@ -1,6 +1,13 @@
 #include <libheart.h>
 #include "defs.h"
 
+void vblFunc()
+{
+	hrt_CopyOAM();
+	frames++;
+	g_newframe = 0;
+}
+
 int main()
 {
 	int frames;
@@ -50,7 +57,8 @@ int main()
     hrt_SetDSPMode(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0); //Sets REG_DISPCNT, like above
     hrt_PrintOnBitmap(8, 0, "OBJ Window"); //draws text
 	hrt_PrintOnBitmap(8, 9, "Rotate Background"); //draws text
-	hrt_PrintOnBitmap(8, 18, "JPEG"); //draws text
+	hrt_PrintOnBitmap(8, 18, "PCX"); //draws text
+	hrt_PrintOnBitmap(8, 27, "Interrupt Dispatcher"); //draws text
     hrt_CopyOAM(); //Copies OBJ Data to OAM
     while (1) {
         if (keyDown(KEY_UP)) {
@@ -76,61 +84,79 @@ int main()
         if (keyDown(KEY_A)) {
 			if (arpos == 2)
 			{
-				hrt_SetDSPMode(1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0); //Sets REG_DISPCNT, like above
+				hrt_SetDSPMode(4, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0); //Sets REG_DISPCNT, like above
 				hrt_FillScreen(0x0000, 3);
-				JPEG_DecompressImage(gbfs_get_obj(dat, "such.jpg", NULL), VRAM, 240, 160);
+				hrt_DecodePCX(such, VRAM, BGPaletteMem);
 			}
-			if (arpos == 1)
+			if (arpos == 3)
 			{
-				hrt_SetDSPMode(1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0); //Sets REG_DISPCNT, like above
+				hrt_irqInit();
+				hrt_irqSet(IRQ_VBLANK, vblFunc);
+				hrt_irqEnable(IRQ_VBLANK);
+				REG_IME = 1;
+				int x_scale;
+				int x, y;
+				int fxlevel;
+				int rot;
+				hrt_offsetOAMPal = 0;
 				hrt_offsetOAMData = 0;
-				hrt_ConfigBG(2, 0, 1, 0, 1, 0, 0, 1);
-				hrt_LoadBGPal((void*)l1Pal, 255);
-				hrt_LoadBGTiles((void*)l1Tiles, 32768);
-				hrt_offsetBGTile = 0x2000;
-				hrt_LoadBGMap((void*)l1Map, 1024);
-				int bgx=0, bgy=0, angle=0, scale=256;
-				hrt_EditBG(2, bgx, bgy, 256, 256, 0);
-				hrt_VblankIntrWait();
+				hrt_CreateOBJ(0, 120, 80, 2, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
+				hrt_SetDSPMode(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0);
+				hrt_LoadOBJGFX((void*)blockTiles, 2048);
+				hrt_LoadOBJPal((void*)blockPal, 255);
 				hrt_CopyOAM();
-				while (1)
-				{
-					frames++;
+				x = 120;
+				y = 80;
+				hrt_AffineOBJ(0, 0, 255, 255);
+				x_scale = 255;
+				g_newframe = 1;
+				hrt_FillScreen(0x0000, 3);
+				hrt_PrintOnBitmap(0, 0, "Interrupt Dispatcher");
+				while (1) {
+					if (g_newframe == 0)
+					{
+						frames++;
+						if (keyDown(KEY_SELECT)) {
+							fxlevel++;
+							hrt_SetFXLevel(fxlevel);
+						}
+
+						if (keyDown(KEY_R)) {
+							rot++;
+						}
+						if (keyDown(KEY_L)) {
+							rot--;
+						}
+						if (keyDown(KEY_A)) {
+							x_scale++;
+						}
+						if (keyDown(KEY_B)) {
+							x_scale--;
+						}
+						if (keyDown(KEY_UP)) {
+							y--;
+						}
+						if (keyDown(KEY_DOWN)) {
+							y++;
+						}
+						if (keyDown(KEY_LEFT)) {
+							x--;
+						}
+						if (keyDown(KEY_RIGHT)) {
+							x++;
+						}
+						if (rot == -1) {
+							rot = 0;
+						}
+						if (keyDown(KEY_START)) {
+							asm volatile("swi 0x00"::);
+						}
+						hrt_SetOBJXY(&sprites[0], x, y);
+						hrt_AffineOBJ(0, rot % 360, x_scale, x_scale);
+						hrt_CopyOAM();
+						g_newframe = 1;
+					}
 					hrt_VblankIntrWait();
-					hrt_EditBG(2, bgx, bgy, scale, scale, angle);
-					if (keyDown(KEY_A))
-					{
-						scale++;
-					}
-					if (keyDown(KEY_B))
-					{
-						scale--;
-					}
-					if (keyDown(KEY_L))
-					{
-						angle--;
-					}
-					if (keyDown(KEY_R))
-					{
-						angle++;
-					}
-					if (keyDown(KEY_LEFT)) {
-						bgx--;
-					}
-					if (keyDown(KEY_RIGHT)) {
-						bgx++;
-					}
-					if (keyDown(KEY_UP)) {
-						bgy--;
-					}
-					if (keyDown(KEY_DOWN)) {
-						bgy++;
-					}
-					if (keyDown(KEY_START)) {
-						hrt_SetDSPMode(4, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0);
-						asm volatile("swi 0x01"::);
-						asm volatile("swi 0x00"::);
-					}
 				}
 			}
         }

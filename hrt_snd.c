@@ -1,4 +1,5 @@
 #include "libheart.h"
+extern u8 hrt_start;
 
 void hrt_InitSound(int a, int f, int e, u8* d)
 {
