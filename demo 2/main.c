@@ -1,7 +1,8 @@
 #include <libheart.h>
 #include "defs.h"
+#include "soundbank.h"
 
-char buf[255];
+char buffer[255];
 
 void vblFunc()
 {
@@ -62,6 +63,7 @@ int main()
 	hrt_PrintOnBitmap(8, 18, "PCX"); //draws text
 	hrt_PrintOnBitmap(8, 27, "Interrupt Dispatcher"); //draws text
 	hrt_PrintOnBitmap(8, 36, "Random Number Generator"); //draws text
+	hrt_PrintOnBitmap(8, 36, "MaxMod"); //draws text
     hrt_CopyOAM(); //Copies OBJ Data to OAM
     while (1) {
 		frames++;
@@ -75,8 +77,8 @@ int main()
         }
         if (keyDown(KEY_DOWN)) {
             arpos++;
-            if (arpos == 5) {
-                arpos = 4;
+            if (arpos == 6) {
+                arpos = 5;
             }
             while (keyDown(KEY_DOWN));
         }
@@ -86,6 +88,11 @@ int main()
                      9*arpos); //Y Position
 
         if (keyDown(KEY_A)) {
+			if (arpos == 5)
+			{
+				mmInitDefault((mm_addr)soundbank_bin, 8);
+				mmStart(MOD_FLATOUTLIES, MM_PLAY_LOOP);
+			}
 			if (arpos == 4)
 			{
 				hrt_irqInit();
@@ -116,8 +123,8 @@ int main()
 					{
 						g_sram = hrt_CreateRNG();
 						hrt_Memcpy(VRAM, (char*)0x06000ED0, 240 * 16);
-						sprintf((char*)buf, "%d", g_sram);
-						hrt_PrintOnBitmap(0, 0, (char*)buf);
+						sprintf((char*)buffer, "%d", g_sram);
+						hrt_PrintOnBitmap(0, 0, (char*)buffer);
 					}
 				}
 			}
