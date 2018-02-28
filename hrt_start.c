@@ -1,15 +1,9 @@
 #include "libheart.h"
-extern u8 hrt_start;
 extern const unsigned short hrt_logoBitmap[2716];
 extern const unsigned short hrt_logoPal[256];
 extern const unsigned short hrt_objTiles[164];
 extern const unsigned short hrt_objPal[14];
 u16* temp = (u16*)0x6014000;
-extern int	hrt_offsetOAMData;
-extern int hrt_offsetOAMPal;
-extern int hrt_offsetBGMap;
-extern int hrt_offsetBGTile;
-extern int hrt_offsetBGPal;
 
 void hrt_Init(int mode) {
 	int i;

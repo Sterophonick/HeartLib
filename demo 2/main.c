@@ -63,7 +63,7 @@ int main()
 	hrt_PrintOnBitmap(8, 18, "PCX"); //draws text
 	hrt_PrintOnBitmap(8, 27, "Interrupt Dispatcher"); //draws text
 	hrt_PrintOnBitmap(8, 36, "Random Number Generator"); //draws text
-	hrt_PrintOnBitmap(8, 36, "MaxMod"); //draws text
+	hrt_PrintOnBitmap(8, 45, "Built-in MaxMod"); //draws text
     hrt_CopyOAM(); //Copies OBJ Data to OAM
     while (1) {
 		frames++;
@@ -91,7 +91,26 @@ int main()
 			if (arpos == 5)
 			{
 				mmInitDefault((mm_addr)soundbank_bin, 8);
-				mmStart(MOD_FLATOUTLIES, MM_PLAY_LOOP);
+				mmStart(SFX_COMPLETE, MM_PLAY_LOOP);
+				mm_sound_effect boom = {
+					{ MOD_MODULE} ,			// id
+					(int)(1.0f * (1 << 10)),	// rate
+					0,		// handle
+					255,	// volume
+					255,	// panning
+				};
+				mm_sfxhand amb = 0;
+				while (1)
+				{
+					hrt_VblankIntrWait();
+					mmFrame();
+					if (keyDown(KEY_B)) {
+						mmEffectEx(&boom);
+					}
+					if (!(keyDown(KEY_B))) {
+						mmEffectCancel(amb);
+					}
+				}
 			}
 			if (arpos == 4)
 			{

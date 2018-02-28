@@ -1,9 +1,3 @@
-
-extern int	hrt_offsetOAMData;
-extern int hrt_offsetOAMPal;
-extern int hrt_offsetBGMap;
-extern int hrt_offsetBGTile;
-extern int hrt_offsetBGPal;
 /*
 Copyright 2002 Damian Yerrick
 Permission is hereby granted, free of charge, to any person obtaining
@@ -27,11 +21,7 @@ included in all copies or substantial portions of the Software.
 typedef unsigned short u16;
 typedef unsigned long u32;
 
-#include <stdlib.h>
-#include <string.h>
 #include "libheart.h"
-extern u8 hrt_start;
-
 #define GBFS_SEARCH_LIMIT ((const u32 *)0x0a000000)
 #define GBFS_ALIGNMENT  256
 
