@@ -2,13 +2,15 @@
 //Date: March 2018
 //Author: Sterophonick
 //Derived from gba.h by eloist
-//This library is designed to make GBA Programming easy to do, and for everyone to be able to do it, not unlike HAMLib (rip 2001-2011 =( )
+//This library is designed to make GBA Programming easy to do, and for everyone to be able to do it, not unlike HAMLib (rip 2001-2011 =( may god rest ur soul)
+//This Library is Dedicated to Stevendog98, who is wanting to make GBA Games. This is to give him a head start on the GBA.
 
 /*
-Possibilities with this library:
+  What's Included:
+    **ALL** the GBA Register Definitions -- Including some undocumented ones
 	Screen Wipes (Mode 3 at the moment)
 	Sprites
-	Affine Transformation
+	Affine Transformation - BG and OBJ
 	Sound
 	DMA
 	Palettes
@@ -29,12 +31,15 @@ Possibilities with this library:
 	PCX Decoding (Shoutouts to libGBA)
 	Random Number Generation (Uses Merssene Twister method)
 	MaxMod (Kudos to LibGBA)
+	FatFs (Kudos to Elm-Chan and EZ-Team)
 
 TODO:
 		Implement Tiled Text
 		Implement Easy System Call functions
-		Implement JPEG Decoding -- For now it goes unused. rip
-		Test Compatability with Krawall, if I can get it to work.
+		JPEG Decoding
+		MBV2Lib from LibGBA?
+		Game Boy Player Functions?
+		PogoShell Functions?
 
 Recommended Tools for development with this library:
 gfx2gba
@@ -55,6 +60,7 @@ extern "C" {
 
 #include <stdio.h>
 #include <stdint.h>
+#include <float.h>
 #include <stdlib.h>
 #include <malloc.h>
 #include <string.h>
@@ -81,40 +87,49 @@ extern "C" {
 #include <fastmath.h>
 #include <cpio.h>
 #include <alloca.h>
-#include <maxmod.h> //Built-In MaxMod
+#include "maxmod.h" //Built-In MaxMod
+#include "libSD.h" //FatFs driver
 
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned long u32;
 typedef unsigned long long u64;
+typedef unsigned int uint;
 typedef volatile unsigned char vu8;
 typedef volatile unsigned short vu16;
 typedef volatile unsigned long vu32;
 typedef volatile unsigned long long vu64;
+typedef volatile unsigned int vuint;
 typedef volatile signed char vs8;
 typedef volatile signed short vs16;
 typedef volatile signed long vs32;
 typedef volatile signed long long vs64;
+typedef volatile signed int vsint;
 typedef const signed char cs8;
 typedef const signed short cs16;
 typedef const signed long cs32;
 typedef const signed long long cs64;
+typedef const signed int csint;
 typedef const volatile signed char cvs8;
 typedef const volatile signed short cvs16;
 typedef const volatile signed long cvs32;
 typedef const volatile signed long long cvs64;
+typedef const volatile signed int cvsint;
 typedef const volatile unsigned char cvu8;
 typedef const volatile unsigned short cvu16;
 typedef const volatile unsigned long cvu32;
 typedef const volatile unsigned long long cvu64;
+typedef const volatile unsigned int cvuint;
 typedef const signed char cu8;
 typedef const signed short cu16;
 typedef const signed long cu32;
 typedef const signed long long cu64;
+typedef const signed int csint;
 typedef signed char s8;
 typedef signed short s16;
 typedef signed long s32;
 typedef signed long long s64;
+typedef signed int sint;
 typedef void(*IntFn)(void);
 
 u32* OAMmem;
@@ -405,7 +420,7 @@ sounds sound[25];
 #define REG_SOUNDCNT_H  *(u16*)0x04000082 //Control Mixing/DMA Control
 #define REG_SOUNDCNT_X  *(u16*)0x04000084 //Control Sound on/off
 #define REG_UNKNOWN8 *(u16*)0x04000086 //Not Used
-#define REG_SOUNDBIAS *(u16*)0x04000088 //Sound PWN Control ****CONTROLLED BY BIOS****
+#define REG_SOUNDBIAS *(u16*)0x04000088 //Sound PWM Control ****CONTROLLED BY BIOS****
 #define REG_UNKNOWN9 *(u16*)0x0400008A //Not Used
 #define REG_SGWR0_L    *(vu16*)0x4000090		//???
 #define REG_SGWR0_H    *(vu16*)0x4000092		//???
@@ -484,12 +499,6 @@ sounds sound[25];
 #define REG_UNKNOWN21  *(u16*)0x04000411 //Not Used
 #define REG_UNKNOWN22  *(u32*)0x04000800 //Undocumented - Internal Memory Control(R/W)
 #define REG_UNKNOWN23  *(u16*)0x04000804 //Not Used
-#define DMA_ENABLE		0x80000000
-#define DMA_IMMEDIATE	0x00000000
-#define DMA_16			0x00000000
-#define DMA_32			0x04000000
-#define BACKBUFFER 0x10
-#define H_BLANK_OAM 0x20
 
 //keys
 #define KEY_A 1
@@ -533,7 +542,11 @@ sounds sound[25];
 #define ACCESS_32(location)		*(volatile u32 *) (location)
 #define MEM_PAL_COL_PTR(x)		 (u16*) (0x05000000+(x<<1))	// Palette color pointer
 #define MEM_PAL_OBJ_PTR(x)		 (u16*) (0x05000200+(x<<1))	// Palette color pointer
-#define RGB(r,g,b) ((((b)>>3)<<10)+(((g)>>3)<<5)+((r)>>3))
+#define RGB15(r,g,b) ((((b)>>3)<<10)+(((g)>>3)<<5)+((r)>>3))
+
+#define hrt_MEM_IN_EWRAM __attribute__ ((section (".ewram"))) = {0}
+#define hrt_MEM_IN_IWRAM __attribute__ ((section (".iwram"))) = {0}
+#define hrt_MEM_FUNC_IN_IWRAM __attribute__ ((section (".iwram"), long_call))
 //
 
 #define MAX_INTS	15
@@ -559,16 +572,16 @@ const unsigned short font_matrixBitmap[6080];
 const unsigned short font_milkbottleTiles[3072];
 const unsigned short font_milkbottlePal[16];
 
-u32 hrt_MultiBoot(MultiBootParam *mp, u32 mode);
-void hrt_InitInterrupt(void) __attribute__((deprecated));
-void hrt_irqInit();
-IntFn *hrt_SetInterrupt(irqMASK mask, IntFn function) __attribute__((deprecated));
-IntFn *hrt_irqSet(irqMASK mask, IntFn function);
-void hrt_EnableInterrupt(irqMASK mask) __attribute__((deprecated));
-void hrt_irqEnable(int mask);
-void hrt_DisableInterrupt(irqMASK mask) __attribute__((deprecated));
-void hrt_irqDisable(int mask);
-void hrt_IntrMain();
+u32 hrt_MultiBoot(MultiBootParam *mp, u32 mode); //Enables Multiboot? Unknown
+void hrt_InitInterrupt(void) __attribute__((deprecated)); //Initialize interrupts mirror
+void hrt_irqInit(); //Initialize Interrupts
+IntFn *hrt_SetInterrupt(irqMASK mask, IntFn function) __attribute__((deprecated)); //Set Interrupt Function Mirror
+IntFn *hrt_irqSet(irqMASK mask, IntFn function); //Set Interrupt Function
+void hrt_EnableInterrupt(irqMASK mask) __attribute__((deprecated)); //Enable Interrupt Mirror
+void hrt_irqEnable(int mask); //Enable Interrupt
+void hrt_DisableInterrupt(irqMASK mask) __attribute__((deprecated)); //Disable Interrupt Mirror
+void hrt_irqDisable(int mask); //Disable Interrupt
+void hrt_IntrMain(); //Main Interrupt
 void hrt_EditBG(u8 bg, int x, int y, int x_scale, int y_scale, int angle); //Edits background attributes
 void hrt_Diff8bitUnFilterWram(u32 source, u32 dest); //Decompresses Diff8bit to EWRAM
 void hrt_Diff8bitUnFilterVram(u32 source, u32 dest); //Decompresses Diff8bit to VRAM
@@ -583,7 +596,7 @@ void hrt_CopyOAM(); //Copies OBJ Attributes to OAM
 void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset); //Creates a sprite
 void hrt_LoadOBJPal(unsigned int * pal, u16 size); //Loads OBJ Palette
 void hrt_LoadOBJGFX(unsigned int * gfx,int size); //loads OBJ GFX
-void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale,s32 y_scale); //Scales and Rotates an object
+void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale,s32 y_scale); //Scales and Rotates an object with the affine flag set to 1.
 void hrt_SetOBJXY(OAMEntry* sp, int x, int y); // Sets Position of a Sprite
 void hrt_ResetOffset(u8 no); //Resets offset of gfx or pal data for BG or OBJ
 void hrt_CloneOBJ(int ospr, int nspr); //Creates clone of sprite
@@ -605,57 +618,85 @@ void hrt_FillScreen(u16 color, int mode); // fills screen with specified color
 void hrt_DrawLine(int x1, int y1, int x2, int y2, unsigned short color, int mode); //Draws line of specified color
 void hrt_DrawCircle(int xCenter, int yCenter, int radius, u16 color, int mode); //Draws circle of specified color.
 void hrt_ScanLines(u16 color, int time, int mode); //scanlines wipe
-void hrt_LeftWipe(u16 color, int time, int mode);
-void hrt_RightWipe(u16 color, int time, int mode);
-void hrt_TopWipe(u16 color, int time, int mode);
-void hrt_BottomWipe(u16 color, int time, int mode);
-void hrt_CircleWipe(u16 color, int time, int mode);
-void hrt_CoolScanLines(u16 color, int time, int mode);
-u16 hrt_GetBGPalEntry(int slot);
-u16 hrt_GetOBJPalEntry(int slot);
-void hrt_SetBGPalEntry(int slot, u16 color);
-void hrt_SetOBJPalEntry(int slot, u16 color);
-void hrt_LoadBGTiles(u16* data, int length);
-void hrt_ColdReset();
-void hrt_SoftReset();
-extern u32 hrt_GetBiosChecksum();
-void hrt_Init(int mode);
-void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode);
-void hrt_SetFXLevel(u8 level);
-void hrt_SetFXMode(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 backdrop, u8 mode, u8 bg0_2, u8 bg1_2, u8 bg2_2, u8 bg3_2, u8 obj_2, u8 backdrop_2);
-void hrt_SetDSPMode(u8 mode, u8 CGB, u8 framesel, u8 unlockedhblank, u8 objmap, u8 forceblank, u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 win0, u8 win1, u8 objwin);
-void hrt_Assert(u8 error, char* func, int arg, char* desc);
-void hrt_ConfigBG(u8 bg, u8 priority, u8 tilebase, u8 mosaic, u8 color256, u8 tilemapbase, u8 wraparound, u8 dimensions);
-void hrt_LineWipe(u16 color, int time, u8 mode);
-void hrt_SetMosaic(u8 bh, u8 bv, u8 oh, u8 ov);
-double hrt_Distance(int x1, int y1, int x2, int y2);
-double hrt_Slope(int x1, int y1, int x2, int y2);
-void hrt_SetTile(u8 x, u8 y, int tileno);
-void hrt_SetFXAlphaLevel(u8 src, u8 dst);
-void hrt_DrawTextTile(int x, int y, char* str);
-void hrt_InitTextTile();
-void hrt_FillPalette(int paltype, u16 color);
-void hrt_AGBPrint(const char *msg);
-void *hrt_Memcpy(void *dest, const void *src, size_t len);
-void hrt_VblankIntrWait();
-void hrt_ColdReset();
-void hrt_SoftReset();
-void hrt_RegisterRamReset();
-void hrt_Suspend();
-void hrt_EZ4Exit();
-void hrt_ConfigTimer(u8 channel, u8 scale, u8 irq, u8 enable, u16 start);
-void hrt_SaveByte(int offset, u8 value);
-u8 hrt_LoadByte(int offset);
-void hrt_FlipBGBuffer();
-const void *skip_gbfs_file(const GBFS_FILE *file);
-const void *gbfs_get_obj(const GBFS_FILE *file, const char *name, u32 *len);
-void *gbfs_copy_obj(void *dst, const GBFS_FILE *file, const char *name);
-void hrt_ConfigSOUNDCNT(u8 psgmasvol, u8 loudA, u8 loudB, u8 enablear, u8 enableal, u8 atimer, u8 areset, u8 enablebr, u8 enablebl, u8 btimer, u8 breset);
-int hrt_ConfigDMA(u8 dstoff, u8 srcoff, u8 repeat, u8 b32, u8 starttiming, u8 irq, u8 enable);
-void hrt_DecodePCX(const u8 *PCXBuffer, u16 *ScreenAddr, u16 *Palette);
-void hrt_SeedRNG(u32 seed);
-u32 hrt_ReloadRNG(void);
-u32 hrt_CreateRNG(void);
+void hrt_LeftWipe(u16 color, int time, int mode); //Wipe from Left
+void hrt_RightWipe(u16 color, int time, int mode); //Wipe from right
+void hrt_TopWipe(u16 color, int time, int mode); //Wipe from Top
+void hrt_BottomWipe(u16 color, int time, int mode); //Wipe from Bottom
+void hrt_CircleWipe(u16 color, int time, int mode); //Circle wipe -- beroken for now.
+void hrt_CoolScanLines(u16 color, int time, int mode); //Cooler scanlines, acts funny on mGBA.
+u16 hrt_GetBGPalEntry(int slot); //Returns Color of BG Palette Entry
+u16 hrt_GetOBJPalEntry(int slot); //Returns Color of OBJ Palette Entry
+void hrt_SetBGPalEntry(int slot, u16 color); //Sets color of BG Palette Entry
+void hrt_SetOBJPalEntry(int slot, u16 color); //Sets color of OBJ Palette Entry
+void hrt_LoadBGTiles(u16* data, int length); //Loads BG Tiles into VRAM, at Tile slot 1.
+void hrt_ColdReset(); //Restarts the console -- Undocumented BIOS Call
+void hrt_SoftReset(); //Restarts from ROM.
+extern u32 hrt_GetBiosChecksum(); //Returns BIOS Checksum.
+void hrt_Init(int mode); //If set to 0, no intro will play. If set to 1, then an intro will play. MUST BE EXECUTED BEFORE USING THIS LIBRARY.
+void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode); //Copies from DMA
+void hrt_SetFXLevel(u8 level); //Sets BLDY level
+void hrt_SetFXMode(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 backdrop, u8 mode, u8 bg0_2, u8 bg1_2, u8 bg2_2, u8 bg3_2, u8 obj_2, u8 backdrop_2); //Sets BLDCNT Mode
+void hrt_SetDSPMode(u8 mode, u8 CGB, u8 framesel, u8 unlockedhblank, u8 objmap, u8 forceblank, u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 win0, u8 win1, u8 objwin); //Sets REG_DISPCNT, but it is a lot clearer what you have to do.
+void hrt_Assert(u8 error, char* func, int arg, char* desc); //Error message
+void hrt_ConfigBG(u8 bg, u8 priority, u8 tilebase, u8 mosaic, u8 color256, u8 tilemapbase, u8 wraparound, u8 dimensions); //Configures BG
+void hrt_LineWipe(u16 color, int time, u8 mode); //Wipe from hrt_DrawLine
+void hrt_SetMosaic(u8 bh, u8 bv, u8 oh, u8 ov); //Sets Mosaic Level -- Not Tested Yet.
+double hrt_Distance(int x1, int y1, int x2, int y2); //Returns distance between 2 different points
+double hrt_Slope(int x1, int y1, int x2, int y2); //Returns slope between 2 different points
+void hrt_SetTile(u8 x, u8 y, int tileno); //Sets a specific tile to a given value.
+void hrt_SetFXAlphaLevel(u8 src, u8 dst); //Sets REG_BLDALPHA
+void hrt_DrawTextTile(int x, int y, char* str); //Unfinished -- Ignore this
+void hrt_InitTextTile(); //Unfinished -- Ignore this.
+void hrt_FillPalette(int paltype, u16 color); //Fills BG or OBJ palette witha specified color.
+void hrt_AGBPrint(const char *msg); //hrt_AGBPrint is interesting. Using this will make the ROM put a message into the output log if AGBPrint is enabled on VisualBoyAdvance. I found a technique that doesn't crash on hardware or other emulators.
+void *hrt_Memcpy(void *dest, const void *src, size_t len); //Copies Memory from one place to another.
+void hrt_VblankIntrWait(); //Waits for Vblank Interrupt.
+void hrt_RegisterRamReset(); //Resets Memory. Unfinished.
+void hrt_Suspend(); //Suspends the console. Unfinished.
+void hrt_EZ4Exit() hrt_MEM_FUNC_IN_IWRAM; //Exits to Ez-Flash IV Menu. Unfinished
+void hrt_ConfigTimer(u8 channel, u8 scale, u8 irq, u8 enable, u16 start); //Configures a Timer.
+void hrt_SaveByte(int offset, u8 value); //Copies a byte to SRAM at a given location
+u8 hrt_LoadByte(int offset); //Loads a byte from SRAM at a given address
+void hrt_FlipBGBuffer(); //Flips FrontBuffer and BackBuffer in mode 4.
+const void *skip_gbfs_file(const GBFS_FILE *file); //GBFS Stuff
+const void *gbfs_get_obj(const GBFS_FILE *file, const char *name, u32 *len); //GBFS Stuff
+void *gbfs_copy_obj(void *dst, const GBFS_FILE *file, const char *name); //GBFS Stuff
+void hrt_ConfigSOUNDCNT(u8 psgmasvol, u8 loudA, u8 loudB, u8 enablear, u8 enableal, u8 atimer, u8 areset, u8 enablebr, u8 enablebl, u8 btimer, u8 breset); //Configures SOUNDCNT
+int hrt_ConfigDMA(u8 dstoff, u8 srcoff, u8 repeat, u8 b32, u8 starttiming, u8 irq, u8 enable); //Returns a hex value for the specific operands.
+void hrt_DecodePCX(const u8 *PCXBuffer, u16 *ScreenAddr, u16 *Palette); //Decodes PCX File and Copies data to specified locations. Usually VRAM and BGPaletteMem
+void hrt_SeedRNG(u32 seed); //Seeds the RNG. Think of it like in Minecraft, where you can type in a "seed" for the world generator before creating a world, and based on that seed, the world will generate accordingly to the games RNG.
+u32 hrt_ReloadRNG(void); //Reloads RNG.
+u32 hrt_CreateRNG(void); //Creates RNG Value. You can change the type of return value. in your main.c
+void mmInitDefault(mm_addr soundbank, mm_word number_of_channels); //Initializes Defualt soundbank in MaxMod
+void mmInit(mm_gba_system* setup); //Initializes Maxmod
+void mmVBlank(void); //MaxMod Vblank
+void mmSetVBlankHandler(void* function); //Sets Vblank function handler for MaxMod
+void mmSetEventHandler(mm_callback handler); //Sets event handler for MaxMod
+void mmFrame(void) __attribute((long_call)); //MaxMod frame
+void mmStart(mm_word id, mm_pmode mode); //Starts Maxmod
+void mmPause(void); //Pauses all sound from MaxMod
+void mmResume(void); //Resumes MaxMod Sound
+void mmStop(void); //Stops all sound from MaxMod
+void mmPosition(mm_word position); //Sets position of sound in MaxMod?
+int  mmActive(void); //Returns active statues for MaxMod
+void mmJingle(mm_word module_ID); //???
+int  mmActiveSub(void); //???
+void mmSetModuleVolume(mm_word volume); //Sets modplayer volume
+void mmSetJingleVolume(mm_word volume); //Sets jingle volume?
+void mmSetModuleTempo(mm_word tempo); //Sets Tempo of Module
+void mmSetModulePitch(mm_word pitch); //Sets Pitch of Module
+void mmPlayModule(mm_word address, mm_word mode, mm_word layer); //Plays Module
+mm_sfxhand mmEffect(mm_word sample_ID); //Creates Sound Effect
+mm_sfxhand mmEffectEx(mm_sound_effect* sound); //Creates Sound Effect
+void mmEffectVolume(mm_sfxhand handle, mm_word volume); //Sets Sound Effect Volume
+void mmEffectPanning(mm_sfxhand handle, mm_byte panning); //???
+void mmEffectRate(mm_sfxhand handle, mm_word rate); //Sets Sound Effect Rate
+void mmEffectScaleRate(mm_sfxhand handle, mm_word factor); //??
+void mmEffectCancel(mm_sfxhand handle); //Stops sound effect
+void mmEffectRelease(mm_sfxhand handle); //Releases Sound Effect?
+void mmSetEffectsVolume(mm_word volume); //Set Sound effect volume
+void mmEffectCancelAll(); //Cancel all sound effects
+void hrt_StopSoundFIFO(); //Stops FIFO Sound -- No longer attached to MaxMod.
 
 #ifdef __cplusplus
 }

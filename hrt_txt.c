@@ -3,7 +3,6 @@
 void hrt_DrawChar(int mode, int left, int top, char letter) {
     if (hrt_start == 1) {
         int x, y;
-        char draw;
 
         for (y = 0; y < 8; y++)
             for (x = 0; x < 8; x++) {

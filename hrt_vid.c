@@ -5,9 +5,8 @@ u16* BGTileMem = (u16*)0x6004000;
 u16* FrontBuffer = (u16*)0x6000000;
 u16* BackBuffer = (u16*)0x600A000;
 
-volatile u16* ScanlineCounter = (u16*)0x4000006;
 const char* ee = "In loving memory of the HAMLib and ngine.de. HeartLib by Sterophonick. 2018.";
-const char* ee2 = "I would like to thank Mark Holloway, Tubooboo, Dwedit, gauauu, DevKitPro, Nintendo, sverx, and DekuTree64 for helping me create this library.";
+const char* ee2 = "I would like to thank Mark Holloway, Tubooboo, Dwedit, gauauu, DevKitPro, Nintendo, sverx, endrift, and DekuTree64 for helping me create this library.";
 const char* ee3 = "Without them, this project couldn't have been completed.";
 
 void hrt_FlipBGBuffer() {
@@ -140,11 +139,11 @@ u16 hrt_GetPixel(u8 mode, int x, int y) {
             return BGPaletteMem[temp];
             break;
         case 5:
-            return VRAM[y * 120 + x]; //returns the pixel color at the position given
+            return VRAM[y * 160 + x]; //returns the pixel color at the position given
             break;
         }
-        return 0;
     }
+       return 0;
 }
 
 void hrt_CyclePalette(int start, int amount, int pal) {
@@ -153,14 +152,14 @@ void hrt_CyclePalette(int start, int amount, int pal) {
             int i;
             ACCESS_16(MEM_PAL_COL_PTR(amount)) = ACCESS_16(MEM_PAL_COL_PTR(1));
             for (i = 0; i < amount; i++) {
-                ACCESS_16(MEM_PAL_COL_PTR(i+start)) = ACCESS_16(MEM_PAL_COL_PTR((i + 1 + start)));
+                ACCESS_16(MEM_PAL_COL_PTR((i+start))) = ACCESS_16(MEM_PAL_COL_PTR((i + 1 + start)));
             }
         }
         if (pal == 1) {
             int i;
-            ACCESS_16(MEM_PAL_OBJ_PTR(amount - start)) = ACCESS_16(MEM_PAL_OBJ_PTR(1));
+            ACCESS_16(MEM_PAL_OBJ_PTR((amount - start))) = ACCESS_16(MEM_PAL_OBJ_PTR(1));
             for (i = 0; i < amount; i++) {
-                ACCESS_16(MEM_PAL_OBJ_PTR(i+start)) = ACCESS_16(MEM_PAL_OBJ_PTR((i + 1 + start)));
+                ACCESS_16(MEM_PAL_OBJ_PTR((i+start))) = ACCESS_16(MEM_PAL_OBJ_PTR((i + 1 + start)));
             }
         }
     }
@@ -172,21 +171,21 @@ void hrt_InvertPalette(int start, int amount, int pal) {
         if (pal == 0) {
             int i;
             for (i = 0; i < amount; i++) {
-                u16 Color = ACCESS_16(MEM_PAL_COL_PTR(i+start));
+                u16 Color = ACCESS_16(MEM_PAL_COL_PTR((i+start)));
                 u8 R = 255 - RGB_GET_R_VALUE(Color);
                 u8 G = 255 - RGB_GET_G_VALUE(Color);
                 u8 B = 255 - RGB_GET_B_VALUE(Color);
-                ACCESS_16(MEM_PAL_COL_PTR(i+start)) = RGB(R, G, B);
+                ACCESS_16(MEM_PAL_COL_PTR((i+start))) = RGB15(R, G, B);
             }
         }
         if (pal == 1) {
             int i;
             for (i = 0; i < 256; i++) {
-                u16 Color = ACCESS_16(MEM_PAL_OBJ_PTR(i+start));
+                u16 Color = ACCESS_16(MEM_PAL_OBJ_PTR((i+start)));
                 u8 R = 255 - RGB_GET_R_VALUE(Color);
                 u8 G = 255 - RGB_GET_G_VALUE(Color);
                 u8 B = 255 - RGB_GET_B_VALUE(Color);
-                ACCESS_16(MEM_PAL_OBJ_PTR(i+start)) = RGB(R, G, B);
+                ACCESS_16(MEM_PAL_OBJ_PTR(((i+start)))) = RGB15(R, G, B);
             }
         }
     }
@@ -386,12 +385,14 @@ u16 hrt_GetBGPalEntry(int slot) {
     if (hrt_start == 1) {
         return BGPaletteMem[slot];
     }
+    return 0;
 }
 
 u16 hrt_GetOBJPalEntry(int slot) {
     if (hrt_start == 1) {
         return OBJPaletteMem[slot];
     }
+    return 0;
 }
 
 void hrt_SetBGPalEntry(int slot, u16 color) {
@@ -440,7 +441,7 @@ void hrt_FillPalette(int paltype, u16 color) { //fills a palette of the selectio
                 }
             } else { //if no kind of mem is selected
                 hrt_SetDSPMode(3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                hrt_Assert(0, "HRT-FILLPAL", 1, "INVALID ARGUMENT");
+                hrt_Assert(0, "HRT_FILLPAL()", 1, "INVALID ARGUMENT");
                 while (1); //stops the program due to an invalid type
             }
         }
@@ -484,7 +485,6 @@ void hrt_ConfigBG(u8 bg, u8 priority, u8 tilebase, u8 mosaic, u8 color256, u8 ti
 void hrt_Assert(u8 error, char* func, int arg, char* desc) {
     if (hrt_start == 1) {
         u8* buf[256];
-        u8* buf2 = "FUNCTION: ";
         hrt_SetDSPMode(3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
         hrt_FillScreen(0x0000, 3);
         hrt_PrintOnBitmap(0, 0, "HEARTLIB HAS CRASHED!");
@@ -556,5 +556,9 @@ void hrt_SetFXAlphaLevel(u8 src, u8 dst)
 
 int hrt_ConfigDMA(u8 dstoff, u8 srcoff, u8 repeat, u8 b32, u8 starttiming, u8 irq, u8 enable)
 {
-	return 0x20 * dstoff | 0x80 * srcoff | 0x200 * repeat | 0x400 * b32 | 0x1000 * starttiming | 0x4000 * irq | 0x8000 * enable;
+	if (hrt_start == 1)
+	{
+		return 0x20 * dstoff | 0x80 * srcoff | 0x200 * repeat | 0x400 * b32 | 0x1000 * starttiming | 0x4000 * irq | 0x8000 * enable;
+	}
+    return 0;
 }

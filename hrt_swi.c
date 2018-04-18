@@ -10,6 +10,7 @@ u32 hrt_GetBiosChecksum() {
 #endif
         return result;
     }
+	return 0;
 }
 
 inline void hrt_Diff8bitUnFilterWram(u32 source, u32 dest) {
@@ -128,6 +129,7 @@ void hrt_VblankIntrWait()
 	if (hrt_start == 1)
 	{
 		asm volatile("swi 0x05"::);
+		mmFrame();
 	}
 }
 

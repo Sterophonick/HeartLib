@@ -1,19 +1,3 @@
-
-//{{BLOCK(hrt_logo)
-
-//======================================================================
-//
-//	hrt_logo, 240x160@8, 
-//	+ palette 159 entries, not compressed
-//	+ bitmap lz77 compressed
-//	Total size: 318 + 5432 = 5750
-//
-//	Time-stamp: 2018-02-21, 19:27:07
-//	Exported by Cearn's GBA Image Transmogrifier, v0.8.3
-//	( http://www.coranac.com/projects/#grit )
-//
-//======================================================================
-
 const unsigned short hrt_logoBitmap[2716] __attribute__((aligned(4)))=
 {
 	0x0010,0x0096,0x043F,0xF004,0xF001,0xF001,0xF001,0xF001,

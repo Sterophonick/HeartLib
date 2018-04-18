@@ -133,14 +133,15 @@ void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hflip, u8 vfli
 {
 	if (hrt_start == 1) {
 		if (affine == 1) {
-			sprites[spr].attribute0 = color * 8192 | shape * 0x4000 | mode * 0x400 | mosaic * 0x1000 | 0x100 | dblsize * 0x200 | sty;
-			sprites[spr].attribute1 = size * 16384 | ((spr) << 9) | hflip * 4096 | vflip * 8192 | stx;
-			sprites[spr].attribute2 = 512 + offset | ((priority) << 10) | ((pal) << 12);
+			sprites[spr].attribute0 = (color * 8192) | (shape * 0x4000) | (mode * 0x400) | (mosaic * 0x1000) | (0x100) | (dblsize * 0x200) | sty;
+			sprites[spr].attribute1 = (size * 16384) | ((spr) << 9) | (hflip * 4096) | (vflip * 8192) | stx;
+			sprites[spr].attribute2 = (512 + offset) | ((priority) << 10) | ((pal) << 12);
+			hrt_AffineOBJ(spr, 0, 256, 256);
 		}
 		else {
-			sprites[spr].attribute0 = color * 8192 | shape * 0x4000 | mode * 0x400 | mosaic * 0x1000 | dblsize * 0x200 | sty;
-			sprites[spr].attribute1 = size * 16384 | hflip * 4096 | vflip * 8192 | stx;
-			sprites[spr].attribute2 = 512 + offset | ((priority) << 10) | ((pal) << 12);
+			sprites[spr].attribute0 = (color * 8192) | (shape * 0x4000) | (mode * 0x400) | (mosaic * 0x1000) | (dblsize * 0x200) | sty;
+			sprites[spr].attribute1 = (size * 16384) | hflip * 4096 | (vflip * 8192) | stx;
+			sprites[spr].attribute2 = (512 + offset) | ((priority) << 10) | ((pal) << 12);
 		}
 	}
 }
@@ -236,7 +237,6 @@ void hrt_GlideSpritetoPos(int spr, int x1, int y1, int x2, int y2, u32 frames)
 		//draw the pixels
 		for (i = 1; i < numpixels; i++)
 		{
-			while (REG_VCOUNT > 160);
 			hrt_CopyOAM();
 			hrt_SetOBJXY(&sprites[spr], x, y);
 			if (d < 0)
@@ -252,6 +252,6 @@ void hrt_GlideSpritetoPos(int spr, int x1, int y1, int x2, int y2, u32 frames)
 				y = y + yinc2;
 			}
 		}
-		hrt_Sleep(frames);
+		hrt_VblankIntrWait();
 	}
 }

@@ -1,19 +1,3 @@
-
-//{{BLOCK(hrt_obj)
-
-//======================================================================
-//
-//	hrt_obj, 32x40@8, 
-//	+ palette 14 entries, not compressed
-//	+ 20 tiles lz77 compressed
-//	Total size: 28 + 328 = 356
-//
-//	Time-stamp: 2018-02-21, 19:29:06
-//	Exported by Cearn's GBA Image Transmogrifier, v0.8.3
-//	( http://www.coranac.com/projects/#grit )
-//
-//======================================================================
-
 const unsigned short hrt_objTiles[164] __attribute__((aligned(4)))=
 {
 	0x0010,0x0005,0x003F,0xF000,0xF001,0xF001,0xF001,0xF001,

@@ -5,6 +5,7 @@ double hrt_Distance(int x1, int y1, int x2, int y2)
 	if (hrt_start == 1) {
 		return sqrt(((x2 - x1) ^ 2) + ((y2 - y1) ^ 2));
 	}
+	return 0;
 }
 
 double hrt_Slope(int x1, int y1, int x2, int y2)
@@ -12,6 +13,7 @@ double hrt_Slope(int x1, int y1, int x2, int y2)
 	if (hrt_start == 1) {
 		return ((x2 - x1) / (y2 - y1));
 	}
+	return 0;
 }
 
 void *hrt_Memcpy(void *dest, const void *src, size_t len)
@@ -23,6 +25,7 @@ void *hrt_Memcpy(void *dest, const void *src, size_t len)
 			*d++ = *s++;
 		return dest;
 	}
+	return 0;
 }
 
 void hrt_Sleep(double i) {

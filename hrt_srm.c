@@ -28,6 +28,7 @@ int hrt_LoadInt(u16 offset) //Loads from SRAM
 		}
 		return atoi(string);
 	}
+	return 0;
 }
 
 void hrt_SaveByte(int offset, u8 value)
@@ -42,4 +43,5 @@ u8 hrt_LoadByte(int offset)
 	if (hrt_start == 1) {
 		return SaveData[offset];
 	}
+	return 0;
 }

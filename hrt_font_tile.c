@@ -1,19 +1,3 @@
-
-//{{BLOCK(font_milkbottle)
-
-//======================================================================
-//
-//	font_milkbottle, 64x96@8, 
-//	+ palette 16 entries, not compressed
-//	+ 96 tiles not compressed
-//	Total size: 32 + 6144 = 6176
-//
-//	Time-stamp: 2018-02-20, 10:21:41
-//	Exported by Cearn's GBA Image Transmogrifier, v0.8.3
-//	( http://www.coranac.com/projects/#grit )
-//
-//======================================================================
-
 const unsigned short font_milkbottleTiles[3072] __attribute__((aligned(4)))=
 {
 	0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,

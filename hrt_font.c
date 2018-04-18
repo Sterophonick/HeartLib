@@ -1,18 +1,3 @@
-
-//{{BLOCK(font_matrix)
-
-//======================================================================
-//
-//	font_matrix, 8x760@16, 
-//	+ bitmap not compressed
-//	Total size: 12160 = 12160
-//
-//	Time-stamp: 2018-02-19, 11:09:07
-//	Exported by Cearn's GBA Image Transmogrifier, v0.8.3
-//	( http://www.coranac.com/projects/#grit )
-//
-//======================================================================
-
 const unsigned short font_matrixBitmap[6080] __attribute__((aligned(4)))=
 {
 	0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,

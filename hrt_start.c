@@ -16,13 +16,11 @@ void hrt_Init(int mode) {
 		hrt_offsetOAMPal = 0;
 		hrt_offsetBGMap = 0;
 		hrt_offsetBGPal = 0;
-        u8 fade;
-		u8 dir;
-		u16 angle;
-        u8 fadecnt;
+		u8 dir = 0;
+		u16 angle = 0;
+        u8 fadecnt = 0;
         int frames = 0;
-        u8 bx, by, bsy, bsx;
-        int ys1;
+        u8 bx=0, by=0, bsy=0, bsx=0;
 		REG_BLDCNT = 0x00B4;
 		REG_BLDY = 17;
 		REG_DISPCNT = 0x1444;

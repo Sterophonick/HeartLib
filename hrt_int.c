@@ -26,6 +26,7 @@ IntFn* hrt_SetInterrupt(irqMASK mask, IntFn function) {
 	if (hrt_start == 1) {
 		return hrt_irqSet(mask, function);
 	}
+    return 0;
 }
 
 IntFn* hrt_irqSet(irqMASK mask, IntFn function) {
@@ -39,6 +40,7 @@ IntFn* hrt_irqSet(irqMASK mask, IntFn function) {
 		IntrTable[i].mask = mask;
 		return &IntrTable[i].handler;
 	}
+    return 0;
 }
 
 void hrt_EnableInterrupt(irqMASK mask) {
