@@ -55,3 +55,7 @@ u32 hrt_CreateRNG(void)
 	}
     return 0;
 }
+u32 hrt_RNGRange(u32 low, u32 high)
+{
+	return (hrt_CreateRNG() % high) + low;
+}

@@ -1,7 +1,7 @@
 //File: libheart.h - The NEW Definitive GBA Header File
 //Date: March 2018
 //Author: Sterophonick
-//Derived from gba.h by eloist
+//Derived from gba.h by eloist, Inspired by Hamlib's mygba.h, who da heck remembers that library amirite?
 //This library is designed to make GBA Programming easy to do, and for everyone to be able to do it, not unlike HAMLib (rip 2001-2011 =( may god rest ur soul)
 //This Library is Dedicated to Stevendog98, who is wanting to make GBA Games. This is to give him a head start on the GBA.
 
@@ -24,7 +24,7 @@
 	AGBPrint
 	GBFS (kudos to Damian Yerrick)
 	Access To Undocumented Functions and Registers (Special Greetz to GBATek)
-	Color Conversion
+	Color Conversions
 	Timers
 	Bitmaps
 	Keys
@@ -32,20 +32,21 @@
 	Random Number Generation (Uses Merssene Twister method)
 	MaxMod (Kudos to LibGBA)
 	FatFs (Kudos to Elm-Chan and EZ-Team)
+	MBV2Lib (Greetz to LibGBA)
 
 TODO:
 		Implement Tiled Text
 		Implement Easy System Call functions
 		JPEG Decoding
-		MBV2Lib from LibGBA?
 		Game Boy Player Functions?
 		PogoShell Functions?
 
 Recommended Tools for development with this library:
-gfx2gba
-usenti
-gbfs
-mid2s3m
+	gfx2gba
+	usenti
+	gbfs
+	mmutil
+	bin2s
 */
 
 #ifndef LIBHEART_H
@@ -525,8 +526,9 @@ sounds sound[25];
 #define LEFT(n)     (n) << 8
 #define BOTTOM(n)   (n)
 #define TOP(n)      (n) << 8
-#define PI                   22/7
+#define PI                   3.14159265359
 #define RADIAN(n)    (((float) n)/ (float) 180 * PI)
+
 //Taken from HAM's mygba.h
 #ifndef RGB_GET_R_VALUE
 #define RGB_GET_R_VALUE(rgb)    ((rgb & 0x001f) << 3)
@@ -562,6 +564,76 @@ sounds sound[25];
 #ifndef NULL
 #define NULL ((void *)0)
 #endif
+
+//mbv2.h - libgba
+#define dprintf		mbv2_dprintf
+#define dfprintf	mbv2_dfprintf
+#define dputchar	mbv2_dputchar
+#define dgetch		mbv2_dgetch
+#define dkbhit		mbv2_dkbhit
+#define dfopen		mbv2_dfopen
+#define dfclose		mbv2_dfclose
+#define dfgetc		mbv2_dfgetc
+#define dfputc		mbv2_dfputc
+#define drewind		mbv2_drewind
+#define __DOUTBUFSIZE	256
+#define __FINBUFSIZE	256 
+#define __KINBUFSIZE	64
+#define __ESCCHR		27
+#define __ESC_NADA				0
+#define __ESC_ESCCHR			1
+#define __ESC_FOPEN				2
+#define __ESC_FCLOSE			3
+#define __ESC_FGETC				4
+#define __ESC_FPUTC				5
+#define __ESC_REWIND			6
+#define __ESC_FPUTC_PROCESSED	7
+#define __ESC_KBDCHR 			8
+#define SIO_8BIT		0x0000	// Normal 8-bit communication mode
+#define SIO_32BIT		0x1000	// Normal 32-bit communication mode
+#define SIO_MULTI		0x2000	// Multi-play communication mode
+#define SIO_UART		0x3000	// UART communication mode
+#define SIO_IRQ			0x4000	// Enable serial irq
+#define SIO_9600		0x0000
+#define SIO_38400		0x0001
+#define SIO_57600		0x0002
+#define SIO_115200		0x0003
+#define SIO_CLK_INT		(1<<0)	// Select internal clock
+#define SIO_2MHZ_CLK	(1<<1)	// Select 2MHz clock
+#define SIO_RDY			(1<<2)	// Opponent SO state
+#define SIO_SO_HIGH		(1<<3)	// Our SO state
+#define SIO_START		(1<<7)
+#define R_NORMAL		0x0000
+#define R_MULTI			0x0000
+#define R_UART			0x0000
+#define R_GPIO			0x8000
+#define	GPIO_SC			0x0001	// Data
+#define	GPIO_SD			0x0002
+#define	GPIO_SI			0x0004
+#define	GPIO_SO			0x0008
+#define	GPIO_SC_IO		0x0010	// Select I/O
+#define	GPIO_SD_IO		0x0020
+#define	GPIO_SI_IO		0x0040
+#define	GPIO_SO_IO		0x0080
+#define	GPIO_SC_INPUT	0x0000	// Input setting
+#define GPIO_SD_INPUT	0x0000
+#define	GPIO_SI_INPUT	0x0000
+#define	GPIO_SO_INPUT	0x0000
+#define	GPIO_SC_OUTPUT	0x0010	// Output setting
+#define	GPIO_SD_OUTPUT	0x0020
+#define	GPIO_SI_OUTPUT	0x0040
+#define	GPIO_SO_OUTPUT	0x0080
+#define REG_SIOMLT_RECV	*(vu16*)(REG_BASE + 0x120)	// Multi-play SIO Receive Data
+#define REG_HS_CTRL		*(vu16*)(REG_BASE + 0x140)	// SIO JOY Bus Control
+#define REG_JOYRE		*(vu32*)(REG_BASE + 0x150)	// SIO JOY Bus Receive Data
+#define REG_JOYRE_L		*(vu16*)(REG_BASE + 0x150)
+#define REG_JOYRE_H		*(vu16*)(REG_BASE + 0x152)
+#define REG_JOYTR		*(vu32*)(REG_BASE + 0x154)	// SIO JOY Bus Transmit Data
+#define REG_JOYTR_L		*(vu16*)(REG_BASE + 0x154)
+#define REG_JOYTR_H		*(vu16*)(REG_BASE + 0x156)
+#define REG_JSTAT		*(vu16*)(REG_BASE + 0x158)	// SIO JOY Bus Receive Status
+#define R_JOYBUS		0xC000
+//eof
 
 const GBFS_FILE *find_first_gbfs_file(const void *start);
 
@@ -664,9 +736,9 @@ void *gbfs_copy_obj(void *dst, const GBFS_FILE *file, const char *name); //GBFS 
 void hrt_ConfigSOUNDCNT(u8 psgmasvol, u8 loudA, u8 loudB, u8 enablear, u8 enableal, u8 atimer, u8 areset, u8 enablebr, u8 enablebl, u8 btimer, u8 breset); //Configures SOUNDCNT
 int hrt_ConfigDMA(u8 dstoff, u8 srcoff, u8 repeat, u8 b32, u8 starttiming, u8 irq, u8 enable); //Returns a hex value for the specific operands.
 void hrt_DecodePCX(const u8 *PCXBuffer, u16 *ScreenAddr, u16 *Palette); //Decodes PCX File and Copies data to specified locations. Usually VRAM and BGPaletteMem
-void hrt_SeedRNG(u32 seed); //Seeds the RNG. Think of it like in Minecraft, where you can type in a "seed" for the world generator before creating a world, and based on that seed, the world will generate accordingly to the games RNG.
+void hrt_SeedRNG(u32 seed); //Seeds the RNG. Think of it like in Minecraft, where you can type in a "seed" for the world generator before creating a world, and based on that seed, the world will generate accordingly to the game's RNG.
 u32 hrt_ReloadRNG(void); //Reloads RNG.
-u32 hrt_CreateRNG(void); //Creates RNG Value. You can change the type of return value. in your main.c
+u32 hrt_CreateRNG(void); //Creates RNG Value. You can change the type of return value in your main.c
 void mmInitDefault(mm_addr soundbank, mm_word number_of_channels); //Initializes Defualt soundbank in MaxMod
 void mmInit(mm_gba_system* setup); //Initializes Maxmod
 void mmVBlank(void); //MaxMod Vblank
@@ -697,6 +769,24 @@ void mmEffectRelease(mm_sfxhand handle); //Releases Sound Effect?
 void mmSetEffectsVolume(mm_word volume); //Set Sound effect volume
 void mmEffectCancelAll(); //Cancel all sound effects
 void hrt_StopSoundFIFO(); //Stops FIFO Sound -- No longer attached to MaxMod.
+double hrt_VolumeCylinder(double r, double h); //Calculates the volume of any given cylinder
+double hrt_AreaTriangle(double a, double b); //Calculates the area of a right triangle
+double hrt_AreaCircle(double r); //Calculates the Area of any given circle
+void hrt_ConfigWININ(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 bld, u8 bg0_2, u8 bg1_2, u8 bg2_2, u8 bg3_2, u8 obj_2, u8 bld_2); //configs REG_WININ
+void hrt_ConfigWINOUT(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 bld, u8 bg0_obj, u8 bg1_obj, u8 bg2_obj, u8 bg3_obj, u8 obj_obj, u8 bld_obj); //Configs REG_WINOUT
+u32 hrt_RNGRange(u32 low, u32 high); // Creates a Random number between a range.
+int __dputchar(int c);
+void	mbv2_dprintf(char *str, ...);
+void	mbv2_dfprintf(int fp, char *str, ...);
+int		mbv2_dputchar(int c);
+int		mbv2_dgetch(void);
+int		mbv2_dkbhit(void);
+int		mbv2_dfopen(const char *file, const char *type);
+int		mbv2_dfclose(int fp);
+int		mbv2_dfgetc(int fp);
+int		mbv2_dfputc(int ch, int fp);
+void	mbv2_drewind(int fp);
+int hrt_GetGBAVersion(); //Gets the platform that this is running on
 
 #ifdef __cplusplus
 }

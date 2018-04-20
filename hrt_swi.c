@@ -1,4 +1,5 @@
 #include "libheart.h"
+int __hrt_version(void);
 
 u32 hrt_GetBiosChecksum() {
     if (hrt_start == 1) {
@@ -10,6 +11,13 @@ u32 hrt_GetBiosChecksum() {
 #endif
         return result;
     }
+	return 0;
+}
+
+int hrt_GetGBAVersion() {
+	if (hrt_start == 1) {
+		return (int)__hrt_version;
+	}
 	return 0;
 }
 

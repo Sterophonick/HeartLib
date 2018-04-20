@@ -49,3 +49,18 @@ void hrt_SleepF(u32 frames) {
 		}
 	}
 }
+
+double hrt_VolumeCylinder(double r, double h)
+{
+	return (PI)*(r * r)*h;
+}
+
+double hrt_AreaTriangle(double a, double b)
+{
+	return (1 / 2)*(a*b);
+}
+
+double hrt_AreaCircle(double r)
+{
+	return (PI)*(r * r);
+}

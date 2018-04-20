@@ -1,5 +1,5 @@
 Install Devkitpro to C:\Devkitpro
-Copy libheart.a and libSD.a to C:\Devkitpro\Devkitarm\lib
+Copy libheart.a to C:\Devkitpro\Devkitarm\lib
 Copy all .h files to C:\devkitPro\devkitARM\lib\gcc\arm-none-eabi\7.1.0\include
 Try compiling the Demos included with the library. If all demos work, congratulations! You have installed HeartLib!!
 	The world of GBA Homebrew development is within your grasp!
