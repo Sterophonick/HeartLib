@@ -5,13 +5,29 @@
 //This library is designed to make GBA Programming easy to do, and for everyone to be able to do it, not unlike HAMLib (rip 2001-2011 =( may god rest ur soul)
 //This Library is Dedicated to Stevendog98, who is wanting to make GBA Games. This is to give him a head start on the GBA.
 
+//Some functions don't work yet so be patient!
+
+/*
+GBA Specs:
+	CPU: ARM7TDMI RISC 16.78 Mhz
+	RAM: 32kb internal, 256kb external
+	ROM: 32 MB
+	OAM: 128 Sprites with Affine transformation
+	VRAM: 96 kb
+	BIOS: 16kb
+	Keys: 10
+	DMA: 4 Channels
+	Sound: 4 PSG Channels, 2 Direct Sound Channels, Mono on speaker, Stereo headphones.
+	LCD: 240x160 15 bit BGR, 32768 Colors
+	*/
+
 /*
   What's Included:
     **ALL** the GBA Register Definitions -- Including some undocumented ones
 	Screen Wipes (Mode 3 at the moment)
 	Sprites
 	Affine Transformation - BG and OBJ
-	Sound
+	Sound (Shoutouts to 3DSage)
 	DMA
 	Palettes
 	Scrolling
@@ -19,20 +35,23 @@
 	SRAM
 	Text (Mode 3 only at the moment)
 	Interrupts
-	Blending
+	Blending (Shoutouts to headspin)
 	BIOS Calls
-	AGBPrint
+	AGBPrint (Shoutouts to LibGBA)
 	GBFS (kudos to Damian Yerrick)
 	Access To Undocumented Functions and Registers (Special Greetz to GBATek)
-	Color Conversions
+	Color Conversions (Shoutouts to Tubooboo)
 	Timers
 	Bitmaps
-	Keys
+	Keys (Shoutouts to 3DSage)
+	Screen Drawing
 	PCX Decoding (Shoutouts to libGBA)
 	Random Number Generation (Uses Merssene Twister method)
 	MaxMod (Kudos to LibGBA)
-	FatFs (Kudos to Elm-Chan and EZ-Team)
+	FatFs (Kudos to Elm-Chan, EZ-Team, and LibGBA)
 	MBV2Lib (Greetz to LibGBA)
+	Xboo Stuff (LibGBA)
+	Typedefs
 
 TODO:
 		Implement Tiled Text
@@ -42,10 +61,11 @@ TODO:
 		PogoShell Functions?
 
 Recommended Tools for development with this library:
-gfx2gba
-usenti
-gbfs
-mid2s3m
+	gfx2gba
+	usenti
+	gbfs
+	mmutil
+	bin2s
 */
 
 #ifndef LIBHEART_H
@@ -87,8 +107,11 @@ extern "C" {
 #include <fastmath.h>
 #include <cpio.h>
 #include <alloca.h>
-#include "maxmod.h" //Built-In MaxMod
-#include "libSD.h" //FatFs driver
+#include <iso646.h>
+#include <memory.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/fcntl.h>
 
 typedef unsigned char u8;
 typedef unsigned short u16;
@@ -131,6 +154,9 @@ typedef signed long s32;
 typedef signed long long s64;
 typedef signed int sint;
 typedef void(*IntFn)(void);
+typedef bool(*_SD_FN_CMD_6BYTE_RESPONSE) (u8* responseBuffer, u8 command, u32 data);
+typedef bool(*_SD_FN_CMD_17BYTE_RESPONSE) (u8* responseBuffer, u8 command, u32 data);
+u8 EZ4ExitRAM[128];
 
 u32* OAMmem;
 u16* VRAM;
@@ -338,6 +364,7 @@ sounds sound[25];
 #define AGBPrint 0xFF
 
 #define hrt_MULTIBOOT const int __gba_multiboot; //Type 'MULTIBOOT' at the beginning of a project, and the file will be compiled as a multiboot ROM.
+#define hrt_SOFTRESETCODE int __hrt_softresetcode = 1;
 
 //Bits
 #define W 1
@@ -563,18 +590,216 @@ sounds sound[25];
 #ifndef NULL
 #define NULL ((void *)0)
 #endif
+//xcomms
+#define dprintf		xcomms_dprintf
+#define dfprintf	xcomms_dfprintf
+#define dputchar	xcomms_dputchar
+#define dfopen		xcomms_dfopen
+#define dfseek		xcomms_fseek
+#define dfread		xcomms_fread
+#define dfwrite		xcomms_fwrite
+#define dftell		xcomms_ftell
+#define dfclose		xcomms_dfclose
+#define dfgetc		xcomms_dfgetc
+#define dfputc		xcomms_dfputc
+#define drewind		xcomms_drewind
+#define dgetch		xcomms_getch
+#define dkbhit		xcomms_kbhit
+#define PRINT_CMD	('PRT'<<8)
+#define DPUTC_CMD	('DPT'<<8)
+#define FOPEN_CMD	('OPN'<<8)
+#define FCLOSE_CMD	('CLS'<<8)
+#define FREAD_CMD	('FRD'<<8)
+#define FWRITE_CMD	('FWR'<<8)
+#define FSEEK_CMD	('FSK'<<8)
+#define REWIND_CMD	('RWD'<<8)
+#define FTELL_CMD	('FTL'<<8)
+#define FGETC_CMD	('FGT'<<8)
+#define FPUTC_CMD	('FPT'<<8)
+#define GETCH_CMD	('GTC'<<8)
+#define KBHIT_CMD	('KBH'<<8)
+//
+//Maxmod
+typedef unsigned int	mm_word;
+typedef unsigned short	mm_hword;
+typedef unsigned char	mm_byte;
+typedef unsigned short	mm_sfxhand;
+typedef unsigned char	mm_bool;
+typedef void*			mm_addr;
+typedef void*			mm_reg;
+typedef enum {
+	MM_MODE_A,
+	MM_MODE_B,
+	MM_MODE_C
+} mm_mode_enum;
+typedef enum {
+	MM_STREAM_8BIT_MONO = 0x0,
+	MM_STREAM_8BIT_STEREO = 0x1,
+	MM_STREAM_16BIT_MONO = 0x2,
+	MM_STREAM_16BIT_STEREO = 0x3,
+} mm_stream_formats;
+typedef mm_word(*mm_callback)(mm_word msg, mm_word param);
+typedef mm_word(*mm_stream_func)(mm_word length, mm_addr dest, mm_stream_formats format);
+typedef enum {
+	MMRF_MEMORY = 0x01,
+	MMRF_DELAY = 0x02,
+	MMRF_RATE = 0x04,
+	MMRF_FEEDBACK = 0x08,
+	MMRF_PANNING = 0x10,
+	MMRF_LEFT = 0x20,
+	MMRF_RIGHT = 0x40,
+	MMRF_BOTH = 0x60,
+	MMRF_INVERSEPAN = 0x80,
+	MMRF_NODRYLEFT = 0x100,
+	MMRF_NODRYRIGHT = 0x200,
+	MMRF_8BITLEFT = 0x400,
+	MMRF_16BITLEFT = 0x800,
+	MMRF_8BITRIGHT = 0x1000,
+	MMRF_16BITRIGHT = 0x2000,
+	MMRF_DRYLEFT = 0x4000,
+	MMRF_DRYRIGHT = 0x8000
+} mm_reverbflags;
+typedef enum {
+	MMRC_LEFT = 1,
+	MMRC_RIGHT = 2,
+	MMRC_BOTH = 3
+} mm_reverbch;
+typedef struct mmreverbcfg {
+	mm_word				flags;
+	mm_addr				memory;
+	mm_hword			delay;
+	mm_hword			rate;
+	mm_hword			feedback;
+	mm_byte				panning;
+} mm_reverb_cfg;
+typedef enum {
+	MM_PLAY_LOOP,
+	MM_PLAY_ONCE
+} mm_pmode;
+typedef enum {
+	MM_MIX_8KHZ,
+	MM_MIX_10KHZ,
+	MM_MIX_13KHZ,
+	MM_MIX_16KHZ,
+	MM_MIX_18KHZ,
+	MM_MIX_21KHZ,
+	MM_MIX_27KHZ,
+	MM_MIX_31KHZ
+} mm_mixmode;
+typedef enum {
+	MM_TIMER0,
+	MM_TIMER1,
+	MM_TIMER2,
+	MM_TIMER3
+} mm_stream_timer;
+typedef struct t_mmdssample {
+	mm_word		loop_start;
+	union {
+		mm_word		loop_length;
+		mm_word		length;
+	};
+	mm_byte		format;
+	mm_byte		repeat_mode;
+	mm_hword	base_rate;
+	mm_addr		data;
+} mm_ds_sample;
+typedef struct t_mmsoundeffect {
+	union {
+		mm_word id;
+		mm_ds_sample* sample;
+	};
+	mm_hword rate;
+	mm_sfxhand handle;
+	mm_byte	volume;
+	mm_byte	panning;
+} mm_sound_effect;
+typedef struct t_mmgbasystem {
+	mm_mixmode	mixing_mode;
+	mm_word		mod_channel_count;
+	mm_word		mix_channel_count;
+	mm_addr		module_channels;
+	mm_addr		active_channels;
+	mm_addr		mixing_channels;
+	mm_addr		mixing_memory;
+	mm_addr		wave_memory;
+	mm_addr		soundbank;
+} mm_gba_system;
+typedef struct t_mmdssystem {
+	mm_word		mod_count;
+	mm_word		samp_count;
+	mm_word*	mem_bank;
+	mm_word		fifo_channel;
+} mm_ds_system;
+typedef struct t_mmstream {
+	mm_word sampling_rate;
+	mm_word buffer_length;
+	mm_stream_func callback;
+	mm_word format;
+	mm_word timer;
+	mm_bool manual;
+} mm_stream;
+typedef struct t_mmlayer {
+	mm_byte	tick;
+	mm_byte	row;
+	mm_byte	position;
+	mm_byte	nrows;
+	mm_byte	global_volume;
+	mm_byte	speed;
+	mm_byte	active;
+	mm_byte	bpm;
+} mm_modlayer;
+typedef struct tmm_voice {
+	mm_addr		source;
+	mm_word		length;
+	mm_hword	loop_start;
+	mm_hword	timer;
+	mm_byte		flags;
+	mm_byte		format;
+	mm_byte		repeat;
+	mm_byte		volume;
+	mm_byte		divider;
+	mm_byte		panning;
+	mm_byte		index;
+	mm_byte		reserved[1];
+} mm_voice;
+enum {
+	MMVF_FREQ = 2,
+	MMVF_VOLUME = 4,
+	MMVF_PANNING = 8,
+	MMVF_SOURCE = 16,
+	MMVF_STOP = 32
+};
+#ifdef __cplusplus
+extern "C" {
+#endif
+#define MM_MIXLEN_8KHZ		544
+#define MM_MIXLEN_10KHZ		704
+#define MM_MIXLEN_13KHZ		896
+#define MM_MIXLEN_16KHZ		1056
+#define MM_MIXLEN_18KHZ 	1216
+#define MM_MIXLEN_21KHZ 	1408
+#define MM_MIXLEN_27KHZ		1792
+#define MM_MIXLEN_31KHZ		2112
+#define MM_SIZEOF_MODCH		40
+#define MM_SIZEOF_ACTCH		28
+#define MM_SIZEOF_MIXCH		24
+#define MMCB_SONGMESSAGE	0x2A
+#define MMCB_SONGFINISHED	0x2B
+	extern mm_byte	mp_mix_seg;
+	extern mm_word	mp_writepos;
+//
 
 //mbv2.h - libgba
-#define dprintf		mbv2_dprintf
-#define dfprintf	mbv2_dfprintf
-#define dputchar	mbv2_dputchar
-#define dgetch		mbv2_dgetch
-#define dkbhit		mbv2_dkbhit
-#define dfopen		mbv2_dfopen
-#define dfclose		mbv2_dfclose
-#define dfgetc		mbv2_dfgetc
-#define dfputc		mbv2_dfputc
-#define drewind		mbv2_drewind
+#define mbv_dprintf		mbv2_dprintf
+#define mbv_dfprintf	mbv2_dfprintf
+#define mbv_dputchar	mbv2_dputchar
+#define mbv_dgetch		mbv2_dgetch
+#define mbv_dkbhit		mbv2_dkbhit
+#define mbv_dfopen		mbv2_dfopen
+#define mbv_dfclose		mbv2_dfclose
+#define mbv_dfgetc		mbv2_dfgetc
+#define mbv_dfputc		mbv2_dfputc
+#define mbv_drewind		mbv2_drewind
 #define __DOUTBUFSIZE	256
 #define __FINBUFSIZE	256 
 #define __KINBUFSIZE	64
@@ -643,6 +868,137 @@ const unsigned short font_matrixBitmap[6080];
 const unsigned short font_milkbottleTiles[3072];
 const unsigned short font_milkbottlePal[16];
 
+//DiskIO stuff
+#define DEVICE_TYPE_SCSD 0x44534353
+#define DEVICE_TYPE_SCCF 0x46434353
+#define DEVICE_TYPE_MPCF 0x4643504D
+#define DEVICE_TYPE_M3SD 0x4453334D
+#define DEVICE_TYPE_M3CF 0x4643334D
+#define FEATURE_MEDIUM_CANREAD		0x00000001
+#define FEATURE_MEDIUM_CANWRITE		0x00000002
+#define FEATURE_SLOT_GBA			0x00000010
+#define FEATURE_SLOT_NDS			0x00000020
+typedef uint32_t sec_t;
+typedef bool(*FN_MEDIUM_STARTUP)(void);
+typedef bool(*FN_MEDIUM_ISINSERTED)(void);
+typedef bool(*FN_MEDIUM_READSECTORS)(sec_t sector, sec_t numSectors, void* buffer);
+typedef bool(*FN_MEDIUM_WRITESECTORS)(sec_t sector, sec_t numSectors, const void* buffer);
+typedef bool(*FN_MEDIUM_CLEARSTATUS)(void);
+typedef bool(*FN_MEDIUM_SHUTDOWN)(void);
+struct DISC_INTERFACE_STRUCT {
+	unsigned long			ioType;
+	unsigned long			features;
+	FN_MEDIUM_STARTUP		startup;
+	FN_MEDIUM_ISINSERTED	isInserted;
+	FN_MEDIUM_READSECTORS	readSectors;
+	FN_MEDIUM_WRITESECTORS	writeSectors;
+	FN_MEDIUM_CLEARSTATUS	clearStatus;
+	FN_MEDIUM_SHUTDOWN		shutdown;
+};
+typedef struct DISC_INTERFACE_STRUCT DISC_INTERFACE;
+#define FIX_ALL						0x01
+#define FIX_GLUE					0x02
+#define FIX_GOT						0x04
+#define FIX_BSS						0x08
+#define DLDI_MAGIC_STRING_LEN 		8
+#define DLDI_FRIENDLY_NAME_LEN 		48
+extern const u32  DLDI_MAGIC_NUMBER;
+typedef struct {
+	u32 	magicNumber;
+	char	magicString[DLDI_MAGIC_STRING_LEN];
+	u8		versionNumber;
+	u8		driverSize;			// log-2 of driver size in bytes
+	u8		fixSectionsFlags;
+	u8		allocatedSize;		// log-2 of the allocated space in bytes
+	char	friendlyName[DLDI_FRIENDLY_NAME_LEN];
+	void*	dldiStart;
+	void*	dldiEnd;
+	void*	interworkStart;
+	void*	interworkEnd;
+	void*	gotStart;
+	void*	gotEnd;
+	void*	bssStart;
+	void*	bssEnd;
+	DISC_INTERFACE ioInterface;
+} DLDI_INTERFACE;
+typedef struct {
+	vu16* data;
+	vu16* status;
+	vu16* command;
+	vu16* error;
+	vu16* sectorCount;
+	vu16* lba1;
+	vu16* lba2;
+	vu16* lba3;
+	vu16* lba4;
+} CF_REGISTERS;
+#define CF_STS_INSERTED		0x50
+#define CF_STS_REMOVED		0x00
+#define CF_STS_READY		0x58
+#define CF_STS_DRQ			0x08
+#define CF_STS_BUSY			0x80
+#define CF_CMD_LBA			0xE0
+#define CF_CMD_READ			0x20
+#define CF_CMD_WRITE		0x30
+#define CF_CARD_TIMEOUT	10000000
+#define M3_MODE_ROM 0x00400004
+#define M3_MODE_MEDIA 0x00400003 
+#define SC_MODE_FLASH 0x1510
+#define SC_MODE_RAM 0x5
+#define SC_MODE_MEDIA 0x3 
+#define SC_MODE_RAM_RO 0x1
+#define GO_IDLE_STATE 0
+#define ALL_SEND_CID 2
+#define SEND_RELATIVE_ADDR 3
+#define SELECT_CARD 7
+#define SEND_CSD 9
+#define STOP_TRANSMISSION 12
+#define SEND_STATUS 13
+#define GO_INACTIVE_STATE 15
+#define SET_BLOCKLEN 16
+#define READ_SINGLE_BLOCK 17
+#define READ_MULTIPLE_BLOCK 18
+#define WRITE_BLOCK 24
+#define WRITE_MULTIPLE_BLOCK 25
+#define APP_CMD 55
+#define SET_BUS_WIDTH 6
+#define SD_APP_OP_COND 41
+#define SD_OCR_VALUE 0x00030000
+//#define SD_OCR_VALUE 0x003F8000 /* 2.7V to 3.4V */
+//#define SD_OCR_VALUE 0x00FC0000
+#define SD_CARD_BUSY 0xff
+#define SD_STATE_IDLE 0		// Idle state, after power on or GO_IDLE_STATE command
+#define SD_STATE_READY 1	// Ready state, after card replies non-busy to SD_APP_OP_COND
+#define SD_STATE_IDENT 2	// Identification state, after ALL_SEND_CID
+#define SD_STATE_STBY 3		// Standby state, when card is deselected
+#define SD_STATE_TRAN 4		// Transfer state, after card is selected and ready for data transfer
+#define SD_STATE_DATA 5		// 
+#define SD_STATE_RCV 6		// Receive data state
+#define SD_STATE_PRG 7		// Programming state
+#define SD_STATE_DIS 8		// Disconnect state
+#define SD_STATE_INA 9		// Inactive state, after GO_INACTIVE_STATE
+#define READY_FOR_DATA 1	// bit 8 in card status
+extern const DISC_INTERFACE _io_m3cf;
+extern const DISC_INTERFACE _io_m3sd;
+extern const DISC_INTERFACE _io_mpcf;
+extern const DISC_INTERFACE _io_sccf;
+extern const DISC_INTERFACE _io_scsd;
+
+//
+
+
+static inline u32 hrt_GetBiosChecksum() {
+	if (hrt_start == 1) {
+		register u32 result;
+#if   defined   ( __thumb__ )
+		__asm ("SWI   0x0d\nmov %0,r0\n" :  "=r"(result) :: "r1", "r2", "r3");
+#else
+		__asm ("SWI   0x0d<<16\nmov %0,r0\n" : "=r"(result) :: "r1", "r2", "r3");
+#endif
+		return result;
+	}
+	return 0;
+}//Returns BIOS Checksum.
 u32 hrt_MultiBoot(MultiBootParam *mp, u32 mode); //Enables Multiboot? Unknown
 void hrt_InitInterrupt(void) __attribute__((deprecated)); //Initialize interrupts mirror
 void hrt_irqInit(); //Initialize Interrupts
@@ -702,7 +1058,6 @@ void hrt_SetOBJPalEntry(int slot, u16 color); //Sets color of OBJ Palette Entry
 void hrt_LoadBGTiles(u16* data, int length); //Loads BG Tiles into VRAM, at Tile slot 1.
 void hrt_ColdReset(); //Restarts the console -- Undocumented BIOS Call
 void hrt_SoftReset(); //Restarts from ROM.
-extern u32 hrt_GetBiosChecksum(); //Returns BIOS Checksum.
 void hrt_Init(int mode); //If set to 0, no intro will play. If set to 1, then an intro will play. MUST BE EXECUTED BEFORE USING THIS LIBRARY.
 void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode); //Copies from DMA
 void hrt_SetFXLevel(u8 level); //Sets BLDY level
@@ -775,16 +1130,51 @@ void hrt_ConfigWININ(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 bld, u8 bg0_2, u
 void hrt_ConfigWINOUT(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 bld, u8 bg0_obj, u8 bg1_obj, u8 bg2_obj, u8 bg3_obj, u8 obj_obj, u8 bld_obj); //Configs REG_WINOUT
 u32 hrt_RNGRange(u32 low, u32 high); // Creates a Random number between a range.
 int __dputchar(int c);
-void	mbv2_dprintf(char *str, ...);
-void	mbv2_dfprintf(int fp, char *str, ...);
-int		mbv2_dputchar(int c);
-int		mbv2_dgetch(void);
+void	mbv2_dprintf(char *str, ...); //Mbv2Lib print
+void	mbv2_dfprintf(int fp, char *str, ...);//Mbv2Lib print
+int		mbv2_dputchar(int c); //Mbv2Lib print
+int		mbv2_dgetch(void); 
 int		mbv2_dkbhit(void);
 int		mbv2_dfopen(const char *file, const char *type);
 int		mbv2_dfclose(int fp);
 int		mbv2_dfgetc(int fp);
 int		mbv2_dfputc(int ch, int fp);
 void	mbv2_drewind(int fp);
+int hrt_GetGBAVersion(); //Gets the platform that this is running on. Taken from PocketNES
+extern const DISC_INTERFACE* dldiGetInternal(void);
+extern bool dldiIsValid(const DLDI_INTERFACE* io);
+extern void dldiFixDriverAddresses(DLDI_INTERFACE* io);
+extern DLDI_INTERFACE* dldiLoadFromFile(const char* path);
+extern void dldiFree(DLDI_INTERFACE* dldi);
+bool _CF_isInserted(void);
+bool _CF_clearStatus(void);
+bool _CF_readSectors(u32 sector, u32 numSectors, void* buffer);
+bool _CF_writeSectors(u32 sector, u32 numSectors, void* buffer);
+bool _CF_shutdown(void);
+bool _CF_startup(const CF_REGISTERS *usableCfRegs);
+extern const DISC_INTERFACE _io_m3cf;
+extern void _SC_changeMode(u8 mode);
+extern u8 _SD_CRC7(u8* data, int size);
+extern void _SD_CRC16(u8* buff, int buffLength, u8* crc16buff);
+extern bool _SD_InitCard(_SD_FN_CMD_6BYTE_RESPONSE cmd_6byte_response,	_SD_FN_CMD_17BYTE_RESPONSE cmd_17byte_response,	bool use4bitBus,	u32 *RCA);
+extern const DISC_INTERFACE* discGetInterface(void);
+void	xcomms_dprintf(char *str, ...);
+void	xcomms_dfprintf(int handle, char *str, ...);
+void	xcomms_dputchar(int c);
+int		xcomms_dfopen(const char *file, const char *type);
+void	xcomms_dfclose(int handle);
+u8		xcomms_dfgetc(int handle);
+void	xcomms_dfputc(int ch, int handle);
+void	xcomms_fread(void *buffer, u32 size, u32 count, int handle);
+void	xcomms_fwrite(void *buffer, u32 size, u32 count, int handle);
+void	xcomms_drewind(int handle);
+void 	xcomms_fseek(int handle, u32 offset, int origin);
+u32		xcomms_ftell(int handle);
+void	xcomms_send(u32 data);
+void	xcomms_sendblock(const void *block, u32 len);
+int		xcomms_getch(void);
+int		xcomms_kbhit(void);
+void	xcomms_init();
 
 #ifdef __cplusplus
 }

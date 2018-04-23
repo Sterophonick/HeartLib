@@ -1,0 +1,20 @@
+STATUS: Validatating gr.
+WARNING:   No explicit src path.
+STATUS: Validation succeeded.
+STATUS: Started run at: 2018-02-21, 19:29:06
+STATUS: Validatating gr.
+STATUS: Validation succeeded.
+STATUS: Preparing data.
+STATUS: Work-DIB creation.
+STATUS: Work-DIB creation complete: 32x40@8.
+STATUS: Tile preparation.
+STATUS:   tiling to 8x8 tiles.
+STATUS: Tile preparation complete.
+STATUS: Graphics preparation.
+STATUS: Compressing: 01
+STATUS: Graphics preparation complete.
+STATUS: Palette preparation.
+STATUS: Palette preparation complete.
+STATUS: Data preparation complete.
+STATUS: Export to C: hrt_obj into C:\Users\nickm\Desktop\Code\Game Boy Advance\Heart GBA Lib\data\hrt_obj.c .
+STATUS: Run completed :).

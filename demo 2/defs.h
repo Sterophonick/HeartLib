@@ -7,3 +7,4 @@ extern const unsigned short l1Pal[256];
 extern const unsigned char such[23719];
 extern const unsigned short blockTiles[512];
 extern const unsigned short blockPal[256];
+extern const unsigned char such2_jpg[11127];

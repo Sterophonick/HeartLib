@@ -1,6 +1,8 @@
 #include <libheart.h>
 #include "defs.h"
 
+hrt_SOFTRESETCODE
+
 int i;
 s8 phase;
 int boiy, boix;

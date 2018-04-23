@@ -1,6 +1,6 @@
 #include "libheart.h"
 
-u8* SaveData = (u8*)0xE000000;
+u8* SaveData = (u8*)0x0E000000;
 void hrt_SaveInt(u16 offset, int value) //saves to SRAM
 {
 	if (hrt_start == 1) {

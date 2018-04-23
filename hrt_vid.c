@@ -6,7 +6,7 @@ u16* FrontBuffer = (u16*)0x6000000;
 u16* BackBuffer = (u16*)0x600A000;
 
 const char* ee = "In loving memory of the HAMLib and ngine.de. HeartLib by Sterophonick. 2018.";
-const char* ee2 = "I would like to thank Mark Holloway, Tubooboo, Dwedit, gauauu, DevKitPro, Nintendo, sverx, endrift, and DekuTree64 for helping me create this library.";
+const char* ee2 = "I would like to thank Mark Holloway, Tubooboo, Dwedit, gauauu, DevKitPro, Nintendo, sverx, endrift, GBATek, 3DSage, and DekuTree64 for helping me create this library.";
 const char* ee3 = "Without them, this project couldn't have been completed.";
 
 void hrt_FlipBGBuffer() {
@@ -143,7 +143,7 @@ u16 hrt_GetPixel(u8 mode, int x, int y) {
             break;
         }
     }
-       return 0;
+    return 0;
 }
 
 void hrt_CyclePalette(int start, int amount, int pal) {

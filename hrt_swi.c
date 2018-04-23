@@ -1,18 +1,6 @@
 #include "libheart.h"
 int __hrt_version(void);
-
-u32 hrt_GetBiosChecksum() {
-    if (hrt_start == 1) {
-        register u32 result;
-#if   defined   ( __thumb__ )
-        __asm ("SWI   0x0d\nmov %0,r0\n" :  "=r"(result) :: "r1", "r2", "r3");
-#else
-        __asm ("SWI   0x0d<<16\nmov %0,r0\n" : "=r"(result) :: "r1", "r2", "r3");
-#endif
-        return result;
-    }
-	return 0;
-}
+extern const int __hrt_softresetcode;
 
 int hrt_GetGBAVersion() {
 	if (hrt_start == 1) {
@@ -138,7 +126,14 @@ void hrt_VblankIntrWait()
 	{
 		asm volatile("swi 0x05"::);
 		mmFrame();
+		if (__hrt_softresetcode == 1)
+		{
+			if ((keyDown(KEY_A))AND(keyDown(KEY_B))AND(keyDown(KEY_SELECT))AND(keyDown(KEY_START))) {
+				asm volatile("swi 0x00"::);
+			}
+		}
 	}
+
 }
 
 void hrt_RegisterRamReset()

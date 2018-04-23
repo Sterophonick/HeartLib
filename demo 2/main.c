@@ -1,6 +1,7 @@
 #include <libheart.h>
 #include "defs.h"
 #include "soundbank.h"
+hrt_SOFTRESETCODE
 
 char buffer[255];
 
@@ -64,6 +65,8 @@ int main()
 	hrt_PrintOnBitmap(8, 27, "Interrupt Dispatcher"); //draws text
 	hrt_PrintOnBitmap(8, 36, "Random Number Generator"); //draws text
 	hrt_PrintOnBitmap(8, 45, "Built-in MaxMod"); //draws text
+	hrt_PrintOnBitmap(8, 54, "mbv2lib"); //draws text
+	hrt_PrintOnBitmap(8, 63, "Xboo"); //draws text
     hrt_CopyOAM(); //Copies OBJ Data to OAM
     while (1) {
 		frames++;
@@ -77,8 +80,8 @@ int main()
         }
         if (keyDown(KEY_DOWN)) {
             arpos++;
-            if (arpos == 6) {
-                arpos = 5;
+            if (arpos == 8) {
+                arpos = 7;
             }
             while (keyDown(KEY_DOWN));
         }
@@ -88,6 +91,24 @@ int main()
                      9*arpos); //Y Position
 
         if (keyDown(KEY_A)) {
+			if (arpos == 7)
+			{
+				int handle = dfopen("data\\splash.pcx", "rb");
+				dfseek(handle, 0, SEEK_END);
+				u32 size = dftell(handle);
+				dprintf("File size is %d\n", size);
+				void *splash = malloc(size);
+				dfseek(handle, 0, SEEK_SET);
+				dfread(splash, 1, size, handle);
+				dfclose(handle);
+				hrt_SetDSPMode(4, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0); //Sets REG_DISPCNT, like above
+				hrt_DecodePCX(splash, VRAM, BGPaletteMem);
+				free(splash);
+			}
+			if (arpos == 6)
+			{
+				mbv2_dprintf("Hello World!\n");
+			}
 			if (arpos == 5)
 			{
 				mmInitDefault((mm_addr)soundbank_bin, 8);
@@ -135,7 +156,7 @@ int main()
 				hrt_PrintOnBitmap(0, 0, "0");
 				int j;
 				hrt_SeedRNG(frames);
-				int g_sram;
+				u64 g_sram;
 				while (1)
 				{
 					if (keyDown(KEY_A))

@@ -7,7 +7,7 @@ u16* temp = (u16*)0x6014000;
 
 void hrt_Init(int mode) {
 	int i;
-    if((mode==1)OR(hrt_start == 0)) {
+    if((mode==1)AND(hrt_start == 0)) {
 		hrt_start = 1;
 		hrt_irqInit();
 		hrt_irqEnable(IRQ_VBLANK);

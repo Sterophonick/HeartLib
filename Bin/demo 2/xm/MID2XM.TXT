@@ -1,0 +1,146 @@
+MIDI to XM File Converter (MID2XM) v1.4 - (c)1996-97 Ian Luck
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+What's the point?
+=================
+MID2XM is a MS-Windows program that, as the title suggests, converts
+MIDI files into XM digital music modules (FastTracker 2 modules).
+
+The purpose of MID2XM is to make it easier to create quality music
+for demos, games or whatever. By using a MIDI sequencer and instrument
+to record and edit the music before converting it with MID2XM to a XM
+module. Rather than starting from scratch using a tracker.
+
+
+
+Main Features
+=============
+* Volume, pan, expression, modulation, hold(sustain), all notes off,
+  all sounds off, reset controllers, pitch wheel, pitch wheel range
+  and tempo MIDI events are all handled
+* Supports MIDI file formats 0 and 1 (99.9% of all MIDI files)
+* Easy to use front-end, no messing about with text editors and
+  config files
+* Selectable quantization resolution and rounding of notes
+* Notification of any lost notes during conversion
+* Optimization of patterns (eliminate duplicate patterns)
+* Optimization of samples (resampling, conversion from 16 to 8 bit)
+* XM channels can be allocated to any selected MIDI channels
+* Automatic calculation of the required channels for conversion
+* Integrated WAV to XI converter
+* Help sections on getting started and creating drum XIs
+* XM playback on Win95/NT (listen to XM before saving to disk)
+* MIDI file playback (listen to MIDI file before/while converting)
+* Compatible with MS-Windows 3.1, 95 and NT
+
+Registered Version Only
+-----------------------
+* Upto 90 drums can be defined using multiple drum XI files
+* Automatic drum note duration (play the complete drum samples always)
+* Integrated drum XI editor (no need for a tracker to create drum XIs)
+* PAT/IST/SMP files can be used inplace of XI files as instruments
+* Import complete PAT sets using ULTRAMID.INI or ULTRASND.INI file
+* Individual optimization settings for each sample
+
+
+
+Upgrading
+=========
+If you are upgrading from a previous version of MID2XM you should
+install this version in the same directory. Your old configuration
+will then be used by the new version.
+
+
+
+Latest Version
+==============
+The latest version of MID2XM can always be found at the MID2XM website:
+
+	www.un4seen.com
+
+
+
+Copyright, Disclaimer etc...
+============================
+MID2XM is not free, it is SHAREWARE. You are allowed 21 days to
+evaluate it and decide if it's of any use to you. If you want to
+continue using it after this period you must register your copy.
+See REGISTER.TXT for details.
+
+This software is provided as-is, without warranty of ANY KIND,
+either express or implied, including but not limited to the implied
+warranties of merchantability and/or fitness for a particular purpose.
+The author shall NOT be held liable for ANY damage to you, your
+computer, or to anyone or anything else, that may result from its use.
+Basically, you use it at YOUR OWN RISK.
+
+Use of this software indicates that you agree to the above conditions.
+
+You may freely copy and distribute the UNREGISTERED shareware version
+of MID2XM as long as NO FEE is charged and all the files remain intact
+AND unmodified. Distribution of a registered version and/or registration
+password is obviously PROHIBITED.
+
+All trademarks and other registered names contained in the MID2XM
+package are the property of their respective owners.
+
+
+
+History
+=======
+1.4 - 10/4/97
+-------------
+* WAV file playback
+* PAT/IST/SMP instruments
+* Individual optimization settings for each sample
+* Looped WAV support
+* Import ULTRAMID.INI/ULTRASND.INI
+* Multiple drum XIs increased from 4 to 6
+* XM playback
+
+1.3 - 7/1/97
+------------
+* Automatic drum note duration
+* WinNT compatible
+* MIDI file playback
+* Help sections on getting started and creating drum XIs
+* Installation program
+* Modulation sensitivity
+* Volume boost
+* Drum XI editor
+* WAV to XI converter
+
+1.2 - 31/10/96
+--------------
+* Multiple drum XIs
+* MIDI format 0 support
+* Corrected modulation and pitch wheel handling
+* Sample resampling and conversion from 16 to 8 bits
+* Hold, all notes off, all sounds off, reset controllers, pitch-wheel
+  range MIDI events handled
+
+1.1 - 3/10/96
+-------------
+* Improved modulation conversion
+* Much faster saving of XM conversion
+* More detailed notification of lost notes
+* Automatic calculation of required channels
+* Help file
+* Pattern and drum optimizations
+
+1.0 - 19/9/96
+-------------
+First Release
+
+
+
+Bug Reports, Suggestions, Coments, Problems etc...
+==================================================
+If you have any of the aforementioned you can email:
+
+	mid2xm@un4seen.com
+
+
+If you have any problems, please read the help file thoroughly
+first. It is likely that what you want to know is there somewhere.
+

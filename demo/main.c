@@ -1,6 +1,8 @@
 #include <libheart.h>
 #include "defs.h"
 
+hrt_SOFTRESETCODE
+
 int i;
 s8 phase;
 int boiy, boix;
@@ -254,13 +256,7 @@ int main()
                 hrt_PlaySoundFIFO(0);
                 while (1) {
                     hrt_SleepF(14280);
-                    REG_SOUNDCNT1_H = 0;                                                       //REG_SOUNDCNT_H = 0000 1011 0000 0100, volume = 100, sound goes to the left, sound goes to the right, timer 0 is used, FIFO buffer reset
-                    REG_SOUNDCNT1_X = 0;                                                       //REG_SOUNDCNT_X = 0000 0000 1000 0000, enable the sound system, DMA 1
-                    REG_SD1SAD = 0;                                //REG_DM1SAD = NAME, address of DMA source is the digitized music sample
-                    REG_SD1DAD = 0;                                                   //REG_DM1DAD = REG_SGFIFOA, address of DMA destination is FIFO buffer for direct sound A
-                    REG_SD1CNT_H = 0;                                                       //REG_DM1CNT_H = 1011 0110 0100 0000, DMA destination is fixed, repeat transfer of 4 bytes when FIFO , buffer is empty, enable DMA 1 (number of DMA transfers is ignored), INTERRUPT
-                    REG_TM0SD = 0;                          //REG_TM0D = 65536-(16777216/frequency);, play sample every 16777216/frequency CPU cycles
-                    REG_TMSDCNT = 0;
+					hrt_StopSoundFIFO();
 					hrt_ConfigSOUNDCNT(0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0);
                     hrt_PlaySoundFIFO(0);
                 }
