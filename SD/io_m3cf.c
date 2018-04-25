@@ -35,6 +35,7 @@
 
 
 #include "libheart.h"
+extern void _M3_changeMode(u32 mode);
 #define DEVICE_TYPE_M3CF 0x4643334D
 
 //---------------------------------------------------------------

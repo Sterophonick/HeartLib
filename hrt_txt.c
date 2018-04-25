@@ -1,4 +1,10 @@
 #include "libheart.h"
+extern u8 hrt_start;
+extern int	hrt_offsetOAMData;
+extern int hrt_offsetOAMPal;
+extern int hrt_offsetBGMap;
+extern int hrt_offsetBGTile;
+extern int hrt_offsetBGPal;
 
 void hrt_DrawChar(int mode, int left, int top, char letter) {
     if (hrt_start == 1) {
@@ -24,7 +30,7 @@ void hrt_PrintOnBitmap(int left, int top, char *str) {
     }
 }
 
-void hrt_InitTextTile()
+void hrt_InitTextTile(u8 bgno)
 {
 	int i;
 	if (hrt_start == 1) {

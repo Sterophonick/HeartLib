@@ -1,7 +1,7 @@
 //File: libheart.h - The NEW Definitive GBA Header File
 //Date: March 2018
 //Author: Sterophonick
-//Derived from gba.h by eloist, Inspired by Hamlib's mygba.h, who da heck remembers that library amirite?
+//Derived from gba.h by eloist and agb_lib.h by me, Inspired by Hamlib's mygba.h, who da heck remembers that library amirite?
 //This library is designed to make GBA Programming easy to do, and for everyone to be able to do it, not unlike HAMLib (rip 2001-2011 =( may god rest ur soul)
 //This Library is Dedicated to Stevendog98, who is wanting to make GBA Games. This is to give him a head start on the GBA.
 
@@ -52,8 +52,10 @@ GBA Specs:
 	MBV2Lib (Greetz to LibGBA)
 	Xboo Stuff (LibGBA)
 	Typedefs
+	Defines for making those larger functions easier to understand.
 
 TODO:
+		Implement Real-Time Clock
 		Implement Tiled Text
 		Implement Easy System Call functions
 		JPEG Decoding
@@ -156,7 +158,7 @@ typedef signed int sint;
 typedef void(*IntFn)(void);
 typedef bool(*_SD_FN_CMD_6BYTE_RESPONSE) (u8* responseBuffer, u8 command, u32 data);
 typedef bool(*_SD_FN_CMD_17BYTE_RESPONSE) (u8* responseBuffer, u8 command, u32 data);
-u8 EZ4ExitRAM[128];
+u8 EZ4ExitRAM[12];
 
 u32* OAMmem;
 u16* VRAM;
@@ -168,12 +170,6 @@ u8* SaveData;
 u16* OAM;
 u16* FrontBuffer;
 u16* BackBuffer;
-u8 hrt_start;
-int	hrt_offsetOAMData;
-int hrt_offsetOAMPal;
-int hrt_offsetBGMap;
-int hrt_offsetBGTile;
-int hrt_offsetBGPal;
 
 typedef struct {
     char		manufacturer;
@@ -363,11 +359,11 @@ sounds sound[25];
 #define GetJumpList 0x2A
 #define AGBPrint 0xFF
 
-#define hrt_MULTIBOOT const int __gba_multiboot; //Type 'MULTIBOOT' at the beginning of a project, and the file will be compiled as a multiboot ROM.
-#define hrt_SOFTRESETCODE int __hrt_softresetcode = 1;
+#define hrt_MULTIBOOT const u8 __gba_multiboot=1; //Type 'MULTIBOOT' at the beginning of a project, and the file will be compiled as a multiboot ROM.
+#define hrt_SOFTRESETCODE __hrt_reset = 1;
+#define hrt_RTCENABLE __hrt_rtc = 1;
 
 //Bits
-#define W 1
 #define BIT00 1
 #define BIT01 2
 #define BIT02 4
@@ -384,6 +380,24 @@ sounds sound[25];
 #define BIT13 8192
 #define BIT14 16384
 #define BIT15 32768
+#define BIT_SET(value,bit) ((value) & (bit))
+#define NOT_BIT00  0xFFFE
+#define NOT_BIT01  0xFFFD
+#define NOT_BIT02  0xFFFB
+#define NOT_BIT03  0xFFF7
+#define NOT_BIT04  0xFFEF
+#define NOT_BIT05  0xFFDF
+#define NOT_BIT06  0xFFBF
+#define NOT_BIT07  0xFF7F
+#define NOT_BIT08  0xFEFF
+#define NOT_BIT09  0xFDFF
+#define NOT_BIT10 0xFBFF
+#define NOT_BIT11 0xF7FF
+#define NOT_BIT12 0xEFFF
+#define NOT_BIT13 0xDFFF
+#define NOT_BIT14 0xBFFF
+#define NOT_BIT15 0x7FFF
+#define NOT_BIT_SET(value,bit) (!((value) & (bit)))
 //
 //All GBA Registers - Copied from GBATek
 #define REG_DISPCNT *(u16*)0x04000000 //Display Control
@@ -571,10 +585,10 @@ sounds sound[25];
 #define MEM_PAL_COL_PTR(x)		 (u16*) (0x05000000+(x<<1))	// Palette color pointer
 #define MEM_PAL_OBJ_PTR(x)		 (u16*) (0x05000200+(x<<1))	// Palette color pointer
 #define RGB15(r,g,b) ((((b)>>3)<<10)+(((g)>>3)<<5)+((r)>>3))
-
 #define hrt_MEM_IN_EWRAM __attribute__ ((section (".ewram"))) = {0}
 #define hrt_MEM_IN_IWRAM __attribute__ ((section (".iwram"))) = {0}
 #define hrt_MEM_FUNC_IN_IWRAM __attribute__ ((section (".iwram"), long_call))
+#define hrt_MEM_FUNC_IN_EWRAM __attribute__ ((section (".ewram"), long_call))
 //
 
 #define MAX_INTS	15
@@ -983,12 +997,91 @@ extern const DISC_INTERFACE _io_m3sd;
 extern const DISC_INTERFACE _io_mpcf;
 extern const DISC_INTERFACE _io_sccf;
 extern const DISC_INTERFACE _io_scsd;
+//
+//Defines for Functions
+#define OBJ_SIZE_8X8 0
+#define OBJ_SIZE_16X16 1
+#define OBJ_SIZE_32X32 2
+#define OBJ_SIZE_64X64 3
+#define OBJ_SHAPE_NORMAL 0
+#define OBJ_SHAPE_WIDE 1
+#define OBJ_SHAPE_TALL 2
+#define OBJ_SHAPE_PROHIBITED 3
+#define OBJ_AFFINE_ENABLE 1
+#define OBJ_AFFINE_DISABLE 0
+#define OBJ_HFLIP_ENABLE 1
+#define OBJ_HFLIP_DISABLE 0
+#define OBJ_VFLIP_ENABLE 1
+#define OBJ_VFLIP_DISABLE 0
+#define OBJ_MODE_NORMAL 0
+#define OBJ_MODE_ALPHA 1
+#define OBJ_MODE_WIN 2
+#define OBJ_MODE_PROHIBITED 3
+#define OBJ_DOUBLESIZE_ENABLE 1
+#define OBJ_DOUBLESIZE_DISABLE 0
 
+#define FX_TARGET1_BG0_ENABLE 1
+#define FX_TARGET1_BG0_DISABLE 0
+#define FX_TARGET1_BG1_ENABLE 1
+#define FX_TARGET1_BG1_DISABLE 0
+#define FX_TARGET1_BG2_ENABLE 1
+#define FX_TARGET1_BG2_DISABLE 0
+#define FX_TARGET1_BG3_ENABLE 1
+#define FX_TARGET1_BG3_DISABLE 0
+#define FX_TARGET1_OBJ_ENABLE 1
+#define FX_TARGET1_OBJ_DISABLE 0
+#define FX_TARGET1_BACKDROP_ENABLE 1
+#define FX_TARGET1_BACKDROP_DISABLE 0
+#define FX_MODE_NONE 0
+#define FX_MODE_ALPHA 1
+#define FX_MODE_BRIGHTEN 2
+#define FX_MODE_DARKEN 3
+#define FX_TARGET2_BG0_ENABLE 1
+#define FX_TARGET2_BG0_DISABLE 0
+#define FX_TARGET2_BG1_ENABLE 1
+#define FX_TARGET2_BG1_DISABLE 0
+#define FX_TARGET2_BG2_ENABLE 1
+#define FX_TARGET2_BG2_DISABLE 0
+#define FX_TARGET2_BG3_ENABLE 1
+#define FX_TARGET2_BG3_DISABLE 0
+#define FX_TARGET2_OBJ_ENABLE 1
+#define FX_TARGET2_OBJ_DISABLE 0
+#define FX_TARGET2_BACKDROP_ENABLE 1
+#define FX_TARGET2_BACKDROP_DISABLE 0
+
+#define DSP_MODE_0 0
+#define DSP_MODE_1 1
+#define DSP_MODE_2 2
+#define DSP_MODE_3 3
+#define DSP_MODE_4 4
+#define DSP_MODE_5 5
+#define DSP_CGB_ENABLE 1
+#define DSP_FRAMESELECT_ENABLE 1
+#define DSP_FRAMESELECT_DISABLE 0
+#define DSP_UNLOCKED_HBLANK_ENABLE 1
+#define DSP_UNLOCKED_HBLANK_DISABLE 0
+#define DSP_OBJ_MAP_1D 1
+#define DSP_OBJ_MAP_2D 0
+#define DSP_BG0_ENABLE 1
+#define DSP_BG0_DISABLE 0
+#define DSP_BG1_ENABLE 1
+#define DSP_BG1_DISABLE 0
+#define DSP_BG2_ENABLE 1
+#define DSP_BG2_DISABLE 0
+#define DSP_BG3_ENABLE 1
+#define DSP_BG3_DISABLE 0
+#define DSP_OBJ_ENABLE 1
+#define DSP_OBJ_DISABLE 0
+#define DSP_WIN0_ENABLE 1
+#define DSP_WIN0_DISABLE 0
+#define DSP_WIN1_ENABLE 1
+#define DSP_WIN1_DISABLE 0
+#define DSP_OBJWIN_ENABLE 1
+#define DSP_OBJWIN_DISABLE 0
 //
 
 
 static inline u32 hrt_GetBiosChecksum() {
-	if (hrt_start == 1) {
 		register u32 result;
 #if   defined   ( __thumb__ )
 		__asm ("SWI   0x0d\nmov %0,r0\n" :  "=r"(result) :: "r1", "r2", "r3");
@@ -996,8 +1089,6 @@ static inline u32 hrt_GetBiosChecksum() {
 		__asm ("SWI   0x0d<<16\nmov %0,r0\n" : "=r"(result) :: "r1", "r2", "r3");
 #endif
 		return result;
-	}
-	return 0;
 }//Returns BIOS Checksum.
 u32 hrt_MultiBoot(MultiBootParam *mp, u32 mode); //Enables Multiboot? Unknown
 void hrt_InitInterrupt(void) __attribute__((deprecated)); //Initialize interrupts mirror
@@ -1072,14 +1163,14 @@ double hrt_Slope(int x1, int y1, int x2, int y2); //Returns slope between 2 diff
 void hrt_SetTile(u8 x, u8 y, int tileno); //Sets a specific tile to a given value.
 void hrt_SetFXAlphaLevel(u8 src, u8 dst); //Sets REG_BLDALPHA
 void hrt_DrawTextTile(int x, int y, char* str); //Unfinished -- Ignore this
-void hrt_InitTextTile(); //Unfinished -- Ignore this.
+void hrt_InitTextTile(u8 bgno); //Unfinished -- Ignore this.
 void hrt_FillPalette(int paltype, u16 color); //Fills BG or OBJ palette witha specified color.
 void hrt_AGBPrint(const char *msg); //hrt_AGBPrint is interesting. Using this will make the ROM put a message into the output log if AGBPrint is enabled on VisualBoyAdvance. I found a technique that doesn't crash on hardware or other emulators.
 void *hrt_Memcpy(void *dest, const void *src, size_t len); //Copies Memory from one place to another.
 void hrt_VblankIntrWait(); //Waits for Vblank Interrupt.
 void hrt_RegisterRamReset(); //Resets Memory. Unfinished.
 void hrt_Suspend(); //Suspends the console. Unfinished.
-void hrt_EZ4Exit() hrt_MEM_FUNC_IN_IWRAM; //Exits to Ez-Flash IV Menu. Unfinished
+void hrt_EZ4Exit(); //Exits to Ez-Flash IV Menu. Unfinished
 void hrt_ConfigTimer(u8 channel, u8 scale, u8 irq, u8 enable, u16 start); //Configures a Timer.
 void hrt_SaveByte(int offset, u8 value); //Copies a byte to SRAM at a given location
 u8 hrt_LoadByte(int offset); //Loads a byte from SRAM at a given address
@@ -1140,7 +1231,6 @@ int		mbv2_dfclose(int fp);
 int		mbv2_dfgetc(int fp);
 int		mbv2_dfputc(int ch, int fp);
 void	mbv2_drewind(int fp);
-int hrt_GetGBAVersion(); //Gets the platform that this is running on. Taken from PocketNES
 extern const DISC_INTERFACE* dldiGetInternal(void);
 extern bool dldiIsValid(const DLDI_INTERFACE* io);
 extern void dldiFixDriverAddresses(DLDI_INTERFACE* io);
@@ -1175,8 +1265,17 @@ void	xcomms_sendblock(const void *block, u32 len);
 int		xcomms_getch(void);
 int		xcomms_kbhit(void);
 void	xcomms_init();
+extern void _M3_changeMode(u32 mode);
+void hrt_ConfigSIONormal(u8 sc, u8 isc, u8 si_state, u8 soinact, u8 start, u8 length, u8 mode, u8 irq); //Configures REG_SIOCNT
+void hrt_ConfigSIOMultiplayer(u8 baudrate, u8 busy, u8 irq); //Configures SIOCNT in multiplayer mode
+void hrt_ConfigLowSCCNT(u8 baudrate, u8 cts, u8 paritycnt, u8 length, u8 fifo, u8 parityenable, u8 send, u8 receive, u8 irq); //Configures REG_SIOCNT in UART mode
+void hrt_ConfigJOYCNT(u8 reset, u8 receive, u8 send, u8 irq); //Configures JoyCNT
+int hrt_GetRTCTime(void) hrt_MEM_FUNC_IN_EWRAM; //Returns Time of Real-Time-Clock
+void hrt_EnableSoftReset(); //Enables Soft-Reset
+void hrt_EnableRTC(); //Enables the Built-in Real Time Clock function
 
 #ifdef __cplusplus
 }
 #endif
+
 #endif

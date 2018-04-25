@@ -6,6 +6,12 @@ u16* OAM = (u16*)0x7000000;
 u32* OAMmem  		=(u32*)0x7000000;
 s32 angle = 0;
 s32 zoom = 1<<8;
+extern u8 hrt_start;
+extern int	hrt_offsetOAMData;
+extern int hrt_offsetOAMPal;
+extern int hrt_offsetBGMap;
+extern int hrt_offsetBGTile;
+extern int hrt_offsetBGPal;
 const double SIN[360] = { 0 , 4.46781 , 8.93426 , 13.398 , 17.8576 , 22.3119 , 26.7593 , 31.1985 , 35.6283 , 40.0472 , 44.4539 ,
 		48.8471 , 53.2253 , 57.5874 , 61.932 , 66.2576 , 70.5631 , 74.8471 , 79.1083 , 83.3454 , 87.5571 ,
 		91.7421 , 95.8992 , 100.027 , 104.124 , 108.19 , 112.223 , 116.221 , 120.185 , 124.111 , 128 ,

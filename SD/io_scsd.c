@@ -177,7 +177,7 @@ static inline bool _SCSD_getResponse_R6 (u8* dest) {
 }
 
 static void _SCSD_sendClocks (u32 numClocks) {
-	u16 temp;
+	u16 temp = 0;
 	do {
 		temp = REG_SCSD_CMD;
 	} while (numClocks--);

@@ -1,9 +1,14 @@
 #include "libheart.h"
-extern const unsigned short hrt_logoBitmap[2716];
-extern const unsigned short hrt_logoPal[256];
+extern const unsigned short hrt_logoBitmap[16956];
 extern const unsigned short hrt_objTiles[164];
 extern const unsigned short hrt_objPal[14];
 u16* temp = (u16*)0x6014000;
+u8 hrt_start;
+int	hrt_offsetOAMData;
+int hrt_offsetOAMPal;
+int hrt_offsetBGMap;
+int hrt_offsetBGTile;
+int hrt_offsetBGPal;
 
 void hrt_Init(int mode) {
 	int i;
@@ -23,19 +28,18 @@ void hrt_Init(int mode) {
         u8 bx=0, by=0, bsy=0, bsx=0;
 		REG_BLDCNT = 0x00B4;
 		REG_BLDY = 17;
-		REG_DISPCNT = 0x1444;
+		REG_DISPCNT = 0x1443;
 		hrt_LZ77UnCompVRAM((u32)hrt_logoBitmap, (u32)VRAM);
-        hrt_LoadBGPal((void*)hrt_logoPal, 159);
 		hrt_LZ77UnCompVRAM((u32)hrt_objTiles, (u32)temp);
         hrt_LoadOBJPal((void*)hrt_objPal, 14);
-        hrt_CreateOBJ(0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
+        hrt_CreateOBJ(0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         hrt_CloneOBJ(0, 1);
         hrt_SetOBJXY(&sprites[1], 0, 128);
         hrt_CloneOBJ(0, 2);
         hrt_SetOBJXY(&sprites[2], 208, 128);
         hrt_CloneOBJ(0, 3);
         hrt_SetOBJXY(&sprites[3], 208, 0);
-        hrt_CreateOBJ(4, 112, 72, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 32);
+        hrt_CreateOBJ(4, 112, 72, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16);
         hrt_AffineOBJ(0, 0, 256, 256);
         hrt_AffineOBJ(1, 0, 256, 256);
         hrt_AffineOBJ(2, 0, 256, 256);
@@ -46,7 +50,7 @@ void hrt_Init(int mode) {
         by = 72;
         bsy = 10;
         bsx = 10;
-        for (i = 0; i < 17 * 4; i++) {
+        for (i = 0; i < 17 * 3; i++) {
             hrt_VblankIntrWait();
             frames++;
             hrt_SetOBJXY(&sprites[4], bx, by);
@@ -80,8 +84,8 @@ void hrt_Init(int mode) {
 					angle -= 4;
 				}
 			}
-            if ((!(frames % 4))AND(fadecnt < 17)) {
-				REG_BLDY = 16 - i / 4;
+            if ((!(frames % 3))AND(fadecnt < 17)) {
+				REG_BLDY = 16 - i / 3;
                 fadecnt++;
             }
             if (!(frames % 10)) {
@@ -103,9 +107,8 @@ void hrt_Init(int mode) {
             hrt_CopyOAM();
         }
         frames = 0;
-        for (i = 0; i < 220; i++) {
+        for (i = 0; i < 120; i++) {
             frames++;
-            hrt_CopyOAM();
             hrt_VblankIntrWait();
             hrt_SetOBJXY(&sprites[4], bx, by);
             bx += bsx;
@@ -157,8 +160,9 @@ void hrt_Init(int mode) {
         }
         frames = 0;
         fadecnt = 0;
-        for (i = 0; i < 17 * 4; i++) {
+        for (i = 0; i < 17 * 3; i++) {
             hrt_VblankIntrWait();
+			hrt_CopyOAM();
             frames++;
             hrt_SetOBJXY(&sprites[4], bx, by);
             bx += bsx;
@@ -191,8 +195,8 @@ void hrt_Init(int mode) {
 					angle -= 4;
 				}
 			}
-            if ((!(frames % 4))AND(fadecnt < 17)) {
-				REG_BLDY = i / 4;
+            if ((!(frames % 3))AND(fadecnt < 17)) {
+				REG_BLDY = i / 3;
                 fadecnt++;
             }
             if (!(frames % 10)) {
@@ -219,18 +223,23 @@ void hrt_Init(int mode) {
 	REG_BLDCNT = 0;
 	REG_BLDY = 0;
 	hrt_FillScreen(0x0000, 3);
-	memcpy(VRAM, (char*)0x06000ED0, 98304);
+	hrt_Memcpy(VRAM, (char*)0x02000000, 98288);
 	for (i = 0; i < 255; i++) {
 		BGPaletteMem[i] = 0x0000;
 	}
 	for (i = 0; i < 255; i++) {
 		OBJPaletteMem[i] = 0x0000;
 	}
-	hrt_SetOBJXY(&sprites[0], 220, 160);
-	hrt_SetOBJXY(&sprites[1], 220, 160);
-	hrt_SetOBJXY(&sprites[2], 220, 160);
-	hrt_SetOBJXY(&sprites[3], 220, 160);
-	hrt_SetOBJXY(&sprites[4], 220, 160);
+	hrt_CreateOBJ(0, 240, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	hrt_AffineOBJ(0, 0, 0, 0);
+	hrt_CloneOBJ(0, 1);
+	hrt_CloneOBJ(0, 2);
+	hrt_CloneOBJ(0, 3);
+	hrt_CloneOBJ(0, 4);
+	hrt_AffineOBJ(1, 0, 0, 0);
+	hrt_AffineOBJ(2, 0, 0, 0);
+	hrt_AffineOBJ(3, 0, 0, 0);
+	hrt_AffineOBJ(4, 0, 0, 0);
 	hrt_CopyOAM();
 	hrt_offsetOAMData = 0;
 	hrt_offsetOAMPal = 0;

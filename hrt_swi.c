@@ -1,13 +1,12 @@
 #include "libheart.h"
 int __hrt_version(void);
-extern const int __hrt_softresetcode;
-
-int hrt_GetGBAVersion() {
-	if (hrt_start == 1) {
-		return (int)__hrt_version;
-	}
-	return 0;
-}
+extern u8  __hrt_reset;
+extern u8 hrt_start;
+extern int	hrt_offsetOAMData;
+extern int hrt_offsetOAMPal;
+extern int hrt_offsetBGMap;
+extern int hrt_offsetBGTile;
+extern int hrt_offsetBGPal;
 
 inline void hrt_Diff8bitUnFilterWram(u32 source, u32 dest) {
     if (hrt_start == 1) {
@@ -126,7 +125,8 @@ void hrt_VblankIntrWait()
 	{
 		asm volatile("swi 0x05"::);
 		mmFrame();
-		if (__hrt_softresetcode == 1)
+		hrt_CopyOAM();
+		if (__hrt_reset == 1)
 		{
 			if ((keyDown(KEY_A))AND(keyDown(KEY_B))AND(keyDown(KEY_SELECT))AND(keyDown(KEY_START))) {
 				asm volatile("swi 0x00"::);

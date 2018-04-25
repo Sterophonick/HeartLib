@@ -4,6 +4,12 @@ u16* BGPaletteMem 	=(u16*)0x5000000;
 u16* BGTileMem = (u16*)0x6004000;
 u16* FrontBuffer = (u16*)0x6000000;
 u16* BackBuffer = (u16*)0x600A000;
+extern u8 hrt_start;
+extern int	hrt_offsetOAMData;
+extern int hrt_offsetOAMPal;
+extern int hrt_offsetBGMap;
+extern int hrt_offsetBGTile;
+extern int hrt_offsetBGPal;
 
 const char* ee = "In loving memory of the HAMLib and ngine.de. HeartLib by Sterophonick. 2018.";
 const char* ee2 = "I would like to thank Mark Holloway, Tubooboo, Dwedit, gauauu, DevKitPro, Nintendo, sverx, endrift, GBATek, 3DSage, and DekuTree64 for helping me create this library.";

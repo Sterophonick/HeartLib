@@ -1,7 +1,8 @@
 #include <libheart.h>
 #include "defs.h"
 #include "soundbank.h"
-hrt_SOFTRESETCODE
+extern int __hrt_version(void);
+int hrs, min, secs;
 
 char buffer[255];
 
@@ -14,6 +15,8 @@ void vblFunc()
 
 int main()
 {
+	hrt_EnableSoftReset();
+	hrt_EnableRTC();
 	int frames;
     hrt_Init(1); //Initializes Heartlib. If number is set to 1 it plays an intro. REQUIRED FOR USING THIS LIBRARY. IF THIS IS NOT EXECUTED IT WILL NOT WORK!!!!
     const GBFS_FILE *dat = find_first_gbfs_file(find_first_gbfs_file); //defines GBFS file
@@ -67,6 +70,8 @@ int main()
 	hrt_PrintOnBitmap(8, 45, "Built-in MaxMod"); //draws text
 	hrt_PrintOnBitmap(8, 54, "mbv2lib"); //draws text
 	hrt_PrintOnBitmap(8, 63, "Xboo"); //draws text
+	hrt_PrintOnBitmap(8, 72, "RTC"); //draws text
+	hrt_PrintOnBitmap(8, 81, "System Detection"); //draws text
     hrt_CopyOAM(); //Copies OBJ Data to OAM
     while (1) {
 		frames++;
@@ -80,8 +85,8 @@ int main()
         }
         if (keyDown(KEY_DOWN)) {
             arpos++;
-            if (arpos == 8) {
-                arpos = 7;
+            if (arpos == 10) {
+                arpos = 9;
             }
             while (keyDown(KEY_DOWN));
         }
@@ -91,6 +96,54 @@ int main()
                      9*arpos); //Y Position
 
         if (keyDown(KEY_A)) {
+			if (arpos == 9)
+			{
+				int ver;
+				hrt_FillScreen(0x0000, 3);
+				ver = hrt_GetBiosChecksum();
+				hrt_VblankIntrWait();
+				if (ver == 0)
+				{
+					hrt_PrintOnBitmap(0, 0, "Prototype GBA");
+				}
+				if (ver == 0xbaae187f)
+				{
+					hrt_PrintOnBitmap(0, 0, "Release GBA");
+				}
+				if (ver == 0xBAAE1880)
+				{
+					hrt_PrintOnBitmap(0, 0, "Nintendo DS");
+				}
+				while (1);
+			}
+			if (arpos == 8)
+			{
+				char str[30];
+				char *s = str + 20;
+				int timer, mod;
+				hrt_FillScreen(0x0000, 3);
+				while(1)
+				{
+					hrt_VblankIntrWait();
+					strcpy(str, "00:00:00");
+					timer = hrt_GetRTCTime();
+					mod = (timer >> 4) & 3;				//Hours.
+					*(s++) = (mod + '0');
+					mod = (timer & 15);
+					*(s++) = (mod + '0');
+					s++;
+					mod = (timer >> 12) & 15;				//Minutes.
+					*(s++) = (mod + '0');
+					mod = (timer >> 8) & 15;
+					*(s++) = (mod + '0');
+					s++;
+					mod = (timer >> 20) & 15;				//Seconds.
+					*(s++) = (mod + '0');
+					mod = (timer >> 16) & 15;
+					*(s++) = (mod + '0');
+					hrt_PrintOnBitmap(0, 0, (char*)str);
+				}
+			}
 			if (arpos == 7)
 			{
 				int handle = dfopen("data\\splash.pcx", "rb");
@@ -124,9 +177,8 @@ int main()
 				while (1)
 				{
 					hrt_VblankIntrWait();
-					mmFrame();
 					if (keyDown(KEY_B)) {
-						mmEffectEx(&boom);
+						amb = mmEffectEx(&boom);
 					}
 					if (!(keyDown(KEY_B))) {
 						mmEffectCancel(amb);

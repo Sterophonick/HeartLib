@@ -1,4 +1,13 @@
 #include "libheart.h"
+int __gettime(void);
+u8  __hrt_reset;
+u8 __hrt_rtc;
+extern u8 hrt_start;
+extern int	hrt_offsetOAMData;
+extern int hrt_offsetOAMPal;
+extern int hrt_offsetBGMap;
+extern int hrt_offsetBGTile;
+extern int hrt_offsetBGPal;
 
 double hrt_Distance(int x1, int y1, int x2, int y2)
 {
@@ -52,15 +61,49 @@ void hrt_SleepF(u32 frames) {
 
 double hrt_VolumeCylinder(double r, double h)
 {
-	return (PI)*(r * r)*h;
+	if (hrt_start == 1)
+	{
+		return (PI)*(r * r)*h;
+	}
+	return 0;
 }
 
 double hrt_AreaTriangle(double a, double b)
 {
-	return (1 / 2)*(a*b);
+	if (hrt_start == 1)
+	{
+		return (1 / 2)*(a*b);
+	}
+	return 0;
 }
 
 double hrt_AreaCircle(double r)
 {
-	return (PI)*(r * r);
+	if (hrt_start == 1)
+	{
+		return (PI)*(r * r);
+	}
+	return 0;
+}
+
+int hrt_GetRTCTime()
+{
+	if (hrt_start == 1)
+	{
+		if (__hrt_rtc == 1)
+		{
+			return __gettime();
+		}
+	}
+	return 0;
+}
+
+void hrt_EnableRTC()
+{
+	__hrt_rtc = 1;
+}
+
+void hrt_EnableSoftReset()
+{
+	__hrt_reset = 1;
 }
