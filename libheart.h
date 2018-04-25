@@ -4,6 +4,7 @@
 //Derived from gba.h by eloist and agb_lib.h by me, Inspired by Hamlib's mygba.h, who da heck remembers that library amirite?
 //This library is designed to make GBA Programming easy to do, and for everyone to be able to do it, not unlike HAMLib (rip 2001-2011 =( may god rest ur soul)
 //This Library is Dedicated to Stevendog98, who is wanting to make GBA Games. This is to give him a head start on the GBA.
+//This Library is going to be huge. It will probably be one of the best GBA Libraries in recent years.
 
 //Some functions don't work yet so be patient!
 
@@ -19,7 +20,7 @@ GBA Specs:
 	DMA: 4 Channels
 	Sound: 4 PSG Channels, 2 Direct Sound Channels, Mono on speaker, Stereo headphones.
 	LCD: 240x160 15 bit BGR, 32768 Colors
-	*/
+*/
 
 /*
   What's Included:
@@ -53,6 +54,9 @@ GBA Specs:
 	Xboo Stuff (LibGBA)
 	Typedefs
 	Defines for making those larger functions easier to understand.
+	Real-Time Clock
+	Mode 7?
+	
 
 TODO:
 		Implement Real-Time Clock
@@ -61,6 +65,7 @@ TODO:
 		JPEG Decoding
 		Game Boy Player Functions?
 		PogoShell Functions?
+		Serial I/O
 
 Recommended Tools for development with this library:
 	gfx2gba
@@ -160,6 +165,8 @@ typedef bool(*_SD_FN_CMD_6BYTE_RESPONSE) (u8* responseBuffer, u8 command, u32 da
 typedef bool(*_SD_FN_CMD_17BYTE_RESPONSE) (u8* responseBuffer, u8 command, u32 data);
 u8 EZ4ExitRAM[12];
 
+#include "jpg.h"
+
 u32* OAMmem;
 u16* VRAM;
 u16* OAMData;
@@ -170,6 +177,7 @@ u8* SaveData;
 u16* OAM;
 u16* FrontBuffer;
 u16* BackBuffer;
+u8* *ExtWRAM;
 
 typedef struct {
     char		manufacturer;
@@ -360,8 +368,6 @@ sounds sound[25];
 #define AGBPrint 0xFF
 
 #define hrt_MULTIBOOT const u8 __gba_multiboot=1; //Type 'MULTIBOOT' at the beginning of a project, and the file will be compiled as a multiboot ROM.
-#define hrt_SOFTRESETCODE __hrt_reset = 1;
-#define hrt_RTCENABLE __hrt_rtc = 1;
 
 //Bits
 #define BIT00 1
@@ -570,12 +576,6 @@ sounds sound[25];
 #define RADIAN(n)    (((float) n)/ (float) 180 * PI)
 
 //Taken from HAM's mygba.h
-#ifndef RGB_GET_R_VALUE
-#define RGB_GET_R_VALUE(rgb)    ((rgb & 0x001f) << 3)
-#endif
-#ifndef RGB_GET_G_VALUE
-#define RGB_GET_G_VALUE(rgb)    (((rgb >> 5) & 0x001f) << 3)
-#endif
 #ifndef RGB_GET_B_VALUE
 #define RGB_GET_B_VALUE(rgb)    (((rgb >> 10) & 0x001f) << 3)
 #endif
@@ -584,7 +584,6 @@ sounds sound[25];
 #define ACCESS_32(location)		*(volatile u32 *) (location)
 #define MEM_PAL_COL_PTR(x)		 (u16*) (0x05000000+(x<<1))	// Palette color pointer
 #define MEM_PAL_OBJ_PTR(x)		 (u16*) (0x05000200+(x<<1))	// Palette color pointer
-#define RGB15(r,g,b) ((((b)>>3)<<10)+(((g)>>3)<<5)+((r)>>3))
 #define hrt_MEM_IN_EWRAM __attribute__ ((section (".ewram"))) = {0}
 #define hrt_MEM_IN_IWRAM __attribute__ ((section (".iwram"))) = {0}
 #define hrt_MEM_FUNC_IN_IWRAM __attribute__ ((section (".iwram"), long_call))
@@ -1089,7 +1088,7 @@ static inline u32 hrt_GetBiosChecksum() {
 		__asm ("SWI   0x0d<<16\nmov %0,r0\n" : "=r"(result) :: "r1", "r2", "r3");
 #endif
 		return result;
-}//Returns BIOS Checksum.
+}//Returns BIOS Checksum. Return value differs if you are playing on a Prototype GBA, Release GBA, or a Nintendo DS.
 u32 hrt_MultiBoot(MultiBootParam *mp, u32 mode); //Enables Multiboot? Unknown
 void hrt_InitInterrupt(void) __attribute__((deprecated)); //Initialize interrupts mirror
 void hrt_irqInit(); //Initialize Interrupts
@@ -1270,9 +1269,13 @@ void hrt_ConfigSIONormal(u8 sc, u8 isc, u8 si_state, u8 soinact, u8 start, u8 le
 void hrt_ConfigSIOMultiplayer(u8 baudrate, u8 busy, u8 irq); //Configures SIOCNT in multiplayer mode
 void hrt_ConfigLowSCCNT(u8 baudrate, u8 cts, u8 paritycnt, u8 length, u8 fifo, u8 parityenable, u8 send, u8 receive, u8 irq); //Configures REG_SIOCNT in UART mode
 void hrt_ConfigJOYCNT(u8 reset, u8 receive, u8 send, u8 irq); //Configures JoyCNT
-int hrt_GetRTCTime(void) hrt_MEM_FUNC_IN_EWRAM; //Returns Time of Real-Time-Clock
+int hrt_GetRTCTime(void); //Returns Time of Real-Time-Clock
 void hrt_EnableSoftReset(); //Enables Soft-Reset
 void hrt_EnableRTC(); //Enables the Built-in Real Time Clock function
+u16 hrt_GenerateColorFromRGB(u32 red, u32 green, u32 blue); //Creates a 15-bit BGR color value from 24-bit RGB values
+u16 hrt_GetRedValueFromBGR(u16 bgr); //Returns the 24-bit RGB Red Color value from a 15-bit BGR color value
+u16 hrt_GetGreenValueFromBGR(u16 bgr); //Returns the 24-bit RGB Green Color value from a 15-bit BGR color value
+u16 hrt_GetBlueValueFromBGR(u16 bgr); //Returns the 24-bit RGB Blue Color value from a 15-bit BGR color value
 
 #ifdef __cplusplus
 }

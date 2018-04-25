@@ -1,4 +1,5 @@
 #include "libheart.h"
+u8* *ExtWRAM = (u8*)0x2000000;
 int __gettime(void);
 u8  __hrt_reset;
 u8 __hrt_rtc;
@@ -20,7 +21,7 @@ double hrt_Distance(int x1, int y1, int x2, int y2)
 double hrt_Slope(int x1, int y1, int x2, int y2)
 {
 	if (hrt_start == 1) {
-		return ((x2 - x1) / (y2 - y1));
+		return ((y2 - y1) / (x2 - x1));
 	}
 	return 0;
 }

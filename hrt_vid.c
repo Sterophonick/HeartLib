@@ -178,20 +178,20 @@ void hrt_InvertPalette(int start, int amount, int pal) {
             int i;
             for (i = 0; i < amount; i++) {
                 u16 Color = ACCESS_16(MEM_PAL_COL_PTR((i+start)));
-                u8 R = 255 - RGB_GET_R_VALUE(Color);
-                u8 G = 255 - RGB_GET_G_VALUE(Color);
-                u8 B = 255 - RGB_GET_B_VALUE(Color);
-                ACCESS_16(MEM_PAL_COL_PTR((i+start))) = RGB15(R, G, B);
+                u8 R = 255 - hrt_GetRedValueFromBGR(Color);
+                u8 G = 255 - hrt_GetGreenValueFromBGR(Color);
+                u8 B = 255 - hrt_GetBlueValueFromBGR(Color);
+                ACCESS_16(MEM_PAL_COL_PTR((i+start))) = hrt_GenerateColorFromRGB(R, G, B);
             }
         }
         if (pal == 1) {
             int i;
             for (i = 0; i < 256; i++) {
                 u16 Color = ACCESS_16(MEM_PAL_OBJ_PTR((i+start)));
-                u8 R = 255 - RGB_GET_R_VALUE(Color);
-                u8 G = 255 - RGB_GET_G_VALUE(Color);
-                u8 B = 255 - RGB_GET_B_VALUE(Color);
-                ACCESS_16(MEM_PAL_OBJ_PTR(((i+start)))) = RGB15(R, G, B);
+                u8 R = 255 - hrt_GetRedValueFromBGR(Color);
+                u8 G = 255 - hrt_GetGreenValueFromBGR(Color);
+                u8 B = 255 - hrt_GetBlueValueFromBGR(Color);
+                ACCESS_16(MEM_PAL_OBJ_PTR(((i+start)))) = hrt_GenerateColorFromRGB(R, G, B);
             }
         }
     }
@@ -571,9 +571,49 @@ int hrt_ConfigDMA(u8 dstoff, u8 srcoff, u8 repeat, u8 b32, u8 starttiming, u8 ir
 
 void hrt_ConfigWININ(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 bld, u8 bg0_2, u8 bg1_2, u8 bg2_2, u8 bg3_2, u8 obj_2, u8 bld_2)
 {
-	REG_WININ = bg0 * 0x0001 | bg1 * 0x0002 | bg2 * 0x0004 | bg3 * 0x0008 | obj * 0x0010 | bld * 0x0020 | bg0_2 * 0x0100 | bg1_2 * 0x0200 | bg2_2 * 0x0400 | bg3_2 * 0x0800 | obj_2 * 0x1000 | bld_2 * 0x2000;
+	if (hrt_start == 1)
+	{
+		REG_WININ = bg0 * 0x0001 | bg1 * 0x0002 | bg2 * 0x0004 | bg3 * 0x0008 | obj * 0x0010 | bld * 0x0020 | bg0_2 * 0x0100 | bg1_2 * 0x0200 | bg2_2 * 0x0400 | bg3_2 * 0x0800 | obj_2 * 0x1000 | bld_2 * 0x2000;
+	}
 }
 void hrt_ConfigWINOUT(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 bld, u8 bg0_obj, u8 bg1_obj, u8 bg2_obj, u8 bg3_obj, u8 obj_obj, u8 bld_obj)
 {
-	REG_WINOUT = bg0 * 0x0001 | bg1 * 0x0002 | bg2 * 0x0004 | bg3 * 0x0008 | obj * 0x0010 | bld * 0x0020 | bg0_obj * 0x0100 | bg1_obj * 0x0200 | bg2_obj * 0x0400 | bg3_obj * 0x0800 | obj_obj * 0x1000 | bld_obj * 0x2000;
+	if (hrt_start == 1)
+	{
+		REG_WINOUT = bg0 * 0x0001 | bg1 * 0x0002 | bg2 * 0x0004 | bg3 * 0x0008 | obj * 0x0010 | bld * 0x0020 | bg0_obj * 0x0100 | bg1_obj * 0x0200 | bg2_obj * 0x0400 | bg3_obj * 0x0800 | obj_obj * 0x1000 | bld_obj * 0x2000;
+	}
+}
+
+u16 hrt_GenerateColorFromRGB(u32 red, u32 green, u32 blue)
+{
+	if (hrt_start == 1)
+	{
+		return red | (green << 5) | (blue << 10);
+	}
+	return 0;
+}
+
+u16 hrt_GetRedValueFromBGR(u16 bgr)
+{
+	if (hrt_start == 1)
+	{
+		return ((bgr & 0x001f) << 3);
+	}
+	return 0;
+}
+u16 hrt_GetGreenValueFromBGR(u16 bgr)
+{
+	if (hrt_start == 1)
+	{
+		return (((bgr >> 5) & 0x001f) << 3);
+	}
+	return 0;
+}
+u16 hrt_GetBlueValueFromBGR(u16 bgr)
+{
+	if (hrt_start == 1)
+	{
+		return (((bgr >> 10) & 0x001f) << 3);
+	}
+	return 0;
 }

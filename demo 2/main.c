@@ -63,7 +63,7 @@ int main()
 
     hrt_SetDSPMode(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0); //Sets REG_DISPCNT, like above
     hrt_PrintOnBitmap(8, 0, "OBJ Window"); //draws text
-	hrt_PrintOnBitmap(8, 9, "Rotate Background"); //draws text
+	hrt_PrintOnBitmap(8, 9, "BG Affine"); //draws text
 	hrt_PrintOnBitmap(8, 18, "PCX"); //draws text
 	hrt_PrintOnBitmap(8, 27, "Interrupt Dispatcher"); //draws text
 	hrt_PrintOnBitmap(8, 36, "Random Number Generator"); //draws text
@@ -72,6 +72,8 @@ int main()
 	hrt_PrintOnBitmap(8, 63, "Xboo"); //draws text
 	hrt_PrintOnBitmap(8, 72, "RTC"); //draws text
 	hrt_PrintOnBitmap(8, 81, "System Detection"); //draws text
+	hrt_PrintOnBitmap(8, 90, "Mode 7"); //draws text
+	hrt_PrintOnBitmap(8, 99, "JPEG"); //draws text
     hrt_CopyOAM(); //Copies OBJ Data to OAM
     while (1) {
 		frames++;
@@ -85,8 +87,8 @@ int main()
         }
         if (keyDown(KEY_DOWN)) {
             arpos++;
-            if (arpos == 10) {
-                arpos = 9;
+            if (arpos == 12) {
+                arpos = 11;
             }
             while (keyDown(KEY_DOWN));
         }
@@ -96,6 +98,19 @@ int main()
                      9*arpos); //Y Position
 
         if (keyDown(KEY_A)) {
+			if (arpos == 11)
+			{
+				hrt_FillScreen(0x0000, 3);
+				JPEG_DecompressImage(such2_jpg, VRAM, 240, 160);
+				while (1)
+				{
+					hrt_VblankIntrWait();
+				}
+			}
+			if (arpos == 10)
+			{
+				
+			}
 			if (arpos == 9)
 			{
 				int ver;

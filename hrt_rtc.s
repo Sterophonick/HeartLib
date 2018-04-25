@@ -1,6 +1,6 @@
  .align
  .pool
- .text
+ .cpu arm7tdmi
  .align
  .pool
  .arm
