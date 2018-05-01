@@ -1,9 +1,10 @@
 #include "libheart.h"
-u8* *ExtWRAM = (u8*)0x2000000;
+u8* ExtWRAM = (u8*)0x2000000;
 int __gettime(void);
 u8  __hrt_reset;
 u8 __hrt_rtc;
 extern u8 hrt_start;
+extern void __hrt_exittoez4();
 extern int	hrt_offsetOAMData;
 extern int hrt_offsetOAMPal;
 extern int hrt_offsetBGMap;
@@ -110,41 +111,87 @@ int hrt_GetRTCTime()
 	return 0;
 }
 
-int hrt_GetRTCHour()
+int hrt_GetRTCHour_H()
 {
 	if (hrt_start == 1)
 	{
 		if (__hrt_rtc == 1)
 		{
-			int timer = hrt_GetRTCTime;
-			return ((timer >> 4) & 3) + (timer & 15);
+			int timer = hrt_GetRTCTime();
+			return ((timer >> 4) & 3);
+		}
+	}
+	return 0;
+}
+int hrt_GetRTCHour_L()
+{
+	if (hrt_start == 1)
+	{
+		if (__hrt_rtc == 1)
+		{
+			int timer = hrt_GetRTCTime();
+			return (timer & 15);
 		}
 	}
 	return 0;
 }
 
-int hrt_GetRTCMinute()
+int hrt_GetRTCMinute_H()
 {
 	if (hrt_start == 1)
 	{
 		if (__hrt_rtc == 1)
 		{
-			int timer = hrt_GetRTCTime;
-			return ((timer >> 12) & 15) + ((timer >> 8) & 15);
+			int timer = hrt_GetRTCTime();
+			return ((timer >> 12) & 15);
+		}
+	}
+	return 0;
+}
+int hrt_GetRTCMinute_L()
+{
+	if (hrt_start == 1)
+	{
+		if (__hrt_rtc == 1)
+		{
+			int timer = hrt_GetRTCTime();
+			return ((timer >> 8) & 15);
 		}
 	}
 	return 0;
 }
 
-int hrt_GetRTCSecond()
+int hrt_GetRTCSecond_H()
 {
 	if (hrt_start == 1)
 	{
 		if (__hrt_rtc == 1)
 		{
-			int timer = hrt_GetRTCTime;
-			return ((timer >> 20) & 15) + ((timer >> 16) & 15);
+			int timer = hrt_GetRTCTime();
+			return ((timer >> 20) & 15);
 		}
 	}
 	return 0;
+}
+int hrt_GetRTCSecond_L()
+{
+	if (hrt_start == 1)
+	{
+		if (__hrt_rtc == 1)
+		{
+			int timer = hrt_GetRTCTime();
+			return ((timer >> 16) & 15);
+		}
+	}
+	return 0;
+}
+
+void hrt_EZ4Exit()
+{
+	if (hrt_start == 1)
+	{
+		hrt_DMA_Copy(3, (u8*)0x02000000, (u8*)&sprites, 0x3FF, 0x80800000);
+		hrt_CopyOAM();
+		__hrt_exittoez4();
+	}
 }

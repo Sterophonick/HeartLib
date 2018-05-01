@@ -107,7 +107,7 @@ void hrt_Init(int mode) {
             hrt_CopyOAM();
         }
         frames = 0;
-        for (i = 0; i < 120; i++) {
+        for (i = 0; i < 80; i++) {
             frames++;
             hrt_VblankIntrWait();
             hrt_SetOBJXY(&sprites[4], bx, by);
@@ -222,24 +222,9 @@ void hrt_Init(int mode) {
 	REG_DISPCNT = 0x0080;
 	REG_BLDCNT = 0;
 	REG_BLDY = 0;
-	hrt_FillScreen(0x0000, 3);
-	hrt_Memcpy(VRAM, (char*)0x02000000, 98288);
-	for (i = 0; i < 255; i++) {
-		BGPaletteMem[i] = 0x0000;
-	}
-	for (i = 0; i < 255; i++) {
-		OBJPaletteMem[i] = 0x0000;
-	}
-	hrt_CreateOBJ(0, 240, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-	hrt_AffineOBJ(0, 0, 0, 0);
-	hrt_CloneOBJ(0, 1);
-	hrt_CloneOBJ(0, 2);
-	hrt_CloneOBJ(0, 3);
-	hrt_CloneOBJ(0, 4);
-	hrt_AffineOBJ(1, 0, 0, 0);
-	hrt_AffineOBJ(2, 0, 0, 0);
-	hrt_AffineOBJ(3, 0, 0, 0);
-	hrt_AffineOBJ(4, 0, 0, 0);
+	hrt_DMA_Copy(3, (u8*)0x02000000, (u8*)VRAM, 0xFfff, 0x80800000);
+	hrt_DMA_Copy(3, (u8*)0x02000000, (u8*)BGPaletteMem, 0x200, 0x80800000);
+	hrt_DMA_Copy(3, (u8*)0x02000000, (u8*)&sprites, 0x3FF, 0x80800000);
 	hrt_CopyOAM();
 	hrt_offsetOAMData = 0;
 	hrt_offsetOAMPal = 0;

@@ -9,11 +9,8 @@
 //Some functions don't work yet so be patient!
 /*
 	List:
-		EZ4 Exit
 		JPEG
-		RTC
 		Tiled Text
-		SIO
 	*/
 
 /*
@@ -62,18 +59,16 @@ GBA Specs:
 	Xboo Stuff (LibGBA)
 	Typedefs
 	Defines for making those larger functions easier to understand.
-	Real-Time Clock?
+	Real-Time Clock Stuff (Shoutouts to Dwedit)
 	Mode 7?
-	
+	Exit to EZ4 (Shoutouts to Dwedit and GodBolt)
 
 TODO:
-		Implement Real-Time Clock
 		Implement Tiled Text
 		Implement Easy System Call functions
 		JPEG Decoding
 		Game Boy Player Functions?
 		PogoShell Functions?
-		Serial I/O
 
 Recommended Tools for development with this library:
 	gfx2gba
@@ -178,13 +173,10 @@ typedef signed long long s64;
 typedef signed int sint;
 
 typedef void(*IntFn)(void);
-typedef bool(*_SD_FN_CMD_6BYTE_RESPONSE) (u8* responseBuffer, u8 command, u32 data);
-typedef bool(*_SD_FN_CMD_17BYTE_RESPONSE) (u8* responseBuffer, u8 command, u32 data);
-u8 EZ4ExitRAM[12];
+
 
 #include "jpg.h"
 
-u32* OAMmem;
 u16* VRAM;
 u16* OAMData;
 u16* BGPaletteMem;
@@ -194,7 +186,7 @@ u8* SaveData;
 u16* OAM;
 u16* FrontBuffer;
 u16* BackBuffer;
-u8* *ExtWRAM;
+u8* ExtWRAM;
 
 typedef struct {
     char		manufacturer;
@@ -384,7 +376,7 @@ sounds sound[25];
 #define GetJumpList 0x2A
 #define AGBPrint 0xFF
 
-#define hrt_MULTIBOOT const u8 __gba_multiboot=1; //Type 'MULTIBOOT' at the beginning of a project, and the file will be compiled as a multiboot ROM.
+#define hrt_MULTIBOOT const u8 __gba_multiboot; //Type 'MULTIBOOT' at the beginning of a project, and the file will be compiled as a multiboot ROM.
 
 //Bits
 #define BIT00 1
@@ -897,123 +889,6 @@ const unsigned short font_matrixBitmap[6080];
 const unsigned short font_milkbottleTiles[3072];
 const unsigned short font_milkbottlePal[16];
 
-//DiskIO stuff
-#define DEVICE_TYPE_SCSD 0x44534353
-#define DEVICE_TYPE_SCCF 0x46434353
-#define DEVICE_TYPE_MPCF 0x4643504D
-#define DEVICE_TYPE_M3SD 0x4453334D
-#define DEVICE_TYPE_M3CF 0x4643334D
-#define FEATURE_MEDIUM_CANREAD		0x00000001
-#define FEATURE_MEDIUM_CANWRITE		0x00000002
-#define FEATURE_SLOT_GBA			0x00000010
-#define FEATURE_SLOT_NDS			0x00000020
-typedef uint32_t sec_t;
-typedef bool(*FN_MEDIUM_STARTUP)(void);
-typedef bool(*FN_MEDIUM_ISINSERTED)(void);
-typedef bool(*FN_MEDIUM_READSECTORS)(sec_t sector, sec_t numSectors, void* buffer);
-typedef bool(*FN_MEDIUM_WRITESECTORS)(sec_t sector, sec_t numSectors, const void* buffer);
-typedef bool(*FN_MEDIUM_CLEARSTATUS)(void);
-typedef bool(*FN_MEDIUM_SHUTDOWN)(void);
-struct DISC_INTERFACE_STRUCT {
-	unsigned long			ioType;
-	unsigned long			features;
-	FN_MEDIUM_STARTUP		startup;
-	FN_MEDIUM_ISINSERTED	isInserted;
-	FN_MEDIUM_READSECTORS	readSectors;
-	FN_MEDIUM_WRITESECTORS	writeSectors;
-	FN_MEDIUM_CLEARSTATUS	clearStatus;
-	FN_MEDIUM_SHUTDOWN		shutdown;
-};
-typedef struct DISC_INTERFACE_STRUCT DISC_INTERFACE;
-#define FIX_ALL						0x01
-#define FIX_GLUE					0x02
-#define FIX_GOT						0x04
-#define FIX_BSS						0x08
-#define DLDI_MAGIC_STRING_LEN 		8
-#define DLDI_FRIENDLY_NAME_LEN 		48
-extern const u32  DLDI_MAGIC_NUMBER;
-typedef struct {
-	u32 	magicNumber;
-	char	magicString[DLDI_MAGIC_STRING_LEN];
-	u8		versionNumber;
-	u8		driverSize;			// log-2 of driver size in bytes
-	u8		fixSectionsFlags;
-	u8		allocatedSize;		// log-2 of the allocated space in bytes
-	char	friendlyName[DLDI_FRIENDLY_NAME_LEN];
-	void*	dldiStart;
-	void*	dldiEnd;
-	void*	interworkStart;
-	void*	interworkEnd;
-	void*	gotStart;
-	void*	gotEnd;
-	void*	bssStart;
-	void*	bssEnd;
-	DISC_INTERFACE ioInterface;
-} DLDI_INTERFACE;
-typedef struct {
-	vu16* data;
-	vu16* status;
-	vu16* command;
-	vu16* error;
-	vu16* sectorCount;
-	vu16* lba1;
-	vu16* lba2;
-	vu16* lba3;
-	vu16* lba4;
-} CF_REGISTERS;
-#define CF_STS_INSERTED		0x50
-#define CF_STS_REMOVED		0x00
-#define CF_STS_READY		0x58
-#define CF_STS_DRQ			0x08
-#define CF_STS_BUSY			0x80
-#define CF_CMD_LBA			0xE0
-#define CF_CMD_READ			0x20
-#define CF_CMD_WRITE		0x30
-#define CF_CARD_TIMEOUT	10000000
-#define M3_MODE_ROM 0x00400004
-#define M3_MODE_MEDIA 0x00400003 
-#define SC_MODE_FLASH 0x1510
-#define SC_MODE_RAM 0x5
-#define SC_MODE_MEDIA 0x3 
-#define SC_MODE_RAM_RO 0x1
-#define GO_IDLE_STATE 0
-#define ALL_SEND_CID 2
-#define SEND_RELATIVE_ADDR 3
-#define SELECT_CARD 7
-#define SEND_CSD 9
-#define STOP_TRANSMISSION 12
-#define SEND_STATUS 13
-#define GO_INACTIVE_STATE 15
-#define SET_BLOCKLEN 16
-#define READ_SINGLE_BLOCK 17
-#define READ_MULTIPLE_BLOCK 18
-#define WRITE_BLOCK 24
-#define WRITE_MULTIPLE_BLOCK 25
-#define APP_CMD 55
-#define SET_BUS_WIDTH 6
-#define SD_APP_OP_COND 41
-#define SD_OCR_VALUE 0x00030000
-//#define SD_OCR_VALUE 0x003F8000 /* 2.7V to 3.4V */
-//#define SD_OCR_VALUE 0x00FC0000
-#define SD_CARD_BUSY 0xff
-#define SD_STATE_IDLE 0		// Idle state, after power on or GO_IDLE_STATE command
-#define SD_STATE_READY 1	// Ready state, after card replies non-busy to SD_APP_OP_COND
-#define SD_STATE_IDENT 2	// Identification state, after ALL_SEND_CID
-#define SD_STATE_STBY 3		// Standby state, when card is deselected
-#define SD_STATE_TRAN 4		// Transfer state, after card is selected and ready for data transfer
-#define SD_STATE_DATA 5		// 
-#define SD_STATE_RCV 6		// Receive data state
-#define SD_STATE_PRG 7		// Programming state
-#define SD_STATE_DIS 8		// Disconnect state
-#define SD_STATE_INA 9		// Inactive state, after GO_INACTIVE_STATE
-#define READY_FOR_DATA 1	// bit 8 in card status
-extern const DISC_INTERFACE _io_m3cf;
-extern const DISC_INTERFACE _io_m3sd;
-extern const DISC_INTERFACE _io_mpcf;
-extern const DISC_INTERFACE _io_sccf;
-extern const DISC_INTERFACE _io_scsd;
-//
-
 //Defines for Functions
 #define OBJ_SIZE_8X8 0
 #define OBJ_SIZE_16X16 1
@@ -1101,7 +976,10 @@ extern const DISC_INTERFACE _io_scsd;
 #define PAL_OBJ 1
 //
 
-
+///////////////////////////FUNCTIONS////////////////////////////
+// These functions will allow the user control over objects, sound,///
+////registers, memory, bitmaps, palettes, and many other things./////
+///////////////////////////////////////////////////////////////
 static inline u32 hrt_GetBiosChecksum() {
 		register u32 result;
 #if   defined   ( __thumb__ )
@@ -1153,7 +1031,7 @@ void hrt_LoadBGMap(u16* data, int length); //Loads BG Map
 void hrt_LoadBGPal(u16* data, u16 length); //Loads BG Palette
 void hrt_InvertPalette(int start, int amount, int pal); //Inverts Palette
 void hrt_DrawRectangle(int r, int c, int width, int height, u16 color, int mode); //Draws rectangle
-void hrt_FillScreen(u16 color, int mode); // fills screen with specified color
+void hrt_FillScreen(u16 color); // fills screen with specified color
 void hrt_DrawLine(int x1, int y1, int x2, int y2, unsigned short color, int mode); //Draws line of specified color
 void hrt_DrawCircle(int xCenter, int yCenter, int radius, u16 color, int mode); //Draws circle of specified color.
 void hrt_ScanLines(u16 color, int time, int mode); //scanlines wipe
@@ -1175,7 +1053,7 @@ void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode)
 void hrt_SetFXLevel(u8 level); //Sets BLDY level
 void hrt_SetFXMode(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 backdrop, u8 mode, u8 bg0_2, u8 bg1_2, u8 bg2_2, u8 bg3_2, u8 obj_2, u8 backdrop_2); //Sets BLDCNT Mode
 void hrt_SetDSPMode(u8 mode, u8 CGB, u8 framesel, u8 unlockedhblank, u8 objmap, u8 forceblank, u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 win0, u8 win1, u8 objwin); //Sets REG_DISPCNT, but it is a lot clearer what you have to do.
-void hrt_Assert(u8 error, char* func, int arg, char* desc); //Error message
+void hrt_Assert(char* func, int arg, char* desc); //Error message
 void hrt_ConfigBG(u8 bg, u8 priority, u8 tilebase, u8 mosaic, u8 color256, u8 tilemapbase, u8 wraparound, u8 dimensions); //Configures BG
 void hrt_LineWipe(u16 color, int time, u8 mode); //Wipe from hrt_DrawLine
 void hrt_SetMosaic(u8 bh, u8 bv, u8 oh, u8 ov); //Sets Mosaic Level -- Not Tested Yet.
@@ -1183,15 +1061,15 @@ double hrt_Distance(int x1, int y1, int x2, int y2); //Returns distance between 
 double hrt_Slope(int x1, int y1, int x2, int y2); //Returns slope between 2 different points
 void hrt_SetTile(u8 x, u8 y, int tileno); //Sets a specific tile to a given value.
 void hrt_SetFXAlphaLevel(u8 src, u8 dst); //Sets REG_BLDALPHA
-void hrt_DrawTextTile(int x, int y, char* str); //Unfinished -- Ignore this
-void hrt_InitTextTile(u8 bgno); //Unfinished -- Ignore this.
+//void hrt_DrawTextTile(int x, int y, char* str); //Unfinished -- Ignore this
+//void hrt_InitTextTile(u8 bgno); //Unfinished -- Ignore this.
 void hrt_FillPalette(int paltype, u16 color); //Fills BG or OBJ palette witha specified color.
 void hrt_AGBPrint(const char *msg); //hrt_AGBPrint is interesting. Using this will make the ROM put a message into the output log if AGBPrint is enabled on VisualBoyAdvance. I found a technique that doesn't crash on hardware or other emulators.
 void *hrt_Memcpy(void *dest, const void *src, size_t len); //Copies Memory from one place to another.
 void hrt_VblankIntrWait(); //Waits for Vblank Interrupt.
 void hrt_RegisterRamReset(); //Resets Memory. Unfinished.
 void hrt_Suspend(); //Suspends the console. Unfinished.
-void hrt_EZ4Exit(); //Exits to Ez-Flash IV Menu. Unfinished
+void hrt_EZ4Exit(); //Exits to Ez-Flash IV Menu.
 void hrt_ConfigTimer(u8 channel, u8 scale, u8 irq, u8 enable, u16 start); //Configures a Timer.
 void hrt_SaveByte(int offset, u8 value); //Copies a byte to SRAM at a given location
 u8 hrt_LoadByte(int offset); //Loads a byte from SRAM at a given address
@@ -1252,23 +1130,6 @@ int		mbv2_dfclose(int fp);
 int		mbv2_dfgetc(int fp);
 int		mbv2_dfputc(int ch, int fp);
 void	mbv2_drewind(int fp);
-extern const DISC_INTERFACE* dldiGetInternal(void);
-extern bool dldiIsValid(const DLDI_INTERFACE* io);
-extern void dldiFixDriverAddresses(DLDI_INTERFACE* io);
-extern DLDI_INTERFACE* dldiLoadFromFile(const char* path);
-extern void dldiFree(DLDI_INTERFACE* dldi);
-bool _CF_isInserted(void);
-bool _CF_clearStatus(void);
-bool _CF_readSectors(u32 sector, u32 numSectors, void* buffer);
-bool _CF_writeSectors(u32 sector, u32 numSectors, void* buffer);
-bool _CF_shutdown(void);
-bool _CF_startup(const CF_REGISTERS *usableCfRegs);
-extern const DISC_INTERFACE _io_m3cf;
-extern void _SC_changeMode(u8 mode);
-extern u8 _SD_CRC7(u8* data, int size);
-extern void _SD_CRC16(u8* buff, int buffLength, u8* crc16buff);
-extern bool _SD_InitCard(_SD_FN_CMD_6BYTE_RESPONSE cmd_6byte_response,	_SD_FN_CMD_17BYTE_RESPONSE cmd_17byte_response,	bool use4bitBus,	u32 *RCA);
-extern const DISC_INTERFACE* discGetInterface(void);
 void	xcomms_dprintf(char *str, ...);
 void	xcomms_dfprintf(int handle, char *str, ...);
 void	xcomms_dputchar(int c);
@@ -1286,7 +1147,6 @@ void	xcomms_sendblock(const void *block, u32 len);
 int		xcomms_getch(void);
 int		xcomms_kbhit(void);
 void	xcomms_init();
-extern void _M3_changeMode(u32 mode);
 void hrt_ConfigSIONormal(u8 sc, u8 isc, u8 si_state, u8 soinact, u8 start, u8 length, u8 mode, u8 irq); //Configures REG_SIOCNT
 void hrt_ConfigSIOMultiplayer(u8 baudrate, u8 busy, u8 irq); //Configures SIOCNT in multiplayer mode
 void hrt_ConfigLowSCCNT(u8 baudrate, u8 cts, u8 paritycnt, u8 length, u8 fifo, u8 parityenable, u8 send, u8 receive, u8 irq); //Configures REG_SIOCNT in UART mode
@@ -1298,9 +1158,12 @@ u16 hrt_GetGreenValueFromBGR(u16 bgr); //Returns the 24-bit RGB Green Color valu
 u16 hrt_GetBlueValueFromBGR(u16 bgr); //Returns the 24-bit RGB Blue Color value from a 15-bit BGR color value
 int hrt_GetRTCTime(void); //Returns Time of Real-Time-Clock
 void hrt_EnableRTC(); //Enables the Built-in Real Time Clock function
-int hrt_GetRTCHour(); //Gets the Hour of the RTC (WIP)
-int hrt_GetRTCMinute(); //Gets the Minute of the RTC (WIP)
-int hrt_GetRTCSecond(); //Gets the Second of the RTC (WIP)
+int hrt_GetRTCHour_H(); //Gets the Hour of the RTC (WIP)
+int hrt_GetRTCHour_L(); //Gets the Hour of the RTC (WIP)
+int hrt_GetRTCMinute_H(); //Gets the Minute of the RTC (WIP)
+int hrt_GetRTCMinute_L(); //Gets the Minute of the RTC (WIP)
+int hrt_GetRTCSecond_H(); //Gets the Second of the RTC (WIP)
+int hrt_GetRTCSecond_L(); //Gets the Second of the RTC (WIP)
 
 #ifdef __cplusplus
 }

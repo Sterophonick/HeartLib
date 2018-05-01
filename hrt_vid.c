@@ -209,7 +209,7 @@ void hrt_DrawRectangle(int r, int c, int width, int height, u16 color, int mode)
     }
 }
 
-void hrt_FillScreen(u16 color, int mode) { //fills screen with a solid color in mode 3
+void hrt_FillScreen(u16 color) { //fills screen with a solid color in mode 3
     if (hrt_start == 1) {
         int i;
         for (i = 0; i < 38400; i++) {
@@ -447,7 +447,7 @@ void hrt_FillPalette(int paltype, u16 color) { //fills a palette of the selectio
                 }
             } else { //if no kind of mem is selected
                 hrt_SetDSPMode(3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                hrt_Assert(0, "HRT_FILLPAL()", 1, "INVALID ARGUMENT");
+                hrt_Assert("HRT_FILLPAL()", 1, "INVALID ARGUMENT");
                 while (1); //stops the program due to an invalid type
             }
         }
@@ -483,16 +483,16 @@ void hrt_ConfigBG(u8 bg, u8 priority, u8 tilebase, u8 mosaic, u8 color256, u8 ti
         } else if (bg == 3) {
             REG_BG3CNT = 0x01 * priority | 0x04 * tilebase | 0x40 * mosaic | 0x80 * color256 | 0x100 * tilemapbase | 0x2000 * wraparound | 0x4000 * dimensions;
         } else {
-            hrt_Assert(0, "HRT_CONFIGBG()", 1, "INVALID ARGUMENT");
+            hrt_Assert("HRT_CONFIGBG()", 1, "INVALID ARGUMENT");
         }
     }
 }
 
-void hrt_Assert(u8 error, char* func, int arg, char* desc) {
+void hrt_Assert(char* func, int arg, char* desc) {
     if (hrt_start == 1) {
         u8* buf[256];
         hrt_SetDSPMode(3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
-        hrt_FillScreen(0x0000, 3);
+        hrt_FillScreen(0x0000);
         hrt_PrintOnBitmap(0, 0, "HEARTLIB HAS CRASHED!");
         hrt_PrintOnBitmap(0, 9, "FUNCTION: ");
         hrt_PrintOnBitmap(80, 9, (char*)func);

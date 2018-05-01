@@ -1,8 +1,12 @@
 #include <libheart.h>
 #include "defs.h"
 #include "soundbank.h"
-extern int __hrt_version(void);
 int hrs, min, secs;
+extern int	hrt_offsetOAMData;
+extern int hrt_offsetOAMPal;
+extern int hrt_offsetBGMap;
+extern int hrt_offsetBGTile;
+extern int hrt_offsetBGPal;
 
 char buffer[255];
 
@@ -70,7 +74,7 @@ int main()
 	hrt_PrintOnBitmap(8, 45, "Built-in MaxMod"); //draws text
 	hrt_PrintOnBitmap(8, 54, "mbv2lib"); //draws text
 	hrt_PrintOnBitmap(8, 63, "Xboo"); //draws text
-	hrt_PrintOnBitmap(8, 72, "RTC"); //draws text
+	hrt_PrintOnBitmap(8, 72, "Real-Time Clock"); //draws text
 	hrt_PrintOnBitmap(8, 81, "System Detection"); //draws text
 	hrt_PrintOnBitmap(8, 90, "Mode 7"); //draws text
 	hrt_PrintOnBitmap(8, 99, "JPEG"); //draws text
@@ -87,8 +91,8 @@ int main()
         }
         if (keyDown(KEY_DOWN)) {
             arpos++;
-            if (arpos == 12) {
-                arpos = 11;
+            if (arpos == 11) {
+                arpos = 10;
             }
             while (keyDown(KEY_DOWN));
         }
@@ -113,6 +117,7 @@ int main()
 			}
 			if (arpos == 9)
 			{
+
 				int ver;
 				hrt_FillScreen(0x0000, 3);
 				ver = hrt_GetBiosChecksum();
@@ -133,30 +138,30 @@ int main()
 			}
 			if (arpos == 8)
 			{
+				hrt_FillScreen(0x0000, 3);
 				char str[30];
 				char *s = str + 20;
-				int timer, mod;
-				hrt_FillScreen(0x0000, 3);
-				while(1)
+				int timer, hours, min, secs, hours2, min2, secs2;
+				timer = hrt_GetRTCTime();
+				hours = (timer >> 4) & 3;				//Hours.
+				hours2 = (timer & 15);
+				min = (timer >> 12) & 15;				//Minutes.
+				min2 =(timer >> 8) & 15;
+				secs = (timer >> 20) & 15;				//Seconds.
+				secs2 = (timer >> 16) & 15;
+				sprintf((char*)buffer, "%d:%d:%d", hours, hours2, min, min2, secs, secs2);
+				hrt_PrintOnBitmap(0, 0, (char*)buffer);
+				while (1)
 				{
-					hrt_VblankIntrWait();
-					strcpy(str, "00:00:00");
 					timer = hrt_GetRTCTime();
-					mod = (timer >> 4) & 3;				//Hours.
-					*(s++) = (mod + '0');
-					mod = (timer & 15);
-					*(s++) = (mod + '0');
-					s++;
-					mod = (timer >> 12) & 15;				//Minutes.
-					*(s++) = (mod + '0');
-					mod = (timer >> 8) & 15;
-					*(s++) = (mod + '0');
-					s++;
-					mod = (timer >> 20) & 15;				//Seconds.
-					*(s++) = (mod + '0');
-					mod = (timer >> 16) & 15;
-					*(s++) = (mod + '0');
-					hrt_PrintOnBitmap(0, 0, (char*)str);
+					hours = (timer >> 4) & 3;				//Hours.
+					hours2 = (timer & 15);
+					min = (timer >> 12) & 15;				//Minutes.
+					min2 = (timer >> 8) & 15;
+					secs = (timer >> 20) & 15;				//Seconds.
+					secs2 = (timer >> 16) & 15;
+					sprintf((char*)buffer, "%d%d:%d%d:%d%d", hours, hours2, min, min2, secs, secs2);
+					hrt_PrintOnBitmap(0, 0, (char*)buffer);
 				}
 			}
 			if (arpos == 7)

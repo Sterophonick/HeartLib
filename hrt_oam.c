@@ -3,7 +3,6 @@ pRotData rotData = (pRotData)sprites;
 u16* OBJPaletteMem 	=(u16*)0x5000200;
 u16* OAMData		=(u16*)0x6010000;
 u16* OAM = (u16*)0x7000000;
-u32* OAMmem  		=(u32*)0x7000000;
 s32 angle = 0;
 s32 zoom = 1<<8;
 extern u8 hrt_start;
@@ -195,6 +194,7 @@ void hrt_CloneOBJ(int ospr, int nspr) //duplicates a Sprite
 void hrt_GlideSpritetoPos(int spr, int x1, int y1, int x2, int y2, u32 frames)
 {
 	if (hrt_start == 1) {
+		u32 i1 = 0;
 		hrt_SetOBJXY(&sprites[spr], x1, y1);
 		int i, deltax, deltay, numpixels;
 		int d, dinc1, dinc2;
@@ -258,6 +258,9 @@ void hrt_GlideSpritetoPos(int spr, int x1, int y1, int x2, int y2, u32 frames)
 				y = y + yinc2;
 			}
 		}
-		hrt_VblankIntrWait();
+		for (i1 = 0; i1 < frames; i1++)
+		{
+			hrt_VblankIntrWait();
+		}
 	}
 }

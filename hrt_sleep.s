@@ -14,6 +14,7 @@
    .arm
 hrt_Suspend:
 	mov r3,#REG_BASE
+	@stop HDMA so we don't get the crawling scanlines (and possible GBC MODE reboot) anymore
 	strh r3,[r3,#REG_DM0CNT_H]		@DMA0 stop
 	strh r3,[r3,#REG_DM1CNT_H]		@DMA1 stop
 	strh r3,[r3,#REG_DM3CNT_H]		@DMA3 stop

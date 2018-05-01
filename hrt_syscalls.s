@@ -3,7 +3,7 @@
  .text
 .code 16
 .global	hrt_MultiBoot
-.global	__hrt_version
+.global hrt_Crash
 .thumb
 hrt_MultiBoot:
  swi 37

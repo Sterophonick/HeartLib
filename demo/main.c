@@ -1,7 +1,10 @@
 #include <libheart.h>
 #include "defs.h"
-
-hrt_SOFTRESETCODE
+extern int	hrt_offsetOAMData;
+extern int hrt_offsetOAMPal;
+extern int hrt_offsetBGMap;
+extern int hrt_offsetBGTile;
+extern int hrt_offsetBGPal;
 
 int i;
 s8 phase;
@@ -15,6 +18,8 @@ unsigned char *p = (unsigned char*)&g_sram; //Splits int g_sram into 4 bytes for
 
 int main()
 {
+	hrt_EnableSoftReset();
+	hrt_EnableRTC();
     hrt_Init(1); //Initializes Heartlib. If number is set to 1 it plays an intro. REQUIRED FOR USING THIS LIBRARY. IF THIS IS NOT EXECUTED IT WILL NOT WORK!!!!
     p[0] = hrt_LoadByte(0x00);
     p[1] = hrt_LoadByte(0x01);
@@ -34,7 +39,7 @@ int main()
                    1,                               //BG 2
                    0,                               //BG 3
                    1,                               //OBJ
-                   0,                               //Win 0
+                   0,                               //Win 0a
                    0,                               //Win 1
                    0);							  //OBJWin
 
@@ -149,9 +154,7 @@ int main()
                 hrt_EZ4Exit();
             }
             if (arpos == 13) {
-                hrt_Suspend();
-                while (KEY_ANY_PRESSED);
-                while (!(KEY_ANY_PRESSED));
+				hrt_irqEnable(IRQ_KEYPAD);
                 hrt_Suspend();
             }
             if (arpos == 12) {
@@ -182,7 +185,7 @@ int main()
                               0,                             //BG 3 Target 2
                               0,                             //OBJ Target 2
                               1);                           //Backdrop Target 2
-                hrt_FillScreen(0x0000, 3);
+                hrt_FillScreen(0x0000);
                 hrt_LoadBGPal((void*)balls_Palette, 16);
                 hrt_LoadBGTiles((void*)balls_Tiles, 1088);
                 hrt_LoadBGMap((void*)balls_Map, 2048);
@@ -231,7 +234,7 @@ int main()
                 }
             }
             if (arpos == 8) {
-                hrt_FillScreen(0xFFFF, 3); //Fills Screen with white in mode 3.
+                hrt_FillScreen(0xFFFF); //Fills Screen with white in mode 3.
                 hrt_SetDSPMode(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0); //Sets REG_DISPCNT, like above
                 while (1) {
                     hrt_ScanLines(0x0000, 1, 3);
@@ -374,7 +377,7 @@ int main()
                 hrt_AffineOBJ(0, 0, 255, 255);
                 x_scale = 255;
                 g_newframe = 1;
-                hrt_FillScreen(0x0000, 3);
+                hrt_FillScreen(0x0000);
                 hrt_PrintOnBitmap(0, 0, "HeartLib Sprite Demo");
                 while (1) {
                     frames++;
@@ -420,7 +423,7 @@ int main()
                 }
             }
             if (arpos == 10) {
-                hrt_FillScreen(0x0000, 3);
+                hrt_FillScreen(0x0000);
                 sprintf((char*)buf, "%d", g_sram);
                 hrt_PrintOnBitmap(0, 0, (char*)buf);
                 hrt_SetDSPMode(3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
@@ -444,6 +447,7 @@ int main()
                         while (keyDown(KEY_DOWN));
                     }
                     if (keyDown(KEY_START)) {
+						
                         asm volatile("swi 0x00"::);
                     }
                     hrt_VblankIntrWait();

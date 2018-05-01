@@ -30,6 +30,7 @@ void hrt_PrintOnBitmap(int left, int top, char *str) {
     }
 }
 
+/*
 void hrt_InitTextTile(u8 bgno)
 {
 	int i;
@@ -52,3 +53,4 @@ void hrt_DrawTextTile(int x, int y, char* str)
 		pos++;
 	}
 }
+*/
