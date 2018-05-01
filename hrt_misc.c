@@ -87,6 +87,17 @@ double hrt_AreaCircle(double r)
 	return 0;
 }
 
+
+void hrt_EnableRTC()
+{
+	__hrt_rtc = 1;
+}
+
+void hrt_EnableSoftReset()
+{
+	__hrt_reset = 1;
+}
+
 int hrt_GetRTCTime()
 {
 	if (hrt_start == 1)
@@ -99,12 +110,41 @@ int hrt_GetRTCTime()
 	return 0;
 }
 
-void hrt_EnableRTC()
+int hrt_GetRTCHour()
 {
-	__hrt_rtc = 1;
+	if (hrt_start == 1)
+	{
+		if (__hrt_rtc == 1)
+		{
+			int timer = hrt_GetRTCTime;
+			return ((timer >> 4) & 3) + (timer & 15);
+		}
+	}
+	return 0;
 }
 
-void hrt_EnableSoftReset()
+int hrt_GetRTCMinute()
 {
-	__hrt_reset = 1;
+	if (hrt_start == 1)
+	{
+		if (__hrt_rtc == 1)
+		{
+			int timer = hrt_GetRTCTime;
+			return ((timer >> 12) & 15) + ((timer >> 8) & 15);
+		}
+	}
+	return 0;
+}
+
+int hrt_GetRTCSecond()
+{
+	if (hrt_start == 1)
+	{
+		if (__hrt_rtc == 1)
+		{
+			int timer = hrt_GetRTCTime;
+			return ((timer >> 20) & 15) + ((timer >> 16) & 15);
+		}
+	}
+	return 0;
 }

@@ -4,8 +4,8 @@
     #define JPEG_IWRAM_REG_DM3DAD (*(volatile unsigned int *) 0x40000D8)
     #define JPEG_IWRAM_REG_DM3CNT_L (*(volatile unsigned short *) 0x40000DC)
     #define JPEG_IWRAM_REG_DM3CNT_H (*(volatile unsigned short *) 0x40000DE)
-    extern char _start;
-    #define JPEG_IWRAM_USED_END (&_start)
+    extern char __iwram_lma;
+    #define JPEG_IWRAM_USED_END (&__iwram_lma)
     #define JPEG_FUNCTION_END(NAME) static void NAME##End () { }
     #define JPEG_FUNCTION_SIZE(NAME) ((int) ((char *) &NAME##End - (char *) &NAME) & ~3)
     #define JPEG_IWRAM_LoadStart() char *iwramEnd = (char *) JPEG_IWRAM_USED_END

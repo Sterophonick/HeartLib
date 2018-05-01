@@ -7,6 +7,14 @@
 //This Library is going to be huge. It will probably be one of the best GBA Libraries in recent years.
 
 //Some functions don't work yet so be patient!
+/*
+	List:
+		EZ4 Exit
+		JPEG
+		RTC
+		Tiled Text
+		SIO
+	*/
 
 /*
 GBA Specs:
@@ -54,7 +62,7 @@ GBA Specs:
 	Xboo Stuff (LibGBA)
 	Typedefs
 	Defines for making those larger functions easier to understand.
-	Real-Time Clock
+	Real-Time Clock?
 	Mode 7?
 	
 
@@ -119,47 +127,56 @@ extern "C" {
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/fcntl.h>
+#include <errno.h>
 
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned long u32;
 typedef unsigned long long u64;
 typedef unsigned int uint;
+
 typedef volatile unsigned char vu8;
 typedef volatile unsigned short vu16;
 typedef volatile unsigned long vu32;
 typedef volatile unsigned long long vu64;
 typedef volatile unsigned int vuint;
+
 typedef volatile signed char vs8;
 typedef volatile signed short vs16;
 typedef volatile signed long vs32;
 typedef volatile signed long long vs64;
 typedef volatile signed int vsint;
+
 typedef const signed char cs8;
 typedef const signed short cs16;
 typedef const signed long cs32;
 typedef const signed long long cs64;
 typedef const signed int csint;
+
 typedef const volatile signed char cvs8;
 typedef const volatile signed short cvs16;
 typedef const volatile signed long cvs32;
 typedef const volatile signed long long cvs64;
 typedef const volatile signed int cvsint;
+
 typedef const volatile unsigned char cvu8;
 typedef const volatile unsigned short cvu16;
 typedef const volatile unsigned long cvu32;
 typedef const volatile unsigned long long cvu64;
 typedef const volatile unsigned int cvuint;
+
 typedef const signed char cu8;
 typedef const signed short cu16;
 typedef const signed long cu32;
 typedef const signed long long cu64;
 typedef const signed int csint;
+
 typedef signed char s8;
 typedef signed short s16;
 typedef signed long s32;
 typedef signed long long s64;
 typedef signed int sint;
+
 typedef void(*IntFn)(void);
 typedef bool(*_SD_FN_CMD_6BYTE_RESPONSE) (u8* responseBuffer, u8 command, u32 data);
 typedef bool(*_SD_FN_CMD_17BYTE_RESPONSE) (u8* responseBuffer, u8 command, u32 data);
@@ -873,7 +890,6 @@ extern "C" {
 //eof
 
 const GBFS_FILE *find_first_gbfs_file(const void *start);
-
 const double SIN[360];
 const double COS[360];
 const double RAD[360];
@@ -997,6 +1013,7 @@ extern const DISC_INTERFACE _io_mpcf;
 extern const DISC_INTERFACE _io_sccf;
 extern const DISC_INTERFACE _io_scsd;
 //
+
 //Defines for Functions
 #define OBJ_SIZE_8X8 0
 #define OBJ_SIZE_16X16 1
@@ -1018,6 +1035,8 @@ extern const DISC_INTERFACE _io_scsd;
 #define OBJ_MODE_PROHIBITED 3
 #define OBJ_DOUBLESIZE_ENABLE 1
 #define OBJ_DOUBLESIZE_DISABLE 0
+#define OBJ_PAL_16 0
+#define OBJ_PAL_256 1
 
 #define FX_TARGET1_BG0_ENABLE 1
 #define FX_TARGET1_BG0_DISABLE 0
@@ -1077,6 +1096,9 @@ extern const DISC_INTERFACE _io_scsd;
 #define DSP_WIN1_DISABLE 0
 #define DSP_OBJWIN_ENABLE 1
 #define DSP_OBJWIN_DISABLE 0
+
+#define PAL_BG 0
+#define PAL_OBJ 1
 //
 
 
@@ -1269,13 +1291,16 @@ void hrt_ConfigSIONormal(u8 sc, u8 isc, u8 si_state, u8 soinact, u8 start, u8 le
 void hrt_ConfigSIOMultiplayer(u8 baudrate, u8 busy, u8 irq); //Configures SIOCNT in multiplayer mode
 void hrt_ConfigLowSCCNT(u8 baudrate, u8 cts, u8 paritycnt, u8 length, u8 fifo, u8 parityenable, u8 send, u8 receive, u8 irq); //Configures REG_SIOCNT in UART mode
 void hrt_ConfigJOYCNT(u8 reset, u8 receive, u8 send, u8 irq); //Configures JoyCNT
-int hrt_GetRTCTime(void); //Returns Time of Real-Time-Clock
 void hrt_EnableSoftReset(); //Enables Soft-Reset
-void hrt_EnableRTC(); //Enables the Built-in Real Time Clock function
 u16 hrt_GenerateColorFromRGB(u32 red, u32 green, u32 blue); //Creates a 15-bit BGR color value from 24-bit RGB values
 u16 hrt_GetRedValueFromBGR(u16 bgr); //Returns the 24-bit RGB Red Color value from a 15-bit BGR color value
 u16 hrt_GetGreenValueFromBGR(u16 bgr); //Returns the 24-bit RGB Green Color value from a 15-bit BGR color value
 u16 hrt_GetBlueValueFromBGR(u16 bgr); //Returns the 24-bit RGB Blue Color value from a 15-bit BGR color value
+int hrt_GetRTCTime(void); //Returns Time of Real-Time-Clock
+void hrt_EnableRTC(); //Enables the Built-in Real Time Clock function
+int hrt_GetRTCHour(); //Gets the Hour of the RTC (WIP)
+int hrt_GetRTCMinute(); //Gets the Minute of the RTC (WIP)
+int hrt_GetRTCSecond(); //Gets the Second of the RTC (WIP)
 
 #ifdef __cplusplus
 }
