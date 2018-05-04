@@ -79,7 +79,7 @@ void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode)
     }
 }
 
-void hrt_EditBG(u8 bg, int x, int y, int x_size, int y_size, int angle) {
+void hrt_EditBG(u8 bg, int x, int y, int x_size, int y_size, int angle, int centerx, int centery) {
     if (hrt_start == 1) {
         switch (bg) {
         case 0:
@@ -133,23 +133,19 @@ void hrt_DrawPixel(int Mode, int x, int y, unsigned short color) {
     }
 }
 
-u16 hrt_GetPixel(u8 mode, int x, int y) {
-    if (hrt_start == 1) {
-        u16 temp;
-        switch (mode) {
-        case 3:
-            return VRAM[y * 240 + x]; //returns the pixel color at the position given
-            break;
-        case 4:
-            temp = VRAM[y * 120 + x]; //returns the pixel color at the position given
-            return BGPaletteMem[temp];
-            break;
-        case 5:
-            return VRAM[y * 160 + x]; //returns the pixel color at the position given
-            break;
-        }
-    }
-    return 0;
+u16 hrt_GetPixelInMode3(int x, int y) {
+	if (hrt_start == 1) {
+		return VRAM[y * 240 + x]; //returns the pixel color at the position given
+	}
+	return 0;
+}
+u16 hrt_GetPixelInMode4(int x, int y) {
+	if (hrt_start == 1) {
+		u8 pal;
+		pal = (u8)VRAM[y * 120 + x]; //returns the pixel color at the position given
+		return BGPaletteMem[pal];
+	}
+	return 0;
 }
 
 void hrt_CyclePalette(int start, int amount, int pal) {

@@ -85,8 +85,9 @@ Recommended Tools for development with this library:
 extern "C" {
 #endif
 
-#define HEART_VERSION_MAJOR 1
-#define HEART_VERSION_MINOR 00
+#define HRT_VERSION_MAJOR 1
+#define HRT_VERSION_MINOR 00
+#define HRT_VERSION_DEV 99
 
 #include <stdio.h>
 #include <stdint.h>
@@ -173,7 +174,6 @@ typedef signed long long s64;
 typedef signed int sint;
 
 typedef void(*IntFn)(void);
-
 
 #include "jpg.h"
 
@@ -304,7 +304,7 @@ typedef struct {                                                                
 } sounds;
 sounds sound[25];
 
-//gates
+//Logic Gates - So you don't have to remember the syntax for all the logic gates. It's a lifesaver.
 #define NOT  !
 #define AND  &&
 #define NOR  !|
@@ -312,6 +312,7 @@ sounds sound[25];
 #define NAND !&
 #define XOR  ^
 #define XNOR !^
+//
 
 #define BACKBUFFER      0x10
 
@@ -414,6 +415,7 @@ sounds sound[25];
 #define NOT_BIT15 0x7FFF
 #define NOT_BIT_SET(value,bit) (!((value) & (bit)))
 //
+
 //All GBA Registers - Copied from GBATek
 #define REG_DISPCNT *(u16*)0x04000000 //Display Control
 #define REG_UNKNOWN0 *(u16*)0x04000002 //Unknown - Green Swap?
@@ -585,9 +587,6 @@ sounds sound[25];
 #define RADIAN(n)    (((float) n)/ (float) 180 * PI)
 
 //Taken from HAM's mygba.h
-#ifndef RGB_GET_B_VALUE
-#define RGB_GET_B_VALUE(rgb)    (((rgb >> 10) & 0x001f) << 3)
-#endif
 #define ACCESS_8(location)		*(volatile u8 *)  (location)
 #define ACCESS_16(location)		*(volatile u16 *) (location)
 #define ACCESS_32(location)		*(volatile u32 *) (location)
@@ -999,7 +998,6 @@ void hrt_irqEnable(int mask); //Enable Interrupt
 void hrt_DisableInterrupt(irqMASK mask) __attribute__((deprecated)); //Disable Interrupt Mirror
 void hrt_irqDisable(int mask); //Disable Interrupt
 void hrt_IntrMain(); //Main Interrupt
-void hrt_EditBG(u8 bg, int x, int y, int x_scale, int y_scale, int angle); //Edits background attributes
 void hrt_Diff8bitUnFilterWram(u32 source, u32 dest); //Decompresses Diff8bit to EWRAM
 void hrt_Diff8bitUnFilterVram(u32 source, u32 dest); //Decompresses Diff8bit to VRAM
 void hrt_Diff16bitUnFilter(u32 source, u32 dest); //Decompresses Diff16bit
@@ -1119,7 +1117,7 @@ double hrt_AreaCircle(double r); //Calculates the Area of any given circle
 void hrt_ConfigWININ(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 bld, u8 bg0_2, u8 bg1_2, u8 bg2_2, u8 bg3_2, u8 obj_2, u8 bld_2); //configs REG_WININ
 void hrt_ConfigWINOUT(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 bld, u8 bg0_obj, u8 bg1_obj, u8 bg2_obj, u8 bg3_obj, u8 obj_obj, u8 bld_obj); //Configs REG_WINOUT
 u32 hrt_RNGRange(u32 low, u32 high); // Creates a Random number between a range.
-int __dputchar(int c);
+int __dputchar(int c); //MBV2Lib print
 void	mbv2_dprintf(char *str, ...); //Mbv2Lib print
 void	mbv2_dfprintf(int fp, char *str, ...);//Mbv2Lib print
 int		mbv2_dputchar(int c); //Mbv2Lib print
@@ -1164,6 +1162,9 @@ int hrt_GetRTCMinute_H(); //Gets the Minute of the RTC (WIP)
 int hrt_GetRTCMinute_L(); //Gets the Minute of the RTC (WIP)
 int hrt_GetRTCSecond_H(); //Gets the Second of the RTC (WIP)
 int hrt_GetRTCSecond_L(); //Gets the Second of the RTC (WIP)
+void hrt_EditBG(u8 bg, int x, int y, int x_size, int y_size, int angle, int centerx, int centery); //Edits BG
+u16 hrt_GetPixelInMode4(int x, int y); //Gives Mode 4 Pixel
+u16 hrt_GetPixelInMode3(int x, int y); //Gives Mode 3 Pixel
 
 #ifdef __cplusplus
 }

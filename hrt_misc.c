@@ -1,6 +1,7 @@
 #include "libheart.h"
 u8* ExtWRAM = (u8*)0x2000000;
-int __gettime(void);
+extern int __gettime(void);
+extern void sleep12();
 u8  __hrt_reset;
 u8 __hrt_rtc;
 extern u8 hrt_start;
@@ -193,5 +194,12 @@ void hrt_EZ4Exit()
 		hrt_DMA_Copy(3, (u8*)0x02000000, (u8*)&sprites, 0x3FF, 0x80800000);
 		hrt_CopyOAM();
 		__hrt_exittoez4();
+	}
+}
+void hrt_Suspend()
+{
+	if (hrt_start == 1)
+	{
+		sleep12();
 	}
 }

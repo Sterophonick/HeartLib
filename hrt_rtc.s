@@ -12,12 +12,10 @@ __gettime:   @called from ui.c
    strh r1,[r3,#4]         @enable RTC 
    mov r1,#7 
    strh r1,[r3,#2]         @enable write 
-
    mov r1,#1 
    strh r1,[r3] 
    mov r1,#5 
    strh r1,[r3]         @State=Command 
-
    mov r2,#0x65         @r2=Command, YY:MM:DD 00 hh:mm:ss 
    mov addy,#8 
 RTCLoop1: 
@@ -31,7 +29,6 @@ RTCLoop1:
    mov r2,r2,lsl#1 
    subs addy,addy,#1 
    bne RTCLoop1 
-
    mov r1,#5 
    strh r1,[r3,#2]         @enable read 
    mov r2,#0 

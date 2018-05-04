@@ -10,9 +10,17 @@ int hrt_offsetBGMap;
 int hrt_offsetBGTile;
 int hrt_offsetBGPal;
 
+void hrt_InitNoIntro()
+{
+	hrt_start = 1;
+	hrt_irqInit();
+	hrt_irqEnable(IRQ_VBLANK);
+	REG_IME = 1;
+}
+
 void hrt_Init(int mode) {
 	int i;
-    if((mode==1)AND(hrt_start == 0)) {
+    if(mode == 0) {
 		hrt_start = 1;
 		hrt_irqInit();
 		hrt_irqEnable(IRQ_VBLANK);
@@ -50,7 +58,7 @@ void hrt_Init(int mode) {
         by = 72;
         bsy = 10;
         bsx = 10;
-        for (i = 0; i < 17 * 3; i++) {
+        for (i = 0; i < 17 * 2; i++) {
             hrt_VblankIntrWait();
             frames++;
             hrt_SetOBJXY(&sprites[4], bx, by);
@@ -84,10 +92,10 @@ void hrt_Init(int mode) {
 					angle -= 4;
 				}
 			}
-            if ((!(frames % 3))AND(fadecnt < 17)) {
-				REG_BLDY = 16 - i / 3;
-                fadecnt++;
-            }
+			if ((!(frames % 2))AND(fadecnt < 17)) {
+				REG_BLDY = 16-i / 2;
+				fadecnt++;
+			}
             if (!(frames % 10)) {
                 hrt_AffineOBJ(0, 0, 220, 220);
                 hrt_AffineOBJ(3, 0, 256, 256);
@@ -107,7 +115,7 @@ void hrt_Init(int mode) {
             hrt_CopyOAM();
         }
         frames = 0;
-        for (i = 0; i < 80; i++) {
+        for (i = 0; i < 60; i++) {
             frames++;
             hrt_VblankIntrWait();
             hrt_SetOBJXY(&sprites[4], bx, by);
@@ -160,7 +168,7 @@ void hrt_Init(int mode) {
         }
         frames = 0;
         fadecnt = 0;
-        for (i = 0; i < 17 * 3; i++) {
+        for (i = 0; i < 17 * 2; i++) {
             hrt_VblankIntrWait();
 			hrt_CopyOAM();
             frames++;
@@ -195,8 +203,8 @@ void hrt_Init(int mode) {
 					angle -= 4;
 				}
 			}
-            if ((!(frames % 3))AND(fadecnt < 17)) {
-				REG_BLDY = i / 3;
+            if ((!(frames % 2))AND(fadecnt < 17)) {
+				REG_BLDY = i / 2;
                 fadecnt++;
             }
             if (!(frames % 10)) {

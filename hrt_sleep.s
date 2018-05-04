@@ -1,18 +1,18 @@
-.global hrt_Suspend
- .align
- .pool
- .text
- .align
- .pool
- REG_BASE      = 0x4000000 
- REG_DISPCNT      = 0x00 
- REG_P1CNT      = 0x132 
-  REG_DM0CNT_H   = 0xBA 
-  REG_DM1CNT_H   = 0xC6 
-  REG_DM3CNT_H   = 0xDE
-   REG_SGCNT_L      = 0x80 
-   .arm
-hrt_Suspend:
+.global sleep12
+.align
+.pool
+.text
+.align
+.pool
+REG_BASE      = 0x4000000 
+REG_DISPCNT      = 0x00 
+REG_P1CNT      = 0x132 
+REG_DM0CNT_H   = 0xBA 
+REG_DM1CNT_H   = 0xC6 
+REG_DM3CNT_H   = 0xDE
+REG_SGCNT_L      = 0x80 
+.arm
+sleep12:
 	mov r3,#REG_BASE
 	@stop HDMA so we don't get the crawling scanlines (and possible GBC MODE reboot) anymore
 	strh r3,[r3,#REG_DM0CNT_H]		@DMA0 stop
