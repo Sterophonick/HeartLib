@@ -30,23 +30,45 @@ void hrt_FlipBGBuffer() {
 	}
 }
 
-void hrt_ResetOffset(u8 no) {
+u32 hrt_GetOffset(u8 no) {
+	if (hrt_start == 1) {
+		switch (no) {
+		case 0:
+			return hrt_offsetOAMData;
+			break;
+		case 1:
+			return hrt_offsetOAMPal;
+			break;
+		case 2:
+			return hrt_offsetBGMap;
+			break;
+		case 3:
+			return hrt_offsetBGPal;
+			break;
+		case 4:
+			return hrt_offsetBGTile;
+			break;
+		}
+	}
+}
+
+void hrt_SetOffset(u8 no, u32 amount) {
     if (hrt_start == 1) {
         switch (no) {
         case 0:
-            hrt_offsetOAMData = 0;
+            hrt_offsetOAMData = amount;
             break;
         case 1:
-            hrt_offsetOAMPal = 0;
+            hrt_offsetOAMPal = amount;
             break;
         case 2:
-            hrt_offsetBGMap = 0;
+            hrt_offsetBGMap = amount;
             break;
         case 3:
-            hrt_offsetBGPal = 0;
+            hrt_offsetBGPal = amount;
             break;
         case 4:
-            hrt_offsetBGTile = 0;
+            hrt_offsetBGTile = amount;
             break;
         }
     }

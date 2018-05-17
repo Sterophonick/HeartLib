@@ -2,6 +2,8 @@
 u8* ExtWRAM = (u8*)0x2000000;
 extern int __gettime(void);
 extern void sleep12();
+u8 __hrt_mmframeonvbl;
+u8 __copyoamonvbl;
 u8  __hrt_reset;
 u8 __hrt_rtc;
 extern u8 hrt_start;
@@ -98,6 +100,33 @@ void hrt_EnableRTC()
 void hrt_EnableSoftReset()
 {
 	__hrt_reset = 1;
+}
+
+void hrt_DisableSoftReset()
+{
+	__hrt_reset = 0;
+}
+
+void hrt_DisableRTC()
+{
+	__hrt_rtc = 0;
+}
+
+void hrt_EnablemmFrameonVBL()
+{
+	__hrt_mmframeonvbl = 1;
+}
+void hrt_DisablemmFrameonVBL()
+{
+	__hrt_mmframeonvbl = 0;
+}
+void hrt_EnableCopyOAMOnVBL()
+{
+	__copyoamonvbl = 1;
+}
+void hrt_DisableCopyOAMOnVBL()
+{
+	__copyoamonvbl = 0;
 }
 
 int hrt_GetRTCTime()

@@ -2,6 +2,8 @@
 int __hrt_version(void);
 extern u8  __hrt_reset;
 extern u8 hrt_start;
+extern u8 __hrt_mmframeonvbl;
+extern u8 __copyoamonvbl;
 extern int	hrt_offsetOAMData;
 extern int hrt_offsetOAMPal;
 extern int hrt_offsetBGMap;
@@ -124,13 +126,19 @@ void hrt_VblankIntrWait()
 	if (hrt_start == 1)
 	{
 		asm volatile("swi 0x05"::);
-		mmFrame();
-		hrt_CopyOAM();
+		if (__copyoamonvbl == 1)
+		{
+			hrt_CopyOAM();
+		}
 		if (__hrt_reset == 1)
 		{
 			if ((keyDown(KEY_A))AND(keyDown(KEY_B))AND(keyDown(KEY_SELECT))AND(keyDown(KEY_START))) {
 				asm volatile("swi 0x00"::);
 			}
+		}
+		if (__hrt_mmframeonvbl == 1)
+		{
+			mmFrame();
 		}
 	}
 

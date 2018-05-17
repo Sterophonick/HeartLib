@@ -165,6 +165,27 @@ void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale, s32 y_scale)
 		rotData[rotDataIndex].pd = pd;
 	}
 }
+void hrt_SetOBJX(OAMEntry* sp, int x)
+{
+	if (hrt_start == 1) {
+		if (x < 0)
+			x = 512 + x;
+
+		sp->attribute1 = sp->attribute1 & 0xFE00;
+		sp->attribute1 = sp->attribute1 | x;
+	}
+}
+
+void hrt_SetOBJY(OAMEntry* sp, int y)
+{
+	if (hrt_start == 1) {
+		if (y < 0)
+			y = 256 + y;
+
+		sp->attribute0 = sp->attribute0 & 0xFF00;
+		sp->attribute0 = sp->attribute0 | y;
+	}
+}
 
 void hrt_SetOBJXY(OAMEntry* sp, int x, int y)
 {
@@ -263,4 +284,66 @@ void hrt_GlideSpritetoPos(int spr, int x1, int y1, int x2, int y2, u32 frames)
 			hrt_VblankIntrWait();
 		}
 	}
+}
+
+void hrt_MoveSpriteInDirection(u8 sprite, u16 direction, int steps)
+{
+	if (hrt_start == 1)
+	{
+		hrt_SetOBJXY(&sprites[sprite], (hrt_GetOBJX(sprite) + (sin(direction))*steps), (hrt_GetOBJY(sprite) + (cos(direction))*steps));
+	}
+}
+
+u16 hrt_PointOBJTowardsPosition(u8 sprite, int x, int y)
+{
+	int delta_x;
+	int delta_y;
+	u16 direction;
+	if (hrt_start == 1)
+	{
+		delta_x = x - hrt_GetOBJX(sprite);
+		delta_y = y - hrt_GetOBJY(sprite);
+		if (delta_y == 0)
+		{
+			if (delta_x < 0)
+			{
+				return 270;
+			}
+			else
+			{
+				return 90;
+			}
+		}
+		else {
+			if (delta_y < 0)
+			{
+				direction = (180 + (atan(delta_x / delta_y)));
+			}
+			else {
+				direction =(atan(delta_x / delta_y));
+			}
+		}
+		return direction;
+	}
+	return 0;
+}
+
+u8 hrt_GetOBJX(u8 sprite)
+{
+	u8 spriteX = 0;
+	if (hrt_start == 1)
+	{
+		spriteX = (((s16)(sprites[sprite].attribute1 << 7)) >> 7) + (4 << (sprites[sprite].attribute1 >> 14));
+	}
+	return spriteX;
+}
+
+u8 hrt_GetOBJY(u8 sprite)
+{
+	u8 spriteY = 0;
+	if (hrt_start == 1)
+	{
+		spriteY = (((s16)(sprites[sprite].attribute0 << 8)) >> 8) + (4 << (sprites[sprite].attribute1 >> 14));
+	}
+	return spriteY;
 }

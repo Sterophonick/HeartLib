@@ -11,6 +11,7 @@
 	List:
 		JPEG
 		Tiled Text
+		Sprites moving in direction
 	*/
 
 /*
@@ -275,14 +276,6 @@ typedef struct tagOAMEntry {
     u16 attribute3;
 
 } OAMEntry, *pOAMEntry;
-typedef struct {
-
-    u16 x;
-    u16 y;
-    u16 OAMSpriteNum;
-    u16 *SpriteData;
-
-} Sprite, *pSprite;
 typedef struct tagRotData {
 
     u16 filler1[3];
@@ -973,6 +966,12 @@ const unsigned short font_milkbottlePal[16];
 
 #define PAL_BG 0
 #define PAL_OBJ 1
+
+#define OFF_OAMDATA 0
+#define OFF_OAMPAL 1
+#define OFF_BGMAP 2
+#define OFF_BGPAL 3
+#define OFF_BGTILE 4
 //
 
 ///////////////////////////FUNCTIONS////////////////////////////
@@ -1013,7 +1012,8 @@ void hrt_LoadOBJPal(unsigned int * pal, u16 size); //Loads OBJ Palette
 void hrt_LoadOBJGFX(unsigned int * gfx,int size); //loads OBJ GFX
 void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale,s32 y_scale); //Scales and Rotates an object with the affine flag set to 1.
 void hrt_SetOBJXY(OAMEntry* sp, int x, int y); // Sets Position of a Sprite
-void hrt_ResetOffset(u8 no); //Resets offset of gfx or pal data for BG or OBJ
+void hrt_SetOffset(u8 no, u32 amount); //Sets offset for bg or obj gfx, tile, or pal data
+u32 hrt_GetOffset(u8 no); //Returns the offset of bg or obj gfx data.
 void hrt_CloneOBJ(int ospr, int nspr); //Creates clone of sprite
 void hrt_GlideSpritetoPos(int spr, int x1, int y1, int x2, int y2, u32 frames); //glides sprite to a position. WIP
 void hrt_SaveInt(u16 offset, int value); //Saves to SRAM
@@ -1165,6 +1165,18 @@ int hrt_GetRTCSecond_L(); //Gets the Second of the RTC (WIP)
 void hrt_EditBG(u8 bg, int x, int y, int x_size, int y_size, int angle, int centerx, int centery); //Edits BG
 u16 hrt_GetPixelInMode4(int x, int y); //Gives Mode 4 Pixel
 u16 hrt_GetPixelInMode3(int x, int y); //Gives Mode 3 Pixel
+u8 hrt_GetOBJX(u8 sprite); //Returns OBJ X position
+u8 hrt_GetOBJY(u8 sprite); //Returns OBJ Y position
+void hrt_DisableCopyOAMOnVBL();
+void hrt_EnableCopyOAMOnVBL();
+void hrt_DisablemmFrameonVBL();
+void hrt_EnablemmFrameonVBL();
+void hrt_DisableRTC();
+void hrt_DisableSoftReset();
+u16 hrt_PointOBJTowardsPosition(u8 sprite, int x, int y); //Rotates a sprite toward a set direction
+void hrt_MoveSpriteInDirection(u8 sprite, u16 direction, int steps); //Moves sprite in a set direction
+void hrt_SetOBJX(OAMEntry* sp, int x); //Sets just the X position of a sprite
+void hrt_SetOBJY(OAMEntry* sp, int Y); //Sets just the Y position of a sprite
 
 #ifdef __cplusplus
 }
