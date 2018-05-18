@@ -1,11 +1,18 @@
 //File: libheart.h - The NEW Definitive GBA Header File
 //Date: March 2018
 //Author: Sterophonick
-//Derived from gba.h by eloist, Inspired by Hamlib's mygba.h, who da heck remembers that library amirite?
+//Derived from gba.h by eloist and agb_lib.h by me, Inspired by Hamlib's mygba.h, who da heck remembers that library amirite?
 //This library is designed to make GBA Programming easy to do, and for everyone to be able to do it, not unlike HAMLib (rip 2001-2011 =( may god rest ur soul)
 //This Library is Dedicated to Stevendog98, who is wanting to make GBA Games. This is to give him a head start on the GBA.
+//This Library is going to be huge. It will probably be one of the best GBA Libraries in recent years.
 
 //Some functions don't work yet so be patient!
+/*
+	List:
+		JPEG
+		Tiled Text
+		Sprites moving in direction
+	*/
 
 /*
 GBA Specs:
@@ -19,7 +26,7 @@ GBA Specs:
 	DMA: 4 Channels
 	Sound: 4 PSG Channels, 2 Direct Sound Channels, Mono on speaker, Stereo headphones.
 	LCD: 240x160 15 bit BGR, 32768 Colors
-	*/
+*/
 
 /*
   What's Included:
@@ -52,6 +59,10 @@ GBA Specs:
 	MBV2Lib (Greetz to LibGBA)
 	Xboo Stuff (LibGBA)
 	Typedefs
+	Defines for making those larger functions easier to understand.
+	Real-Time Clock Stuff (Shoutouts to Dwedit)
+	Mode 7?
+	Exit to EZ4 (Shoutouts to Dwedit and GodBolt)
 
 TODO:
 		Implement Tiled Text
@@ -75,8 +86,9 @@ Recommended Tools for development with this library:
 extern "C" {
 #endif
 
-#define HEART_VERSION_MAJOR 1
-#define HEART_VERSION_MINOR 00
+#define HRT_VERSION_MAJOR 1
+#define HRT_VERSION_MINOR 00
+#define HRT_VERSION_DEV 99
 
 #include <stdio.h>
 #include <stdint.h>
@@ -112,53 +124,60 @@ extern "C" {
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/fcntl.h>
+#include <errno.h>
 
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned long u32;
 typedef unsigned long long u64;
 typedef unsigned int uint;
+
 typedef volatile unsigned char vu8;
 typedef volatile unsigned short vu16;
 typedef volatile unsigned long vu32;
 typedef volatile unsigned long long vu64;
 typedef volatile unsigned int vuint;
+
 typedef volatile signed char vs8;
 typedef volatile signed short vs16;
 typedef volatile signed long vs32;
 typedef volatile signed long long vs64;
 typedef volatile signed int vsint;
+
 typedef const signed char cs8;
 typedef const signed short cs16;
 typedef const signed long cs32;
 typedef const signed long long cs64;
 typedef const signed int csint;
+
 typedef const volatile signed char cvs8;
 typedef const volatile signed short cvs16;
 typedef const volatile signed long cvs32;
 typedef const volatile signed long long cvs64;
 typedef const volatile signed int cvsint;
+
 typedef const volatile unsigned char cvu8;
 typedef const volatile unsigned short cvu16;
 typedef const volatile unsigned long cvu32;
 typedef const volatile unsigned long long cvu64;
 typedef const volatile unsigned int cvuint;
+
 typedef const signed char cu8;
 typedef const signed short cu16;
 typedef const signed long cu32;
 typedef const signed long long cu64;
 typedef const signed int csint;
+
 typedef signed char s8;
 typedef signed short s16;
 typedef signed long s32;
 typedef signed long long s64;
 typedef signed int sint;
-typedef void(*IntFn)(void);
-typedef bool(*_SD_FN_CMD_6BYTE_RESPONSE) (u8* responseBuffer, u8 command, u32 data);
-typedef bool(*_SD_FN_CMD_17BYTE_RESPONSE) (u8* responseBuffer, u8 command, u32 data);
-u8 EZ4ExitRAM[128];
 
-u32* OAMmem;
+typedef void(*IntFn)(void);
+
+#include "jpg.h"
+
 u16* VRAM;
 u16* OAMData;
 u16* BGPaletteMem;
@@ -168,12 +187,7 @@ u8* SaveData;
 u16* OAM;
 u16* FrontBuffer;
 u16* BackBuffer;
-u8 hrt_start;
-int	hrt_offsetOAMData;
-int hrt_offsetOAMPal;
-int hrt_offsetBGMap;
-int hrt_offsetBGTile;
-int hrt_offsetBGPal;
+u8* ExtWRAM;
 
 typedef struct {
     char		manufacturer;
@@ -262,14 +276,6 @@ typedef struct tagOAMEntry {
     u16 attribute3;
 
 } OAMEntry, *pOAMEntry;
-typedef struct {
-
-    u16 x;
-    u16 y;
-    u16 OAMSpriteNum;
-    u16 *SpriteData;
-
-} Sprite, *pSprite;
 typedef struct tagRotData {
 
     u16 filler1[3];
@@ -291,7 +297,7 @@ typedef struct {                                                                
 } sounds;
 sounds sound[25];
 
-//gates
+//Logic Gates - So you don't have to remember the syntax for all the logic gates. It's a lifesaver.
 #define NOT  !
 #define AND  &&
 #define NOR  !|
@@ -299,6 +305,7 @@ sounds sound[25];
 #define NAND !&
 #define XOR  ^
 #define XNOR !^
+//
 
 #define BACKBUFFER      0x10
 
@@ -363,28 +370,45 @@ sounds sound[25];
 #define GetJumpList 0x2A
 #define AGBPrint 0xFF
 
-#define hrt_MULTIBOOT const int __gba_multiboot; //Type 'MULTIBOOT' at the beginning of a project, and the file will be compiled as a multiboot ROM.
-#define hrt_SOFTRESETCODE int __hrt_softresetcode = 1;
+#define hrt_MULTIBOOT const u8 __gba_multiboot; //Type 'MULTIBOOT' at the beginning of a project, and the file will be compiled as a multiboot ROM.
 
 //Bits
-#define W 1
-#define BIT00 1
-#define BIT01 2
-#define BIT02 4
-#define BIT03 8
-#define BIT04 16
-#define BIT05 32
-#define BIT06 64
-#define BIT07 128
-#define BIT08 256
-#define BIT09 512
-#define BIT10 1024
-#define BIT11 2048
-#define BIT12 4096
-#define BIT13 8192
-#define BIT14 16384
-#define BIT15 32768
+#define BIT00  0x0001
+#define BIT01  0x0002
+#define BIT02  0x0004
+#define BIT03  0x0008
+#define BIT04  0x0010
+#define BIT05  0x0020
+#define BIT06  0x0040
+#define BIT07  0x0080
+#define BIT08  0x0100
+#define BIT09  0x0200
+#define BIT10 0x0400
+#define BIT11 0x0800
+#define BIT12 0x1000
+#define BIT13 0x2000
+#define BIT14 0x4000
+#define BIT15 0x8000
+#define BIT_SET(value,bit) ((value) & (bit))
+#define NOT_BIT00  0xFFFE
+#define NOT_BIT01  0xFFFD
+#define NOT_BIT02  0xFFFB
+#define NOT_BIT03  0xFFF7
+#define NOT_BIT04  0xFFEF
+#define NOT_BIT05  0xFFDF
+#define NOT_BIT06  0xFFBF
+#define NOT_BIT07  0xFF7F
+#define NOT_BIT08  0xFEFF
+#define NOT_BIT09  0xFDFF
+#define NOT_BIT10 0xFBFF
+#define NOT_BIT11 0xF7FF
+#define NOT_BIT12 0xEFFF
+#define NOT_BIT13 0xDFFF
+#define NOT_BIT14 0xBFFF
+#define NOT_BIT15 0x7FFF
+#define NOT_BIT_SET(value,bit) (!((value) & (bit)))
 //
+
 //All GBA Registers - Copied from GBATek
 #define REG_DISPCNT *(u16*)0x04000000 //Display Control
 #define REG_UNKNOWN0 *(u16*)0x04000002 //Unknown - Green Swap?
@@ -556,25 +580,18 @@ sounds sound[25];
 #define RADIAN(n)    (((float) n)/ (float) 180 * PI)
 
 //Taken from HAM's mygba.h
-#ifndef RGB_GET_R_VALUE
-#define RGB_GET_R_VALUE(rgb)    ((rgb & 0x001f) << 3)
-#endif
-#ifndef RGB_GET_G_VALUE
-#define RGB_GET_G_VALUE(rgb)    (((rgb >> 5) & 0x001f) << 3)
-#endif
-#ifndef RGB_GET_B_VALUE
-#define RGB_GET_B_VALUE(rgb)    (((rgb >> 10) & 0x001f) << 3)
-#endif
 #define ACCESS_8(location)		*(volatile u8 *)  (location)
 #define ACCESS_16(location)		*(volatile u16 *) (location)
 #define ACCESS_32(location)		*(volatile u32 *) (location)
 #define MEM_PAL_COL_PTR(x)		 (u16*) (0x05000000+(x<<1))	// Palette color pointer
 #define MEM_PAL_OBJ_PTR(x)		 (u16*) (0x05000200+(x<<1))	// Palette color pointer
-#define RGB15(r,g,b) ((((b)>>3)<<10)+(((g)>>3)<<5)+((r)>>3))
-
 #define hrt_MEM_IN_EWRAM __attribute__ ((section (".ewram"))) = {0}
 #define hrt_MEM_IN_IWRAM __attribute__ ((section (".iwram"))) = {0}
 #define hrt_MEM_FUNC_IN_IWRAM __attribute__ ((section (".iwram"), long_call))
+#define hrt_MEM_FUNC_IN_EWRAM __attribute__ ((section (".ewram"), long_call))
+#define SIZEOF_8BIT(x)          (sizeof(x))
+#define SIZEOF_16BIT(x)         (sizeof(x)/2)
+#define SIZEOF_32BIT(x)         (sizeof(x)/4)
 //
 
 #define MAX_INTS	15
@@ -860,7 +877,6 @@ extern "C" {
 //eof
 
 const GBFS_FILE *find_first_gbfs_file(const void *start);
-
 const double SIN[360];
 const double COS[360];
 const double RAD[360];
@@ -868,127 +884,114 @@ const unsigned short font_matrixBitmap[6080];
 const unsigned short font_milkbottleTiles[3072];
 const unsigned short font_milkbottlePal[16];
 
-//DiskIO stuff
-#define DEVICE_TYPE_SCSD 0x44534353
-#define DEVICE_TYPE_SCCF 0x46434353
-#define DEVICE_TYPE_MPCF 0x4643504D
-#define DEVICE_TYPE_M3SD 0x4453334D
-#define DEVICE_TYPE_M3CF 0x4643334D
-#define FEATURE_MEDIUM_CANREAD		0x00000001
-#define FEATURE_MEDIUM_CANWRITE		0x00000002
-#define FEATURE_SLOT_GBA			0x00000010
-#define FEATURE_SLOT_NDS			0x00000020
-typedef uint32_t sec_t;
-typedef bool(*FN_MEDIUM_STARTUP)(void);
-typedef bool(*FN_MEDIUM_ISINSERTED)(void);
-typedef bool(*FN_MEDIUM_READSECTORS)(sec_t sector, sec_t numSectors, void* buffer);
-typedef bool(*FN_MEDIUM_WRITESECTORS)(sec_t sector, sec_t numSectors, const void* buffer);
-typedef bool(*FN_MEDIUM_CLEARSTATUS)(void);
-typedef bool(*FN_MEDIUM_SHUTDOWN)(void);
-struct DISC_INTERFACE_STRUCT {
-	unsigned long			ioType;
-	unsigned long			features;
-	FN_MEDIUM_STARTUP		startup;
-	FN_MEDIUM_ISINSERTED	isInserted;
-	FN_MEDIUM_READSECTORS	readSectors;
-	FN_MEDIUM_WRITESECTORS	writeSectors;
-	FN_MEDIUM_CLEARSTATUS	clearStatus;
-	FN_MEDIUM_SHUTDOWN		shutdown;
-};
-typedef struct DISC_INTERFACE_STRUCT DISC_INTERFACE;
-#define FIX_ALL						0x01
-#define FIX_GLUE					0x02
-#define FIX_GOT						0x04
-#define FIX_BSS						0x08
-#define DLDI_MAGIC_STRING_LEN 		8
-#define DLDI_FRIENDLY_NAME_LEN 		48
-extern const u32  DLDI_MAGIC_NUMBER;
-typedef struct {
-	u32 	magicNumber;
-	char	magicString[DLDI_MAGIC_STRING_LEN];
-	u8		versionNumber;
-	u8		driverSize;			// log-2 of driver size in bytes
-	u8		fixSectionsFlags;
-	u8		allocatedSize;		// log-2 of the allocated space in bytes
-	char	friendlyName[DLDI_FRIENDLY_NAME_LEN];
-	void*	dldiStart;
-	void*	dldiEnd;
-	void*	interworkStart;
-	void*	interworkEnd;
-	void*	gotStart;
-	void*	gotEnd;
-	void*	bssStart;
-	void*	bssEnd;
-	DISC_INTERFACE ioInterface;
-} DLDI_INTERFACE;
-typedef struct {
-	vu16* data;
-	vu16* status;
-	vu16* command;
-	vu16* error;
-	vu16* sectorCount;
-	vu16* lba1;
-	vu16* lba2;
-	vu16* lba3;
-	vu16* lba4;
-} CF_REGISTERS;
-#define CF_STS_INSERTED		0x50
-#define CF_STS_REMOVED		0x00
-#define CF_STS_READY		0x58
-#define CF_STS_DRQ			0x08
-#define CF_STS_BUSY			0x80
-#define CF_CMD_LBA			0xE0
-#define CF_CMD_READ			0x20
-#define CF_CMD_WRITE		0x30
-#define CF_CARD_TIMEOUT	10000000
-#define M3_MODE_ROM 0x00400004
-#define M3_MODE_MEDIA 0x00400003 
-#define SC_MODE_FLASH 0x1510
-#define SC_MODE_RAM 0x5
-#define SC_MODE_MEDIA 0x3 
-#define SC_MODE_RAM_RO 0x1
-#define GO_IDLE_STATE 0
-#define ALL_SEND_CID 2
-#define SEND_RELATIVE_ADDR 3
-#define SELECT_CARD 7
-#define SEND_CSD 9
-#define STOP_TRANSMISSION 12
-#define SEND_STATUS 13
-#define GO_INACTIVE_STATE 15
-#define SET_BLOCKLEN 16
-#define READ_SINGLE_BLOCK 17
-#define READ_MULTIPLE_BLOCK 18
-#define WRITE_BLOCK 24
-#define WRITE_MULTIPLE_BLOCK 25
-#define APP_CMD 55
-#define SET_BUS_WIDTH 6
-#define SD_APP_OP_COND 41
-#define SD_OCR_VALUE 0x00030000
-//#define SD_OCR_VALUE 0x003F8000 /* 2.7V to 3.4V */
-//#define SD_OCR_VALUE 0x00FC0000
-#define SD_CARD_BUSY 0xff
-#define SD_STATE_IDLE 0		// Idle state, after power on or GO_IDLE_STATE command
-#define SD_STATE_READY 1	// Ready state, after card replies non-busy to SD_APP_OP_COND
-#define SD_STATE_IDENT 2	// Identification state, after ALL_SEND_CID
-#define SD_STATE_STBY 3		// Standby state, when card is deselected
-#define SD_STATE_TRAN 4		// Transfer state, after card is selected and ready for data transfer
-#define SD_STATE_DATA 5		// 
-#define SD_STATE_RCV 6		// Receive data state
-#define SD_STATE_PRG 7		// Programming state
-#define SD_STATE_DIS 8		// Disconnect state
-#define SD_STATE_INA 9		// Inactive state, after GO_INACTIVE_STATE
-#define READY_FOR_DATA 1	// bit 8 in card status
-extern const DISC_INTERFACE _io_m3cf;
-extern const DISC_INTERFACE _io_m3sd;
-extern const DISC_INTERFACE _io_mpcf;
-extern const DISC_INTERFACE _io_sccf;
-extern const DISC_INTERFACE _io_scsd;
+//Defines for Functions
+#define OBJ_SIZE_8X8 0
+#define OBJ_SIZE_16X16 1
+#define OBJ_SIZE_32X32 2
+#define OBJ_SIZE_64X64 3
+#define OBJ_SHAPE_NORMAL 0
+#define OBJ_SHAPE_WIDE 1
+#define OBJ_SHAPE_TALL 2
+#define OBJ_SHAPE_PROHIBITED 3
+#define OBJ_AFFINE_ENABLE 1
+#define OBJ_AFFINE_DISABLE 0
+#define OBJ_HFLIP_ENABLE 1
+#define OBJ_HFLIP_DISABLE 0
+#define OBJ_VFLIP_ENABLE 1
+#define OBJ_VFLIP_DISABLE 0
+#define OBJ_MODE_NORMAL 0
+#define OBJ_MODE_ALPHA 1
+#define OBJ_MODE_WIN 2
+#define OBJ_MODE_PROHIBITED 3
+#define OBJ_DOUBLESIZE_ENABLE 1
+#define OBJ_DOUBLESIZE_DISABLE 0
+#define OBJ_PAL_16 0
+#define OBJ_PAL_256 1
 
+#define FX_TARGET1_BG0_ENABLE 1
+#define FX_TARGET1_BG0_DISABLE 0
+#define FX_TARGET1_BG1_ENABLE 1
+#define FX_TARGET1_BG1_DISABLE 0
+#define FX_TARGET1_BG2_ENABLE 1
+#define FX_TARGET1_BG2_DISABLE 0
+#define FX_TARGET1_BG3_ENABLE 1
+#define FX_TARGET1_BG3_DISABLE 0
+#define FX_TARGET1_OBJ_ENABLE 1
+#define FX_TARGET1_OBJ_DISABLE 0
+#define FX_TARGET1_BACKDROP_ENABLE 1
+#define FX_TARGET1_BACKDROP_DISABLE 0
+#define FX_MODE_NONE 0
+#define FX_MODE_ALPHA 1
+#define FX_MODE_BRIGHTEN 2
+#define FX_MODE_DARKEN 3
+#define FX_TARGET2_BG0_ENABLE 1
+#define FX_TARGET2_BG0_DISABLE 0
+#define FX_TARGET2_BG1_ENABLE 1
+#define FX_TARGET2_BG1_DISABLE 0
+#define FX_TARGET2_BG2_ENABLE 1
+#define FX_TARGET2_BG2_DISABLE 0
+#define FX_TARGET2_BG3_ENABLE 1
+#define FX_TARGET2_BG3_DISABLE 0
+#define FX_TARGET2_OBJ_ENABLE 1
+#define FX_TARGET2_OBJ_DISABLE 0
+#define FX_TARGET2_BACKDROP_ENABLE 1
+#define FX_TARGET2_BACKDROP_DISABLE 0
+
+#define DSP_MODE_0 0
+#define DSP_MODE_1 1
+#define DSP_MODE_2 2
+#define DSP_MODE_3 3
+#define DSP_MODE_4 4
+#define DSP_MODE_5 5
+#define DSP_CGB_ENABLE 1
+#define DSP_FRAMESELECT_ENABLE 1
+#define DSP_FRAMESELECT_DISABLE 0
+#define DSP_UNLOCKED_HBLANK_ENABLE 1
+#define DSP_UNLOCKED_HBLANK_DISABLE 0
+#define DSP_OBJ_MAP_1D 1
+#define DSP_OBJ_MAP_2D 0
+#define DSP_BG0_ENABLE 1
+#define DSP_BG0_DISABLE 0
+#define DSP_BG1_ENABLE 1
+#define DSP_BG1_DISABLE 0
+#define DSP_BG2_ENABLE 1
+#define DSP_BG2_DISABLE 0
+#define DSP_BG3_ENABLE 1
+#define DSP_BG3_DISABLE 0
+#define DSP_OBJ_ENABLE 1
+#define DSP_OBJ_DISABLE 0
+#define DSP_WIN0_ENABLE 1
+#define DSP_WIN0_DISABLE 0
+#define DSP_WIN1_ENABLE 1
+#define DSP_WIN1_DISABLE 0
+#define DSP_OBJWIN_ENABLE 1
+#define DSP_OBJWIN_DISABLE 0
+
+#define PAL_BG 0
+#define PAL_OBJ 1
+
+#define OFF_OAMDATA 0
+#define OFF_OAMPAL 1
+#define OFF_BGMAP 2
+#define OFF_BGPAL 3
+#define OFF_BGTILE 4
+
+#define BGXCNT_SIZE_256X256 0
+#define BGXCNT_SIZE_512X256 1
+#define BGXCNT_SIZE_256X512 2
+#define BGXCNT_SIZE_512X512 3
+
+#define OBJ_MODE_NORMAL 0
+#define OBJ_MODE_SEMITRANSPARENT 1
+#define OBJ_MODE_WINDOW 2
+#define OBJ_MODE_PROHIBITED 3
 //
 
-
-static inline u32 hrt_GetBiosChecksum() {
-	if (hrt_start == 1) {
+///////////////////////////FUNCTIONS////////////////////////////
+// These functions will allow the user control over objects, sound,///
+////registers, memory, bitmaps, palettes, and many other things./////
+///////////////////////////////////////////////////////////////
+static inline u32 hrt_GetBiosChecksum(void) {
 		register u32 result;
 #if   defined   ( __thumb__ )
 		__asm ("SWI   0x0d\nmov %0,r0\n" :  "=r"(result) :: "r1", "r2", "r3");
@@ -996,20 +999,17 @@ static inline u32 hrt_GetBiosChecksum() {
 		__asm ("SWI   0x0d<<16\nmov %0,r0\n" : "=r"(result) :: "r1", "r2", "r3");
 #endif
 		return result;
-	}
-	return 0;
-}//Returns BIOS Checksum.
+}//Returns BIOS Checksum. Return value differs if you are playing on a Prototype GBA, Release GBA, or a Nintendo DS.
 u32 hrt_MultiBoot(MultiBootParam *mp, u32 mode); //Enables Multiboot? Unknown
 void hrt_InitInterrupt(void) __attribute__((deprecated)); //Initialize interrupts mirror
-void hrt_irqInit(); //Initialize Interrupts
+void hrt_irqInit(void); //Initialize Interrupts
 IntFn *hrt_SetInterrupt(irqMASK mask, IntFn function) __attribute__((deprecated)); //Set Interrupt Function Mirror
 IntFn *hrt_irqSet(irqMASK mask, IntFn function); //Set Interrupt Function
 void hrt_EnableInterrupt(irqMASK mask) __attribute__((deprecated)); //Enable Interrupt Mirror
 void hrt_irqEnable(int mask); //Enable Interrupt
 void hrt_DisableInterrupt(irqMASK mask) __attribute__((deprecated)); //Disable Interrupt Mirror
 void hrt_irqDisable(int mask); //Disable Interrupt
-void hrt_IntrMain(); //Main Interrupt
-void hrt_EditBG(u8 bg, int x, int y, int x_scale, int y_scale, int angle); //Edits background attributes
+void hrt_IntrMain(void); //Main Interrupt
 void hrt_Diff8bitUnFilterWram(u32 source, u32 dest); //Decompresses Diff8bit to EWRAM
 void hrt_Diff8bitUnFilterVram(u32 source, u32 dest); //Decompresses Diff8bit to VRAM
 void hrt_Diff16bitUnFilter(u32 source, u32 dest); //Decompresses Diff16bit
@@ -1019,13 +1019,14 @@ void hrt_LZ77UnCompVRAM(u32 source, u32 dest); //LZ77 Decompresses to VRAM
 void hrt_RLUnCompVram(u32 source, u32 dest); //RLE Uncompresses
 void hrt_InitSound(int a, int f, int e, u8* d);  //creates sound object
 void hrt_PlaySoundFIFO(int s); //plays sound using DMA
-void hrt_CopyOAM(); //Copies OBJ Attributes to OAM
+void hrt_CopyOAM(void); //Copies OBJ Attributes to OAM
 void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset); //Creates a sprite
 void hrt_LoadOBJPal(unsigned int * pal, u16 size); //Loads OBJ Palette
 void hrt_LoadOBJGFX(unsigned int * gfx,int size); //loads OBJ GFX
 void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale,s32 y_scale); //Scales and Rotates an object with the affine flag set to 1.
 void hrt_SetOBJXY(OAMEntry* sp, int x, int y); // Sets Position of a Sprite
-void hrt_ResetOffset(u8 no); //Resets offset of gfx or pal data for BG or OBJ
+void hrt_SetOffset(u8 no, u32 amount); //Sets offset for bg or obj gfx, tile, or pal data
+u32 hrt_GetOffset(u8 no); //Returns the offset of bg or obj gfx data.
 void hrt_CloneOBJ(int ospr, int nspr); //Creates clone of sprite
 void hrt_GlideSpritetoPos(int spr, int x1, int y1, int x2, int y2, u32 frames); //glides sprite to a position. WIP
 void hrt_SaveInt(u16 offset, int value); //Saves to SRAM
@@ -1041,7 +1042,7 @@ void hrt_LoadBGMap(u16* data, int length); //Loads BG Map
 void hrt_LoadBGPal(u16* data, u16 length); //Loads BG Palette
 void hrt_InvertPalette(int start, int amount, int pal); //Inverts Palette
 void hrt_DrawRectangle(int r, int c, int width, int height, u16 color, int mode); //Draws rectangle
-void hrt_FillScreen(u16 color, int mode); // fills screen with specified color
+void hrt_FillScreen(u16 color); // fills screen with specified color
 void hrt_DrawLine(int x1, int y1, int x2, int y2, unsigned short color, int mode); //Draws line of specified color
 void hrt_DrawCircle(int xCenter, int yCenter, int radius, u16 color, int mode); //Draws circle of specified color.
 void hrt_ScanLines(u16 color, int time, int mode); //scanlines wipe
@@ -1056,14 +1057,14 @@ u16 hrt_GetOBJPalEntry(int slot); //Returns Color of OBJ Palette Entry
 void hrt_SetBGPalEntry(int slot, u16 color); //Sets color of BG Palette Entry
 void hrt_SetOBJPalEntry(int slot, u16 color); //Sets color of OBJ Palette Entry
 void hrt_LoadBGTiles(u16* data, int length); //Loads BG Tiles into VRAM, at Tile slot 1.
-void hrt_ColdReset(); //Restarts the console -- Undocumented BIOS Call
-void hrt_SoftReset(); //Restarts from ROM.
-void hrt_Init(int mode); //If set to 0, no intro will play. If set to 1, then an intro will play. MUST BE EXECUTED BEFORE USING THIS LIBRARY.
+void hrt_ColdReset(void); //Restarts the console -- Undocumented BIOS Call
+void hrt_SoftReset(void); //Restarts from ROM.
+void hrt_Init(void); //If set to 0, no intro will play. If set to 1, then an intro will play. MUST BE EXECUTED BEFORE USING THIS LIBRARY.
 void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode); //Copies from DMA
 void hrt_SetFXLevel(u8 level); //Sets BLDY level
 void hrt_SetFXMode(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 backdrop, u8 mode, u8 bg0_2, u8 bg1_2, u8 bg2_2, u8 bg3_2, u8 obj_2, u8 backdrop_2); //Sets BLDCNT Mode
 void hrt_SetDSPMode(u8 mode, u8 CGB, u8 framesel, u8 unlockedhblank, u8 objmap, u8 forceblank, u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 win0, u8 win1, u8 objwin); //Sets REG_DISPCNT, but it is a lot clearer what you have to do.
-void hrt_Assert(u8 error, char* func, int arg, char* desc); //Error message
+void hrt_Assert(char* func, int arg, char* desc); //Error message
 void hrt_ConfigBG(u8 bg, u8 priority, u8 tilebase, u8 mosaic, u8 color256, u8 tilemapbase, u8 wraparound, u8 dimensions); //Configures BG
 void hrt_LineWipe(u16 color, int time, u8 mode); //Wipe from hrt_DrawLine
 void hrt_SetMosaic(u8 bh, u8 bv, u8 oh, u8 ov); //Sets Mosaic Level -- Not Tested Yet.
@@ -1071,19 +1072,19 @@ double hrt_Distance(int x1, int y1, int x2, int y2); //Returns distance between 
 double hrt_Slope(int x1, int y1, int x2, int y2); //Returns slope between 2 different points
 void hrt_SetTile(u8 x, u8 y, int tileno); //Sets a specific tile to a given value.
 void hrt_SetFXAlphaLevel(u8 src, u8 dst); //Sets REG_BLDALPHA
-void hrt_DrawTextTile(int x, int y, char* str); //Unfinished -- Ignore this
-void hrt_InitTextTile(); //Unfinished -- Ignore this.
+//void hrt_DrawTextTile(int x, int y, char* str); //Unfinished -- Ignore this
+//void hrt_InitTextTile(u8 bgno); //Unfinished -- Ignore this.
 void hrt_FillPalette(int paltype, u16 color); //Fills BG or OBJ palette witha specified color.
 void hrt_AGBPrint(const char *msg); //hrt_AGBPrint is interesting. Using this will make the ROM put a message into the output log if AGBPrint is enabled on VisualBoyAdvance. I found a technique that doesn't crash on hardware or other emulators.
 void *hrt_Memcpy(void *dest, const void *src, size_t len); //Copies Memory from one place to another.
-void hrt_VblankIntrWait(); //Waits for Vblank Interrupt.
-void hrt_RegisterRamReset(); //Resets Memory. Unfinished.
-void hrt_Suspend(); //Suspends the console. Unfinished.
-void hrt_EZ4Exit() hrt_MEM_FUNC_IN_IWRAM; //Exits to Ez-Flash IV Menu. Unfinished
+void hrt_VblankIntrWait(void); //Waits for Vblank Interrupt.
+void hrt_RegisterRamReset(void); //Resets Memory. Unfinished.
+void hrt_Suspend(void); //Suspends the console. Unfinished.
+void hrt_EZ4Exit(void); //Exits to Ez-Flash IV Menu.
 void hrt_ConfigTimer(u8 channel, u8 scale, u8 irq, u8 enable, u16 start); //Configures a Timer.
 void hrt_SaveByte(int offset, u8 value); //Copies a byte to SRAM at a given location
 u8 hrt_LoadByte(int offset); //Loads a byte from SRAM at a given address
-void hrt_FlipBGBuffer(); //Flips FrontBuffer and BackBuffer in mode 4.
+void hrt_FlipBGBuffer(void); //Flips FrontBuffer and BackBuffer in mode 4.
 const void *skip_gbfs_file(const GBFS_FILE *file); //GBFS Stuff
 const void *gbfs_get_obj(const GBFS_FILE *file, const char *name, u32 *len); //GBFS Stuff
 void *gbfs_copy_obj(void *dst, const GBFS_FILE *file, const char *name); //GBFS Stuff
@@ -1121,15 +1122,15 @@ void mmEffectScaleRate(mm_sfxhand handle, mm_word factor); //??
 void mmEffectCancel(mm_sfxhand handle); //Stops sound effect
 void mmEffectRelease(mm_sfxhand handle); //Releases Sound Effect?
 void mmSetEffectsVolume(mm_word volume); //Set Sound effect volume
-void mmEffectCancelAll(); //Cancel all sound effects
-void hrt_StopSoundFIFO(); //Stops FIFO Sound -- No longer attached to MaxMod.
+void mmEffectCancelAll(void); //Cancel all sound effects
+void hrt_StopSoundFIFO(void); //Stops FIFO Sound -- No longer attached to MaxMod.
 double hrt_VolumeCylinder(double r, double h); //Calculates the volume of any given cylinder
 double hrt_AreaTriangle(double a, double b); //Calculates the area of a right triangle
 double hrt_AreaCircle(double r); //Calculates the Area of any given circle
 void hrt_ConfigWININ(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 bld, u8 bg0_2, u8 bg1_2, u8 bg2_2, u8 bg3_2, u8 obj_2, u8 bld_2); //configs REG_WININ
 void hrt_ConfigWINOUT(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 bld, u8 bg0_obj, u8 bg1_obj, u8 bg2_obj, u8 bg3_obj, u8 obj_obj, u8 bld_obj); //Configs REG_WINOUT
 u32 hrt_RNGRange(u32 low, u32 high); // Creates a Random number between a range.
-int __dputchar(int c);
+int __dputchar(int c); //MBV2Lib print
 void	mbv2_dprintf(char *str, ...); //Mbv2Lib print
 void	mbv2_dfprintf(int fp, char *str, ...);//Mbv2Lib print
 int		mbv2_dputchar(int c); //Mbv2Lib print
@@ -1140,24 +1141,6 @@ int		mbv2_dfclose(int fp);
 int		mbv2_dfgetc(int fp);
 int		mbv2_dfputc(int ch, int fp);
 void	mbv2_drewind(int fp);
-int hrt_GetGBAVersion(); //Gets the platform that this is running on. Taken from PocketNES
-extern const DISC_INTERFACE* dldiGetInternal(void);
-extern bool dldiIsValid(const DLDI_INTERFACE* io);
-extern void dldiFixDriverAddresses(DLDI_INTERFACE* io);
-extern DLDI_INTERFACE* dldiLoadFromFile(const char* path);
-extern void dldiFree(DLDI_INTERFACE* dldi);
-bool _CF_isInserted(void);
-bool _CF_clearStatus(void);
-bool _CF_readSectors(u32 sector, u32 numSectors, void* buffer);
-bool _CF_writeSectors(u32 sector, u32 numSectors, void* buffer);
-bool _CF_shutdown(void);
-bool _CF_startup(const CF_REGISTERS *usableCfRegs);
-extern const DISC_INTERFACE _io_m3cf;
-extern void _SC_changeMode(u8 mode);
-extern u8 _SD_CRC7(u8* data, int size);
-extern void _SD_CRC16(u8* buff, int buffLength, u8* crc16buff);
-extern bool _SD_InitCard(_SD_FN_CMD_6BYTE_RESPONSE cmd_6byte_response,	_SD_FN_CMD_17BYTE_RESPONSE cmd_17byte_response,	bool use4bitBus,	u32 *RCA);
-extern const DISC_INTERFACE* discGetInterface(void);
 void	xcomms_dprintf(char *str, ...);
 void	xcomms_dfprintf(int handle, char *str, ...);
 void	xcomms_dputchar(int c);
@@ -1174,9 +1157,108 @@ void	xcomms_send(u32 data);
 void	xcomms_sendblock(const void *block, u32 len);
 int		xcomms_getch(void);
 int		xcomms_kbhit(void);
-void	xcomms_init();
+void	xcomms_init(void);
+void hrt_ConfigSIONormal(u8 sc, u8 isc, u8 si_state, u8 soinact, u8 start, u8 length, u8 mode, u8 irq); //Configures REG_SIOCNT
+void hrt_ConfigSIOMultiplayer(u8 baudrate, u8 busy, u8 irq); //Configures SIOCNT in multiplayer mode
+void hrt_ConfigLowSCCNT(u8 baudrate, u8 cts, u8 paritycnt, u8 length, u8 fifo, u8 parityenable, u8 send, u8 receive, u8 irq); //Configures REG_SIOCNT in UART mode
+void hrt_ConfigJOYCNT(u8 reset, u8 receive, u8 send, u8 irq); //Configures JoyCNT
+void hrt_EnableSoftReset(void); //Enables Soft-Reset
+u16 hrt_GenerateColorFromRGB(u32 red, u32 green, u32 blue); //Creates a 15-bit BGR color value from 24-bit RGB values
+u16 hrt_GetRedValueFromBGR(u16 bgr); //Returns the 24-bit RGB Red Color value from a 15-bit BGR color value
+u16 hrt_GetGreenValueFromBGR(u16 bgr); //Returns the 24-bit RGB Green Color value from a 15-bit BGR color value
+u16 hrt_GetBlueValueFromBGR(u16 bgr); //Returns the 24-bit RGB Blue Color value from a 15-bit BGR color value
+int hrt_GetRTCTime(void); //Returns Time of Real-Time-Clock
+void hrt_EnableRTC(void); //Enables the Built-in Real Time Clock function
+int hrt_GetRTCHour_H(void); //Gets the Hour of the RTC (WIP)
+int hrt_GetRTCHour_L(void); //Gets the Hour of the RTC (WIP)
+int hrt_GetRTCMinute_H(void); //Gets the Minute of the RTC (WIP)
+int hrt_GetRTCMinute_L(void); //Gets the Minute of the RTC (WIP)
+int hrt_GetRTCSecond_H(void); //Gets the Second of the RTC (WIP)
+int hrt_GetRTCSecond_L(void); //Gets the Second of the RTC (WIP)
+void hrt_EditBG(u8 bg, int x, int y, int x_size, int y_size, int angle, int centerx, int centery); //Edits BG
+u16 hrt_GetPixelInMode4(int x, int y); //Gives Mode 4 Pixel
+u16 hrt_GetPixelInMode3(int x, int y); //Gives Mode 3 Pixel
+u8 hrt_GetOBJX(u8 sprite); //Returns OBJ X position
+u8 hrt_GetOBJY(u8 sprite); //Returns OBJ Y position
+void hrt_DisableCopyOAMOnVBL(void); //Disables Copying OAM on VblankIntWait();
+void hrt_EnableCopyOAMOnVBL(void); //Enables Copying OAM on VblankIntWait();
+void hrt_DisablemmFrameonVBL(void); //Disables mmFrame() on VblankIntrWait();
+void hrt_EnablemmFrameonVBL(void); //Enables mmFrame() on VblankIntrWait();
+void hrt_DisableRTC(void); //Disables RTC
+void hrt_DisableSoftReset(void); //Disables Soft-reset on VblankIntrWait();
+u16 hrt_PointOBJTowardsPosition(u8 sprite, int x, int y); //Rotates a sprite toward a set direction
+void hrt_MoveSpriteInDirection(u8 sprite, u16 direction, int steps); //Moves sprite in a set direction
+void hrt_SetOBJX(OAMEntry* sp, int x); //Sets just the X position of a sprite
+void hrt_SetOBJY(OAMEntry* sp, int Y); //Sets just the Y position of a sprite
+void hrt_SetDSPBGMode(u8 mode); //Sets the REG_DISPCNT BG Mode.
+void hrt_DSPEnableForceBlank(void); //Enables Force Blank
+void hrt_DSPDisableForceBlank(void); //Disables Force Blank
+void hrt_DSPEnableBG0(void); //Enables BG0
+void hrt_DSPDisableBG0(void); //Disables BG0
+void hrt_DSPEnableBG1(void); //Enables BG1
+void hrt_DSPDisableBG1(void); //Disables BG1
+void hrt_DSPEnableBG2(void); //Enables BG2
+void hrt_DSPDisableBG2(void); //Disables BG2
+void hrt_DSPEnableBG3(void); //Enables BG3
+void hrt_DSPDisableBG3(void); //Disables BG3
+void hrt_DSPEnableOBJ(void); //Enables OBJ
+void hrt_DSPDisableOBJ(void); //Disables OBJ
+void hrt_DSPEnableWIN0(void); //Enables Win0
+void hrt_DSPDisableWIN0(void); //Disables Win0
+void hrt_DSPEnableWIN1(void); //Enables Win1
+void hrt_DSPDisableWIN1(void); //Disables Win1
+void hrt_DSPEnableWINO(void); //Enables WinOut
+void hrt_DSPDisableWINO(void); //Disables WinOut
+u8 hrt_DSPGetBGMode(void); //Returns DSP Mode
+void hrt_BG0Set16Color(void); //Sets BG0 to 16 Colors
+void hrt_BG0Set256Color(void); //Sets BG0 to 256 colors
+void hrt_BG0EnableMosaic(void); //Enables Mosaic for BG0
+void hrt_BG0DisableMosaic(void); //Disables Mosaic for BG0
+void hrt_BG0SetSize(u8 size); //Sets BG0 Size
+void hrt_BG0SetMapBase(u8 no); //Sets BG0 Map Base
+void hrt_BG0SetTileBase(u8 no); //Sets BG0 Tile base
+void hrt_BG0SetPriority(u8 no); //Sets BG0 Priority
+void hrt_BG1Set16Color(void); //Sets BG1 to 16 Colors
+void hrt_BG1Set256Color(void); //Sets BG1 to 256 colors
+void hrt_BG1EnableMosaic(void); //Enables Mosaic for BG1
+void hrt_BG1DisableMosaic(void); //Disables Mosaic for BG1
+void hrt_BG1SetSize(u8 size); //Sets BG1 Size
+void hrt_BG1SetMapBase(u8 no); //Sets BG1 Map Base
+void hrt_BG1SetTileBase(u8 no); //Sets BG1 Tile base
+void hrt_BG1SetPriority(u8 no); //Sets BG1 Priority
+void hrt_BG2Set16Color(void); //Sets BG2 to 16 Colors
+void hrt_BG2Set256Color(void); //Sets BG2 to 256 colors
+void hrt_BG2EnableMosaic(void); //Enables Mosaic for BG2
+void hrt_BG2DisableMosaic(void); //Disables Mosaic for BG2
+void hrt_BG2SetSize(u8 size); //Sets BG2 Size
+void hrt_BG2SetMapBase(u8 no); //Sets BG2 Map Base
+void hrt_BG2SetTileBase(u8 no); //Sets BG2 Tile base
+void hrt_BG2SetPriority(u8 no); //Sets BG2 Priority
+void hrt_BG3Set16Color(void); //Sets BG3 to 16 Colors
+void hrt_BG3Set256Color(void); //Sets BG3 to 256 colors
+void hrt_BG3EnableMosaic(void); //Enables Mosaic for BG3
+void hrt_BG3DisableMosaic(void); //Disables Mosaic for BG3
+void hrt_BG3SetSize(u8 size); //Sets BG3 Size
+void hrt_BG3SetMapBase(u8 no); //Sets BG3 Map Base
+void hrt_BG3SetTileBase(u8 no); //Sets BG3 Tile base
+void hrt_BG3SetPriority(u8 no); //Sets BG3 Priority
+void hrt_EnableOBJHFlip(u8 objno); //Enables HFlip for a specified sprite
+void hrt_DisableOBJHFlip(u8 objno); //Disable HFlip for a specified sprite
+void hrt_EnableOBJVFlip(u8 objno); //Enables VFlip for a specified sprite
+void hrt_DisableOBJVFlip(u8 objno); //Disable VFlip for a specified sprite
+void hrt_SetOBJMode(u8 objno, u8 mode); //Sets mode of a specific sprite
+void hrt_EnableOBJMosaic(u8 objno); //Enables Mosaic for a specific sprite
+void hrt_DisableOBJMosaic(u8 objno); //Disables Mosaic for a specific sprite
+void hrt_SetOBJColor16(u8 objno); //Sets OBJ Color to 16 colors
+void hrt_SetOBJColor256(u8 objno); //Sets OBJ Color to 256 colors
+void hrt_SetOBJShape(u8 objno, u8 shape); //Sets shape of a sprite
+void hrt_SetOBJSize(u8 objno, u8 size); //Sets the size of a sprite
+void hrt_SetOBJOffset(u8 objno, u8 data); //Sets the sprite tile number
+void hrt_SetOBJPriority(u8 objno, u8 prior); //Sets OBJ Priority
+void hrt_SetOBJPalette(u8 objno, u8 palette); //Sets OBJ Palette no.
 
 #ifdef __cplusplus
 }
 #endif
+
 #endif

@@ -91,45 +91,44 @@ double hrt_AreaCircle(double r)
 	return 0;
 }
 
-
-void hrt_EnableRTC()
+void hrt_EnableRTC(void)
 {
 	__hrt_rtc = 1;
 }
 
-void hrt_EnableSoftReset()
+void hrt_EnableSoftReset(void)
 {
 	__hrt_reset = 1;
 }
 
-void hrt_DisableSoftReset()
+void hrt_DisableSoftReset(void)
 {
 	__hrt_reset = 0;
 }
 
-void hrt_DisableRTC()
+void hrt_DisableRTC(void)
 {
 	__hrt_rtc = 0;
 }
 
-void hrt_EnablemmFrameonVBL()
+void hrt_EnablemmFrameonVBL(void)
 {
 	__hrt_mmframeonvbl = 1;
 }
-void hrt_DisablemmFrameonVBL()
+void hrt_DisablemmFrameonVBL(void)
 {
 	__hrt_mmframeonvbl = 0;
 }
-void hrt_EnableCopyOAMOnVBL()
+void hrt_EnableCopyOAMOnVBL(void)
 {
 	__copyoamonvbl = 1;
 }
-void hrt_DisableCopyOAMOnVBL()
+void hrt_DisableCopyOAMOnVBL(void)
 {
 	__copyoamonvbl = 0;
 }
 
-int hrt_GetRTCTime()
+int hrt_GetRTCTime(void)
 {
 	if (hrt_start == 1)
 	{
@@ -141,7 +140,7 @@ int hrt_GetRTCTime()
 	return 0;
 }
 
-int hrt_GetRTCHour_H()
+int hrt_GetRTCHour_H(void)
 {
 	if (hrt_start == 1)
 	{
@@ -153,7 +152,7 @@ int hrt_GetRTCHour_H()
 	}
 	return 0;
 }
-int hrt_GetRTCHour_L()
+int hrt_GetRTCHour_L(void)
 {
 	if (hrt_start == 1)
 	{
@@ -166,7 +165,7 @@ int hrt_GetRTCHour_L()
 	return 0;
 }
 
-int hrt_GetRTCMinute_H()
+int hrt_GetRTCMinute_H(void)
 {
 	if (hrt_start == 1)
 	{
@@ -191,7 +190,7 @@ int hrt_GetRTCMinute_L()
 	return 0;
 }
 
-int hrt_GetRTCSecond_H()
+int hrt_GetRTCSecond_H(void)
 {
 	if (hrt_start == 1)
 	{
@@ -203,7 +202,7 @@ int hrt_GetRTCSecond_H()
 	}
 	return 0;
 }
-int hrt_GetRTCSecond_L()
+int hrt_GetRTCSecond_L(void)
 {
 	if (hrt_start == 1)
 	{
@@ -216,7 +215,7 @@ int hrt_GetRTCSecond_L()
 	return 0;
 }
 
-void hrt_EZ4Exit()
+void hrt_EZ4Exit(void)
 {
 	if (hrt_start == 1)
 	{
@@ -225,7 +224,7 @@ void hrt_EZ4Exit()
 		__hrt_exittoez4();
 	}
 }
-void hrt_Suspend()
+void hrt_Suspend(void)
 {
 	if (hrt_start == 1)
 	{

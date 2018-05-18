@@ -18,7 +18,7 @@ void hrt_InitNoIntro()
 	REG_IME = 1;
 }
 
-void hrt_Init(int mode) {
+void hrt_Init(void) {
 	int i;
 	hrt_start = 1;
 	hrt_irqInit();

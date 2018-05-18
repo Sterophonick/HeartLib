@@ -15,7 +15,7 @@ const char* ee = "In loving memory of the HAMLib and ngine.de. HeartLib by Stero
 const char* ee2 = "I would like to thank Mark Holloway, Tubooboo, Dwedit, gauauu, DevKitPro, Nintendo, sverx, endrift, GBATek, 3DSage, and DekuTree64 for helping me create this library.";
 const char* ee3 = "Without them, this project couldn't have been completed.";
 
-void hrt_FlipBGBuffer() {
+void hrt_FlipBGBuffer(void) {
 	if (hrt_start == 1) {
 		if (REG_DISPCNT & BACKBUFFER)                                                   //back buffer is current buffer, switch to font buffer
 		{
@@ -50,6 +50,7 @@ u32 hrt_GetOffset(u8 no) {
 			break;
 		}
 	}
+	return 0;
 }
 
 void hrt_SetOffset(u8 no, u32 amount) {
@@ -619,6 +620,7 @@ u16 hrt_GetRedValueFromBGR(u16 bgr)
 	}
 	return 0;
 }
+
 u16 hrt_GetGreenValueFromBGR(u16 bgr)
 {
 	if (hrt_start == 1)
@@ -627,6 +629,7 @@ u16 hrt_GetGreenValueFromBGR(u16 bgr)
 	}
 	return 0;
 }
+
 u16 hrt_GetBlueValueFromBGR(u16 bgr)
 {
 	if (hrt_start == 1)
@@ -634,4 +637,438 @@ u16 hrt_GetBlueValueFromBGR(u16 bgr)
 		return (((bgr >> 10) & 0x001f) << 3);
 	}
 	return 0;
+}
+
+void hrt_SetDSPBGMode(u8 mode)
+{
+	if (hrt_start == 1)
+	{
+		REG_DISPCNT &= 0xFFF8;
+		REG_DISPCNT |= mode;
+	}
+}
+
+void hrt_DSPEnableForceBlank(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_DISPCNT |= 0x0080;
+	}
+}
+
+void hrt_DSPDisableForceBlank(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_DISPCNT &= 0xFF7F;
+	}
+}
+
+void hrt_DSPEnableBG0(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_DISPCNT |= 0x0100;
+	}
+}
+
+void hrt_DSPDisableBG0(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_DISPCNT &= 0xFEFF;
+	}
+}
+
+void hrt_DSPEnableBG1(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_DISPCNT |= 0x0200;
+	}
+}
+
+void hrt_DSPDisableBG1(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_DISPCNT &= 0xFDFF;
+	}
+}
+
+void hrt_DSPEnableBG2(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_DISPCNT |= 0x0400;
+	}
+}
+
+void hrt_DSPDisableBG2(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_DISPCNT &= 0xFBFF;
+	}
+}
+
+void hrt_DSPEnableBG3(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_DISPCNT |= 0x0800;
+	}
+}
+
+void hrt_DSPDisableBG3(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_DISPCNT &= 0xF7FF;
+	}
+}
+
+void hrt_DSPEnableOBJ(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_DISPCNT |= 0x1000;
+	}
+}
+
+void hrt_DSPDisableOBJ(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_DISPCNT &= 0xEFFF;
+	}
+}
+
+void hrt_DSPEnableWIN0(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_DISPCNT |= 0x2000;
+	}
+}
+
+void hrt_DSPDisableWIN0(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_DISPCNT &= 0xDFFF;
+	}
+}
+
+void hrt_DSPEnableWIN1(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_DISPCNT |= 0x4000;
+	}
+}
+
+void hrt_DSPDisableWIN1(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_DISPCNT &= 0xBFFF;
+	}
+}
+
+void hrt_DSPEnableWINO(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_DISPCNT |= 0x8000;
+	}
+}
+
+void hrt_DSPDisableWINO(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_DISPCNT &= 0x7FFF;
+	}
+}
+
+u8 hrt_DSPGetBGMode(void)
+{
+	if (hrt_start == 1)
+	{
+		return REG_DISPCNT & 0x7;
+	}
+	return 0;
+}
+
+void hrt_BG0Set16Color(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG0CNT &= 0xFF7F;
+	}
+}
+
+void hrt_BG0Set256Color(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG0CNT |= 0x0080;
+	}
+}
+
+void hrt_BG0EnableMosaic(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG0CNT |= 0x0040;
+	}
+}
+
+void hrt_BG0DisableMosaic(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG0CNT &= 0xFFBF;
+	}
+}
+
+void hrt_BG0SetSize(u8 size)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG0CNT &= 0x3FFF;
+		REG_BG0CNT |= (size << 14);
+	}
+}
+
+void hrt_BG0SetMapBase(u8 no)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG0CNT &= 0xE0FF;
+		REG_BG0CNT |= (no << 8);
+	}
+}
+
+void hrt_BG0SetTileBase(u8 no)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG0CNT &= 0xFFF3;
+		REG_BG0CNT |= (no << 2);
+	}
+}
+
+void hrt_BG0SetPriority(u8 no)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG0CNT &= 0xFFFD;
+		REG_BG0CNT |= no;
+	}
+}
+
+void hrt_BG1Set16Color(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG1CNT &= 0xFF7F;
+	}
+}
+
+void hrt_BG1Set256Color(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG1CNT |= 0x0080;
+	}
+}
+
+void hrt_BG1EnableMosaic(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG1CNT |= 0x0040;
+	}
+}
+
+void hrt_BG1DisableMosaic(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG1CNT &= 0xFFBF;
+	}
+}
+
+void hrt_BG1SetSize(u8 size)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG1CNT &= 0x3FFF;
+		REG_BG1CNT |= (size << 14);
+	}
+}
+
+void hrt_BG1SetMapBase(u8 no)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG1CNT &= 0xE0FF;
+		REG_BG1CNT |= (no << 8);
+	}
+}
+
+void hrt_BG1SetTileBase(u8 no)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG1CNT &= 0xFFF3;
+		REG_BG1CNT |= (no << 2);
+	}
+}
+
+void hrt_BG1SetPriority(u8 no)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG1CNT &= 0xFFFD;
+		REG_BG1CNT |= no;
+	}
+}
+
+void hrt_BG2Set16Color(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG2CNT &= 0xFF7F;
+	}
+}
+
+void hrt_BG2Set256Color(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG2CNT |= 0x0080;
+	}
+}
+
+void hrt_BG2EnableMosaic(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG2CNT |= 0x0040;
+	}
+}
+
+void hrt_BG2DisableMosaic(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG2CNT &= 0xFFBF;
+	}
+}
+
+void hrt_BG2SetSize(u8 size)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG2CNT &= 0x3FFF;
+		REG_BG2CNT |= (size << 14);
+	}
+}
+
+void hrt_BG2SetMapBase(u8 no)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG2CNT &= 0xE0FF;
+		REG_BG2CNT |= (no << 8);
+	}
+}
+
+void hrt_BG2SetTileBase(u8 no)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG2CNT &= 0xFFF3;
+		REG_BG2CNT |= (no << 2);
+	}
+}
+
+void hrt_BG2SetPriority(u8 no)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG2CNT &= 0xFFFD;
+		REG_BG2CNT |= no;
+	}
+}
+
+void hrt_BG3Set16Color(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG3CNT &= 0xFF7F;
+	}
+}
+
+void hrt_BG3Set256Color(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG3CNT |= 0x0080;
+	}
+}
+
+void hrt_BG3EnableMosaic(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG3CNT |= 0x0040;
+	}
+}
+
+void hrt_BG3DisableMosaic(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG3CNT &= 0xFFBF;
+	}
+}
+
+void hrt_BG3SetSize(u8 size)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG3CNT &= 0x3FFF;
+		REG_BG3CNT |= (size << 14);
+	}
+}
+
+void hrt_BG3SetMapBase(u8 no)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG3CNT &= 0xE0FF;
+		REG_BG3CNT |= (no << 8);
+	}
+}
+
+void hrt_BG3SetTileBase(u8 no)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG3CNT &= 0xFFF3;
+		REG_BG3CNT |= (no << 2);
+	}
+}
+
+void hrt_BG3SetPriority(u8 no)
+{
+	if (hrt_start == 1)
+	{
+		REG_BG3CNT &= 0xFFFD;
+		REG_BG3CNT |= no;
+	}
 }

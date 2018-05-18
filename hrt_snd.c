@@ -33,7 +33,7 @@ void hrt_PlaySoundFIFOB(int s) {
 	}
 }
 
-void hrt_StopSoundFIFO()
+void hrt_StopSoundFIFO(void)
 {
 	REG_DMA1SAD = 0;                                //REG_DM1SAD = NAME, address of DMA source is the digitized music sample
 	REG_DMA1DAD = 0;                                                   //REG_DM1DAD = REG_SGFIFOA, address of DMA destination is FIFO buffer for direct sound A

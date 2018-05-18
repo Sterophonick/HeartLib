@@ -373,22 +373,22 @@ sounds sound[25];
 #define hrt_MULTIBOOT const u8 __gba_multiboot; //Type 'MULTIBOOT' at the beginning of a project, and the file will be compiled as a multiboot ROM.
 
 //Bits
-#define BIT00 1
-#define BIT01 2
-#define BIT02 4
-#define BIT03 8
-#define BIT04 16
-#define BIT05 32
-#define BIT06 64
-#define BIT07 128
-#define BIT08 256
-#define BIT09 512
-#define BIT10 1024
-#define BIT11 2048
-#define BIT12 4096
-#define BIT13 8192
-#define BIT14 16384
-#define BIT15 32768
+#define BIT00  0x0001
+#define BIT01  0x0002
+#define BIT02  0x0004
+#define BIT03  0x0008
+#define BIT04  0x0010
+#define BIT05  0x0020
+#define BIT06  0x0040
+#define BIT07  0x0080
+#define BIT08  0x0100
+#define BIT09  0x0200
+#define BIT10 0x0400
+#define BIT11 0x0800
+#define BIT12 0x1000
+#define BIT13 0x2000
+#define BIT14 0x4000
+#define BIT15 0x8000
 #define BIT_SET(value,bit) ((value) & (bit))
 #define NOT_BIT00  0xFFFE
 #define NOT_BIT01  0xFFFD
@@ -589,6 +589,9 @@ sounds sound[25];
 #define hrt_MEM_IN_IWRAM __attribute__ ((section (".iwram"))) = {0}
 #define hrt_MEM_FUNC_IN_IWRAM __attribute__ ((section (".iwram"), long_call))
 #define hrt_MEM_FUNC_IN_EWRAM __attribute__ ((section (".ewram"), long_call))
+#define SIZEOF_8BIT(x)          (sizeof(x))
+#define SIZEOF_16BIT(x)         (sizeof(x)/2)
+#define SIZEOF_32BIT(x)         (sizeof(x)/4)
 //
 
 #define MAX_INTS	15
@@ -972,13 +975,23 @@ const unsigned short font_milkbottlePal[16];
 #define OFF_BGMAP 2
 #define OFF_BGPAL 3
 #define OFF_BGTILE 4
+
+#define BGXCNT_SIZE_256X256 0
+#define BGXCNT_SIZE_512X256 1
+#define BGXCNT_SIZE_256X512 2
+#define BGXCNT_SIZE_512X512 3
+
+#define OBJ_MODE_NORMAL 0
+#define OBJ_MODE_SEMITRANSPARENT 1
+#define OBJ_MODE_WINDOW 2
+#define OBJ_MODE_PROHIBITED 3
 //
 
 ///////////////////////////FUNCTIONS////////////////////////////
 // These functions will allow the user control over objects, sound,///
 ////registers, memory, bitmaps, palettes, and many other things./////
 ///////////////////////////////////////////////////////////////
-static inline u32 hrt_GetBiosChecksum() {
+static inline u32 hrt_GetBiosChecksum(void) {
 		register u32 result;
 #if   defined   ( __thumb__ )
 		__asm ("SWI   0x0d\nmov %0,r0\n" :  "=r"(result) :: "r1", "r2", "r3");
@@ -989,14 +1002,14 @@ static inline u32 hrt_GetBiosChecksum() {
 }//Returns BIOS Checksum. Return value differs if you are playing on a Prototype GBA, Release GBA, or a Nintendo DS.
 u32 hrt_MultiBoot(MultiBootParam *mp, u32 mode); //Enables Multiboot? Unknown
 void hrt_InitInterrupt(void) __attribute__((deprecated)); //Initialize interrupts mirror
-void hrt_irqInit(); //Initialize Interrupts
+void hrt_irqInit(void); //Initialize Interrupts
 IntFn *hrt_SetInterrupt(irqMASK mask, IntFn function) __attribute__((deprecated)); //Set Interrupt Function Mirror
 IntFn *hrt_irqSet(irqMASK mask, IntFn function); //Set Interrupt Function
 void hrt_EnableInterrupt(irqMASK mask) __attribute__((deprecated)); //Enable Interrupt Mirror
 void hrt_irqEnable(int mask); //Enable Interrupt
 void hrt_DisableInterrupt(irqMASK mask) __attribute__((deprecated)); //Disable Interrupt Mirror
 void hrt_irqDisable(int mask); //Disable Interrupt
-void hrt_IntrMain(); //Main Interrupt
+void hrt_IntrMain(void); //Main Interrupt
 void hrt_Diff8bitUnFilterWram(u32 source, u32 dest); //Decompresses Diff8bit to EWRAM
 void hrt_Diff8bitUnFilterVram(u32 source, u32 dest); //Decompresses Diff8bit to VRAM
 void hrt_Diff16bitUnFilter(u32 source, u32 dest); //Decompresses Diff16bit
@@ -1006,7 +1019,7 @@ void hrt_LZ77UnCompVRAM(u32 source, u32 dest); //LZ77 Decompresses to VRAM
 void hrt_RLUnCompVram(u32 source, u32 dest); //RLE Uncompresses
 void hrt_InitSound(int a, int f, int e, u8* d);  //creates sound object
 void hrt_PlaySoundFIFO(int s); //plays sound using DMA
-void hrt_CopyOAM(); //Copies OBJ Attributes to OAM
+void hrt_CopyOAM(void); //Copies OBJ Attributes to OAM
 void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset); //Creates a sprite
 void hrt_LoadOBJPal(unsigned int * pal, u16 size); //Loads OBJ Palette
 void hrt_LoadOBJGFX(unsigned int * gfx,int size); //loads OBJ GFX
@@ -1044,9 +1057,9 @@ u16 hrt_GetOBJPalEntry(int slot); //Returns Color of OBJ Palette Entry
 void hrt_SetBGPalEntry(int slot, u16 color); //Sets color of BG Palette Entry
 void hrt_SetOBJPalEntry(int slot, u16 color); //Sets color of OBJ Palette Entry
 void hrt_LoadBGTiles(u16* data, int length); //Loads BG Tiles into VRAM, at Tile slot 1.
-void hrt_ColdReset(); //Restarts the console -- Undocumented BIOS Call
-void hrt_SoftReset(); //Restarts from ROM.
-void hrt_Init(int mode); //If set to 0, no intro will play. If set to 1, then an intro will play. MUST BE EXECUTED BEFORE USING THIS LIBRARY.
+void hrt_ColdReset(void); //Restarts the console -- Undocumented BIOS Call
+void hrt_SoftReset(void); //Restarts from ROM.
+void hrt_Init(void); //If set to 0, no intro will play. If set to 1, then an intro will play. MUST BE EXECUTED BEFORE USING THIS LIBRARY.
 void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode); //Copies from DMA
 void hrt_SetFXLevel(u8 level); //Sets BLDY level
 void hrt_SetFXMode(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 backdrop, u8 mode, u8 bg0_2, u8 bg1_2, u8 bg2_2, u8 bg3_2, u8 obj_2, u8 backdrop_2); //Sets BLDCNT Mode
@@ -1064,14 +1077,14 @@ void hrt_SetFXAlphaLevel(u8 src, u8 dst); //Sets REG_BLDALPHA
 void hrt_FillPalette(int paltype, u16 color); //Fills BG or OBJ palette witha specified color.
 void hrt_AGBPrint(const char *msg); //hrt_AGBPrint is interesting. Using this will make the ROM put a message into the output log if AGBPrint is enabled on VisualBoyAdvance. I found a technique that doesn't crash on hardware or other emulators.
 void *hrt_Memcpy(void *dest, const void *src, size_t len); //Copies Memory from one place to another.
-void hrt_VblankIntrWait(); //Waits for Vblank Interrupt.
-void hrt_RegisterRamReset(); //Resets Memory. Unfinished.
-void hrt_Suspend(); //Suspends the console. Unfinished.
-void hrt_EZ4Exit(); //Exits to Ez-Flash IV Menu.
+void hrt_VblankIntrWait(void); //Waits for Vblank Interrupt.
+void hrt_RegisterRamReset(void); //Resets Memory. Unfinished.
+void hrt_Suspend(void); //Suspends the console. Unfinished.
+void hrt_EZ4Exit(void); //Exits to Ez-Flash IV Menu.
 void hrt_ConfigTimer(u8 channel, u8 scale, u8 irq, u8 enable, u16 start); //Configures a Timer.
 void hrt_SaveByte(int offset, u8 value); //Copies a byte to SRAM at a given location
 u8 hrt_LoadByte(int offset); //Loads a byte from SRAM at a given address
-void hrt_FlipBGBuffer(); //Flips FrontBuffer and BackBuffer in mode 4.
+void hrt_FlipBGBuffer(void); //Flips FrontBuffer and BackBuffer in mode 4.
 const void *skip_gbfs_file(const GBFS_FILE *file); //GBFS Stuff
 const void *gbfs_get_obj(const GBFS_FILE *file, const char *name, u32 *len); //GBFS Stuff
 void *gbfs_copy_obj(void *dst, const GBFS_FILE *file, const char *name); //GBFS Stuff
@@ -1109,8 +1122,8 @@ void mmEffectScaleRate(mm_sfxhand handle, mm_word factor); //??
 void mmEffectCancel(mm_sfxhand handle); //Stops sound effect
 void mmEffectRelease(mm_sfxhand handle); //Releases Sound Effect?
 void mmSetEffectsVolume(mm_word volume); //Set Sound effect volume
-void mmEffectCancelAll(); //Cancel all sound effects
-void hrt_StopSoundFIFO(); //Stops FIFO Sound -- No longer attached to MaxMod.
+void mmEffectCancelAll(void); //Cancel all sound effects
+void hrt_StopSoundFIFO(void); //Stops FIFO Sound -- No longer attached to MaxMod.
 double hrt_VolumeCylinder(double r, double h); //Calculates the volume of any given cylinder
 double hrt_AreaTriangle(double a, double b); //Calculates the area of a right triangle
 double hrt_AreaCircle(double r); //Calculates the Area of any given circle
@@ -1144,39 +1157,105 @@ void	xcomms_send(u32 data);
 void	xcomms_sendblock(const void *block, u32 len);
 int		xcomms_getch(void);
 int		xcomms_kbhit(void);
-void	xcomms_init();
+void	xcomms_init(void);
 void hrt_ConfigSIONormal(u8 sc, u8 isc, u8 si_state, u8 soinact, u8 start, u8 length, u8 mode, u8 irq); //Configures REG_SIOCNT
 void hrt_ConfigSIOMultiplayer(u8 baudrate, u8 busy, u8 irq); //Configures SIOCNT in multiplayer mode
 void hrt_ConfigLowSCCNT(u8 baudrate, u8 cts, u8 paritycnt, u8 length, u8 fifo, u8 parityenable, u8 send, u8 receive, u8 irq); //Configures REG_SIOCNT in UART mode
 void hrt_ConfigJOYCNT(u8 reset, u8 receive, u8 send, u8 irq); //Configures JoyCNT
-void hrt_EnableSoftReset(); //Enables Soft-Reset
+void hrt_EnableSoftReset(void); //Enables Soft-Reset
 u16 hrt_GenerateColorFromRGB(u32 red, u32 green, u32 blue); //Creates a 15-bit BGR color value from 24-bit RGB values
 u16 hrt_GetRedValueFromBGR(u16 bgr); //Returns the 24-bit RGB Red Color value from a 15-bit BGR color value
 u16 hrt_GetGreenValueFromBGR(u16 bgr); //Returns the 24-bit RGB Green Color value from a 15-bit BGR color value
 u16 hrt_GetBlueValueFromBGR(u16 bgr); //Returns the 24-bit RGB Blue Color value from a 15-bit BGR color value
 int hrt_GetRTCTime(void); //Returns Time of Real-Time-Clock
-void hrt_EnableRTC(); //Enables the Built-in Real Time Clock function
-int hrt_GetRTCHour_H(); //Gets the Hour of the RTC (WIP)
-int hrt_GetRTCHour_L(); //Gets the Hour of the RTC (WIP)
-int hrt_GetRTCMinute_H(); //Gets the Minute of the RTC (WIP)
-int hrt_GetRTCMinute_L(); //Gets the Minute of the RTC (WIP)
-int hrt_GetRTCSecond_H(); //Gets the Second of the RTC (WIP)
-int hrt_GetRTCSecond_L(); //Gets the Second of the RTC (WIP)
+void hrt_EnableRTC(void); //Enables the Built-in Real Time Clock function
+int hrt_GetRTCHour_H(void); //Gets the Hour of the RTC (WIP)
+int hrt_GetRTCHour_L(void); //Gets the Hour of the RTC (WIP)
+int hrt_GetRTCMinute_H(void); //Gets the Minute of the RTC (WIP)
+int hrt_GetRTCMinute_L(void); //Gets the Minute of the RTC (WIP)
+int hrt_GetRTCSecond_H(void); //Gets the Second of the RTC (WIP)
+int hrt_GetRTCSecond_L(void); //Gets the Second of the RTC (WIP)
 void hrt_EditBG(u8 bg, int x, int y, int x_size, int y_size, int angle, int centerx, int centery); //Edits BG
 u16 hrt_GetPixelInMode4(int x, int y); //Gives Mode 4 Pixel
 u16 hrt_GetPixelInMode3(int x, int y); //Gives Mode 3 Pixel
 u8 hrt_GetOBJX(u8 sprite); //Returns OBJ X position
 u8 hrt_GetOBJY(u8 sprite); //Returns OBJ Y position
-void hrt_DisableCopyOAMOnVBL();
-void hrt_EnableCopyOAMOnVBL();
-void hrt_DisablemmFrameonVBL();
-void hrt_EnablemmFrameonVBL();
-void hrt_DisableRTC();
-void hrt_DisableSoftReset();
+void hrt_DisableCopyOAMOnVBL(void); //Disables Copying OAM on VblankIntWait();
+void hrt_EnableCopyOAMOnVBL(void); //Enables Copying OAM on VblankIntWait();
+void hrt_DisablemmFrameonVBL(void); //Disables mmFrame() on VblankIntrWait();
+void hrt_EnablemmFrameonVBL(void); //Enables mmFrame() on VblankIntrWait();
+void hrt_DisableRTC(void); //Disables RTC
+void hrt_DisableSoftReset(void); //Disables Soft-reset on VblankIntrWait();
 u16 hrt_PointOBJTowardsPosition(u8 sprite, int x, int y); //Rotates a sprite toward a set direction
 void hrt_MoveSpriteInDirection(u8 sprite, u16 direction, int steps); //Moves sprite in a set direction
 void hrt_SetOBJX(OAMEntry* sp, int x); //Sets just the X position of a sprite
 void hrt_SetOBJY(OAMEntry* sp, int Y); //Sets just the Y position of a sprite
+void hrt_SetDSPBGMode(u8 mode); //Sets the REG_DISPCNT BG Mode.
+void hrt_DSPEnableForceBlank(void); //Enables Force Blank
+void hrt_DSPDisableForceBlank(void); //Disables Force Blank
+void hrt_DSPEnableBG0(void); //Enables BG0
+void hrt_DSPDisableBG0(void); //Disables BG0
+void hrt_DSPEnableBG1(void); //Enables BG1
+void hrt_DSPDisableBG1(void); //Disables BG1
+void hrt_DSPEnableBG2(void); //Enables BG2
+void hrt_DSPDisableBG2(void); //Disables BG2
+void hrt_DSPEnableBG3(void); //Enables BG3
+void hrt_DSPDisableBG3(void); //Disables BG3
+void hrt_DSPEnableOBJ(void); //Enables OBJ
+void hrt_DSPDisableOBJ(void); //Disables OBJ
+void hrt_DSPEnableWIN0(void); //Enables Win0
+void hrt_DSPDisableWIN0(void); //Disables Win0
+void hrt_DSPEnableWIN1(void); //Enables Win1
+void hrt_DSPDisableWIN1(void); //Disables Win1
+void hrt_DSPEnableWINO(void); //Enables WinOut
+void hrt_DSPDisableWINO(void); //Disables WinOut
+u8 hrt_DSPGetBGMode(void); //Returns DSP Mode
+void hrt_BG0Set16Color(void); //Sets BG0 to 16 Colors
+void hrt_BG0Set256Color(void); //Sets BG0 to 256 colors
+void hrt_BG0EnableMosaic(void); //Enables Mosaic for BG0
+void hrt_BG0DisableMosaic(void); //Disables Mosaic for BG0
+void hrt_BG0SetSize(u8 size); //Sets BG0 Size
+void hrt_BG0SetMapBase(u8 no); //Sets BG0 Map Base
+void hrt_BG0SetTileBase(u8 no); //Sets BG0 Tile base
+void hrt_BG0SetPriority(u8 no); //Sets BG0 Priority
+void hrt_BG1Set16Color(void); //Sets BG1 to 16 Colors
+void hrt_BG1Set256Color(void); //Sets BG1 to 256 colors
+void hrt_BG1EnableMosaic(void); //Enables Mosaic for BG1
+void hrt_BG1DisableMosaic(void); //Disables Mosaic for BG1
+void hrt_BG1SetSize(u8 size); //Sets BG1 Size
+void hrt_BG1SetMapBase(u8 no); //Sets BG1 Map Base
+void hrt_BG1SetTileBase(u8 no); //Sets BG1 Tile base
+void hrt_BG1SetPriority(u8 no); //Sets BG1 Priority
+void hrt_BG2Set16Color(void); //Sets BG2 to 16 Colors
+void hrt_BG2Set256Color(void); //Sets BG2 to 256 colors
+void hrt_BG2EnableMosaic(void); //Enables Mosaic for BG2
+void hrt_BG2DisableMosaic(void); //Disables Mosaic for BG2
+void hrt_BG2SetSize(u8 size); //Sets BG2 Size
+void hrt_BG2SetMapBase(u8 no); //Sets BG2 Map Base
+void hrt_BG2SetTileBase(u8 no); //Sets BG2 Tile base
+void hrt_BG2SetPriority(u8 no); //Sets BG2 Priority
+void hrt_BG3Set16Color(void); //Sets BG3 to 16 Colors
+void hrt_BG3Set256Color(void); //Sets BG3 to 256 colors
+void hrt_BG3EnableMosaic(void); //Enables Mosaic for BG3
+void hrt_BG3DisableMosaic(void); //Disables Mosaic for BG3
+void hrt_BG3SetSize(u8 size); //Sets BG3 Size
+void hrt_BG3SetMapBase(u8 no); //Sets BG3 Map Base
+void hrt_BG3SetTileBase(u8 no); //Sets BG3 Tile base
+void hrt_BG3SetPriority(u8 no); //Sets BG3 Priority
+void hrt_EnableOBJHFlip(u8 objno); //Enables HFlip for a specified sprite
+void hrt_DisableOBJHFlip(u8 objno); //Disable HFlip for a specified sprite
+void hrt_EnableOBJVFlip(u8 objno); //Enables VFlip for a specified sprite
+void hrt_DisableOBJVFlip(u8 objno); //Disable VFlip for a specified sprite
+void hrt_SetOBJMode(u8 objno, u8 mode); //Sets mode of a specific sprite
+void hrt_EnableOBJMosaic(u8 objno); //Enables Mosaic for a specific sprite
+void hrt_DisableOBJMosaic(u8 objno); //Disables Mosaic for a specific sprite
+void hrt_SetOBJColor16(u8 objno); //Sets OBJ Color to 16 colors
+void hrt_SetOBJColor256(u8 objno); //Sets OBJ Color to 256 colors
+void hrt_SetOBJShape(u8 objno, u8 shape); //Sets shape of a sprite
+void hrt_SetOBJSize(u8 objno, u8 size); //Sets the size of a sprite
+void hrt_SetOBJOffset(u8 objno, u8 data); //Sets the sprite tile number
+void hrt_SetOBJPriority(u8 objno, u8 prior); //Sets OBJ Priority
+void hrt_SetOBJPalette(u8 objno, u8 palette); //Sets OBJ Palette no.
 
 #ifdef __cplusplus
 }

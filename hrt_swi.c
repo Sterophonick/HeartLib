@@ -105,7 +105,7 @@ void hrt_AGBPrint(const char *msg)
 		"r0", "r1", "r2");
 }
 
-void hrt_ColdReset()
+void hrt_ColdReset(void)
 {
 	if (hrt_start == 1)
 	{
@@ -113,7 +113,7 @@ void hrt_ColdReset()
 	}
 }
 
-void hrt_SoftReset()
+void hrt_SoftReset(void)
 {
 	if (hrt_start == 1)
 	{
@@ -121,7 +121,7 @@ void hrt_SoftReset()
 	}
 }
 
-void hrt_VblankIntrWait()
+void hrt_VblankIntrWait(void)
 {
 	if (hrt_start == 1)
 	{
@@ -144,7 +144,7 @@ void hrt_VblankIntrWait()
 
 }
 
-void hrt_RegisterRamReset()
+void hrt_RegisterRamReset(void)
 {
 	if (hrt_start == 1)
 	{

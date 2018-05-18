@@ -15,7 +15,7 @@ void hrt_InitInterrupt(void) {
 	}
 }
 
-void hrt_irqInit() {
+void hrt_irqInit(void) {
 	if (hrt_start == 1) {
 		int i;
 		for (i = 0; i < MAX_INTS; i++)

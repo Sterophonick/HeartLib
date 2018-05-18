@@ -122,7 +122,7 @@ const double RAD[360] = { 0 , 0.0174533 , 0.0349066 , 0.0523598 , 0.0698131 , 0.
 		5.95157 , 5.96902 , 5.98647 , 6.00393 , 6.02138 , 6.03883 , 6.05629 , 6.07374 , 6.09119 , 6.10865 ,
 		6.1261 , 6.14355 , 6.16101 , 6.17846 , 6.19591 , 6.21337 , 6.23082 , 6.24827 , 6.26573 ,  };
 
-void hrt_CopyOAM()
+void hrt_CopyOAM(void)
 {
 	if (hrt_start == 1) {
 		u16 loop;
@@ -334,8 +334,9 @@ u8 hrt_GetOBJX(u8 sprite)
 	if (hrt_start == 1)
 	{
 		spriteX = (((s16)(sprites[sprite].attribute1 << 7)) >> 7) + (4 << (sprites[sprite].attribute1 >> 14));
+		return spriteX;
 	}
-	return spriteX;
+	return 0;
 }
 
 u8 hrt_GetOBJY(u8 sprite)
@@ -344,6 +345,119 @@ u8 hrt_GetOBJY(u8 sprite)
 	if (hrt_start == 1)
 	{
 		spriteY = (((s16)(sprites[sprite].attribute0 << 8)) >> 8) + (4 << (sprites[sprite].attribute1 >> 14));
+		return spriteY;
 	}
-	return spriteY;
+	return 0;
+}
+
+void hrt_EnableOBJHFlip(u8 objno)
+{
+	if (hrt_start == 1)
+	{
+		sprites[objno].attribute1 |= (1 << 12);
+	}
+}
+
+void hrt_DisableOBJHFlip(u8 objno)
+{
+	if (hrt_start == 1)
+	{
+		sprites[objno].attribute1 &= ~(1 << 12);
+	}
+}
+
+void hrt_EnableOBJVFlip(u8 objno)
+{
+	if (hrt_start == 1)
+	{
+		sprites[objno].attribute1 |= (1 << 13);
+	}
+}
+
+void hrt_DisableOBJVFlip(u8 objno)
+{
+	if (hrt_start == 1)
+	{
+		sprites[objno].attribute1 &= ~(1 << 13);
+	}
+}
+
+void hrt_SetOBJMode(u8 objno, u8 mode)
+{
+	if(hrt_start == 1)
+	{
+		sprites[objno].attribute0 |= (mode << 10);
+	}
+}
+
+void hrt_EnableOBJMosaic(u8 objno)
+{
+	if (hrt_start == 1)
+	{
+		sprites[objno].attribute0 |= (1 << 12);
+	}
+}
+
+void hrt_DisableOBJMosaic(u8 objno)
+{
+	if (hrt_start == 1)
+	{
+		sprites[objno].attribute0 &= ~(1 << 12);
+	}
+}
+
+void hrt_SetOBJColor16(u8 objno)
+{
+	if (hrt_start == 1)
+	{
+		sprites[objno].attribute0 &= ~(1 << 13);
+	}
+}
+
+void hrt_SetOBJColor256(u8 objno)
+{
+	if (hrt_start == 1)
+	{
+		sprites[objno].attribute0 |= (1 << 13);
+	}
+}
+
+void hrt_SetOBJShape(u8 objno, u8 shape)
+{
+	if (hrt_start == 1)
+	{
+		sprites[objno].attribute0 |= (shape << 14);
+	}
+}
+
+void hrt_SetOBJSize(u8 objno, u8 size)
+{
+	if (hrt_start == 1)
+	{
+		sprites[objno].attribute1 |= (size << 14);
+	}
+}
+
+void hrt_SetOBJOffset(u8 objno, u8 data)
+{
+	if (hrt_start == 1)
+	{
+		sprites[objno].attribute2 |= (data << 0);
+	}
+}
+
+void hrt_SetOBJPriority(u8 objno, u8 prior)
+{
+	if (hrt_start == 1)
+	{
+		sprites[objno].attribute2 |= (prior << 10);
+	}
+}
+
+void hrt_SetOBJPalette(u8 objno, u8 palette)
+{
+	if (hrt_start == 1)
+	{
+		sprites[objno].attribute2 |= (palette << 12);
+	}
 }

@@ -18,9 +18,6 @@ included in all copies or substantial portions of the Software.
    also assumes that the target uses 16-bit short and 32-bit longs.
 */
 
-typedef unsigned short u16;
-typedef unsigned long u32;
-
 #include "libheart.h"
 #define GBFS_SEARCH_LIMIT ((const u32 *)0x0a000000)
 #define GBFS_ALIGNMENT  256
