@@ -88,7 +88,7 @@ extern "C" {
 
 #define HRT_VERSION_MAJOR 1
 #define HRT_VERSION_MINOR 00
-#define HRT_VERSION_DEV 99
+#define HRT_VERSION_DEV 34151818
 
 #include <stdio.h>
 #include <stdint.h>
