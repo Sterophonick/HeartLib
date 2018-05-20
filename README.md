@@ -7,7 +7,6 @@ This library is undergoing heavy development. It is currenty my most heavily wor
 The library is designed to make GBA development way easier.
 
 HeartLib has a TON of nice little functions for the user to play with that can manipulate registers, sprites, DMA, bitmaps,
-
 palettes, bios calls, SRAM, memory, Interrupts, and a bunch of many other things.
 
 # Features
