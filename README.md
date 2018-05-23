@@ -26,4 +26,6 @@ palettes, bios calls, SRAM, memory, Interrupts, and a bunch of many other things
  
  - Random Number Generator
  
+ - Functions for configuring ALL the necessary Registers.
+ 
  - Many more things!
