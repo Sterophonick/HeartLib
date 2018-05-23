@@ -20,7 +20,9 @@ int main()
 {
 	hrt_EnableSoftReset();
 	hrt_EnableRTC();
-    hrt_Init(1); //Initializes Heartlib. If number is set to 1 it plays an intro. REQUIRED FOR USING THIS LIBRARY. IF THIS IS NOT EXECUTED IT WILL NOT WORK!!!!
+	hrt_EnableCopyOAMOnVBL();
+	hrt_EnablemmFrameonVBL();
+    hrt_Init(); //Initializes Heartlib. If number is set to 1 it plays an intro. REQUIRED FOR USING THIS LIBRARY. IF THIS IS NOT EXECUTED IT WILL NOT WORK!!!!
     p[0] = hrt_LoadByte(0x00);
     p[1] = hrt_LoadByte(0x01);
     p[2] = hrt_LoadByte(0x02);
@@ -104,7 +106,7 @@ int main()
             while (keyDown(KEY_DOWN));
         }
 
-        hrt_SetOBJXY(&sprites[0], //Sprite
+        hrt_SetOBJXY(0, //Sprite
                      0, //X Position
                      9*arpos); //Y Position
 
@@ -120,14 +122,14 @@ int main()
                 hrt_LoadBGTiles((void*)l2_Tiles, 1664);
                 hrt_LoadBGMap((void*)l1_Map, 1024);
                 hrt_LoadBGMap((void*)l2_Map, 1024);
-                hrt_EditBG(2, bgx, bgy, 256, 256, 0);
-                hrt_EditBG(3, bgx/2, bgy/2, 256, 256, 0);
+                hrt_EditBG(2, bgx, bgy, 256, 256, 0, 0, 0);
+                hrt_EditBG(3, bgx/2, bgy/2, 256, 256, 0, 0, 0);
                 hrt_VblankIntrWait();
                 while (1) {
                     frames++;
                     hrt_VblankIntrWait();
-                    hrt_EditBG(2, bgx, bgy, 256, 256, 0);
-                    hrt_EditBG(3, bgx / 2, bgy / 2, 256, 256, 0);
+                    hrt_EditBG(2, bgx, bgy, 256, 256, 0, 0, 0);
+                    hrt_EditBG(3, bgx / 2, bgy / 2, 256, 256, 0, 0, 0);
                     if (keyDown(KEY_LEFT)) {
                         bgx--;
                     }
@@ -191,7 +193,7 @@ int main()
                 hrt_LoadBGMap((void*)balls_Map, 2048);
                 hrt_LoadOBJGFX((void*)busterTiles, 512); //loads Sprite Graphics
                 hrt_LoadOBJPal((void*)busterPal, 16); //loads Sprite palette
-                hrt_EditBG(2, bgx, bgy, 256, 256, 0);
+                hrt_EditBG(2, bgx, bgy, 256, 256, 0, 0, 0);
                 hrt_CreateOBJ(0,   //Sprite ID
                               0,							     //Start X
                               0,							     //Start Y
@@ -221,7 +223,7 @@ int main()
                     if (0 == g_EffectValueA) {
                         g_EffectIncrease = 1;
                     }
-                    hrt_EditBG(2, bgx, bgy, 256, 256, 0);
+                    hrt_EditBG(2, bgx, bgy, 256, 256, 0, 0, 0);
                     hrt_VblankIntrWait();
                     hrt_SetFXAlphaLevel(g_EffectValueA,             // Source intensity
                                         16 - g_EffectValueB);
@@ -249,7 +251,7 @@ int main()
             }
             if (arpos == 6) {
                 hrt_DrawPixel(3, 120, 80, 0xFFFF);
-                if (hrt_GetPixel(3,120, 80) == 0xFFFF) {
+                if (hrt_GetPixelInMode3(120, 80) == 0xFFFF) {
                     hrt_DrawPixel(3, 121, 81, 0x07FF);
                 }
             }
@@ -339,12 +341,12 @@ int main()
                 hrt_LoadBGPal((void*)bg_hillPal, 255);
                 hrt_LoadBGTiles((void*)bg_hillTiles, 32800);
                 hrt_LoadBGMap((void*)bg_hillMap, 2048);
-                hrt_EditBG(2, bgx, bgy, 256, 256, 0);
+                hrt_EditBG(2, bgx, bgy, 256, 256, 0, 0, 0);
                 hrt_VblankIntrWait();
                 while (1) {
                     frames++;
                     hrt_VblankIntrWait();
-                    hrt_EditBG(2, bgx, bgy, 256, 256, 0);
+                    hrt_EditBG(2, bgx, bgy, 256, 256, 0, 0, 0);
                     if (keyDown(KEY_LEFT)) {
                         bgx--;
                     }
@@ -416,7 +418,7 @@ int main()
                     if (keyDown(KEY_START)) {
                         asm volatile("swi 0x00"::);
                     }
-                    hrt_SetOBJXY(&sprites[0], x, y);
+                    hrt_SetOBJXY(0, x, y);
                     hrt_AffineOBJ(0, rot % 360, x_scale, x_scale);
                     hrt_VblankIntrWait();
                     hrt_CopyOAM();

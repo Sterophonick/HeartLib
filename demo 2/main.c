@@ -21,8 +21,10 @@ int main()
 {
 	hrt_EnableSoftReset();
 	hrt_EnableRTC();
+	hrt_EnableCopyOAMOnVBL();
+	hrt_EnablemmFrameonVBL();
 	int frames;
-    hrt_Init(1); //Initializes Heartlib. If number is set to 1 it plays an intro. REQUIRED FOR USING THIS LIBRARY. IF THIS IS NOT EXECUTED IT WILL NOT WORK!!!!
+    hrt_Init(); //Initializes Heartlib. If number is set to 1 it plays an intro. REQUIRED FOR USING THIS LIBRARY. IF THIS IS NOT EXECUTED IT WILL NOT WORK!!!!
     const GBFS_FILE *dat = find_first_gbfs_file(find_first_gbfs_file); //defines GBFS file
     //Sets the Display Mode, like which mode, OBJ Settings, and which backgrounds are enabled.
     hrt_SetDSPMode(3, //Mode
@@ -91,21 +93,22 @@ int main()
         }
         if (keyDown(KEY_DOWN)) {
             arpos++;
-            if (arpos == 11) {
-                arpos = 10;
+            if (arpos == 12) {
+                arpos = 11;
             }
             while (keyDown(KEY_DOWN));
         }
 
-        hrt_SetOBJXY(&sprites[0], //Sprite
+        hrt_SetOBJXY(0, //Sprite
                      0, //X Position
                      9*arpos); //Y Position
 
         if (keyDown(KEY_A)) {
 			if (arpos == 11)
 			{
-				hrt_FillScreen(0x0000, 3);
-				JPEG_DecompressImage(such2_jpg, VRAM, 240, 160);
+				hrt_FillScreen(0x0000);
+				hrt_CpuFastSet((void*)such2_jpg, ExtWRAM, 12853);
+				JPEG_DecompressImage(ExtWRAM, VRAM, 240, 160);
 				while (1)
 				{
 					hrt_VblankIntrWait();
@@ -117,9 +120,8 @@ int main()
 			}
 			if (arpos == 9)
 			{
-
 				int ver;
-				hrt_FillScreen(0x0000, 3);
+				hrt_FillScreen(0x0000);
 				ver = hrt_GetBiosChecksum();
 				hrt_VblankIntrWait();
 				if (ver == 0)
@@ -138,7 +140,7 @@ int main()
 			}
 			if (arpos == 8)
 			{
-				hrt_FillScreen(0x0000, 3);
+				hrt_FillScreen(0x0000);
 				char str[30];
 				char *s = str + 20;
 				int timer, hours, min, secs, hours2, min2, secs2;
@@ -215,8 +217,8 @@ int main()
 				int x, y;
 				int fxlevel;
 				int rot;
-				hrt_ResetOffset(1);
-				hrt_ResetOffset(0);
+				hrt_SetOffset(1, 0);
+				hrt_SetOffset(0, 0);
 				hrt_CreateOBJ(0, 120, 80, 2, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
 				hrt_SetDSPMode(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0);
 				x = 120;
@@ -224,7 +226,7 @@ int main()
 				hrt_AffineOBJ(0, 0, 255, 255);
 				x_scale = 255;
 				g_newframe = 1;
-				hrt_FillScreen(0x0000, 3);
+				hrt_FillScreen(0x0000);
 				hrt_PrintOnBitmap(0, 0, "0");
 				int j;
 				hrt_SeedRNG(frames);
@@ -243,7 +245,7 @@ int main()
 			if (arpos == 2)
 			{
 				hrt_SetDSPMode(4, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0); //Sets REG_DISPCNT, like above
-				hrt_FillScreen(0x0000, 3);
+				hrt_FillScreen(0x0000);
 				hrt_DecodePCX(such, VRAM, BGPaletteMem);
 			}
 			if (arpos == 3)
@@ -256,9 +258,9 @@ int main()
 				int x, y;
 				int fxlevel;
 				int rot;
-				hrt_ResetOffset(1);
-				hrt_ResetOffset(0);
-				hrt_CreateOBJ(0, 120, 80, 2, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
+				hrt_SetOffset(1, 0);
+				hrt_SetOffset(0, 0);
+				hrt_CreateOBJ(0, 120, 80, 2, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0);
 				hrt_SetDSPMode(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0);
 				hrt_LoadOBJGFX((void*)blockTiles, 2048);
 				hrt_LoadOBJPal((void*)blockPal, 255);
@@ -267,8 +269,8 @@ int main()
 				y = 80;
 				hrt_AffineOBJ(0, 0, 255, 255);
 				x_scale = 255;
-				g_newframe = 1;
-				hrt_FillScreen(0x0000, 3);
+				g_newframe = 0;
+				hrt_FillScreen(0x0000);
 				hrt_PrintOnBitmap(0, 0, "Interrupt Dispatcher");
 				while (1) {
 					if (g_newframe == 0)
@@ -309,16 +311,20 @@ int main()
 						if (keyDown(KEY_START)) {
 							asm volatile("swi 0x00"::);
 						}
-						hrt_SetOBJXY(&sprites[0], x, y);
+						hrt_SetOBJXY(0, x, y);
 						hrt_AffineOBJ(0, rot % 360, x_scale, x_scale);
 						hrt_CopyOAM();
 						g_newframe = 1;
 					}
-					hrt_VblankIntrWait();
+					if (keyDown(KEY_SELECT))
+					{
+						hrt_Crash();
+					}
+					asm("swi 0x05"::);
+					g_newframe = 0;
 				}
 			}
         }
-        hrt_CopyOAM();
         hrt_VblankIntrWait();
     }
     return 0;
