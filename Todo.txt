@@ -1,0 +1,11 @@
+- Functions for properly configuring all registers
+
+- Functions for enabling/disabling sprite affine.
+
+- Compress intro
+
+- Text on tiled backgrounds
+
+- Remove Dma sound, not needed.
+
+- Working functions for sprites moving in a specific direction, or for sprites pointing toward a specific direction
