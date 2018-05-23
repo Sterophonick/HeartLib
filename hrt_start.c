@@ -1,5 +1,6 @@
 #include "libheart.h"
-extern const unsigned short hrt_logoBitmap[16956];
+const unsigned short hrt_logoBitmap[4286];
+const unsigned short hrt_logoPal[256];
 extern const unsigned short hrt_objTiles[164];
 extern const unsigned short hrt_objPal[14];
 u16* temp = (u16*)0x6014000;
@@ -30,22 +31,22 @@ void hrt_Init(void) {
 	hrt_offsetBGPal = 0;
 	u8 dir = 0;
 	u16 angle = 0;
-	u8 fadecnt = 0;
 	int frames = 0;
 	u8 bx = 0, by = 0, bsy = 0, bsx = 0;
 	REG_BLDCNT = 0x00B4;
 	REG_BLDY = 17;
-	REG_DISPCNT = 0x1443;
+	REG_DISPCNT = 0x1444;
 	hrt_LZ77UnCompVRAM((u32)hrt_logoBitmap, (u32)VRAM);
 	hrt_LZ77UnCompVRAM((u32)hrt_objTiles, (u32)temp);
 	hrt_LoadOBJPal((void*)hrt_objPal, 14);
+	hrt_LoadBGPal((void*)hrt_logoPal, 256);
 	hrt_CreateOBJ(0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 	hrt_CloneOBJ(0, 1);
-	hrt_SetOBJXY(&sprites[1], 0, 128);
+	hrt_SetOBJXY(1, 0, 128);
 	hrt_CloneOBJ(0, 2);
-	hrt_SetOBJXY(&sprites[2], 208, 128);
+	hrt_SetOBJXY(2, 208, 128);
 	hrt_CloneOBJ(0, 3);
-	hrt_SetOBJXY(&sprites[3], 208, 0);
+	hrt_SetOBJXY(3, 208, 0);
 	hrt_CreateOBJ(4, 112, 72, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16);
 	hrt_AffineOBJ(0, 0, 256, 256);
 	hrt_AffineOBJ(1, 0, 256, 256);
@@ -57,67 +58,17 @@ void hrt_Init(void) {
 	by = 72;
 	bsy = 10;
 	bsx = 10;
-	for (i = 0; i < 17 * 2; i++) {
-		hrt_VblankIntrWait();
+	for (i = 0; i < 180; i++) {
 		frames++;
-		hrt_SetOBJXY(&sprites[4], bx, by);
-		bx += bsx;
-		by += bsy;
-
-		if (by >= 144) {
-			bsy = -2;
-		}
-		if (by <= 0) {
-			bsy = 2;
-		}
-
-		if (bx >= 224) {
-			bsx = -2;
-			dir = 1;
-		}
-		if (bx <= 0) {
-			bsx = 2;
-			dir = 0;
-		}
-		hrt_AffineOBJ(4, angle, 256, 256);
-		if (!(frames % 1))
+		if (frames < 17)
 		{
-			if (dir == 0)
-			{
-				angle += 4;
-			}
-			if (dir == 1)
-			{
-				angle -= 4;
-			}
+			REG_BLDY = 16 - frames;
 		}
-		if ((!(frames % 2))AND(fadecnt < 17)) {
-			REG_BLDY = 16 - i / 2;
-			fadecnt++;
+		if (frames > 163)
+		{
+			REG_BLDY = frames - 163;
 		}
-		if (!(frames % 10)) {
-			hrt_AffineOBJ(0, 0, 220, 220);
-			hrt_AffineOBJ(3, 0, 256, 256);
-		}
-		if (!(frames % 15)) {
-			hrt_AffineOBJ(1, 0, 220, 220);
-			hrt_AffineOBJ(0, 0, 256, 256);
-		}
-		if (!(frames % 20)) {
-			hrt_AffineOBJ(2, 0, 220, 220);
-			hrt_AffineOBJ(1, 0, 256, 256);
-		}
-		if (!(frames % 25)) {
-			hrt_AffineOBJ(3, 0, 220, 220);
-			hrt_AffineOBJ(2, 0, 256, 256);
-		}
-		hrt_CopyOAM();
-	}
-	frames = 0;
-	for (i = 0; i < 60; i++) {
-		frames++;
-		hrt_VblankIntrWait();
-		hrt_SetOBJXY(&sprites[4], bx, by);
+		hrt_SetOBJXY(4, bx, by);
 		bx += bsx;
 		by += bsy;
 
@@ -164,65 +115,8 @@ void hrt_Init(void) {
 			hrt_AffineOBJ(3, 0, 220, 220);
 			hrt_AffineOBJ(2, 0, 256, 256);
 		}
-	}
-	frames = 0;
-	fadecnt = 0;
-	for (i = 0; i < 17 * 2; i++) {
-		hrt_VblankIntrWait();
 		hrt_CopyOAM();
-		frames++;
-		hrt_SetOBJXY(&sprites[4], bx, by);
-		bx += bsx;
-		by += bsy;
-
-		if (by >= 144) {
-			bsy = -2;
-		}
-		if (by <= 0) {
-			bsy = 2;
-		}
-
-		if (bx >= 224) {
-			bsx = -2;
-			dir = 1;
-		}
-		if (bx <= 0) {
-			bsx = 2;
-			dir = 0;
-		}
-		hrt_AffineOBJ(4, angle, 256, 256);
-		if (!(frames % 1))
-		{
-			if (dir == 0)
-			{
-				angle += 4;
-			}
-			if (dir == 1)
-			{
-				angle -= 4;
-			}
-		}
-		if ((!(frames % 2))AND(fadecnt < 17)) {
-			REG_BLDY = i / 2;
-			fadecnt++;
-		}
-		if (!(frames % 10)) {
-			hrt_AffineOBJ(0, 0, 220, 220);
-			hrt_AffineOBJ(3, 0, 256, 256);
-		}
-		if (!(frames % 15)) {
-			hrt_AffineOBJ(1, 0, 220, 220);
-			hrt_AffineOBJ(0, 0, 256, 256);
-		}
-		if (!(frames % 20)) {
-			hrt_AffineOBJ(2, 0, 220, 220);
-			hrt_AffineOBJ(1, 0, 256, 256);
-		}
-		if (!(frames % 25)) {
-			hrt_AffineOBJ(3, 0, 220, 220);
-			hrt_AffineOBJ(2, 0, 256, 256);
-		}
-		hrt_CopyOAM();
+		asm volatile("swi 0x05"::);
 	}
 	hrt_start = 1;
 	REG_DISPCNT = 0x0080;

@@ -26,7 +26,6 @@ These functions give you access to:
 	PCX Decoding (Shoutouts to libGBA)
 	Random Number Generation (Uses Merssene Twister method)
 	MaxMod (Kudos to LibGBA)
-	FatFs (Shoutouts to elm-chan and EZ-Team)
 
 You can find some documentation on the GBACrusherCL, GBFS, gfx2gba and other tools inside the TOOLS folder.
 

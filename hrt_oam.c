@@ -165,41 +165,29 @@ void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale, s32 y_scale)
 		rotData[rotDataIndex].pd = pd;
 	}
 }
-void hrt_SetOBJX(OAMEntry* sp, int x)
+void hrt_SetOBJX(u8 spr, s16 x)
 {
 	if (hrt_start == 1) {
-		if (x < 0)
-			x = 512 + x;
-
-		sp->attribute1 = sp->attribute1 & 0xFE00;
-		sp->attribute1 = sp->attribute1 | x;
+		sprites[spr].attribute1 &= 0xFE00;
+		sprites[spr].attribute1 |= x;
 	}
 }
 
-void hrt_SetOBJY(OAMEntry* sp, int y)
+void hrt_SetOBJY(u8 spr, s16 y)
 {
 	if (hrt_start == 1) {
-		if (y < 0)
-			y = 256 + y;
-
-		sp->attribute0 = sp->attribute0 & 0xFF00;
-		sp->attribute0 = sp->attribute0 | y;
+		sprites[spr].attribute0 &= 0xFF00;
+		sprites[spr].attribute0 |= y;
 	}
 }
 
-void hrt_SetOBJXY(OAMEntry* sp, int x, int y)
+void hrt_SetOBJXY(u8 spr, s16 x, s16 y)
 {
 	if (hrt_start == 1) {
-		if (x < 0)
-			x = 512 + x;
-		if (y < 0)
-			y = 256 + y;
-
-		sp->attribute1 = sp->attribute1 & 0xFE00;
-		sp->attribute1 = sp->attribute1 | x;
-
-		sp->attribute0 = sp->attribute0 & 0xFF00;
-		sp->attribute0 = sp->attribute0 | y;
+		sprites[spr].attribute0 &= 0xFF00;
+		sprites[spr].attribute0 |= y;
+		sprites[spr].attribute1 &= 0xFE00;
+		sprites[spr].attribute1 |= x;
 	}
 }
 
@@ -216,7 +204,7 @@ void hrt_GlideSpritetoPos(int spr, int x1, int y1, int x2, int y2, u32 frames)
 {
 	if (hrt_start == 1) {
 		u32 i1 = 0;
-		hrt_SetOBJXY(&sprites[spr], x1, y1);
+		hrt_SetOBJXY(spr, x1, y1);
 		int i, deltax, deltay, numpixels;
 		int d, dinc1, dinc2;
 		int x, xinc1, xinc2;
@@ -265,7 +253,7 @@ void hrt_GlideSpritetoPos(int spr, int x1, int y1, int x2, int y2, u32 frames)
 		for (i = 1; i < numpixels; i++)
 		{
 			hrt_CopyOAM();
-			hrt_SetOBJXY(&sprites[spr], x, y);
+			hrt_SetOBJXY(spr, x, y);
 			if (d < 0)
 			{
 				d = d + dinc1;
@@ -290,7 +278,7 @@ void hrt_MoveSpriteInDirection(u8 sprite, u16 direction, int steps)
 {
 	if (hrt_start == 1)
 	{
-		hrt_SetOBJXY(&sprites[sprite], (hrt_GetOBJX(sprite) + (sin(direction))*steps), (hrt_GetOBJY(sprite) + (cos(direction))*steps));
+		hrt_SetOBJXY(sprite, (hrt_GetOBJX(sprite) + (sin(direction))*steps), (hrt_GetOBJY(sprite) + (cos(direction))*steps));
 	}
 }
 

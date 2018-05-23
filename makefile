@@ -4,7 +4,7 @@ CPPFILES =
 SOURCES = hrt_oam.c hrt_snd.c hrt_srm.c hrt_swi.c hrt_txt.c hrt_vid.c hrt_gbfs.c hrt_start.c hrt_logo.c hrt_obj.c hrt_int.c hrt_font.c hrt_font_tile.c hrt_misc.c hrt_tmr.c hrt_pcx.c hrt_rng.c hrt_mbv2.c hrt_xboo.c hrt_sio.c hrt_jpg.c
 ASM = hrt_intdispatch.s hrt_syscalls.s hrt_sleep.s hrt_ez4exit.s hrt_rtc.s
 LIBS= libheart.a
-CFLAGS = -pedantic -Wall -Wextra -Os -march=armv4t -Wno-switch -Wno-multichar -ffast-math -mlong-calls -mcpu=arm7tdmi -mtune=arm7tdmi -marm -faggressive-loop-optimizations -fverbose-asm 
+CFLAGS = -Wall -Ofast -march=armv4t -Wno-switch -Wno-multichar -ffast-math -mlong-calls -mcpu=arm7tdmi -mtune=arm7tdmi -marm -faggressive-loop-optimizations -fverbose-asm 
 ARCH = -mthumb -mthumb-interwork
 SPECS = -specs=gba.specs
 PREFIX = C:\devkitPro\devkitARM\bin\arm-none-eabi-
