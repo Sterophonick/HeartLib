@@ -278,7 +278,7 @@ void hrt_MoveSpriteInDirection(u8 sprite, u16 direction, int steps)
 {
 	if (hrt_start == 1)
 	{
-		hrt_SetOBJXY(sprite, (hrt_GetOBJX(sprite) + (sin(direction))*steps), (hrt_GetOBJY(sprite) + (cos(direction))*steps));
+		hrt_SetOBJXY(sprite, (hrt_GetOBJX(sprite) + (SIN[direction])*steps), (hrt_GetOBJY(sprite) + (COS[direction])*steps));
 	}
 }
 

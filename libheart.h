@@ -87,7 +87,7 @@ extern "C" {
 
 #define HRT_VERSION_MAJOR 1
 #define HRT_VERSION_MINOR 00
-#define HRT_VERSION_DEV 5015222018
+#define HRT_VERSION_DEV 5065232018
 
 #include <stdio.h>
 #include <stdint.h>
@@ -124,6 +124,15 @@ extern "C" {
 #include <unistd.h>
 #include <sys/fcntl.h>
 #include <errno.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <_ansi.h>
+#include <reent.h>
+#include <sys/time.h>
+#include <sys/times.h>
+#include <sys/timespec.h>
+#include <sys/_timeval.h>
+#include <sys/cdefs.h>
 
 typedef unsigned char u8;
 typedef unsigned short u16;
@@ -1075,6 +1084,10 @@ extern "C" {
 #define OBJ_MODE_SEMITRANSPARENT 1
 #define OBJ_MODE_WINDOW 2
 #define OBJ_MODE_PROHIBITED 3
+
+#define gettimeofday my_gettimeofday
+#define system(cmd) my_system(cmd)
+#define kill(a, b) my_kill()
 //
 
 ///////////////////////////FUNCTIONS////////////////////////////
@@ -1091,6 +1104,9 @@ extern "C" {
 #endif
         return result;
     }//Returns BIOS Checksum. Return value differs if you are playing on a Prototype GBA, Release GBA, or a Nintendo DS.
+	int my_gettimeofday(struct timeval *__restrict __p, void *__restrict __tz);
+	int my_system(const char *car);
+	int my_kill(void);
     u32 hrt_MultiBoot(MultiBootParam *mp, u32 mode); //Enables Multiboot? Unknown
     void hrt_InitInterrupt(void) __attribute__((deprecated)); //Initialize interrupts mirror
     void hrt_irqInit(void); //Initialize Interrupts
@@ -1150,7 +1166,7 @@ extern "C" {
     void hrt_LoadBGTiles(u16* data, int length); //Loads BG Tiles into VRAM, at Tile slot 1.
     void hrt_ColdReset(void); //Restarts the console -- Undocumented BIOS Call
     void hrt_SoftReset(void); //Restarts from ROM.
-    void hrt_Init(void); //If set to 0, no intro will play. If set to 1, then an intro will play. MUST BE EXECUTED BEFORE USING THIS LIBRARY.
+    void hrt_Init(void); //MUST BE EXECUTED BEFORE USING THIS LIBRARY.
     void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode); //Copies from DMA
     void hrt_SetFXLevel(u8 level); //Sets BLDY level
     void hrt_SetFXMode(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 backdrop, u8 mode, u8 bg0_2, u8 bg1_2, u8 bg2_2, u8 bg3_2, u8 obj_2, u8 backdrop_2); //Sets BLDCNT Mode
