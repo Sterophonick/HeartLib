@@ -78,8 +78,6 @@ extern "C" {
 #endif
 #ifndef JPEG_Assert
     #if JPEG_DEBUG
-        #include <stdio.h>
-        #include <stdlib.h>
         #define JPEG_Assert(TEST) \
             do { \
                 if (TEST) \

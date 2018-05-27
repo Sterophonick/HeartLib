@@ -1,1 +1,0 @@
-/*Dummy file for AGBGFXConverter, so it doesn't have a hissy fit. Ignore this*/

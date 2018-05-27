@@ -7,21 +7,23 @@ void _exit(__attribute__((unused)) int n)
 }
 void _abort(void)
 {
-	for (;;);
+	_start();
 }
 int _getpid(void)
 {
 	return 1;
 }
-int my_gettimeofday(struct timeval *__restrict __p, void *__restrict __tz)
+int gettimeofday(struct timeval *__restrict __p,
+	void *__restrict __tz)
 {
-	return 1;
+	_start();
+	return 0;
 }
-int my_kill(void)
+int kill(pid_t i, int i2)
 {
-	return 1;
+	_start();
 }
-int my_system(const char *car)
+int system(const char *__string)
 {
-	return 1;
+	_start();
 }
