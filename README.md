@@ -28,4 +28,6 @@ palettes, bios calls, SRAM, memory, Interrupts, and a bunch of many other things
  
  - Functions for configuring ALL the necessary Registers.
  
+ - aPlib compression
+ 
  - Many more things!
