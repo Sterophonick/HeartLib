@@ -62,6 +62,7 @@ GBA Specs:
 	Mode 7?
 	Exit to EZ4 (Shoutouts to Dwedit and GodBolt)
 	aPlib
+	Scrolling Map Edge Drawing
 
 TODO:
 		Implement Tiled Text
@@ -75,9 +76,9 @@ TODO:
 #ifndef LIBHEART_H
 #define LIBHEART_H
 
-#define HRT_VERSION_MAJOR 1
-#define HRT_VERSION_MINOR 00
-#define HRT_VERSION_DEV 12175272018
+#define HRT_VERSION_MAJOR 0
+#define HRT_VERSION_MINOR 50
+#define HRT_BUILD_DATE 095605322018
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -393,6 +394,20 @@ typedef struct tagRotData {
 } RotData, *pRotData;
 OAMEntry sprites[128];
 
+typedef struct _s16xy { s16 x, y; } s16xy;
+typedef struct _Vector2 { s32 x, y; } Vector2;
+typedef struct _MapLayer { u16 *map; Vector2 scroll; } MapLayer;
+typedef struct _GameMap
+{
+	s16xy dimensions;
+	const u16 *tileset; // Pointer to map file output from gfx2gba for the tileset bitmap 
+	u8 numLayers; // Number of layers actually in use for the current map. Max 4 since that's all the hardware BGs 
+	MapLayer layer[4];
+} GameMap;
+#define BG_SCRN_VRAM(n) ((u16*)(0x6000000 + ((n) << 11))) 
+#define fptochar(x) ((x) >> 11) 
+#define inttofp(x) ((x) << 8) 
+
 //Logic Gates - So you don't have to remember the syntax for all the logic gates. It's a lifesaver.
 #define NOT  !
 #define AND  &&
@@ -403,22 +418,41 @@ OAMEntry sprites[128];
 #define XNOR !^
 //
 
+//Screen Widths/Heights
+#define GBA_SCREEN_WIDTH 240
+#define GBA_SCREEN_HEIGHT 160
+#define MODE_3_4_WIDTH 240
+#define MODE_3_4_HEIGHT 160
+#define MODE_4_VRAM_WIDTH 120
+#define MODE_4_VRAM_HEIGHT 80
+#define MODE_5_WIDTH  160
+#define MODE_5_HEIGHT 120
+//
+
 #define BACKBUFFER      0x10
 
 //colors
-#define WHITE 0xFFFF
-#define RED 0x001F
-#define BLUE 0x7C00
-#define CYAN 0x7FE0
-#define GREEN 0x03E0
-#define MAGENTA 0x7c1f
-#define BROWN 0x0110
-#define BLACK 0x0000
-#define BRICK 0x011B
-#define PINK 0x7EDD
-#define ORANGE 0x029F
-#define YELLOW 0x03FF
-#define GREY 0x4210
+#define COLOR_BLACK        0x0000
+#define COLOR_MAROON       0x0010
+#define COLOR_GREEN        0x0200
+#define COLOR_OLIVE        0x0210
+#define COLOR_NAVY         0x4000
+#define COLOR_PURPLE       0x4010
+#define COLOR_TEAL         0x4200
+#define COLOR_GRAY         0x4210
+#define COLOR_SILVER       0x6318
+#define COLOR_RED          0x001F
+#define COLOR_LIME         0x03E0
+#define COLOR_YELLOW       0x03FF
+#define COLOR_BLUE         0x7C00
+#define COLOR_FUCHSIA      0x7C1F
+#define COLOR_WHITE        0x7FFF
+#define COLOR_MONEYGREEN   0x6378
+#define COLOR_SKYBLUE      0x7B34
+#define COLOR_CREAM        0x7BFF
+#define COLOR_MEDGRAY      0x5294
+#define COLOR_ORANGE 0x029F
+#define COLOR_CYAN 0x7FE0
 
 //bios calls
 #define SoftReset 0x00
@@ -1073,6 +1107,16 @@ const unsigned short font_milkbottlePal[16];
 #define OBJ_MODE_SEMITRANSPARENT 1
 #define OBJ_MODE_WINDOW 2
 #define OBJ_MODE_PROHIBITED 3
+
+#define DMA_INCREMENT 0
+#define DMA_DECREMENT 1
+#define DMA_FIXED 2
+#define DMA_INC_AND_RELOAD 3
+
+#define DMA_TIMING_IMMEDIATE 0
+#define DMA_TIMING_VBLANK 1
+#define DMA_TIMING_HBLANK 2
+#define DMA_TIMING_AUDIOFIFO 3
 //
 
 ///////////////////////////FUNCTIONS////////////////////////////
@@ -1275,8 +1319,10 @@ void hrt_DSPEnableWIN0(void); //Enables Win0
 void hrt_DSPDisableWIN0(void); //Disables Win0
 void hrt_DSPEnableWIN1(void); //Enables Win1
 void hrt_DSPDisableWIN1(void); //Disables Win1
-void hrt_DSPEnableWINO(void); //Enables WinOut
-void hrt_DSPDisableWINO(void); //Disables WinOut
+void hrt_DSPEnableWINOBJ(void); //Enables WinOBJ
+void hrt_DSPDisableWINOBJ(void); //Disables WinOBJ
+void hrt_DSPEnableLinearOBJ(void); //Enables Linear OBJ Tile Mapping
+void hrt_DSPDisableLinearOBJ(void); //Disables Linear OBJ TIle Mapping
 u8 hrt_DSPGetBGMode(void); //Returns DSP Mode
 void hrt_BG0Set16Color(void); //Sets BG0 to 16 Colors
 void hrt_BG0Set256Color(void); //Sets BG0 to 256 colors
@@ -1366,6 +1412,57 @@ void hrt_FXDisableOBJTarget2(void); //Disables.
 void hrt_FXEnableBackdropTarget2(void); //Enables Backdrop for Target 2
 void hrt_FXDisableBackdropTarget2(void); //Disables.
 u32 aP_depack(u8 *source, u8 *destination); //aPlib Unpack.
+void hrt_ConfigMapLayerDrawing(u8 numLayers, u16 *tileset, s16 dimensionsx, s16 dimensionsy, u16 *map, s32 x, s32 y); //Configures map for large scrolling
+void hrt_DrawMapLayerStripH(int layerIdx, int srcY); //Draws a Horizontal Map Strip, for vertical scrolling
+void hrt_DrawMapLayerStripV(int layerIdx, int srcX); //Draws a Vertical Map Strip, for horizontal scrolling
+void hrt_DSPWinIn0EnableBG0(void); //Enables BG 0 for winin 0
+void hrt_DSPWinIn0DisableBG0(void); //Disables BG 0 for winin 0
+void hrt_DSPWinIn0EnableBG1(void); //Enables BG 1 for winin 0
+void hrt_DSPWinIn0DisableBG1(void); //Disables BG 1 for winin 0
+void hrt_DSPWinIn0EnableBG2(void); //Enables BG 2 for winin 0
+void hrt_DSPWinIn0DisableBG2(void); //Disables BG 2 for winin 0
+void hrt_DSPWinIn0EnableBG3(void); //Enables BG 3 for winin 0
+void hrt_DSPWinIn0DisableBG3(void); //Disables BG 3 for winin 0
+void hrt_DSPWinIn0EnableOBJ(void); //Enables Sprites for winin 0
+void hrt_DSPWinIn0DisableOBJ(void); //Disables Sprites for winin 0
+void hrt_DSPWinIn0EnableBlend(void); //Enables Blend for winin 0
+void hrt_DSPWinIn0DisableBlend(void); //Disables Blend for winin 0
+void hrt_DSPWinIn1EnableBG0(void); //Enables BG 0 for WinIn 1
+void hrt_DSPWinIn1DisableBG0(void); //Disables BG 0 for WinIn 1
+void hrt_DSPWinIn1EnableBG1(void); //Enables BG 1 for WinIn 1
+void hrt_DSPWinIn1DisableBG1(void); //Disables BG 1 for WinIn 1
+void hrt_DSPWinIn1EnableBG2(void); //Enables BG 2 for WinIn 1
+void hrt_DSPWinIn1DisableBG2(void); //Disables BG 2 for WinIn 1
+void hrt_DSPWinIn1EnableBG3(void); //Enables BG 3 for WinIn 1
+void hrt_DSPWinIn1DisableBG3(void); //Disables BG 3 for WinIn 1
+void hrt_DSPWinIn1EnableOBJ(void); //Enables Sprites for WinIn 1
+void hrt_DSPWinIn1DisableOBJ(void); //Disables Sprites for WinIn 1
+void hrt_DSPWinIn1EnableBlend(void); //Enables Blend for WinIn 1
+void hrt_DSPWinIn1DisableBlend(void); //Disables Blend for WinIn 1
+void hrt_DSPWinOut0EnableBG0(void); //Enables BG 0 for WinOut 0
+void hrt_DSPWinOut0DisableBG0(void); //Disables BG 0 for WinOut 0
+void hrt_DSPWinOut0EnableBG1(void); //Enables BG 1 for WinOut 0
+void hrt_DSPWinOut0DisableBG1(void); //Disables BG 1 for WinOut 0
+void hrt_DSPWinOut0EnableBG2(void); //Enables BG 2 for WinOut 0
+void hrt_DSPWinOut0DisableBG2(void); //Disables BG 2 for WinOut 0
+void hrt_DSPWinOut0EnableBG3(void); //Enables BG 3 for WinOut 0
+void hrt_DSPWinOut0DisableBG3(void); //Disables BG 3 for WinOut 0
+void hrt_DSPWinOut0EnableOBJ(void); //Enables Sprites for WinOut 0
+void hrt_DSPWinOut0DisableOBJ(void); //Disables Sprites for WinOut 0
+void hrt_DSPWinOut0EnableBlend(void); //Enables Blend for WinOut 0
+void hrt_DSPWinOut0DisableBlend(void); //Disables Blend for WinOut 0
+void hrt_DSPWinOut1EnableBG0(void); //Enables BG 0 for WinOut 1
+void hrt_DSPWinOut1DisableBG0(void); //Disables BG 0 for WinOut 1
+void hrt_DSPWinOut1EnableBG1(void); //Enables BG 1 for WinOut 1
+void hrt_DSPWinOut1DisableBG1(void); //Disables BG 1 for WinOut 1
+void hrt_DSPWinOut1EnableBG2(void); //Enables BG 2 for WinOut 1
+void hrt_DSPWinOut1DisableBG2(void); //Disables BG 2 for WinOut 1
+void hrt_DSPWinOut1EnableBG3(void); //Enables BG 3 for WinOut 1
+void hrt_DSPWinOut1DisableBG3(void); //Disables BG 3 for WinOut 1
+void hrt_DSPWinOut1EnableOBJ(void); //Enables Sprites for WinOut 1
+void hrt_DSPWinOut1DisableOBJ(void); //Disables Sprites for WinOut 1
+void hrt_DSPWinOut1EnableBlend(void); //Enables Blend for WinOut 1
+void hrt_DSPWinOut1DisableBlend(void); //Disables Blend for WinOut 1
 
 #ifdef __cplusplus
 }

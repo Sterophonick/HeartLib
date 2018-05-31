@@ -798,18 +798,34 @@ void hrt_DSPDisableWIN1(void)
     }
 }
 
-void hrt_DSPEnableWINO(void)
+void hrt_DSPEnableWINOBJ(void)
 {
     if (hrt_start == 1) {
         REG_DISPCNT |= 0x8000;
     }
 }
 
-void hrt_DSPDisableWINO(void)
+void hrt_DSPDisableWINOBJ(void)
 {
     if (hrt_start == 1) {
         REG_DISPCNT &= 0x7FFF;
     }
+}
+
+void hrt_DSPEnableLinearOBJ(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_DISPCNT |= BIT06;
+	}
+}
+
+void hrt_DSPDisableLinearOBJ(void)
+{
+	if (hrt_start -= 1)
+	{
+		REG_DISPCNT &= NOT_BIT06;
+	}
 }
 
 u8 hrt_DSPGetBGMode(void)
@@ -1258,5 +1274,389 @@ void hrt_FXDisableBackdropTarget2(void)
 	if (hrt_start == 1)
 	{
 		REG_BLDCNT &= NOT_BIT13;
+	}
+}
+
+void hrt_DSPWinIn0EnableBG0(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ |= BIT00;
+	}
+}
+
+void hrt_DSPWinIn0DisableBG0(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ &= NOT_BIT00;
+	}
+}
+
+void hrt_DSPWinIn0EnableBG1(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ |= BIT01;
+	}
+}
+
+void hrt_DSPWinIn0DisableBG1(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ &= NOT_BIT01;
+	}
+}
+
+void hrt_DSPWinIn0EnableBG2(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ |= BIT02;
+	}
+}
+
+void hrt_DSPWinIn0DisableBG2(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ &= NOT_BIT02;
+	}
+}
+
+void hrt_DSPWinIn0EnableBG3(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ |= BIT03;
+	}
+}
+
+void hrt_DSPWinIn0DisableBG3(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ &= NOT_BIT03;
+	}
+}
+
+void hrt_DSPWinIn0EnableOBJ(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ |= BIT04;
+	}
+}
+
+void hrt_DSPWinIn0DisableOBJ(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ &= NOT_BIT04;
+	}
+}
+
+void hrt_DSPWinIn0EnableBlend(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ |= BIT05;
+	}
+}
+
+void hrt_DSPWinIn0DisableBlend(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ &= NOT_BIT05;
+	}
+}
+
+void hrt_DSPWinIn1EnableBG0(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ |= BIT08;
+	}
+}
+
+void hrt_DSPWinIn1DisableBG0(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ &= NOT_BIT08;
+	}
+}
+
+void hrt_DSPWinIn1EnableBG1(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ |= BIT09;
+	}
+}
+
+void hrt_DSPWinIn1DisableBG1(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ &= NOT_BIT09;
+	}
+}
+
+void hrt_DSPWinIn1EnableBG2(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ |= BIT10;
+	}
+}
+
+void hrt_DSPWinIn1DisableBG2(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ &= NOT_BIT10;
+	}
+}
+
+void hrt_DSPWinIn1EnableBG3(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ |= BIT11;
+	}
+}
+
+void hrt_DSPWinIn1DisableBG3(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ &= NOT_BIT11;
+	}
+}
+
+void hrt_DSPWinIn1EnableOBJ(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ |= BIT12;
+	}
+}
+
+void hrt_DSPWinIn1DisableOBJ(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ &= NOT_BIT12;
+	}
+}
+
+void hrt_DSPWinIn1EnableBlend(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ |= BIT13;
+	}
+}
+
+void hrt_DSPWinIn1DisableBlend(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WININ &= NOT_BIT13;
+	}
+}
+
+void hrt_DSPWinOut0EnableBG0(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT |= BIT00;
+	}
+}
+
+void hrt_DSPWinOut0DisableBG0(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT &= NOT_BIT00;
+	}
+}
+
+void hrt_DSPWinOut0EnableBG1(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT |= BIT01;
+	}
+}
+
+void hrt_DSPWinOut0DisableBG1(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT &= NOT_BIT01;
+	}
+}
+
+void hrt_DSPWinOut0EnableBG2(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT |= BIT02;
+	}
+}
+
+void hrt_DSPWinOut0DisableBG2(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT &= NOT_BIT02;
+	}
+}
+
+void hrt_DSPWinOut0EnableBG3(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT |= BIT03;
+	}
+}
+
+void hrt_DSPWinOut0DisableBG3(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT &= NOT_BIT03;
+	}
+}
+
+void hrt_DSPWinOut0EnableOBJ(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT |= BIT04;
+	}
+}
+
+void hrt_DSPWinOut0DisableOBJ(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT &= NOT_BIT04;
+	}
+}
+
+void hrt_DSPWinOut0EnableBlend(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT |= BIT05;
+	}
+}
+
+void hrt_DSPWinOut0DisableBlend(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT &= NOT_BIT05;
+	}
+}
+
+void hrt_DSPWinOut1EnableBG0(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT |= BIT08;
+	}
+}
+
+void hrt_DSPWinOut1DisableBG0(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT &= NOT_BIT08;
+	}
+}
+
+void hrt_DSPWinOut1EnableBG1(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT |= BIT09;
+	}
+}
+
+void hrt_DSPWinOut1DisableBG1(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT &= NOT_BIT09;
+	}
+}
+
+void hrt_DSPWinOut1EnableBG2(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT |= BIT10;
+	}
+}
+
+void hrt_DSPWinOut1DisableBG2(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT &= NOT_BIT10;
+	}
+}
+
+void hrt_DSPWinOut1EnableBG3(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT |= BIT11;
+	}
+}
+
+void hrt_DSPWinOut1DisableBG3(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT &= NOT_BIT11;
+	}
+}
+
+void hrt_DSPWinOut1EnableOBJ(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT |= BIT12;
+	}
+}
+
+void hrt_DSPWinOut1DisableOBJ(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT &= NOT_BIT12;
+	}
+}
+
+void hrt_DSPWinOut1EnableBlend(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT |= BIT13;
+	}
+}
+
+void hrt_DSPWinOut1DisableBlend(void)
+{
+	if (hrt_start == 1)
+	{
+		REG_WINOUT &= NOT_BIT13;
 	}
 }
