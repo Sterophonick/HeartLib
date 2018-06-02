@@ -19,7 +19,6 @@ libheart.a: $(OBJECTS)
 	$(PREFIX)ar -r libheart.a $(OBJECTS)
 	cp libheart.a C:\devkitPro\devkitARM\lib
 	cp libheart.h C:\devkitPro\devkitARM\lib\gcc\arm-none-eabi\8.1.0\include
-	cp jpg.h C:\devkitPro\devkitARM\lib\gcc\arm-none-eabi\8.1.0\include
 
 	
 clean:

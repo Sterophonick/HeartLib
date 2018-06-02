@@ -9,7 +9,6 @@
 //Some functions don't work yet so be patient!
 /*
 	List:
-		JPEG
 		Tiled Text
 		Sprites moving in direction
 */
@@ -63,11 +62,10 @@ GBA Specs:
 	Exit to EZ4 (Shoutouts to Dwedit and GodBolt)
 	aPlib
 	Scrolling Map Edge Drawing
+	JPEG Decoding for Serious image compression
 
 TODO:
 		Implement Tiled Text
-		Implement Easy System Call functions
-		JPEG Decoding
 		Game Boy Player Functions?
 		PogoShell Functions?
 */
@@ -78,7 +76,7 @@ TODO:
 
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 50
-#define HRT_BUILD_DATE 095605322018
+#define HRT_BUILD_DATE 035606012018
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -133,7 +131,6 @@ extern "C" {
 #include <complex.h>
 #include <stdalign.h>
 #include <locale.h>
-#include <stdatomic.h>
 #include <stdnoreturn.h>
 #include <wchar.h>
 #include <tgmath.h>
@@ -216,7 +213,6 @@ typedef     s32     sfp32;  //1:19:8 fixed point
 typedef     u16     ufp16;  //8:8 fixed point
 typedef     u32     ufp32;  //24:8 fixed point
 
-#include "jpg.h"
 
 u16* VRAM;
 u16* OAMData;
@@ -407,6 +403,10 @@ typedef struct _GameMap
 #define BG_SCRN_VRAM(n) ((u16*)(0x6000000 + ((n) << 11))) 
 #define fptochar(x) ((x) >> 11) 
 #define inttofp(x) ((x) << 8) 
+
+#ifndef JPEG_OUTPUT_TYPE
+#define JPEG_OUTPUT_TYPE unsigned short
+#endif
 
 //Logic Gates - So you don't have to remember the syntax for all the logic gates. It's a lifesaver.
 #define NOT  !
@@ -1411,7 +1411,7 @@ void hrt_FXEnableOBJTarget2(void); //Enables the Blend Control flag for Sprites 
 void hrt_FXDisableOBJTarget2(void); //Disables.
 void hrt_FXEnableBackdropTarget2(void); //Enables Backdrop for Target 2
 void hrt_FXDisableBackdropTarget2(void); //Disables.
-u32 aP_depack(u8 *source, u8 *destination); //aPlib Unpack.
+u32 hrt_aPlibUnpack(u8 *source, u8 *destination); //aPlib Unpack.
 void hrt_ConfigMapLayerDrawing(u8 numLayers, u16 *tileset, s16 dimensionsx, s16 dimensionsy, u16 *map, s32 x, s32 y); //Configures map for large scrolling
 void hrt_DrawMapLayerStripH(int layerIdx, int srcY); //Draws a Horizontal Map Strip, for vertical scrolling
 void hrt_DrawMapLayerStripV(int layerIdx, int srcX); //Draws a Vertical Map Strip, for horizontal scrolling
@@ -1463,6 +1463,7 @@ void hrt_DSPWinOut1EnableOBJ(void); //Enables Sprites for WinOut 1
 void hrt_DSPWinOut1DisableOBJ(void); //Disables Sprites for WinOut 1
 void hrt_DSPWinOut1EnableBlend(void); //Enables Blend for WinOut 1
 void hrt_DSPWinOut1DisableBlend(void); //Disables Blend for WinOut 1
+int hrt_DecodeJPEG(const unsigned char *data, volatile JPEG_OUTPUT_TYPE *out, int outWidth, int outHeight); //Decodes a JPEG Image. (FINALLY)
 
 #ifdef __cplusplus
 }

@@ -34,7 +34,7 @@ u32 aP_d_getgamma()
 	return 0;
 }
 
-u32 aP_depack(u8 *source, u8 *destination)
+u32 hrt_aPlibUnpack(u8 *source, u8 *destination)
 {
     if (hrt_start == 1) {
         u32 offs, len, R0, LWM;

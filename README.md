@@ -16,7 +16,7 @@ palettes, bios calls, SRAM, memory, Interrupts, and a bunch of many other things
  
  - PCX image decoding
  
- - Possible JPEG image decoding.
+ - JPEG image decoding.
  
  - ALL the GBA hardware registers ready to go, including some undocumented ones
  
