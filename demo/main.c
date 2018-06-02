@@ -28,7 +28,6 @@ int main()
     p[2] = hrt_LoadByte(0x02);
     p[3] = hrt_LoadByte(0x03);
     const GBFS_FILE *dat = find_first_gbfs_file(find_first_gbfs_file); //defines GBFS file
-    hrt_InitSound(0, 22050, 5252832, (void*)hrt_snd); //initialises sound
     //Sets the Display Mode, like which mode, OBJ Settings, and which backgrounds are enabled.
     hrt_SetDSPMode(3, //Mode
                    0,								  //CGB Mode
@@ -78,7 +77,7 @@ int main()
     hrt_PrintOnBitmap(8, 36, "Palette Cycle");//draws text
     hrt_PrintOnBitmap(8, 45, "DMA Transfer");//draws text
     hrt_PrintOnBitmap(8, 54, "GetPixel");//draws text
-    hrt_PrintOnBitmap(8, 63, "DMA Sound");//draws text
+    hrt_PrintOnBitmap(8, 63, "OBJWin");//draws text
     hrt_PrintOnBitmap(8, 72, "Mode 3 Wipes");//draws text
     hrt_PrintOnBitmap(8, 81, "Alpha Blending");//draws text
     hrt_PrintOnBitmap(8, 90, "SRAM");//draws text
@@ -240,13 +239,13 @@ int main()
                 hrt_SetDSPMode(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0); //Sets REG_DISPCNT, like above
                 while (1) {
                     hrt_ScanLines(0x0000, 1, 3);
-                    hrt_LeftWipe(RED, 1, 3);
-                    hrt_RightWipe(BLUE, 1, 3);
-                    hrt_BottomWipe(BROWN, 1, 3);
-                    hrt_TopWipe(GREEN, 1, 3);
-                    hrt_CoolScanLines(MAGENTA, 1, 3);
-                    hrt_CircleWipe(ORANGE, 1, 3);
-                    hrt_LineWipe(CYAN, 0, 3);
+                    hrt_LeftWipe(COLOR_RED, 1, 3);
+                    hrt_RightWipe(COLOR_BLUE, 1, 3);
+                    hrt_BottomWipe(0x0110, 1, 3); //Brown
+                    hrt_TopWipe(COLOR_GREEN, 1, 3);
+                    hrt_CoolScanLines(0x7c1f, 1, 3); //Magenta
+                    hrt_CircleWipe(COLOR_ORANGE, 1, 3);
+                    hrt_LineWipe(COLOR_CYAN, 0, 3);
                 }
             }
             if (arpos == 6) {
@@ -256,15 +255,66 @@ int main()
                 }
             }
             if (arpos == 7) {
-                frames = 0;
-				hrt_ConfigSOUNDCNT(0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0);
-                hrt_PlaySoundFIFO(0);
-                while (1) {
-                    hrt_SleepF(14280);
-					hrt_StopSoundFIFO();
-					hrt_ConfigSOUNDCNT(0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0);
-                    hrt_PlaySoundFIFO(0);
-                }
+				hrt_offsetOAMData = 0;
+				hrt_ConfigBG(2, 0, 1, 1, 1, 0, 1, 0);
+				hrt_SetDSPBGMode(0);
+				hrt_DSPEnableBG2();
+				hrt_DSPEnableWINOBJ();
+				hrt_DSPEnableLinearOBJ();
+				hrt_DSPEnableOBJ();
+				REG_WINOUT = 0x1F00;
+				hrt_LoadBGPal((void*)bg_hillPal, 255);
+				hrt_LoadBGTiles((void*)bg_hillTiles, 32800);
+				hrt_LoadBGMap((void*)bg_hillMap, 2048);
+				hrt_EditBG(2, bgx, bgy, 256, 256, 0, 0, 0);
+				hrt_VblankIntrWait();
+				hrt_offsetOAMPal = 0;
+				hrt_offsetOAMData = 0;
+				hrt_LoadOBJGFX((void*)blockTiles, 2048);
+				hrt_LoadOBJPal((void*)blockPal, 255);
+				hrt_CopyOAM();
+				x = 120;
+				y = 80;
+				hrt_CreateOBJ(0, 120, 80, 2, 1, 0, 0, 0, 1, 0, 0, 1, OBJ_MODE_WINDOW, 0, 0);
+				hrt_AffineOBJ(0, 0, 255, 255);
+				while (1)
+				{
+					frames++;
+					if (keyDown(KEY_R)) {
+						rot++;
+					}
+					if (keyDown(KEY_L)) {
+						rot--;
+					}
+					if (keyDown(KEY_A)) {
+						x_scale++;
+					}
+					if (keyDown(KEY_B)) {
+						x_scale--;
+					}
+					if (keyDown(KEY_UP)) {
+						y--;
+					}
+					if (keyDown(KEY_DOWN)) {
+						y++;
+					}
+					if (keyDown(KEY_LEFT)) {
+						x--;
+					}
+					if (keyDown(KEY_RIGHT)) {
+						x++;
+					}
+					if (rot == -1) {
+						rot = 0;
+					}
+					if (keyDown(KEY_START)) {
+						asm volatile("swi 0x00"::);
+					}
+					hrt_SetOBJXY(0, x, y);
+					hrt_AffineOBJ(0, rot % 360, x_scale, x_scale);
+					hrt_VblankIntrWait();
+					hrt_CopyOAM();
+				}
             }
             if (arpos == 5) {
                 hrt_SetDSPMode(4, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);

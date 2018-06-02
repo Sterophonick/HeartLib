@@ -17,8 +17,8 @@ build/%.out: %.s
 	$(PREFIX)as  -mthumb -mthumb-interwork -mcpu=arm7tdmi $< -o $@
 libheart.a: $(OBJECTS)
 	$(PREFIX)ar -r libheart.a $(OBJECTS)
-	cp libheart.a C:\devkitPro\devkitARM\lib
-	cp libheart.h C:\devkitPro\devkitARM\lib\gcc\arm-none-eabi\8.1.0\include
+	cp libheart.a C:\devkitPro\devkitARM\arm-none-eabi\lib
+	cp libheart.h C:\devkitPro\devkitARM\arm-none-eabi\include
 
 	
 clean:

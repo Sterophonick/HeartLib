@@ -2,7 +2,7 @@ HEADERS = defs.h
 OBJECTS = build/arrow.o build/main.o build/l1.o build/such.o build/block.o build/soundbank.o build/such2.o
 SOURCES = main.c arrow.c l1.c such.C block.c soundbank.s such2.c
 ELFS = build/main.elf
-CFLAGS = -MMD -MP -MF -Wall -O3 -ffast-math -mlong-calls -mcpu=arm7tdmi -mtune=arm7tdmi -fomit-frame-pointer -marm -faggressive-loop-optimizations -fverbose-asm 
+CFLAGS = -DHRT_WITH_LIBHEART -Wall -O3 -ffast-math -mlong-calls -mcpu=arm7tdmi -mtune=arm7tdmi -fomit-frame-pointer -marm -faggressive-loop-optimizations -fverbose-asm 
 ARCH = -mthumb -mthumb-interwork
 SPECS = -specs=gba.specs
 PREFIX = C:\devkitPro\devkitARM\bin\arm-none-eabi-
@@ -17,7 +17,7 @@ build/main.elf: $(OBJECTS)
 	$(PREFIX)gcc $(SPECS) $(ARCH) $(OBJECTS)  -LC:\devkitPro\devkitARM\lib -lheart -lm -o build/main.elf
 demo.gba: $(ELFS)
 	$(PREFIX)objcopy -O binary $(ELFS) demo.gba
-		tools/padbin 256 demo.gba>nul
+		tools/padbin 256 demo.gba
 			cat demo.gba data.gbfs>demo2.gba
 				rm demo.gba
 	mv demo2.gba demo.gba

@@ -75,7 +75,7 @@ int main()
 	hrt_PrintOnBitmap(8, 36, "Random Number Generator"); //draws text
 	hrt_PrintOnBitmap(8, 45, "Built-in MaxMod"); //draws text
 	hrt_PrintOnBitmap(8, 54, "mbv2lib"); //draws text
-	hrt_PrintOnBitmap(8, 63, "Xboo"); //draws text
+	hrt_PrintOnBitmap(8, 63, ""); //draws text
 	hrt_PrintOnBitmap(8, 72, "Real-Time Clock"); //draws text
 	hrt_PrintOnBitmap(8, 81, "System Detection"); //draws text
 	hrt_PrintOnBitmap(8, 90, "Mode 7"); //draws text
@@ -107,8 +107,7 @@ int main()
 			if (arpos == 11)
 			{
 				hrt_FillScreen(0x0000);
-				hrt_CpuFastSet((void*)such2_jpg, ExtWRAM, 12853);
-				JPEG_DecompressImage(ExtWRAM, VRAM, 240, 160);
+				JPEG_DecompressImage(such2_jpg, VRAM, 240, 160);
 				while (1)
 				{
 					hrt_VblankIntrWait();
@@ -168,17 +167,7 @@ int main()
 			}
 			if (arpos == 7)
 			{
-				int handle = dfopen("data\\splash.pcx", "rb");
-				dfseek(handle, 0, SEEK_END);
-				u32 size = dftell(handle);
-				dprintf("File size is %d\n", size);
-				void *splash = malloc(size);
-				dfseek(handle, 0, SEEK_SET);
-				dfread(splash, 1, size, handle);
-				dfclose(handle);
-				hrt_SetDSPMode(4, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0); //Sets REG_DISPCNT, like above
-				hrt_DecodePCX(splash, VRAM, BGPaletteMem);
-				free(splash);
+
 			}
 			if (arpos == 6)
 			{
@@ -315,10 +304,6 @@ int main()
 						hrt_AffineOBJ(0, rot % 360, x_scale, x_scale);
 						hrt_CopyOAM();
 						g_newframe = 1;
-					}
-					if (keyDown(KEY_SELECT))
-					{
-						hrt_Crash();
 					}
 					asm("swi 0x05"::);
 					g_newframe = 0;
