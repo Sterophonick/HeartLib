@@ -36,6 +36,8 @@ palettes, bios calls, SRAM, memory, Interrupts, and a bunch of many other things
  
  - ADPCM Lib (Shoutouts to Nrx, YodaJR, and OMG)
  
+ - Drawing text to the screen in bitmap and tile modes.
+ 
  - Drawing new data to the zcreen when scrolling very large backgrounds.
  
  - Many more things!
