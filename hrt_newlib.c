@@ -1,7 +1,7 @@
 #include "libheart.h"
 
-void _start(void);
-void _exit(__attribute__((unused)) int n)
+extern void _start(void);
+void _ATTRIBUTE((__noreturn__)) _exit(__attribute__((unused)) int n)
 {
 	_start();
 }
@@ -22,8 +22,10 @@ int gettimeofday(struct timeval *__restrict __p,
 int kill(pid_t i, int i2)
 {
 	_start();
+	return 0;
 }
 int system(const char *__string)
 {
 	_start();
+	return 0;
 }

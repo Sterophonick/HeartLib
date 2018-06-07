@@ -1,4 +1,5 @@
 #include "libheart.h"
+extern gba_system __hrt_system;
 
 #ifndef JPEG_DEBUG
 #define JPEG_DEBUG 0
@@ -1006,14 +1007,18 @@ int JPEG_HuffmanTable_Read(JPEG_HuffmanTable *huffmanTable, const unsigned char 
 }
 int hrt_DecodeJPEG(const unsigned char *data, volatile JPEG_OUTPUT_TYPE *out, int outWidth, int outHeight)
 {
-	JPEG_Decoder decoder;
-	if (!JPEG_Decoder_ReadHeaders(&decoder, &data)) {
-		return 0;
+	if (__hrt_system.hrt_start == 1)
+	{
+		JPEG_Decoder decoder;
+		if (!JPEG_Decoder_ReadHeaders(&decoder, &data)) {
+			return 0;
+		}
+		if (!JPEG_Decoder_ReadImage(&decoder, &data, out, outWidth, outHeight)) {
+			return 0;
+		}
+		return 1;
 	}
-	if (!JPEG_Decoder_ReadImage(&decoder, &data, out, outWidth, outHeight)) {
-		return 0;
-	}
-	return 1;
+	return 0;
 }
 int JPEG_Match(const unsigned char *data, int length)
 {

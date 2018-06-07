@@ -1,10 +1,7 @@
 #include "libheart.h"
-extern u8 hrt_start;
-extern int	hrt_offsetOAMData;
-extern int hrt_offsetOAMPal;
-extern int hrt_offsetBGMap;
-extern int hrt_offsetBGTile;
-extern int hrt_offsetBGPal;
+
+extern gba_system __hrt_system;
+
 #define N              (624)
 #define M              (397)
 #define K              (0x9908B0DFU)
@@ -17,7 +14,7 @@ static u32   *next;
 static int      left = -1; 
 void hrt_SeedRNG(u32 seed)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		register u32 x = (seed | 1U) & 0xFFFFFFFFU, *s = state;
 		register int    j;
@@ -27,7 +24,7 @@ void hrt_SeedRNG(u32 seed)
 }
 u32 hrt_ReloadRNG(void)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		register u32 *p0 = state, *p2 = state + 2, *pM = state + M, s0, s1;
 		register int    j;
@@ -48,7 +45,7 @@ u32 hrt_ReloadRNG(void)
 }
 u32 hrt_CreateRNG(void)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		u32 y;
 		if (--left < 0)

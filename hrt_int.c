@@ -1,22 +1,17 @@
 #include "libheart.h"
-extern u8 hrt_start;
-extern int	hrt_offsetOAMData;
-extern int hrt_offsetOAMPal;
-extern int hrt_offsetBGMap;
-extern int hrt_offsetBGTile;
-extern int hrt_offsetBGPal;
+extern gba_system __hrt_system;
 
 struct IntTable IntrTable[MAX_INTS];
 
 void hrt_dummy(void) {};
 void hrt_InitInterrupt(void) {
-	if (hrt_start == 1) {
+	if (__hrt_system.hrt_start == 1) {
 		hrt_irqInit();
 	}
 }
 
 void hrt_irqInit(void) {
-	if (hrt_start == 1) {
+	if (__hrt_system.hrt_start == 1) {
 		int i;
 		for (i = 0; i < MAX_INTS; i++)
 		{
@@ -28,14 +23,14 @@ void hrt_irqInit(void) {
 }
 
 IntFn* hrt_SetInterrupt(irqMASK mask, IntFn function) {
-	if (hrt_start == 1) {
+	if (__hrt_system.hrt_start == 1) {
 		return hrt_irqSet(mask, function);
 	}
     return 0;
 }
 
 IntFn* hrt_irqSet(irqMASK mask, IntFn function) {
-	if (hrt_start == 1) {
+	if (__hrt_system.hrt_start == 1) {
 		int i;
 		for (i = 0;; i++) {
 			if (!IntrTable[i].mask || IntrTable[i].mask == mask) break;
@@ -49,13 +44,13 @@ IntFn* hrt_irqSet(irqMASK mask, IntFn function) {
 }
 
 void hrt_EnableInterrupt(irqMASK mask) {
-	if (hrt_start == 1) {
+	if (__hrt_system.hrt_start == 1) {
 		hrt_irqEnable(mask);
 	}
 }
 
 void hrt_irqEnable(int mask) {
-	if (hrt_start == 1) {
+	if (__hrt_system.hrt_start == 1) {
 		REG_IME = 0;
 
 		if (mask & IRQ_VBLANK) REG_DISPSTAT |= LCDC_VBL;
@@ -67,13 +62,13 @@ void hrt_irqEnable(int mask) {
 }
 
 void hrt_DisableInterrupt(irqMASK mask) {
-	if (hrt_start == 1) {
+	if (__hrt_system.hrt_start == 1) {
 		hrt_irqDisable(mask);
 	}
 }
 
 void hrt_irqDisable(int mask) {
-	if (hrt_start == 1) {
+	if (__hrt_system.hrt_start == 1) {
 		REG_IME = 0;
 		if (mask & IRQ_VBLANK) REG_DISPSTAT &= ~LCDC_VBL;
 		if (mask & IRQ_HBLANK) REG_DISPSTAT &= ~LCDC_HBL;

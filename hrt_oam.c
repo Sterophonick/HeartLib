@@ -5,12 +5,8 @@ u16* OAMData		=(u16*)0x6010000;
 u16* OAM = (u16*)0x7000000;
 s32 angle = 0;
 s32 zoom = 1<<8;
-extern u8 hrt_start;
-extern int	hrt_offsetOAMData;
-extern int hrt_offsetOAMPal;
-extern int hrt_offsetBGMap;
-extern int hrt_offsetBGTile;
-extern int hrt_offsetBGPal;
+extern gba_system __hrt_system;
+
 const double SIN[360] = { 0 , 4.46781 , 8.93426 , 13.398 , 17.8576 , 22.3119 , 26.7593 , 31.1985 , 35.6283 , 40.0472 , 44.4539 ,
 		48.8471 , 53.2253 , 57.5874 , 61.932 , 66.2576 , 70.5631 , 74.8471 , 79.1083 , 83.3454 , 87.5571 ,
 		91.7421 , 95.8992 , 100.027 , 104.124 , 108.19 , 112.223 , 116.221 , 120.185 , 124.111 , 128 ,
@@ -124,7 +120,7 @@ const double RAD[360] = { 0 , 0.0174533 , 0.0349066 , 0.0523598 , 0.0698131 , 0.
 
 void hrt_CopyOAM(void)
 {
-	if (hrt_start == 1) {
+	if (__hrt_system.hrt_start == 1) {
 		u16 loop;
 		u16* temp;
 		temp = (u16*)sprites;
@@ -136,7 +132,7 @@ void hrt_CopyOAM(void)
 }
 void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset)
 {
-	if (hrt_start == 1) {
+	if (__hrt_system.hrt_start == 1) {
 		if (affine == 1) {
 			sprites[spr].attribute0 = (color * 8192) | (shape * 0x4000) | (mode * 0x400) | (mosaic * 0x1000) | (0x100) | (dblsize * 0x200) | sty;
 			sprites[spr].attribute1 = (size * 16384) | ((spr) << 9) | (hflip * 4096) | (vflip * 8192) | stx;
@@ -153,7 +149,7 @@ void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hflip, u8 vfli
 
 void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale, s32 y_scale)
 {
-	if (hrt_start == 1) {
+	if (__hrt_system.hrt_start == 1) {
 		s32 pa, pb, pc, pd;
 		pa = ((x_scale) * (s32)COS[angle % 360]) >> 8;
 		pb = ((y_scale) * (s32)SIN[angle % 360]) >> 8;
@@ -167,7 +163,7 @@ void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale, s32 y_scale)
 }
 void hrt_SetOBJX(u8 spr, s16 x)
 {
-	if (hrt_start == 1) {
+	if (__hrt_system.hrt_start == 1) {
 		sprites[spr].attribute1 &= 0xFE00;
 		sprites[spr].attribute1 |= x;
 	}
@@ -175,7 +171,7 @@ void hrt_SetOBJX(u8 spr, s16 x)
 
 void hrt_SetOBJY(u8 spr, s16 y)
 {
-	if (hrt_start == 1) {
+	if (__hrt_system.hrt_start == 1) {
 		sprites[spr].attribute0 &= 0xFF00;
 		sprites[spr].attribute0 |= y;
 	}
@@ -183,7 +179,7 @@ void hrt_SetOBJY(u8 spr, s16 y)
 
 void hrt_SetOBJXY(u8 spr, s16 x, s16 y)
 {
-	if (hrt_start == 1) {
+	if (__hrt_system.hrt_start == 1) {
 		sprites[spr].attribute0 &= 0xFF00;
 		sprites[spr].attribute0 |= y;
 		sprites[spr].attribute1 &= 0xFE00;
@@ -193,7 +189,7 @@ void hrt_SetOBJXY(u8 spr, s16 x, s16 y)
 
 void hrt_CloneOBJ(int ospr, int nspr) //duplicates a Sprite
 {
-	if (hrt_start == 1) {
+	if (__hrt_system.hrt_start == 1) {
 		// set sprite offscreen, and set it up (size,etc)
 		sprites[nspr].attribute0 = sprites[ospr].attribute0;
 		sprites[nspr].attribute1 = sprites[ospr].attribute1;
@@ -202,7 +198,7 @@ void hrt_CloneOBJ(int ospr, int nspr) //duplicates a Sprite
 }
 void hrt_GlideSpritetoPos(int spr, int x1, int y1, int x2, int y2, u32 frames)
 {
-	if (hrt_start == 1) {
+	if (__hrt_system.hrt_start == 1) {
 		u32 i1 = 0;
 		hrt_SetOBJXY(spr, x1, y1);
 		int i, deltax, deltay, numpixels;
@@ -276,7 +272,7 @@ void hrt_GlideSpritetoPos(int spr, int x1, int y1, int x2, int y2, u32 frames)
 
 void hrt_MoveSpriteInDirection(u8 sprite, u16 direction, int steps)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		hrt_SetOBJXY(sprite, (hrt_GetOBJX(sprite) + (SIN[direction])*steps), (hrt_GetOBJY(sprite) + (COS[direction])*steps));
 	}
@@ -287,7 +283,7 @@ u16 hrt_PointOBJTowardsPosition(u8 sprite, int x, int y)
 	int delta_x;
 	int delta_y;
 	u16 direction;
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		delta_x = x - hrt_GetOBJX(sprite);
 		delta_y = y - hrt_GetOBJY(sprite);
@@ -319,7 +315,7 @@ u16 hrt_PointOBJTowardsPosition(u8 sprite, int x, int y)
 u8 hrt_GetOBJX(u8 sprite)
 {
 	u8 spriteX = 0;
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		spriteX = (((s16)(sprites[sprite].attribute1 << 7)) >> 7) + (4 << (sprites[sprite].attribute1 >> 14));
 		return spriteX;
@@ -330,7 +326,7 @@ u8 hrt_GetOBJX(u8 sprite)
 u8 hrt_GetOBJY(u8 sprite)
 {
 	u8 spriteY = 0;
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		spriteY = (((s16)(sprites[sprite].attribute0 << 8)) >> 8) + (4 << (sprites[sprite].attribute1 >> 14));
 		return spriteY;
@@ -340,7 +336,7 @@ u8 hrt_GetOBJY(u8 sprite)
 
 void hrt_EnableOBJHFlip(u8 objno)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		sprites[objno].attribute1 |= (1 << 12);
 	}
@@ -348,7 +344,7 @@ void hrt_EnableOBJHFlip(u8 objno)
 
 void hrt_DisableOBJHFlip(u8 objno)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		sprites[objno].attribute1 &= ~(1 << 12);
 	}
@@ -356,7 +352,7 @@ void hrt_DisableOBJHFlip(u8 objno)
 
 void hrt_EnableOBJVFlip(u8 objno)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		sprites[objno].attribute1 |= (1 << 13);
 	}
@@ -364,7 +360,7 @@ void hrt_EnableOBJVFlip(u8 objno)
 
 void hrt_DisableOBJVFlip(u8 objno)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		sprites[objno].attribute1 &= ~(1 << 13);
 	}
@@ -372,7 +368,7 @@ void hrt_DisableOBJVFlip(u8 objno)
 
 void hrt_SetOBJMode(u8 objno, u8 mode)
 {
-	if(hrt_start == 1)
+	if(__hrt_system.hrt_start == 1)
 	{
 		sprites[objno].attribute0 |= (mode << 10);
 	}
@@ -380,7 +376,7 @@ void hrt_SetOBJMode(u8 objno, u8 mode)
 
 void hrt_EnableOBJMosaic(u8 objno)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		sprites[objno].attribute0 |= (1 << 12);
 	}
@@ -388,7 +384,7 @@ void hrt_EnableOBJMosaic(u8 objno)
 
 void hrt_DisableOBJMosaic(u8 objno)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		sprites[objno].attribute0 &= ~(1 << 12);
 	}
@@ -396,7 +392,7 @@ void hrt_DisableOBJMosaic(u8 objno)
 
 void hrt_SetOBJColor16(u8 objno)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		sprites[objno].attribute0 &= ~(1 << 13);
 	}
@@ -404,7 +400,7 @@ void hrt_SetOBJColor16(u8 objno)
 
 void hrt_SetOBJColor256(u8 objno)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		sprites[objno].attribute0 |= (1 << 13);
 	}
@@ -412,7 +408,7 @@ void hrt_SetOBJColor256(u8 objno)
 
 void hrt_SetOBJShape(u8 objno, u8 shape)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		sprites[objno].attribute0 |= (shape << 14);
 	}
@@ -420,7 +416,7 @@ void hrt_SetOBJShape(u8 objno, u8 shape)
 
 void hrt_SetOBJSize(u8 objno, u8 size)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		sprites[objno].attribute1 |= (size << 14);
 	}
@@ -428,7 +424,7 @@ void hrt_SetOBJSize(u8 objno, u8 size)
 
 void hrt_SetOBJOffset(u8 objno, u8 data)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		sprites[objno].attribute2 |= (data << 0);
 	}
@@ -436,7 +432,7 @@ void hrt_SetOBJOffset(u8 objno, u8 data)
 
 void hrt_SetOBJPriority(u8 objno, u8 prior)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		sprites[objno].attribute2 |= (prior << 10);
 	}
@@ -444,7 +440,7 @@ void hrt_SetOBJPriority(u8 objno, u8 prior)
 
 void hrt_SetOBJPalette(u8 objno, u8 palette)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		sprites[objno].attribute2 |= (palette << 12);
 	}

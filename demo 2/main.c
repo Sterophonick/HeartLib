@@ -2,11 +2,8 @@
 #include "defs.h"
 #include "soundbank.h"
 int hrs, min, secs;
-extern int	hrt_offsetOAMData;
-extern int hrt_offsetOAMPal;
-extern int hrt_offsetBGMap;
-extern int hrt_offsetBGTile;
-extern int hrt_offsetBGPal;
+extern const Sound ADPCM_truc;
+int temp = 0;
 
 char buffer[255];
 
@@ -14,6 +11,13 @@ void vblFunc()
 {
 	hrt_CopyOAM();
 	frames++;
+	g_newframe = 0;
+}
+
+void vblFunc2(void)
+{
+	hrt_ADPCMDecodeVBL(0);
+	hrt_ADPCMDecodeVBL(1);
 	g_newframe = 0;
 }
 
@@ -80,6 +84,7 @@ int main()
 	hrt_PrintOnBitmap(8, 81, "System Detection"); //draws text
 	hrt_PrintOnBitmap(8, 90, "Mode 7"); //draws text
 	hrt_PrintOnBitmap(8, 99, "JPEG"); //draws text
+	hrt_PrintOnBitmap(8, 108, "ADPCM"); //draws text
     hrt_CopyOAM(); //Copies OBJ Data to OAM
     while (1) {
 		frames++;
@@ -93,8 +98,8 @@ int main()
         }
         if (keyDown(KEY_DOWN)) {
             arpos++;
-            if (arpos == 12) {
-                arpos = 11;
+            if (arpos == 13) {
+                arpos = 12;
             }
             while (keyDown(KEY_DOWN));
         }
@@ -104,10 +109,38 @@ int main()
                      9*arpos); //Y Position
 
         if (keyDown(KEY_A)) {
+			if (arpos == 12)
+			{
+				hrt_FillScreen(0x0000);
+				hrt_DSPDisableOBJ();
+				hrt_InitADPCM(2);
+				hrt_irqSet(IRQ_VBLANK, &vblFunc2);
+				hrt_DSPSetBGMode(3);
+				hrt_DSPDisableForceBlank();
+				hrt_DSPEnableBG(2);
+				hrt_BGSetMapBase(2, 2);
+				hrt_PrintOnBitmap(0, 0, "HeartLib ADPCM Demo. Press B.");
+				while (1)
+				{
+					if (g_newframe == 0)
+					{
+						g_newframe = 1;
+						if (keyDown(KEY_B))
+						{
+							hrt_StartADPCM(&ADPCM_truc, -1, 0);
+						}
+						if (keyDown(KEY_A))
+						{
+							temp = chmod("C:\\suck\\", 1);
+						}
+					}
+					hrt_VblankIntrWait();
+				}
+			}
 			if (arpos == 11)
 			{
 				hrt_FillScreen(0x0000);
-				JPEG_DecompressImage(such2_jpg, VRAM, 240, 160);
+				hrt_DecodeJPEG(such2_jpg, VRAM, 240, 160);
 				while (1)
 				{
 					hrt_VblankIntrWait();

@@ -21,16 +21,12 @@ included in all copies or substantial portions of the Software.
 #include "libheart.h"
 #define GBFS_SEARCH_LIMIT ((const u32 *)0x0a000000)
 #define GBFS_ALIGNMENT  256
-extern u8 hrt_start;
-extern int	hrt_offsetOAMData;
-extern int hrt_offsetOAMPal;
-extern int hrt_offsetBGMap;
-extern int hrt_offsetBGTile;
-extern int hrt_offsetBGPal;
+
+extern gba_system __hrt_system;
 
 const GBFS_FILE *find_first_gbfs_file(const void *start)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		const u32 *here = (const u32 *)
 			((unsigned long)start & (-GBFS_ALIGNMENT));
@@ -50,7 +46,7 @@ const GBFS_FILE *find_first_gbfs_file(const void *start)
 }
 const void *skip_gbfs_file(const GBFS_FILE *file)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		return ((char *)file + file->total_len);
 	}
@@ -58,7 +54,7 @@ const void *skip_gbfs_file(const GBFS_FILE *file)
 }
 static int namecmp(const void *a, const void *b)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		return memcmp(a, b, 24);
 	}
@@ -66,7 +62,7 @@ static int namecmp(const void *a, const void *b)
 }
 const void *gbfs_get_obj(const GBFS_FILE *file,	const char *name,	u32 *len)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		char key[24] = { 0 };
 		GBFS_ENTRY *dirbase = (GBFS_ENTRY *)((char *)file + file->dir_off);
@@ -86,7 +82,7 @@ const void *gbfs_get_obj(const GBFS_FILE *file,	const char *name,	u32 *len)
 }
 void *gbfs_copy_obj(void *dst,	const GBFS_FILE *file, 	const char *name)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		u32 len;
 		const void *src = gbfs_get_obj(file, name, &len);

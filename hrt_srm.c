@@ -1,15 +1,10 @@
 #include "libheart.h"
-extern u8 hrt_start;
-extern int	hrt_offsetOAMData;
-extern int hrt_offsetOAMPal;
-extern int hrt_offsetBGMap;
-extern int hrt_offsetBGTile;
-extern int hrt_offsetBGPal;
+extern gba_system __hrt_system;
 
 u8* SaveData = (u8*)0x0E000000;
 void hrt_SaveInt(u16 offset, int value) //saves to SRAM
 {
-	if (hrt_start == 1) {
+	if (__hrt_system.hrt_start == 1) {
 		int i;
 		char string[7];
 		sprintf(string, "%d", value);
@@ -25,7 +20,7 @@ void hrt_SaveInt(u16 offset, int value) //saves to SRAM
 }
 int hrt_LoadInt(u16 offset) //Loads from SRAM
 {
-	if (hrt_start == 1) {
+	if (__hrt_system.hrt_start == 1) {
 		int  i;
 		char string[7];
 		for (i = 0; i != 7; i++)
@@ -39,14 +34,14 @@ int hrt_LoadInt(u16 offset) //Loads from SRAM
 
 void hrt_SaveByte(int offset, u8 value)
 {
-	if (hrt_start == 1) {
+	if (__hrt_system.hrt_start == 1) {
 		SaveData[offset] = value;
 	}
 }
 
 u8 hrt_LoadByte(int offset)
 {
-	if (hrt_start == 1) {
+	if (__hrt_system.hrt_start == 1) {
 		return SaveData[offset];
 	}
 	return 0;

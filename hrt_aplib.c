@@ -3,11 +3,11 @@ u8 *aP_d_output;
 u8 *aP_d_input;
 u8 aP_d_tagbyte;
 u32 aP_d_tagpos;
-extern u8 hrt_start;
+extern gba_system __hrt_system;
 
 u32 aP_d_getbit()
 {
-    if (hrt_start == 1) {
+    if (__hrt_system.hrt_start == 1) {
         u32 tmp;
         if (!aP_d_tagpos--) {
             aP_d_tagpos = 7;
@@ -23,7 +23,7 @@ u32 aP_d_getbit()
 
 u32 aP_d_getgamma()
 {
-    if (hrt_start == 1) {
+    if (__hrt_system.hrt_start == 1) {
         u32 result = 1;
         do {
             result = (result << 1) + aP_d_getbit();
@@ -36,7 +36,7 @@ u32 aP_d_getgamma()
 
 u32 hrt_aPlibUnpack(u8 *source, u8 *destination)
 {
-    if (hrt_start == 1) {
+    if (__hrt_system.hrt_start == 1) {
         u32 offs, len, R0, LWM;
         s32 done;
         s32 i;

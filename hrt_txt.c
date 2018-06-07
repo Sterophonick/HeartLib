@@ -1,27 +1,27 @@
 #include "libheart.h"
-extern u8 hrt_start;
-extern int	hrt_offsetOAMData;
-extern int hrt_offsetOAMPal;
-extern int hrt_offsetBGMap;
-extern int hrt_offsetBGTile;
-extern int hrt_offsetBGPal;
+extern gba_system __hrt_system;
+
+const u16 _____colors[3] = {
+	0x0000, 0x0421, 0x7FFF
+};
 
 void hrt_DrawChar(int mode, int left, int top, char letter) {
-    if (hrt_start == 1) {
+    if (__hrt_system.hrt_start == 1) {
         int x, y;
-
+		u8 temp;
         for (y = 0; y < 8; y++)
             for (x = 0; x < 8; x++) {
-				if (!(font_matrixBitmap[(letter - 32) * 64 + y * 8 + x] == 0x0000))
+				temp = font_matrixBitmap[(letter - 32) * 64 + y * 8 + x];
+				if (!(temp == 0))
 				{
-					hrt_DrawPixel(mode, left + x, top + y, font_matrixBitmap[(letter - 32) * 64 + y * 8 + x]);
+					hrt_DrawPixel(mode, left + x, top + y, _____colors[temp]);
 				}
             }
     }
 }
 
 void hrt_PrintOnBitmap(int left, int top, char *str) {
-    if (hrt_start == 1) {
+    if (__hrt_system.hrt_start == 1) {
         int pos = 0;
         while (*str) {
             hrt_DrawChar(3, left + pos, top, *str++);

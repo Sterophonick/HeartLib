@@ -1,14 +1,9 @@
 #include "libheart.h"
-extern u8 hrt_start;
-extern int	hrt_offsetOAMData;
-extern int hrt_offsetOAMPal;
-extern int hrt_offsetBGMap;
-extern int hrt_offsetBGTile;
-extern int hrt_offsetBGPal;
+extern gba_system __hrt_system;
 
 void hrt_DecodePCX(const u8 *PCXBuffer, u16 * ScreenAddr, u16* Palette)
 {
-	if (hrt_start == 1) {
+	if (__hrt_system.hrt_start == 1) {
 		u8 Buf[240];
 		int c, l, r, g, b;
 		int i;

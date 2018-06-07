@@ -1,10 +1,6 @@
 #include "libheart.h"
-extern u8 hrt_start;
-extern int	hrt_offsetOAMData;
-extern int hrt_offsetOAMPal;
-extern int hrt_offsetBGMap;
-extern int hrt_offsetBGTile;
-extern int hrt_offsetBGPal;
+extern gba_system __hrt_system;
+
 unsigned char __finstr[__FINBUFSIZE];
 unsigned char __kinstr[__KINBUFSIZE];
 char __outstr[__DOUTBUFSIZE];
@@ -15,7 +11,7 @@ int koutptr = 0;
 
 int __dputchar(int c)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		int rcv;
 		static int LastChar = 0;
@@ -74,7 +70,7 @@ int __dputchar(int c)
 }
 int mbv2_dputchar(int c)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		(void)__dputchar(c);
 		if (c == __ESCCHR) {
@@ -86,7 +82,7 @@ int mbv2_dputchar(int c)
 }
 int mbv2_dgetch(void)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		int c;
 		// If no character is in FIFO then wait for one.
@@ -102,7 +98,7 @@ int mbv2_dgetch(void)
 }
 int mbv2_dfgetch(void)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		int c;
 		// If no character is in FIFO then wait for one.
@@ -118,7 +114,7 @@ int mbv2_dfgetch(void)
 }
 int mbv2_dkbhit(void)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		return(kinptr != koutptr);
 	}
@@ -126,7 +122,7 @@ int mbv2_dkbhit(void)
 }
 int mbv2_dfopen(const char *file, const char *type)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		__dputchar(__ESCCHR);
 		__dputchar(__ESC_FOPEN);
@@ -144,7 +140,7 @@ int mbv2_dfopen(const char *file, const char *type)
 }
 int mbv2_dfclose(int fp)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		__dputchar(__ESCCHR);
 		__dputchar(__ESC_FCLOSE);
@@ -154,7 +150,7 @@ int mbv2_dfclose(int fp)
 }
 int mbv2_dfgetc(int fp)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		__dputchar(__ESCCHR);
 		__dputchar(__ESC_FGETC);
@@ -164,7 +160,7 @@ int mbv2_dfgetc(int fp)
 }
 int mbv2_dfputc(int ch, int fp)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		__dputchar(__ESCCHR);
 		__dputchar(__ESC_FPUTC);
@@ -175,7 +171,7 @@ int mbv2_dfputc(int ch, int fp)
 }
 void mbv2_drewind(int fp)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		__dputchar(__ESCCHR);
 		__dputchar(__ESC_REWIND);
@@ -183,7 +179,7 @@ void mbv2_drewind(int fp)
 }
 void mbv2_dprintf(char *str, ...)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		va_list args;
 		int i;
@@ -198,7 +194,7 @@ void mbv2_dprintf(char *str, ...)
 }
 void mbv2_dfprintf(int fp, char *str, ...)
 {
-	if (hrt_start == 1)
+	if (__hrt_system.hrt_start == 1)
 	{
 		va_list args;
 		int i;
