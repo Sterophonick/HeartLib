@@ -3190,5 +3190,5 @@ soundbank_bin:
 	.global soundbank_bin_end
 soundbank_bin_end:
 
-	.align
+	.balign 4
 soundbank_bin_size: .int 50904

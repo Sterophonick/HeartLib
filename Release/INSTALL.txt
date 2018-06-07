@@ -18,3 +18,4 @@ elm-chan.org
 GBATek
 Headspin
 Jibz (for aPlib)
+NRX for ADPCM

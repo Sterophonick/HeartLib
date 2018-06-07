@@ -27,6 +27,9 @@ These functions give you access to:
 	Random Number Generation (Uses Merssene Twister method)
 	MaxMod (Kudos to LibGBA)
 	aPlib
+	JPEG Decoding
+	Tiled Text
+	ADPCM
 
 You can find some documentation on the GBACrusherCL, GBFS, gfx2gba and other tools inside the TOOLS folder.
 

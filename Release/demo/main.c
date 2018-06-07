@@ -1,5 +1,10 @@
 #include <libheart.h>
 #include "defs.h"
+extern int	hrt_offsetOAMData;
+extern int hrt_offsetOAMPal;
+extern int hrt_offsetBGMap;
+extern int hrt_offsetBGTile;
+extern int hrt_offsetBGPal;
 
 int i;
 s8 phase;
@@ -13,13 +18,16 @@ unsigned char *p = (unsigned char*)&g_sram; //Splits int g_sram into 4 bytes for
 
 int main()
 {
-    hrt_Init(1); //Initializes Heartlib. If number is set to 1 it plays an intro. REQUIRED FOR USING THIS LIBRARY. IF THIS IS NOT EXECUTED IT WILL NOT WORK!!!!
+	hrt_EnableSoftReset();
+	hrt_EnableRTC();
+	hrt_EnableCopyOAMOnVBL();
+	hrt_EnablemmFrameonVBL();
+    hrt_Init(); //Initializes Heartlib. If number is set to 1 it plays an intro. REQUIRED FOR USING THIS LIBRARY. IF THIS IS NOT EXECUTED IT WILL NOT WORK!!!!
     p[0] = hrt_LoadByte(0x00);
     p[1] = hrt_LoadByte(0x01);
     p[2] = hrt_LoadByte(0x02);
     p[3] = hrt_LoadByte(0x03);
     const GBFS_FILE *dat = find_first_gbfs_file(find_first_gbfs_file); //defines GBFS file
-    hrt_InitSound(0, 22050, 5252832, (void*)hrt_snd); //initialises sound
     //Sets the Display Mode, like which mode, OBJ Settings, and which backgrounds are enabled.
     hrt_SetDSPMode(3, //Mode
                    0,								  //CGB Mode
@@ -32,7 +40,7 @@ int main()
                    1,                               //BG 2
                    0,                               //BG 3
                    1,                               //OBJ
-                   0,                               //Win 0
+                   0,                               //Win 0a
                    0,                               //Win 1
                    0);							  //OBJWin
 
@@ -69,7 +77,7 @@ int main()
     hrt_PrintOnBitmap(8, 36, "Palette Cycle");//draws text
     hrt_PrintOnBitmap(8, 45, "DMA Transfer");//draws text
     hrt_PrintOnBitmap(8, 54, "GetPixel");//draws text
-    hrt_PrintOnBitmap(8, 63, "DMA Sound");//draws text
+    hrt_PrintOnBitmap(8, 63, "OBJWin");//draws text
     hrt_PrintOnBitmap(8, 72, "Mode 3 Wipes");//draws text
     hrt_PrintOnBitmap(8, 81, "Alpha Blending");//draws text
     hrt_PrintOnBitmap(8, 90, "SRAM");//draws text
@@ -97,7 +105,7 @@ int main()
             while (keyDown(KEY_DOWN));
         }
 
-        hrt_SetOBJXY(&sprites[0], //Sprite
+        hrt_SetOBJXY(0, //Sprite
                      0, //X Position
                      9*arpos); //Y Position
 
@@ -113,14 +121,14 @@ int main()
                 hrt_LoadBGTiles((void*)l2_Tiles, 1664);
                 hrt_LoadBGMap((void*)l1_Map, 1024);
                 hrt_LoadBGMap((void*)l2_Map, 1024);
-                hrt_EditBG(2, bgx, bgy, 256, 256, 0);
-                hrt_EditBG(3, bgx/2, bgy/2, 256, 256, 0);
+                hrt_EditBG(2, bgx, bgy, 256, 256, 0, 0, 0);
+                hrt_EditBG(3, bgx/2, bgy/2, 256, 256, 0, 0, 0);
                 hrt_VblankIntrWait();
                 while (1) {
                     frames++;
                     hrt_VblankIntrWait();
-                    hrt_EditBG(2, bgx, bgy, 256, 256, 0);
-                    hrt_EditBG(3, bgx / 2, bgy / 2, 256, 256, 0);
+                    hrt_EditBG(2, bgx, bgy, 256, 256, 0, 0, 0);
+                    hrt_EditBG(3, bgx / 2, bgy / 2, 256, 256, 0, 0, 0);
                     if (keyDown(KEY_LEFT)) {
                         bgx--;
                     }
@@ -147,9 +155,7 @@ int main()
                 hrt_EZ4Exit();
             }
             if (arpos == 13) {
-                hrt_Suspend();
-                while (KEY_ANY_PRESSED);
-                while (!(KEY_ANY_PRESSED));
+				hrt_irqEnable(IRQ_KEYPAD);
                 hrt_Suspend();
             }
             if (arpos == 12) {
@@ -180,13 +186,13 @@ int main()
                               0,                             //BG 3 Target 2
                               0,                             //OBJ Target 2
                               1);                           //Backdrop Target 2
-                hrt_FillScreen(0x0000, 3);
+                hrt_FillScreen(0x0000);
                 hrt_LoadBGPal((void*)balls_Palette, 16);
                 hrt_LoadBGTiles((void*)balls_Tiles, 1088);
                 hrt_LoadBGMap((void*)balls_Map, 2048);
                 hrt_LoadOBJGFX((void*)busterTiles, 512); //loads Sprite Graphics
                 hrt_LoadOBJPal((void*)busterPal, 16); //loads Sprite palette
-                hrt_EditBG(2, bgx, bgy, 256, 256, 0);
+                hrt_EditBG(2, bgx, bgy, 256, 256, 0, 0, 0);
                 hrt_CreateOBJ(0,   //Sprite ID
                               0,							     //Start X
                               0,							     //Start Y
@@ -216,7 +222,7 @@ int main()
                     if (0 == g_EffectValueA) {
                         g_EffectIncrease = 1;
                     }
-                    hrt_EditBG(2, bgx, bgy, 256, 256, 0);
+                    hrt_EditBG(2, bgx, bgy, 256, 256, 0, 0, 0);
                     hrt_VblankIntrWait();
                     hrt_SetFXAlphaLevel(g_EffectValueA,             // Source intensity
                                         16 - g_EffectValueB);
@@ -229,35 +235,86 @@ int main()
                 }
             }
             if (arpos == 8) {
-                hrt_FillScreen(0xFFFF, 3); //Fills Screen with white in mode 3.
+                hrt_FillScreen(0xFFFF); //Fills Screen with white in mode 3.
                 hrt_SetDSPMode(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0); //Sets REG_DISPCNT, like above
                 while (1) {
                     hrt_ScanLines(0x0000, 1, 3);
-                    hrt_LeftWipe(RED, 1, 3);
-                    hrt_RightWipe(BLUE, 1, 3);
-                    hrt_BottomWipe(BROWN, 1, 3);
-                    hrt_TopWipe(GREEN, 1, 3);
-                    hrt_CoolScanLines(MAGENTA, 1, 3);
-                    hrt_CircleWipe(ORANGE, 1, 3);
-                    hrt_LineWipe(CYAN, 0, 3);
+                    hrt_LeftWipe(COLOR_RED, 1, 3);
+                    hrt_RightWipe(COLOR_BLUE, 1, 3);
+                    hrt_BottomWipe(0x0110, 1, 3); //Brown
+                    hrt_TopWipe(COLOR_GREEN, 1, 3);
+                    hrt_CoolScanLines(0x7c1f, 1, 3); //Magenta
+                    hrt_CircleWipe(COLOR_ORANGE, 1, 3);
+                    hrt_LineWipe(COLOR_CYAN, 0, 3);
                 }
             }
             if (arpos == 6) {
                 hrt_DrawPixel(3, 120, 80, 0xFFFF);
-                if (hrt_GetPixel(3,120, 80) == 0xFFFF) {
+                if (hrt_GetPixelInMode3(120, 80) == 0xFFFF) {
                     hrt_DrawPixel(3, 121, 81, 0x07FF);
                 }
             }
             if (arpos == 7) {
-                frames = 0;
-				hrt_ConfigSOUNDCNT(0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0);
-                hrt_PlaySoundFIFO(0);
-                while (1) {
-                    hrt_SleepF(14280);
-					hrt_StopSoundFIFO();
-					hrt_ConfigSOUNDCNT(0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0);
-                    hrt_PlaySoundFIFO(0);
-                }
+				hrt_offsetOAMData = 0;
+				hrt_ConfigBG(2, 0, 1, 1, 1, 0, 1, 0);
+				hrt_SetDSPBGMode(0);
+				hrt_DSPEnableBG2();
+				hrt_DSPEnableWINOBJ();
+				hrt_DSPEnableLinearOBJ();
+				hrt_DSPEnableOBJ();
+				REG_WINOUT = 0x1F00;
+				hrt_LoadBGPal((void*)bg_hillPal, 255);
+				hrt_LoadBGTiles((void*)bg_hillTiles, 32800);
+				hrt_LoadBGMap((void*)bg_hillMap, 2048);
+				hrt_EditBG(2, bgx, bgy, 256, 256, 0, 0, 0);
+				hrt_VblankIntrWait();
+				hrt_offsetOAMPal = 0;
+				hrt_offsetOAMData = 0;
+				hrt_LoadOBJGFX((void*)blockTiles, 2048);
+				hrt_LoadOBJPal((void*)blockPal, 255);
+				hrt_CopyOAM();
+				x = 120;
+				y = 80;
+				hrt_CreateOBJ(0, 120, 80, 2, 1, 0, 0, 0, 1, 0, 0, 1, OBJ_MODE_WINDOW, 0, 0);
+				hrt_AffineOBJ(0, 0, 255, 255);
+				while (1)
+				{
+					frames++;
+					if (keyDown(KEY_R)) {
+						rot++;
+					}
+					if (keyDown(KEY_L)) {
+						rot--;
+					}
+					if (keyDown(KEY_A)) {
+						x_scale++;
+					}
+					if (keyDown(KEY_B)) {
+						x_scale--;
+					}
+					if (keyDown(KEY_UP)) {
+						y--;
+					}
+					if (keyDown(KEY_DOWN)) {
+						y++;
+					}
+					if (keyDown(KEY_LEFT)) {
+						x--;
+					}
+					if (keyDown(KEY_RIGHT)) {
+						x++;
+					}
+					if (rot == -1) {
+						rot = 0;
+					}
+					if (keyDown(KEY_START)) {
+						asm volatile("swi 0x00"::);
+					}
+					hrt_SetOBJXY(0, x, y);
+					hrt_AffineOBJ(0, rot % 360, x_scale, x_scale);
+					hrt_VblankIntrWait();
+					hrt_CopyOAM();
+				}
             }
             if (arpos == 5) {
                 hrt_SetDSPMode(4, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
@@ -334,12 +391,12 @@ int main()
                 hrt_LoadBGPal((void*)bg_hillPal, 255);
                 hrt_LoadBGTiles((void*)bg_hillTiles, 32800);
                 hrt_LoadBGMap((void*)bg_hillMap, 2048);
-                hrt_EditBG(2, bgx, bgy, 256, 256, 0);
+                hrt_EditBG(2, bgx, bgy, 256, 256, 0, 0, 0);
                 hrt_VblankIntrWait();
                 while (1) {
                     frames++;
                     hrt_VblankIntrWait();
-                    hrt_EditBG(2, bgx, bgy, 256, 256, 0);
+                    hrt_EditBG(2, bgx, bgy, 256, 256, 0, 0, 0);
                     if (keyDown(KEY_LEFT)) {
                         bgx--;
                     }
@@ -372,7 +429,7 @@ int main()
                 hrt_AffineOBJ(0, 0, 255, 255);
                 x_scale = 255;
                 g_newframe = 1;
-                hrt_FillScreen(0x0000, 3);
+                hrt_FillScreen(0x0000);
                 hrt_PrintOnBitmap(0, 0, "HeartLib Sprite Demo");
                 while (1) {
                     frames++;
@@ -411,14 +468,14 @@ int main()
                     if (keyDown(KEY_START)) {
                         asm volatile("swi 0x00"::);
                     }
-                    hrt_SetOBJXY(&sprites[0], x, y);
+                    hrt_SetOBJXY(0, x, y);
                     hrt_AffineOBJ(0, rot % 360, x_scale, x_scale);
                     hrt_VblankIntrWait();
                     hrt_CopyOAM();
                 }
             }
             if (arpos == 10) {
-                hrt_FillScreen(0x0000, 3);
+                hrt_FillScreen(0x0000);
                 sprintf((char*)buf, "%d", g_sram);
                 hrt_PrintOnBitmap(0, 0, (char*)buf);
                 hrt_SetDSPMode(3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
@@ -442,6 +499,7 @@ int main()
                         while (keyDown(KEY_DOWN));
                     }
                     if (keyDown(KEY_START)) {
+						
                         asm volatile("swi 0x00"::);
                     }
                     hrt_VblankIntrWait();

@@ -77,8 +77,8 @@ TODO:
 #define LIBHEART_H
 
 #define HRT_VERSION_MAJOR 0
-#define HRT_VERSION_MINOR 50
-#define HRT_BUILD_DATE 185406062018
+#define HRT_VERSION_MINOR 75
+#define HRT_BUILD_DATE 071806072018
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -1042,12 +1042,12 @@ Sound;
 //
 
 const GBFS_FILE *find_first_gbfs_file(const void *start);
-const double SIN[360];
-const double COS[360];
-const double RAD[360];
-const unsigned short font_matrixBitmap[6080];
-const unsigned short font_milkbottleTiles[3072];
-const unsigned short font_milkbottlePal[16];
+extern const double SIN[360];
+extern const double COS[360];
+extern const double RAD[360];
+extern const unsigned short font_matrixBitmap[6080];
+extern const unsigned short font_milkbottleTiles[3072];
+extern const unsigned short font_milkbottlePal[16];
 
 //Defines for Functions
 #define OBJ_SIZE_8X8 0

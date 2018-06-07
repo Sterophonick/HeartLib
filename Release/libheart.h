@@ -9,7 +9,6 @@
 //Some functions don't work yet so be patient!
 /*
 	List:
-		JPEG
 		Tiled Text
 		Sprites moving in direction
 */
@@ -62,29 +61,24 @@ GBA Specs:
 	Mode 7?
 	Exit to EZ4 (Shoutouts to Dwedit and GodBolt)
 	aPlib
+	Scrolling Map Edge Drawing
+	JPEG Decoding for Serious image compression
+	ADPCM (Shoutouts to NRX)
 
 TODO:
 		Implement Tiled Text
-		Implement Easy System Call functions
-		JPEG Decoding
 		Game Boy Player Functions?
 		PogoShell Functions?
-
-Recommended Tools for development with this library:
-	gfx2gba
-	usenti
-	gbfs
-	mmutil
-	bin2s
+		Finish Easy Build System
 */
 #ifdef HRT_WITH_LIBHEART
 
 #ifndef LIBHEART_H
 #define LIBHEART_H
 
-#define HRT_VERSION_MAJOR 1
-#define HRT_VERSION_MINOR 00
-#define HRT_VERSION_DEV 12175272018
+#define HRT_VERSION_MAJOR 0
+#define HRT_VERSION_MINOR 75
+#define HRT_BUILD_DATE 071806072018
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -139,7 +133,6 @@ extern "C" {
 #include <complex.h>
 #include <stdalign.h>
 #include <locale.h>
-#include <stdatomic.h>
 #include <stdnoreturn.h>
 #include <wchar.h>
 #include <tgmath.h>
@@ -222,7 +215,26 @@ typedef     s32     sfp32;  //1:19:8 fixed point
 typedef     u16     ufp16;  //8:8 fixed point
 typedef     u32     ufp32;  //24:8 fixed point
 
-#include "jpg.h"
+typedef struct
+{
+	u8 hrt_start;
+	u32	hrt_offsetOAMData;
+	u32 hrt_offsetOAMPal;
+	u32 hrt_offsetBGMap;
+	u32 hrt_offsetBGTile;
+	u32 hrt_offsetBGPal;
+	u8 __hrt_mmframeonvbl;
+	u8 __copyoamonvbl;
+	u8  __hrt_reset;
+	u8 __hrt_rtc;
+	u8 __hrt_tiledtext;
+	u16 __hrt_tiledtext_color1;
+	u16 __hrt_tiledtext_color2;
+}gba_system;
+
+#ifdef HRT_ADMIN
+extern gba_system __hrt_system;
+#endif
 
 u16* VRAM;
 u16* OAMData;
@@ -235,6 +247,7 @@ u16* FrontBuffer;
 u16* BackBuffer;
 u8* ExtWRAM;
 
+#ifdef HRT_BITFIELD_TYPES
 typedef struct {
     unsigned int var : 24;
 } u24;
@@ -298,7 +311,7 @@ typedef struct {
     typedef struct {
     const volatile unsigned int var : 4;
     } cvu4;
-
+#endif
     typedef struct {
     char		manufacturer;
     char		version;
@@ -400,6 +413,24 @@ typedef struct tagRotData {
 } RotData, *pRotData;
 OAMEntry sprites[128];
 
+typedef struct _s16xy { s16 x, y; } s16xy;
+typedef struct _Vector2 { s32 x, y; } Vector2;
+typedef struct _MapLayer { u16 *map; Vector2 scroll; } MapLayer;
+typedef struct _GameMap
+{
+	s16xy dimensions;
+	const u16 *tileset; // Pointer to map file output from gfx2gba for the tileset bitmap 
+	u8 numLayers; // Number of layers actually in use for the current map. Max 4 since that's all the hardware BGs 
+	MapLayer layer[4];
+} GameMap;
+#define BG_SCRN_VRAM(n) ((u16*)(0x6000000 + ((n) << 11))) 
+#define fptochar(x) ((x) >> 11) 
+#define inttofp(x) ((x) << 8) 
+
+#ifndef JPEG_OUTPUT_TYPE
+#define JPEG_OUTPUT_TYPE unsigned short
+#endif
+
 //Logic Gates - So you don't have to remember the syntax for all the logic gates. It's a lifesaver.
 #define NOT  !
 #define AND  &&
@@ -410,22 +441,41 @@ OAMEntry sprites[128];
 #define XNOR !^
 //
 
+//Screen Widths/Heights
+#define GBA_SCREEN_WIDTH 240
+#define GBA_SCREEN_HEIGHT 160
+#define MODE_3_4_WIDTH 240
+#define MODE_3_4_HEIGHT 160
+#define MODE_4_VRAM_WIDTH 120
+#define MODE_4_VRAM_HEIGHT 80
+#define MODE_5_WIDTH  160
+#define MODE_5_HEIGHT 120
+//
+
 #define BACKBUFFER      0x10
 
 //colors
-#define WHITE 0xFFFF
-#define RED 0x001F
-#define BLUE 0x7C00
-#define CYAN 0x7FE0
-#define GREEN 0x03E0
-#define MAGENTA 0x7c1f
-#define BROWN 0x0110
-#define BLACK 0x0000
-#define BRICK 0x011B
-#define PINK 0x7EDD
-#define ORANGE 0x029F
-#define YELLOW 0x03FF
-#define GREY 0x4210
+#define COLOR_BLACK        0x0000
+#define COLOR_MAROON       0x0010
+#define COLOR_GREEN        0x0200
+#define COLOR_OLIVE        0x0210
+#define COLOR_NAVY         0x4000
+#define COLOR_PURPLE       0x4010
+#define COLOR_TEAL         0x4200
+#define COLOR_GRAY         0x4210
+#define COLOR_SILVER       0x6318
+#define COLOR_RED          0x001F
+#define COLOR_LIME         0x03E0
+#define COLOR_YELLOW       0x03FF
+#define COLOR_BLUE         0x7C00
+#define COLOR_FUCHSIA      0x7C1F
+#define COLOR_WHITE        0x7FFF
+#define COLOR_MONEYGREEN   0x6378
+#define COLOR_SKYBLUE      0x7B34
+#define COLOR_CREAM        0x7BFF
+#define COLOR_MEDGRAY      0x5294
+#define COLOR_ORANGE 0x029F
+#define COLOR_CYAN 0x7FE0
 
 //bios calls
 #define SoftReset 0x00
@@ -473,7 +523,9 @@ OAMEntry sprites[128];
 #define GetJumpList 0x2A
 #define AGBPrint 0xFF
 
-#define hrt_MULTIBOOT const u8 __gba_multiboot = 1; //Type 'MULTIBOOT' at the beginning of a project, and the file will be compiled as a multiboot ROM.
+#ifdef HRT_EXPERIMENTAL
+#define MULTIBOOT const u8 __gba_multiboot = 1; //Type 'MULTIBOOT' at the beginning of a project, and the file will be compiled as a multiboot ROM.
+#endif
 
 //Bits
 #define BIT00  0x0001
@@ -714,10 +766,12 @@ OAMEntry sprites[128];
 #define CONV_FLOAT_TO_SFP16(n)  ((sfp16)((n)*256))
 #define CONV_FLOAT_TO_SFP32(n)  ((sfp32)((n)*65536))
 ////
+#define REG_BGxCNT(x)                 (ACCESS_16(0x04000008+(x*2)))
 //
 
 #define MAX_INTS	15
 #define INT_VECTOR	*(IntFn *)(0x03007ffc)		// BIOS Interrupt vector
+
 #ifndef TRUE
 #define TRUE 1
 #endif
@@ -906,6 +960,7 @@ extern mm_word	mp_writepos;
 //
 
 //mbv2.h - libgba
+#ifdef HRT_USE_MBV2LIB
 #define mbv_dprintf		mbv2_dprintf
 #define mbv_dfprintf	mbv2_dfprintf
 #define mbv_dputchar	mbv2_dputchar
@@ -973,15 +1028,26 @@ extern mm_word	mp_writepos;
 #define REG_JOYTR_H		*(vu16*)(REG_BASE + 0x156)
 #define REG_JSTAT		*(vu16*)(REG_BASE + 0x158)	// SIO JOY Bus Receive Status
 #define R_JOYBUS		0xC000
+#endif
 //eof
+// ADPCM
+typedef struct
+{
+	unsigned long sampleRate;
+	unsigned long length;
+	unsigned char noCompress;
+	unsigned char __attribute__((aligned(4))) data[];
+}
+Sound;
+//
 
 const GBFS_FILE *find_first_gbfs_file(const void *start);
-const double SIN[360];
-const double COS[360];
-const double RAD[360];
-const unsigned short font_matrixBitmap[6080];
-const unsigned short font_milkbottleTiles[3072];
-const unsigned short font_milkbottlePal[16];
+extern const double SIN[360];
+extern const double COS[360];
+extern const double RAD[360];
+extern const unsigned short font_matrixBitmap[6080];
+extern const unsigned short font_milkbottleTiles[3072];
+extern const unsigned short font_milkbottlePal[16];
 
 //Defines for Functions
 #define OBJ_SIZE_8X8 0
@@ -1080,6 +1146,16 @@ const unsigned short font_milkbottlePal[16];
 #define OBJ_MODE_SEMITRANSPARENT 1
 #define OBJ_MODE_WINDOW 2
 #define OBJ_MODE_PROHIBITED 3
+
+#define DMA_INCREMENT 0
+#define DMA_DECREMENT 1
+#define DMA_FIXED 2
+#define DMA_INC_AND_RELOAD 3
+
+#define DMA_TIMING_IMMEDIATE 0
+#define DMA_TIMING_VBLANK 1
+#define DMA_TIMING_HBLANK 2
+#define DMA_TIMING_AUDIOFIFO 3
 //
 
 ///////////////////////////FUNCTIONS////////////////////////////
@@ -1265,58 +1341,30 @@ u16 hrt_PointOBJTowardsPosition(u8 sprite, int x, int y); //Rotates a sprite tow
 void hrt_MoveSpriteInDirection(u8 sprite, u16 direction, int steps); //Moves sprite in a set direction
 void hrt_SetOBJX(u8 spr, s16 x); //Sets just the X position of a sprite
 void hrt_SetOBJY(u8 spr, s16 Y); //Sets just the Y position of a sprite
-void hrt_SetDSPBGMode(u8 mode); //Sets the REG_DISPCNT BG Mode.
+void hrt_DSPSetBGMode(u8 mode); //Sets the REG_DISPCNT BG Mode.
 void hrt_DSPEnableForceBlank(void); //Enables Force Blank
 void hrt_DSPDisableForceBlank(void); //Disables Force Blank
-void hrt_DSPEnableBG0(void); //Enables BG0
-void hrt_DSPDisableBG0(void); //Disables BG0
-void hrt_DSPEnableBG1(void); //Enables BG1
-void hrt_DSPDisableBG1(void); //Disables BG1
-void hrt_DSPEnableBG2(void); //Enables BG2
-void hrt_DSPDisableBG2(void); //Disables BG2
-void hrt_DSPEnableBG3(void); //Enables BG3
-void hrt_DSPDisableBG3(void); //Disables BG3
+void hrt_DSPEnableBG(u8 layer);  //Enables a selected BG Mode
+void hrt_DSPDisableBG(u8 layer);  //Enables a selected BG Mode
 void hrt_DSPEnableOBJ(void); //Enables OBJ
 void hrt_DSPDisableOBJ(void); //Disables OBJ
 void hrt_DSPEnableWIN0(void); //Enables Win0
 void hrt_DSPDisableWIN0(void); //Disables Win0
 void hrt_DSPEnableWIN1(void); //Enables Win1
 void hrt_DSPDisableWIN1(void); //Disables Win1
-void hrt_DSPEnableWINO(void); //Enables WinOut
-void hrt_DSPDisableWINO(void); //Disables WinOut
+void hrt_DSPEnableWINOBJ(void); //Enables WinOBJ
+void hrt_DSPDisableWINOBJ(void); //Disables WinOBJ
+void hrt_DSPEnableLinearOBJ(void); //Enables Linear OBJ Tile Mapping
+void hrt_DSPDisableLinearOBJ(void); //Disables Linear OBJ TIle Mapping
 u8 hrt_DSPGetBGMode(void); //Returns DSP Mode
-void hrt_BG0Set16Color(void); //Sets BG0 to 16 Colors
-void hrt_BG0Set256Color(void); //Sets BG0 to 256 colors
-void hrt_BG0EnableMosaic(void); //Enables Mosaic for BG0
-void hrt_BG0DisableMosaic(void); //Disables Mosaic for BG0
-void hrt_BG0SetSize(u8 size); //Sets BG0 Size
-void hrt_BG0SetMapBase(u8 no); //Sets BG0 Map Base
-void hrt_BG0SetTileBase(u8 no); //Sets BG0 Tile base
-void hrt_BG0SetPriority(u8 no); //Sets BG0 Priority
-void hrt_BG1Set16Color(void); //Sets BG1 to 16 Colors
-void hrt_BG1Set256Color(void); //Sets BG1 to 256 colors
-void hrt_BG1EnableMosaic(void); //Enables Mosaic for BG1
-void hrt_BG1DisableMosaic(void); //Disables Mosaic for BG1
-void hrt_BG1SetSize(u8 size); //Sets BG1 Size
-void hrt_BG1SetMapBase(u8 no); //Sets BG1 Map Base
-void hrt_BG1SetTileBase(u8 no); //Sets BG1 Tile base
-void hrt_BG1SetPriority(u8 no); //Sets BG1 Priority
-void hrt_BG2Set16Color(void); //Sets BG2 to 16 Colors
-void hrt_BG2Set256Color(void); //Sets BG2 to 256 colors
-void hrt_BG2EnableMosaic(void); //Enables Mosaic for BG2
-void hrt_BG2DisableMosaic(void); //Disables Mosaic for BG2
-void hrt_BG2SetSize(u8 size); //Sets BG2 Size
-void hrt_BG2SetMapBase(u8 no); //Sets BG2 Map Base
-void hrt_BG2SetTileBase(u8 no); //Sets BG2 Tile base
-void hrt_BG2SetPriority(u8 no); //Sets BG2 Priority
-void hrt_BG3Set16Color(void); //Sets BG3 to 16 Colors
-void hrt_BG3Set256Color(void); //Sets BG3 to 256 colors
-void hrt_BG3EnableMosaic(void); //Enables Mosaic for BG3
-void hrt_BG3DisableMosaic(void); //Disables Mosaic for BG3
-void hrt_BG3SetSize(u8 size); //Sets BG3 Size
-void hrt_BG3SetMapBase(u8 no); //Sets BG3 Map Base
-void hrt_BG3SetTileBase(u8 no); //Sets BG3 Tile base
-void hrt_BG3SetPriority(u8 no); //Sets BG3 Priority
+void hrt_BGSet16Color(u8 layer); //Sets BG to 16 Colors
+void hrt_BGSet256Color(u8 layer); //Sets BG to 256 colors
+void hrt_BGEnableMosaic(u8 layer); //Enables Mosaic for BG0
+void hrt_BGDisableMosaic(u8 layer); //Disables Mosaic for BG0
+void hrt_BGSetSize(u8 layer, u8 size); //Sets BG Size
+void hrt_BGSetMapBase(u8 layer, u8 no); //Sets BG Map Base
+void hrt_BGSetTileBase(u8 layer, u8 no); //Sets BG Tile base
+void hrt_BGSetPriority(u8 layer, u8 no); //Sets BG Priority
 void hrt_EnableOBJHFlip(u8 objno); //Enables HFlip for a specified sprite
 void hrt_DisableOBJHFlip(u8 objno); //Disable HFlip for a specified sprite
 void hrt_EnableOBJVFlip(u8 objno); //Enables VFlip for a specified sprite
@@ -1347,32 +1395,56 @@ u16 hrt_ArcTan2(s16 X, s16 Y); //SWI 0x0A
 void hrt_IntrWait(u32 ReturnFlag, u32 IntFlag); //SWI 0x04
 void hrt_Halt(void); //SWI 2
 void hrt_Stop(void); //SWI 3
-void hrt_FXEnableBG0Target1(void); //Enables BLDCNT BG0 in target 1
-void hrt_FXDisableBG0Target1(void); //Disables the latter.
-void hrt_FXEnableBG1Target1(void); //Enables BLDCNT BG1 in target 1
-void hrt_FXDisableBG1Target1(void); //Disables the latter.
-void hrt_FXEnableBG2Target1(void); //Enables BLDCNT BG2 in target 1
-void hrt_FXDisableBG2Target1(void); //Disables the latter.
-void hrt_FXEnableBG3Target1(void); //Enables BLDCNT BG3 in target 1
-void hrt_FXDisableBG3Target1(void); //Disables.
+void hrt_FXEnableBGTarget1(u8 layer); //Enables the specified BG for Target 1
+void hrt_FXDisableBGTarget1(u8 layer); //Disables the specified BG for Target 1
 void hrt_FXEnableOBJTarget1(void); //Enables the Blend Control flag for Sprites in target 1
 void hrt_FXDisableOBJTarget1(void); //Disables.
 void hrt_FXEnableBackdropTarget1(void); //Enables Backdrop for target 1
 void hrt_FXDisableBackdropTarget1(void); //Disables.
 void hrt_FXSetBlendMode(u8 mode); //Sets blend mode
-void hrt_FXEnableBG0Target2(void); //Enables BLDCNT BG0 in Target 2
-void hrt_FXDisableBG0Target2(void); //Disables the latter.
-void hrt_FXEnableBG1Target2(void); //Enables BLDCNT BG1 in Target 2
-void hrt_FXDisableBG1Target2(void); //Disables the latter.
-void hrt_FXEnableBG2Target2(void); //Enables BLDCNT BG2 in Target 2
-void hrt_FXDisableBG2Target2(void); //Disables the latter.
-void hrt_FXEnableBG3Target2(void); //Enables BLDCNT BG3 in Target 2
-void hrt_FXDisableBG3Target2(void); //Disables.
+void hrt_FXEnableBGTarget2(u8 layer); //Enables the specified BG for Target 2
+void hrt_FXDisableBGTarget2(u8 layer); //Disables the specified BG for Target 2
 void hrt_FXEnableOBJTarget2(void); //Enables the Blend Control flag for Sprites in Target 2
 void hrt_FXDisableOBJTarget2(void); //Disables.
 void hrt_FXEnableBackdropTarget2(void); //Enables Backdrop for Target 2
 void hrt_FXDisableBackdropTarget2(void); //Disables.
-u32 aP_depack(u8 *source, u8 *destination); //aPlib Unpack.
+u32 hrt_aPlibUnpack(u8 *source, u8 *destination); //aPlib Unpack.
+void hrt_ConfigMapLayerDrawing(u8 numLayers, u16 *tileset, s16 dimensionsx, s16 dimensionsy, u16 *map, s32 x, s32 y, u8 MapNo); //Configures map for large scrolling
+void hrt_DrawMapLayerStripH(u8 MapNo, int layerIdx, int srcY); //Draws a Horizontal Map Strip, for vertical scrolling
+void hrt_DrawMapLayerStripV(u8 MapNo, int layerIdx, int srcX); //Draws a Vertical Map Strip, for horizontal scrolling
+void hrt_DSPWinIn0EnableBG(u8 layer); //Enables Specified BG for winin 0
+void hrt_DSPWinIn0DisableBG(u8 layer); //Disables Specified BG for winin 0
+void hrt_DSPWinIn0EnableOBJ(void); //Enables Sprites for winin 0
+void hrt_DSPWinIn0DisableOBJ(void); //Disables Sprites for winin 0
+void hrt_DSPWinIn0EnableBlend(void); //Enables Blend for winin 0
+void hrt_DSPWinIn0DisableBlend(void); //Disables Blend for winin 0
+void hrt_DSPWinIn1EnableBG(u8 layer); //Enables Specified BG for WinIn 1
+void hrt_DSPWinIn1DisableBG(u8 layer); //Disables Specified BG for WinIn 1
+void hrt_DSPWinIn1EnableOBJ(void); //Enables Sprites for WinIn 1
+void hrt_DSPWinIn1DisableOBJ(void); //Disables Sprites for WinIn 1
+void hrt_DSPWinIn1EnableBlend(void); //Enables Blend for WinIn 1
+void hrt_DSPWinIn1DisableBlend(void); //Disables Blend for WinIn 1
+void hrt_DSPWinOutEnableBG(u8 layer); //Enables specified BG for WinOut 0
+void hrt_DSPWinOutDisableBG(u8 layer); //Disables specified BG for WinOut 0
+void hrt_DSPWinOutEnableOBJ(void); //Enables Sprites for WinOut 0
+void hrt_DSPWinOutDisableOBJ(void); //Disables Sprites for WinOut 0
+void hrt_DSPWinOutEnableBlend(void); //Enables Blend for WinOut 0
+void hrt_DSPWinOutDisableBlend(void); //Disables Blend for WinOut 0
+void hrt_DSPWinOutOBJEnableBG(u8 layer); //Enables specified BG for WinOut OBJ
+void hrt_DSPWinOutOBJDisableBG(u8 layer); //Disables specified BG for WinOut OBJ
+void hrt_DSPWinOut1EnableOBJ(void); //Enables Sprites for WinOut 1
+void hrt_DSPWinOut1DisableOBJ(void); //Disables Sprites for WinOut 1
+void hrt_DSPWinOut1EnableBlend(void); //Enables Blend for WinOut 1
+void hrt_DSPWinOut1DisableBlend(void); //Disables Blend for WinOut 1
+int hrt_DecodeJPEG(const unsigned char *data, volatile JPEG_OUTPUT_TYPE *out, int outWidth, int outHeight); //Decodes a JPEG Image. (FINALLY)
+unsigned char hrt_InitADPCM(unsigned char numberChannels); //Initializes ADPCM
+void hrt_DestroyADPCM(void); //Destroys ADPCM
+unsigned char hrt_StartADPCM(const Sound* sound, signed char repeat, unsigned char channel); //Plays ADPCM Sound
+unsigned char hrt_StopADPCM(unsigned char channel); //Stops ADPCM Channel
+signed char  hrt_GetADPCMStatus(unsigned char channel); //Returns ADPCM Status
+void __attribute__((section(".iwram"), long_call)) hrt_ADPCMDecodeVBL(unsigned char channel); //Decodes ADPCM on VBL
+void hrt_SetLargeScrollMapX(u8 MapNo, s32 x); //X Scrolls a large map
+void hrt_SetLargeScrollMapY(u8 MapNo, s32 y); //Y Scrolls a large map
 
 #ifdef __cplusplus
 }

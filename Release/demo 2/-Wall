@@ -1,5 +1,0 @@
-build/main.o: main.c defs.h soundbank.h
-
-defs.h:
-
-soundbank.h:

@@ -5,21 +5,24 @@ SOURCES = main.c
 HEADERS = inc/soundbank.h
 ASMFLAGS = -mcpu=arm7tdmi
 ASMINC = 
-SPECS = -specs=gba.specs
 PATH = C:\devkitPro\devkitARM\bin
 PREFIX = \arm-none-eabi-
 LIBS = -lheart -lm
 PROGNAME = sample
 CDATA = smp.c such.s soundbank.s
-GBFSFILE = build/data.hrt
-COMPFILES = build/soundbank.bin
+GBFSFILE = 
+COMPFILES = build/soundbank.bin data/such.bin
 OBJECTS = build/main.o build/smp.o build/soundbank.out build/such.out
 INTERNALNAME = SAMPLE
 GAME_CODE = SMPL
 VERSION = 1
-LIBDIRS = -LC:\devkitPro\devkitARM\lib
+LIBDIRS = 
 MAXMODDATA = data/franky.s3m data/complete2.wav
 MAXMODFILE = soundbank
+HRT_CFLAGS = -DHRT_USE_MBV2LIB -DHRT_BITFIELD_TYPES -DHRT_ADMIN
+USE_MULTIBOOT = yes
 
+include C:\devkitPro\devkitARM\hrt_standard_targets.mak
 
-include C:\devkitPro\devkitARM\hrt_system\hrt_standard_targets.mak
+# CUSTOM MAKEFILE TARGETS START HERE
+
