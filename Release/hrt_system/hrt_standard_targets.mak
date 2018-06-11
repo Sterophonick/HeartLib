@@ -1,5 +1,7 @@
 # HeartLib API Automated Build System (ABS)
 # This file is designed for HeartLib-compliant makefiles 
+PREFIX = arm-none-eabi-
+GBFSFILE = build/data.hrt
 
 default: $(PROGNAME).gba 
 
@@ -26,18 +28,8 @@ build/main.elf: $(OBJECTS)
 	$(PATH)$(PREFIX)gcc -specs=gba.specs $(ARCH) $(OBJECTS) $(LIBDIRS) $(LIBS) -o build/main.elf	
 endif
 	
-inc/$(MAXMODFILE).h build/$(MAXMODFILE).bin: $(MAXMODDATA)
-	mmutil $(MAXMODDATA) -hinc/$(MAXMODFILE).h -obuild/$(MAXMODFILE).bin
-
-data/$(MAXMODFILE).s: build/$(MAXMODFILE).bin
-	bin2s build/$(MAXMODFILE).bin > data/$(MAXMODFILE).s
-	
-data/%.s: data/%.bin
-	bin2s $< > $@
-	
 $(GBFSFILE): $(COMPFILES)
 	gbfs $(GBFSFILE) $(COMPFILES)
-
 
 $(PROGNAME).gba: build/main.elf $(GBFSFILE)
 ifneq ($(GBFSFILE),)

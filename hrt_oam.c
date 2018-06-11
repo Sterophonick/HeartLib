@@ -3,8 +3,6 @@ pRotData rotData = (pRotData)sprites;
 u16* OBJPaletteMem 	=(u16*)0x5000200;
 u16* OAMData		=(u16*)0x6010000;
 u16* OAM = (u16*)0x7000000;
-s32 angle = 0;
-s32 zoom = 1<<8;
 extern gba_system __hrt_system;
 
 const double SIN[360] = { 0 , 4.46781 , 8.93426 , 13.398 , 17.8576 , 22.3119 , 26.7593 , 31.1985 , 35.6283 , 40.0472 , 44.4539 ,
@@ -443,5 +441,15 @@ void hrt_SetOBJPalette(u8 objno, u8 palette)
 	if (__hrt_system.hrt_start == 1)
 	{
 		sprites[objno].attribute2 |= (palette << 12);
+	}
+}
+
+void hrt_DestroyOBJ(u8 objno)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		sprites[objno].attribute0 = 0;
+		sprites[objno].attribute1 = 0;
+		sprites[objno].attribute2 = 0;
 	}
 }

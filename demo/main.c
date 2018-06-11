@@ -1,10 +1,5 @@
 #include <libheart.h>
 #include "defs.h"
-extern int	hrt_offsetOAMData;
-extern int hrt_offsetOAMPal;
-extern int hrt_offsetBGMap;
-extern int hrt_offsetBGTile;
-extern int hrt_offsetBGPal;
 
 int i;
 s8 phase;
@@ -111,13 +106,13 @@ int main()
 
         if (keyDown(KEY_A)) {
             if (arpos == 16) {
-                hrt_offsetOAMData = 0;
+                __hrt_system.hrt_offsetOAMData = 0;
                 hrt_ConfigBG(2, 0, 1, 0, 1, 0, 0, 0);
                 hrt_ConfigBG(3, 0, 2, 0, 1, 1, 0, 0);
                 hrt_SetDSPMode(0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0);
                 hrt_LoadBGPal((void*)master_Palette, 255);
                 hrt_LoadBGTiles((void*)l1_Tiles, 1664);
-                hrt_offsetBGTile = 0x2000;
+                __hrt_system.hrt_offsetBGTile = 0x2000;
                 hrt_LoadBGTiles((void*)l2_Tiles, 1664);
                 hrt_LoadBGMap((void*)l1_Map, 1024);
                 hrt_LoadBGMap((void*)l2_Map, 1024);
@@ -167,11 +162,11 @@ int main()
             if (arpos == 9) {
                 hrt_FillPalette(1, 0x0000);
                 hrt_SetDSPMode(0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0);
-                hrt_offsetOAMData = 0;
-                hrt_offsetOAMPal = 0;
-                hrt_offsetBGMap = 0;
-                hrt_offsetBGPal = 0;
-                hrt_offsetBGTile = 0;
+                __hrt_system.hrt_offsetOAMData = 0;
+                __hrt_system.hrt_offsetOAMPal = 0;
+                __hrt_system.hrt_offsetBGMap = 0;
+                __hrt_system.hrt_offsetBGPal = 0;
+                __hrt_system.hrt_offsetBGTile = 0;
                 hrt_ConfigBG(2, 0, 1, 0, 0, 0, 1, 0);
                 hrt_SetFXMode(0, //BG 0 Target 1
                               0,                             //BG 1 Target 1
@@ -255,10 +250,10 @@ int main()
                 }
             }
             if (arpos == 7) {
-				hrt_offsetOAMData = 0;
+				__hrt_system.hrt_offsetOAMData = 0;
 				hrt_ConfigBG(2, 0, 1, 1, 1, 0, 1, 0);
-				hrt_SetDSPBGMode(0);
-				hrt_DSPEnableBG2();
+				hrt_DSPSetBGMode(0);
+				hrt_DSPEnableBG(2);
 				hrt_DSPEnableWINOBJ();
 				hrt_DSPEnableLinearOBJ();
 				hrt_DSPEnableOBJ();
@@ -268,8 +263,8 @@ int main()
 				hrt_LoadBGMap((void*)bg_hillMap, 2048);
 				hrt_EditBG(2, bgx, bgy, 256, 256, 0, 0, 0);
 				hrt_VblankIntrWait();
-				hrt_offsetOAMPal = 0;
-				hrt_offsetOAMData = 0;
+				__hrt_system.hrt_offsetOAMPal = 0;
+				__hrt_system.hrt_offsetOAMData = 0;
 				hrt_LoadOBJGFX((void*)blockTiles, 2048);
 				hrt_LoadOBJPal((void*)blockPal, 255);
 				hrt_CopyOAM();
@@ -385,7 +380,7 @@ int main()
                 }
             }
             if (arpos == 1) {
-                hrt_offsetOAMData = 0;
+                __hrt_system.hrt_offsetOAMData = 0;
                 hrt_ConfigBG(2, 0, 1, 1, 1, 0, 1, 0);
                 hrt_SetDSPMode(0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
                 hrt_LoadBGPal((void*)bg_hillPal, 255);
@@ -417,8 +412,8 @@ int main()
                 }
             }
             if (arpos == 0) {
-                hrt_offsetOAMPal = 0;
-                hrt_offsetOAMData = 0;
+                __hrt_system.hrt_offsetOAMPal = 0;
+                __hrt_system.hrt_offsetOAMData = 0;
                 hrt_CreateOBJ(0, 120, 80, 2, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
                 hrt_SetDSPMode(3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0);
                 hrt_LoadOBJGFX((void*)blockTiles, 2048);

@@ -1,9 +1,17 @@
 #include "libheart.h"
 extern gba_system __hrt_system;
 
-const u16 _____colors[3] = {
+u16 _____colors[3] = {
 	0x0000, 0x0421, 0x7FFF
 };
+
+void hrt_SetBitmapTextColors(u16 outside, u16 inside)
+{
+	if(__hrt_system.hrt_start == 1) {
+		_____colors[1] = outside;
+		_____colors[2] = inside;
+	}
+}
 
 void hrt_DrawChar(int mode, int left, int top, char letter) {
     if (__hrt_system.hrt_start == 1) {

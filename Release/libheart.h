@@ -77,8 +77,8 @@ TODO:
 #define LIBHEART_H
 
 #define HRT_VERSION_MAJOR 0
-#define HRT_VERSION_MINOR 75
-#define HRT_BUILD_DATE 071806072018
+#define HRT_VERSION_MINOR 80
+#define HRT_BUILD_DATE 112006112018
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -228,8 +228,8 @@ typedef struct
 	u8  __hrt_reset;
 	u8 __hrt_rtc;
 	u8 __hrt_tiledtext;
-	u16 __hrt_tiledtext_color1;
-	u16 __hrt_tiledtext_color2;
+	u8 __hrt_tiledtext_color1;
+	u8 __hrt_tiledtext_color2;
 }gba_system;
 
 #ifdef HRT_ADMIN
@@ -706,6 +706,13 @@ typedef struct _GameMap
 #define REG_UNKNOWN22  *(u32*)0x04000800 //Undocumented - Internal Memory Control(R/W)
 #define REG_UNKNOWN23  *(u16*)0x04000804 //Not Used
 
+#define REG_BGxCNT(x)                 (ACCESS_16(0x04000008+(x*2))) //Macro for a BG
+#define REG_BGxHOFS(x)                    (ACCESS_16(0x0400000A+(x*4))) //macro for a bg
+#define REG_BGxVOFS(x)                    (ACCESS_16(0x0400000B+(x*4))) //macro for a bg
+#define REG_DMAxSAD(x)                    (ACCESS_32(0x040000B0+(x*0x0C))) //Macro for a DMA Source
+#define REG_DMAxDAD(x)                    (ACCESS_32(0x040000B4+(x*0x0C))) //Macro for a DMA Destination
+#define REG_DMAxCNT(x)                    (ACCESS_16(0x040000B8+(x*0x0C))) //Macro for a DMA Control
+
 //keys
 #define KEY_A 1
 #define KEY_B 2
@@ -766,7 +773,6 @@ typedef struct _GameMap
 #define CONV_FLOAT_TO_SFP16(n)  ((sfp16)((n)*256))
 #define CONV_FLOAT_TO_SFP32(n)  ((sfp32)((n)*65536))
 ////
-#define REG_BGxCNT(x)                 (ACCESS_16(0x04000008+(x*2)))
 //
 
 #define MAX_INTS	15
@@ -957,6 +963,15 @@ enum {
 #define MMCB_SONGFINISHED	0x2B
 extern mm_byte	mp_mix_seg;
 extern mm_word	mp_writepos;
+
+#define MM_CREATE_SOUNDEFFECT(name, id, rate, handle, volume, panning)       mm_sound_effect (name) = { \
+{ id} ,	\
+(int)(1.0f * (1 << 10)), \
+0,		\
+255,	\
+255, \
+} \
+
 //
 
 //mbv2.h - libgba
@@ -1445,6 +1460,11 @@ signed char  hrt_GetADPCMStatus(unsigned char channel); //Returns ADPCM Status
 void __attribute__((section(".iwram"), long_call)) hrt_ADPCMDecodeVBL(unsigned char channel); //Decodes ADPCM on VBL
 void hrt_SetLargeScrollMapX(u8 MapNo, s32 x); //X Scrolls a large map
 void hrt_SetLargeScrollMapY(u8 MapNo, s32 y); //Y Scrolls a large map
+void hrt_SetBitmapTextColors(u16 outside, u16 inside); //Sets colors of the bitmap text engine
+void hrt_SetBGXY(u8 bg, u16 x, u16 y); //Sets X and Y coordinates of a BG
+void hrt_SetBGX(u8 bg, u16 x); //Sets X coordinate of a BG
+void hrt_SetBGY(u8 bg, u16 y); //Sets Y coordinate of a BG
+void hrt_DestroyOBJ(u8 objno); //Erases a sprite
 
 #ifdef __cplusplus
 }

@@ -199,7 +199,7 @@ unsigned char hrt_InitADPCM(unsigned char numberChannels)
 //////////////////
 // AdpcmDestroy //
 //////////////////
-void hrt_DestoryADPCM(void)
+void hrt_DestroyADPCM(void)
 {
 	if (__hrt_system.hrt_start == 1)
 	{

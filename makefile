@@ -20,7 +20,6 @@ libheart.a: $(OBJECTS)
 	cp libheart.a C:\devkitPro\devkitARM\arm-none-eabi\lib
 	cp libheart.h C:\devkitPro\devkitARM\arm-none-eabi\include
 
-	
 clean:
 	-rm build/*.o build/*.out
 	-rm libheart.a

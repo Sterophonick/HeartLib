@@ -70,28 +70,22 @@ void hrt_SetOffset(u8 no, u32 amount)
 void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode)
 {
     if (__hrt_system.hrt_start == 1) {
-        switch (channel) {
-            case 0:
-                REG_DMA0SAD = (u32)source;
-                REG_DMA0DAD = (u32)dest;
-                REG_DMA0CNT = WordCount | mode;
-                break;
-            case 1:
-                REG_DMA1SAD = (u32)source;
-                REG_DMA1DAD = (u32)dest;
-                REG_DMA1CNT = WordCount | mode;
-                break;
-            case 2:
-                REG_DMA2SAD = (u32)source;
-                REG_DMA2DAD = (u32)dest;
-                REG_DMA2CNT = WordCount | mode;
-                break;
-            case 3:
-                REG_DMA3SAD = (u32)source;
-                REG_DMA3DAD = (u32)dest;
-                REG_DMA3CNT = WordCount | mode;
-                break;
-        }
+            REG_DMAxSAD(channel) = (u32)source;
+            REG_DMAxDAD(channel) = (u32)dest;
+            switch (channel) {
+				case 0:
+				    REG_DMA0CNT = WordCount | mode;
+					break;
+				case 1:
+				    REG_DMA1CNT = WordCount | mode;
+					break;
+				case 2:
+				    REG_DMA2CNT = WordCount | mode;
+					break;
+				case 3:
+				    REG_DMA3CNT = WordCount | mode;
+					break;
+			}
     }
 }
 
@@ -526,21 +520,10 @@ void hrt_SetDSPMode(u8 mode, u8 CGB, u8 framesel, u8 unlockedhblank, u8 objmap, 
 void hrt_ConfigBG(u8 bg, u8 priority, u8 tilebase, u8 mosaic, u8 color256, u8 tilemapbase, u8 wraparound, u8 dimensions)
 {
     if (__hrt_system.hrt_start == 1) {
-        if (bg == 0) {
-            REG_BG0CNT = 0x01 * priority | 0x04 * tilebase | 0x40 * mosaic | 0x80 * color256 | 0x100 * tilemapbase | 0x4000 * dimensions;
-        }
-        else if (bg == 1) {
-            REG_BG1CNT = 0x01 * priority | 0x04 * tilebase | 0x40 * mosaic | 0x80 * color256 | 0x100 * tilemapbase | 0x4000 * dimensions;
-        }
-        else if (bg == 2) {
-            REG_BG2CNT = 0x01 * priority | 0x04 * tilebase | 0x40 * mosaic | 0x80 * color256 | 0x100 * tilemapbase | 0x2000 * wraparound | 0x4000 * dimensions;
-        }
-        else if (bg == 3) {
-            REG_BG3CNT = 0x01 * priority | 0x04 * tilebase | 0x40 * mosaic | 0x80 * color256 | 0x100 * tilemapbase | 0x2000 * wraparound | 0x4000 * dimensions;
-        }
-        else {
-            hrt_Assert("HRT_CONFIGBG()", 1, "INVALID ARGUMENT");
-        }
+		REG_BGxCNT(bg) = 0x01 * priority | 0x04 * tilebase | 0x40 * mosaic | 0x80 * color256 | 0x100 * tilemapbase | 0x2000 * wraparound | 0x4000 * dimensions;
+	}
+    else {
+        hrt_Assert("HRT_CONFIGBG()", 1, "INVALID ARGUMENT");
     }
 }
 
@@ -1147,5 +1130,30 @@ void hrt_DSPWinOutOBJDisableBlend(void)
 	if (__hrt_system.hrt_start == 1)
 	{
 		REG_WINOUT &= NOT_BIT13;
+	}
+}
+
+void hrt_SetBGXY(u8 bg, u16 x, u16 y)
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		REG_BGxHOFS(bg) = x;
+		REG_BGxVOFS(bg) = y;
+	}
+}
+
+void hrt_SetBGX(u8 bg, u16 x)
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		REG_BGxHOFS(bg) = x;
+	}
+}
+
+void hrt_SetBGY(u8 bg, u16 y)
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		REG_BGxVOFS(bg) = y;
 	}
 }
