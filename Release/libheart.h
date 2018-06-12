@@ -78,7 +78,7 @@ TODO:
 
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 80
-#define HRT_BUILD_DATE 112006112018
+#define HRT_BUILD_DATE 091706112018
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -164,49 +164,41 @@ typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned long u32;
 typedef unsigned long long u64;
-typedef unsigned int uint;
 
 typedef volatile unsigned char vu8;
 typedef volatile unsigned short vu16;
 typedef volatile unsigned long vu32;
 typedef volatile unsigned long long vu64;
-typedef volatile unsigned int vuint;
 
 typedef volatile signed char vs8;
 typedef volatile signed short vs16;
 typedef volatile signed long vs32;
 typedef volatile signed long long vs64;
-typedef volatile signed int vsint;
 
 typedef const signed char cs8;
 typedef const signed short cs16;
 typedef const signed long cs32;
 typedef const signed long long cs64;
-typedef const signed int csint;
 
 typedef const volatile signed char cvs8;
 typedef const volatile signed short cvs16;
 typedef const volatile signed long cvs32;
 typedef const volatile signed long long cvs64;
-typedef const volatile signed int cvsint;
 
 typedef const volatile unsigned char cvu8;
 typedef const volatile unsigned short cvu16;
 typedef const volatile unsigned long cvu32;
 typedef const volatile unsigned long long cvu64;
-typedef const volatile unsigned int cvuint;
 
 typedef const signed char cu8;
 typedef const signed short cu16;
 typedef const signed long cu32;
 typedef const signed long long cu64;
-typedef const signed int csint;
 
 typedef signed char s8;
 typedef signed short s16;
 typedef signed long s32;
 typedef signed long long s64;
-typedef signed int sint;
 
 typedef void(*IntFn)(void);
 
@@ -214,6 +206,8 @@ typedef     s16     sfp16;  //1:7:8 fixed point
 typedef     s32     sfp32;  //1:19:8 fixed point
 typedef     u16     ufp16;  //8:8 fixed point
 typedef     u32     ufp32;  //24:8 fixed point
+
+#define FIXED s32
 
 typedef struct
 {
@@ -711,7 +705,6 @@ typedef struct _GameMap
 #define REG_BGxVOFS(x)                    (ACCESS_16(0x0400000B+(x*4))) //macro for a bg
 #define REG_DMAxSAD(x)                    (ACCESS_32(0x040000B0+(x*0x0C))) //Macro for a DMA Source
 #define REG_DMAxDAD(x)                    (ACCESS_32(0x040000B4+(x*0x0C))) //Macro for a DMA Destination
-#define REG_DMAxCNT(x)                    (ACCESS_16(0x040000B8+(x*0x0C))) //Macro for a DMA Control
 
 //keys
 #define KEY_A 1
@@ -741,6 +734,9 @@ typedef struct _GameMap
 #define PI                   3.14159265359
 #define RADIAN(n)    (((float) n)/ (float) 180 * PI)
 
+#define HRT_EWRAM_BSS	__attribute__((section(".sbss")))
+#define HRT_ALIGN(m)	__attribute__((aligned (m)))
+
 //Taken from HAM's mygba.h
 #define FIXED s32
 #define ACCESS_8(location)		*(volatile u8 *)  (location)
@@ -748,10 +744,10 @@ typedef struct _GameMap
 #define ACCESS_32(location)		*(volatile u32 *) (location)
 #define MEM_PAL_COL_PTR(x)		 (u16*) (0x05000000+(x<<1))	// Palette color pointer
 #define MEM_PAL_OBJ_PTR(x)		 (u16*) (0x05000200+(x<<1))	// Palette color pointer
-#define hrt_MEM_IN_EWRAM __attribute__ ((section (".ewram"))) = {0}
-#define hrt_MEM_IN_IWRAM __attribute__ ((section (".iwram"))) = {0}
-#define hrt_MEM_FUNC_IN_IWRAM __attribute__ ((section (".iwram"), long_call))
-#define hrt_MEM_FUNC_IN_EWRAM __attribute__ ((section (".ewram"), long_call))
+#define HRT_EWRAM_DATA __attribute__ ((section (".ewram"))) = {0}
+#define HRT_IWRAM_DATA __attribute__ ((section (".iwram"))) = {0}
+#define HRT_IWRAM_CODE__attribute__ ((section (".iwram"), long_call))
+#define HRT_EWRAM_CODE __attribute__ ((section (".ewram"), long_call))
 #define SIZEOF_8BIT(x)          (sizeof(x))
 #define SIZEOF_16BIT(x)         (sizeof(x)/2)
 #define SIZEOF_32BIT(x)         (sizeof(x)/4)
@@ -790,7 +786,7 @@ typedef struct _GameMap
 #define NULL ((void *)0)
 #endif
 
-//Syetemcall
+//Systemcall
 #if	defined	( __thumb__ )
 #define	hrt_SystemCall(Number)	 __asm ("SWI	  "#Number"\n" :::  "r0", "r1", "r2", "r3")
 #else
@@ -1083,6 +1079,10 @@ extern const unsigned short font_milkbottlePal[16];
 #define OBJ_DOUBLESIZE_DISABLE 0
 #define OBJ_PAL_16 0
 #define OBJ_PAL_256 1
+#define OBJ_MODE_NORMAL 0
+#define OBJ_MODE_ALPHA 1
+#define OBJ_MODE_WINDOW 2
+#define OBJ_MODE_PROHIBITED 3
 
 #define FX_TARGET1_BG0_ENABLE 1
 #define FX_TARGET1_BG0_DISABLE 0
@@ -1157,11 +1157,6 @@ extern const unsigned short font_milkbottlePal[16];
 #define BGXCNT_SIZE_256X512 2
 #define BGXCNT_SIZE_512X512 3
 
-#define OBJ_MODE_NORMAL 0
-#define OBJ_MODE_SEMITRANSPARENT 1
-#define OBJ_MODE_WINDOW 2
-#define OBJ_MODE_PROHIBITED 3
-
 #define DMA_INCREMENT 0
 #define DMA_DECREMENT 1
 #define DMA_FIXED 2
@@ -1171,6 +1166,11 @@ extern const unsigned short font_milkbottlePal[16];
 #define DMA_TIMING_VBLANK 1
 #define DMA_TIMING_HBLANK 2
 #define DMA_TIMING_AUDIOFIFO 3
+
+#define BG_0            (0)
+#define BG_1            (1)
+#define BG_2            (2)
+#define BG_3            (3)
 //
 
 ///////////////////////////FUNCTIONS////////////////////////////
@@ -1213,12 +1213,10 @@ void hrt_SetOBJXY(u8 spr, s16 x, s16 y); // Sets Position of a Sprite
 void hrt_SetOffset(u8 no, u32 amount); //Sets offset for bg or obj gfx, tile, or pal data
 u32 hrt_GetOffset(u8 no); //Returns the offset of bg or obj gfx data.
 void hrt_CloneOBJ(int ospr, int nspr); //Creates clone of sprite
-void hrt_GlideSpritetoPos(int spr, int x1, int y1, int x2, int y2, u32 frames); //glides sprite to a position. WIP
 void hrt_SaveInt(u16 offset, int value); //Saves to SRAM
 int hrt_LoadInt(u16 offset); //Loads from SRAM
 void hrt_DrawChar(int mode, int left, int top, char letter); //Draws text on Bitmap
 void hrt_PrintOnBitmap(int left, int top, char *str); //Draws text on Bitmap
-void hrt_Sleep(double i); //Sleeps
 void hrt_SleepF(u32 frames); //sleeps for set amount of frames
 void hrt_DrawPixel(int Mode, int x, int y, unsigned short color); //Draws pixel on screen
 u16 hrt_GetPixel(u8 mode, int x, int y); //Gets pixel Color of screen

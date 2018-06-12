@@ -1,5 +1,0 @@
-gba-jpeg-decode.o: gba-jpeg-decode.c gba-jpeg-decode.h gba-jpeg.h
-
-gba-jpeg-decode.h:
-
-gba-jpeg.h:
