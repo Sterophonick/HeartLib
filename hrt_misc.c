@@ -1,5 +1,12 @@
 #include "libheart.h"
 u8* ExtWRAM = (u8*)0x2000000;
+u8* BIOS = (u8*)0x00000000;
+u8* IWRAM = (u8*)0x03000000;
+u8* MMIO = (u8*)0x04000000;
+u8* ROM0 = (u8*)0x08000000;
+u8* ROM1 = (u8*)0x0A000000;
+u8* ROM2 = (u8*)0x0C000000;
+u8* EEPROM = (u8*)0x0D000000;
 extern int __gettime(void);
 extern void sleep12();
 extern void __hrt_exittoez4();

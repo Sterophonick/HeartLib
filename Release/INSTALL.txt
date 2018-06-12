@@ -4,18 +4,17 @@ Devkitpro:
 you can find the installers for Windows on SourceForge.
 
 Credits:
-Tubooboo
-Dwedit
-sverx
-gauauu
-DekuTree64
-gbadev.org
-Stevendog98
-DevKitPro
-Mark Holloway
-elm-chan.org
-3DSage
-GBATek
-Headspin
-Jibz (for aPlib)
+Tubooboo for HAMLib
+Dwedit for RTC and EZ4Exit
+sverx for Code help
+gauauu for Code help
+DekuTree64 for Code help
+gbadev.org for Code Resources
+Stevendog98 for the inspiration to make GBA Game development easier
+DevKitPro for the toolchain
+Mark Holloway for the Mushroom GBA lib
+3DSage for some old code resources
+GBATek for some resources for registers and stuff like that
+Headspin for some compression stuff
+Jibz for aPlib
 NRX for ADPCM

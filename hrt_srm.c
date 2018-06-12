@@ -1,5 +1,6 @@
 #include "libheart.h"
 extern gba_system __hrt_system;
+#define	SRAM		0x0E000000
 
 u8* SaveData = (u8*)0x0E000000;
 void hrt_SaveInt(u16 offset, int value) //saves to SRAM

@@ -6,6 +6,17 @@
 //This Library is Dedicated to Stevendog98, who is wanting to make GBA Games. This is to give him a head start on the GBA.
 //This Library is going to be huge. It will probably be one of the best GBA Libraries in recent years.
 
+/*In case some of you don't know, agb_lib.h was a sh*tty library made by me.
+ Development for it started around August of 2016, when I was in 6th grade (JEEBUS). 
+ A lot of my old projects used this library, and it made it easier for a while. 
+ This was until I found that including code and data in a header file was not a good idea.
+ I was disappointed that HAMLib was not compatible with DevKitARM or DevKitAdvance,
+ so I decided to make this library instead.
+ I was also running out of ideas for functions, and I ended up with functions that would
+ add and subract numbers. Just... yeah.
+ It was not a good library.
+ */
+
 //Some functions don't work yet so be patient!
 /*
 	List:
@@ -78,7 +89,7 @@ TODO:
 
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 80
-#define HRT_BUILD_DATE 091706112018
+#define HRT_BUILD_DATE 112606122018
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -160,6 +171,8 @@ extern "C" {
 #include <sys/_timeval.h>
 #include <sys/cdefs.h>
 
+/*HeartLib Typedefs
+These are used as shortened types.*/
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned long u32;
@@ -206,9 +219,10 @@ typedef     s16     sfp16;  //1:7:8 fixed point
 typedef     s32     sfp32;  //1:19:8 fixed point
 typedef     u16     ufp16;  //8:8 fixed point
 typedef     u32     ufp32;  //24:8 fixed point
+typedef s32 FIXED;
 
-#define FIXED s32
-
+/*HeartLib System variables
+DON'T TOUCH THESE*/
 typedef struct
 {
 	u8 hrt_start;
@@ -230,6 +244,7 @@ typedef struct
 extern gba_system __hrt_system;
 #endif
 
+/*System Pointers*/
 u16* VRAM;
 u16* OAMData;
 u16* BGPaletteMem;
@@ -237,91 +252,14 @@ u16* OBJPaletteMem;
 u16* BGTileMem;
 u8* SaveData;
 u16* OAM;
-u16* FrontBuffer;
-u16* BackBuffer;
 u8* ExtWRAM;
-
-#ifdef HRT_BITFIELD_TYPES
-typedef struct {
-    unsigned int var : 24;
-} u24;
-
-typedef struct {
-    signed int var : 24;
-} s24;
-
-typedef struct {
-    volatile unsigned int var : 24;
-    } vu24;
-
-    typedef struct {
-    volatile signed int var : 24;
-    } vs24;
-
-    typedef struct {
-    const signed int var : 24;
-    } cs24;
-
-    typedef struct {
-    const unsigned int var : 24;
-    } cu24;
-
-    typedef struct {
-    const volatile signed int var : 24;
-    } cvs24;
-
-    typedef struct {
-    const volatile unsigned int var : 24;
-    } cvu24;
-
-    typedef struct {
-    unsigned int var : 4;
-} u4;
-
-typedef struct {
-    signed int var : 4;
-} s4;
-
-typedef struct {
-    volatile unsigned int var : 4;
-    } vu4;
-
-    typedef struct {
-    volatile signed int var : 4;
-    } vs4;
-
-    typedef struct {
-    const signed int var : 4;
-    } cs4;
-
-    typedef struct {
-    const unsigned int var : 4;
-    } cu4;
-
-    typedef struct {
-    const volatile signed int var : 4;
-    } cvs4;
-
-    typedef struct {
-    const volatile unsigned int var : 4;
-    } cvu4;
-#endif
-    typedef struct {
-    char		manufacturer;
-    char		version;
-    char		encoding;
-    char		bpp;
-    short int	x1, y1;
-    short int	x2, y2;
-    short int	hres;
-    short int	vres;
-    char		palette[48];
-    char		reserved;
-    char		color_planes;
-    short int	BytesPerLine;
-    short int	PaletteType;
-    char		dummy[58];
-} __attribute__((packed)) pcx_header;
+u8* BIOS;
+u8* IWRAM;
+u8* MMIO;
+u8* ROM0;
+u8* ROM1;
+u8* ROM2;
+u8* EEPROM;
 enum LCDC_IRQ {
     LCDC_VBL_FLAG = (1 << 0),
     LCDC_HBL_FLAG = (1 << 1),
@@ -342,28 +280,6 @@ typedef struct GBFS_ENTRY {
     u32  len;          /* length of object in bytes */
     u32  data_offset;  /* in bytes from beginning of file */
 } GBFS_ENTRY;
-typedef	struct {
-    u32	reserved1[5];
-    u8	handshake_data;
-    u8	padding;
-    u16	handshake_timeout;
-    u8	probe_count;
-    u8	client_data[3];
-    u8	palette_data;
-    u8	response_bit;
-    u8	client_bit;
-    u8	reserved2;
-    u8	*boot_srcp;
-    u8	*boot_endp;
-    u8	*masterp;
-    u8	*reserved3[3];
-    u32	system_work2[4];
-    u8	sendflag;
-    u8	probe_target_bit;
-    u8	check_wait;
-    u8	server_type;
-} MultiBootParam;
-enum MULTIBOOT_MODES { MODE32_NORMAL, MODE16_MULTI, MODE32_2MHZ };
 typedef enum irqMASKS {
     IRQ_VBLANK = (1 << 0),		/*!< vertical blank interrupt mask */
     IRQ_HBLANK = (1 << 1),		/*!< horizontal blank interrupt mask */
@@ -445,8 +361,6 @@ typedef struct _GameMap
 #define MODE_5_WIDTH  160
 #define MODE_5_HEIGHT 120
 //
-
-#define BACKBUFFER      0x10
 
 //colors
 #define COLOR_BLACK        0x0000
@@ -722,10 +636,6 @@ typedef struct _GameMap
 #define keyDown(k)  (~KEYS & k)
 #define KEY_ANY_PRESSED (keyDown(KEY_A))OR(keyDown(KEY_B))OR(keyDown(KEY_L))OR(keyDown(KEY_R))OR(keyDown(KEY_SELECT))OR(keyDown(KEY_START))OR(keyDown(KEY_UP))OR(keyDown(KEY_DOWN))OR(keyDown(KEY_LEFT))OR(keyDown(KEY_RIGHT))
 //
-#define	IWRAM		0x03000000
-#define	EWRAM		0x02000000
-#define	EWRAM_END	0x02040000
-#define	SRAM		0x0E000000
 #define	REG_BASE	0x04000000
 #define RIGHT(n)    (n)
 #define LEFT(n)     (n) << 8
@@ -751,6 +661,7 @@ typedef struct _GameMap
 #define SIZEOF_8BIT(x)          (sizeof(x))
 #define SIZEOF_16BIT(x)         (sizeof(x)/2)
 #define SIZEOF_32BIT(x)         (sizeof(x)/4)
+
 ////Conversions
 #define CONV_U8_TO_UFP16(n)     ((ufp16)(n<<8))
 #define CONV_U8_TO_UFP32(n)     ((ufp32)(n<<8))
@@ -769,22 +680,14 @@ typedef struct _GameMap
 #define CONV_FLOAT_TO_SFP16(n)  ((sfp16)((n)*256))
 #define CONV_FLOAT_TO_SFP32(n)  ((sfp32)((n)*65536))
 ////
+
 //
 
 #define MAX_INTS	15
 #define INT_VECTOR	*(IntFn *)(0x03007ffc)		// BIOS Interrupt vector
-
-#ifndef TRUE
 #define TRUE 1
-#endif
-
-#ifndef FALSE
 #define FALSE 0
-#endif
-
-#ifndef NULL
 #define NULL ((void *)0)
-#endif
 
 //Systemcall
 #if	defined	( __thumb__ )
@@ -1041,6 +944,7 @@ extern mm_word	mp_writepos;
 #define R_JOYBUS		0xC000
 #endif
 //eof
+
 // ADPCM
 typedef struct
 {
@@ -1050,7 +954,7 @@ typedef struct
 	unsigned char __attribute__((aligned(4))) data[];
 }
 Sound;
-//
+//eof
 
 const GBFS_FILE *find_first_gbfs_file(const void *start);
 extern const double SIN[360];
@@ -1187,7 +1091,6 @@ static inline u32 hrt_GetBiosChecksum(void)
 #endif
     return result;
 }//Returns BIOS Checksum. Return value differs if you are playing on a Prototype GBA, Release GBA, or a Nintendo DS.
-u32 hrt_MultiBoot(MultiBootParam *mp, u32 mode); //Enables Multiboot? Unknown
 void hrt_InitInterrupt(void) __attribute__((deprecated)); //Initialize interrupts mirror
 void hrt_irqInit(void); //Initialize Interrupts
 IntFn *hrt_SetInterrupt(irqMASK mask, IntFn function) __attribute__((deprecated)); //Set Interrupt Function Mirror

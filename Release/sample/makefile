@@ -3,24 +3,25 @@
 
 CFLAGS = -Wall -O3 -ffast-math -mlong-calls -mcpu=arm7tdmi -mtune=arm7tdmi -marm -faggressive-loop-optimizations -fverbose-asm 
 CPPFLAGS = 
-SOURCES = main.c
-HEADERS = inc/soundbank.h
+SOURCES = src/main.c data\smp.c data\soundbank.s
+HEADERS = inc\soundbank.h
 ASMFLAGS = -mcpu=arm7tdmi
 ASMINC = 
-PATH = 
+PATH = C:\devkitPro\devkitARM\bin\\
 LIBS = 
 PROGNAME = sample
-CDATA = smp.c such.s soundbank.s
-COMPFILES = build/soundbank.bin data/such.bin
-OBJECTS = build/main.o build/smp.o build/soundbank.out build/such.out
+COMPFILES = build\soundbank.bin data\such.bin
+OBJECTS = build/main.o build/smp.o build/soundbank.out 
 INTERNALNAME = SAMPLE
+MAXMODFILES = data\complete2.wav data/franky.s3m
+MMDATAFILE = soundbank
 GAME_CODE = SMPL
 VERSION = 1
 LIBDIRS = 
-HRT_CFLAGS = -DHRT_USE_MBV2LIB -DHRT_BITFIELD_TYPES -DHRT_ADMIN
+HRT_FLAGS = -DHRT_USE_MBV2LIB  -DHRT_ADMIN
 USE_MULTIBOOT = yes
+MORECLEAN = data/soundbank.s inc/soundbank.h
 
-include C:\devkitPro\devkitARM\hrt_standard_targets.mak
+include C:\devkitPro\devkitARM\hrt_system\hrt_standard_targets.mak
 
 # CUSTOM MAKEFILE TARGETS START HERE
-

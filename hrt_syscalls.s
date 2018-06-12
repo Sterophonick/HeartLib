@@ -2,7 +2,6 @@
  .pool
  .text
 .code 16
-.global	hrt_MultiBoot
 .global hrt_Crash
 .global	hrt_Sqrt
 .global hrt_RegisterRamReset
@@ -15,13 +14,10 @@
 .global hrt_DivArmMod
 .global hrt_DivArmAbs
 .thumb
-hrt_MultiBoot:
- swi 37
- bx lr
 
 hrt_Crash:
-swi 255
-bx lr
+	swi 255
+	bx lr
 
 hrt_Sqrt:
 	swi		8

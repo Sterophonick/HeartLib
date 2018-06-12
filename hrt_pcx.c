@@ -1,5 +1,21 @@
 #include "libheart.h"
 extern gba_system __hrt_system;
+   typedef struct {
+    char		manufacturer;
+    char		version;
+    char		encoding;
+    char		bpp;
+    short int	x1, y1;
+    short int	x2, y2;
+    short int	hres;
+    short int	vres;
+    char		palette[48];
+    char		reserved;
+    char		color_planes;
+    short int	BytesPerLine;
+    short int	PaletteType;
+    char		dummy[58];
+} __attribute__((packed)) pcx_header;
 
 void hrt_DecodePCX(const u8 *PCXBuffer, u16 * ScreenAddr, u16* Palette)
 {
