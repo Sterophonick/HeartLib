@@ -13,52 +13,120 @@
 .global hrt_DivArm
 .global hrt_DivArmMod
 .global hrt_DivArmAbs
-.thumb
+.arm
 
 hrt_Crash:
-	swi 255
-	bx lr
-
+  ldr r3, hrt_start
+  ldrb r3, [r3]
+  cmp r3, #1
+  bxne lr
+  SWI 255 << 16
+  bx lr
+  
 hrt_Sqrt:
-	swi		8
-	bx		lr
+  ldr r3, hrt_start 
+  ldrb r3, [r3]
+  cmp r3, #1
+  bne sqrtexit
+  SWI 8 << 16
+  
+sqrtexit:
+  bx lr 
+
 
 hrt_RegisterRamReset:
-	swi		1
-	bx		lr
+  ldr r3, hrt_start
+  ldrb r3, [r3]
+  cmp r3, #1
+  bxne lr
+  SWI 1 << 16
+  bx lr
 
 hrt_ArcTan:
-	swi		9
-	bx		lr
+  ldr r3, hrt_start 
+  ldrb r3, [r3]
+  cmp r3, #1
+  bne arctexit
+  SWI 9 << 16
+  
+arctexit:
+  bx lr 
 
 hrt_ArcTan2:
-	swi		10
-	bx		lr
+  ldr r3, hrt_start 
+  ldrb r3, [r3]
+  cmp r3, #1
+  bne arct2exit
+  SWI 10 << 16
+  
+arct2exit:
+  bx lr 
 
 hrt_DivMod:
-	swi	6
-	mov	r0, r1
-	bx	lr
+  ldr r3, hrt_start 
+  ldrb r3, [r3]
+  cmp r3, #1
+  bne divmodexit
+  SWI 6 << 16
+  mov r0, r1
+  
+divmodexit:
+  bx lr 
 
-DivAbs:
-	swi	6
-	mov	r0, r3
-	bx	lr
+hrt_DivAbs:
+  ldr r3, hrt_start 
+  ldrb r3, [r3]
+  cmp r3, #1
+  bne divabsexit
+  SWI 6 << 16
+  mov	r0, r3
+
+divabsexit:
+  bx lr 
 
 hrt_Div:	
-	swi	6
-	bx	lr
-
+  ldr r3, hrt_start 
+  ldrb r3, [r3]
+  cmp r3, #1
+  bne divexit
+  swi	6 << 16
+	
+divexit:
+  bx lr 
+  
 hrt_DivArm:
-	swi	7
-	bx	lr
+  ldr r3, hrt_start 
+  ldrb r3, [r3]
+  cmp r3, #1
+  bne divarmexit
+  swi	7 << 16
+	
+divarmexit:
+  bx lr 
 
 hrt_DivArmMod:
-	swi	7
-	mov	r0, r1
-	bx	lr
+  ldr r3, hrt_start 
+  ldrb r3, [r3]
+  cmp r3, #1
+  bne divarmmodexit
+  swi	7 << 16
+  mov	r0, r1
+ 
+divarmmodexit:
+  bx lr 
+
 
 hrt_DivArmAbs:
-	swi	7
+  ldr r3, hrt_start 
+  ldrb r3, [r3]
+  cmp r3, #1
+  bne divarmmodexit
+  swi	7 << 16
 	mov	r0, r3
-	bx	lr
+	
+divarmmodeexit:
+  bx	lr
+  
+hrt_start:
+  .word __hrt_system
+  

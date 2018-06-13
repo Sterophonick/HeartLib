@@ -177,3 +177,19 @@ void hrt_Stop(void)
 		hrt_SystemCall(3);
 	}
 }
+
+u8 hrt_ConfigRegisterRamReset(u8 clearwram, u8 cleariwram, u8 clearpal, u8 clearvram, u8 clearoam, u8 resetsio, u8 resetsnd, u8 resetall)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		u8 temp;
+		temp |= (clearwram << 0);
+		temp |= (cleariwram << 1);
+		temp |= (clearpal << 2);
+		temp |= (clearvram << 3);
+		temp |= (clearoam << 4);
+		temp |= (resetsio << 5);
+		temp |= (resetsnd << 6);
+		temp |= (resetall << 7);
+	}
+}

@@ -1,23 +1,19 @@
 	.section	.iwram,"ax",%progbits
 	.extern	IntrTable
 	.code 32
-
 	.global	hrt_IntrMain
+	
 hrt_IntrMain:
 	mov	r3, #0x4000000		@ REG_BASE
 	ldr	r2, [r3,#0x200]		@ Read	REG_IE
-
 	ldr	r1, [r3, #0x208]	@ r1 = IME
 	str	r3, [r3, #0x208]	@ disable IME
 	mrs	r0, spsr
 	stmfd	sp!, {r0-r1,r3,lr}	@ {spsr, IME, REG_BASE, lr_irq}
-
 	and	r1, r2,	r2, lsr #16	@ r1 =	IE & IF
-
 	ldrh	r2, [r3, #-8]		@\mix up with BIOS irq flags at 3007FF8h,
 	orr	r2, r2, r1		@ aka mirrored at 3FFFFF8h, this is required
 	strh	r2, [r3, #-8]		@/when using the (VBlank)IntrWait functions
-
 	ldr	r2,=IntrTable
 	add	r3,r3,#0x200
 
@@ -69,3 +65,4 @@ hrt_IntrRet:
 	mov	pc,lr
 
 	.pool
+	
