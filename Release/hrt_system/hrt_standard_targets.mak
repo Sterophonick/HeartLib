@@ -3,7 +3,7 @@
 PREFIX = arm-none-eabi-
 GBFSFILE = build/data.hrt
 LIBS += -lheart -lm -lstdc++ -lsupc++ -lgcc -lc -lgcc
-OBJECTS += 
+OBJECTS += build/crt0.o
 SOURCES += src/crt0.s
 HRT_FLAGS += -nostartfiles
 HRTDIR = C:\devkitPro\devkitARM\hrt_system
@@ -22,11 +22,8 @@ build/%.out: src/%.s $(ASMINC)
 build/%.out: data\%.s
 	$(PATH)$(PREFIX)as $(ARCH) $< -o $@
 	
-src\crt0.s:
-	/usr/bin/cp $(HRTDIR)\crt0.s src
-	
-build/crt0.o: src\crt0.s
-	$(PATH)$(PREFIX)gcc -DHRT_WITH_LIBHEART $(HRT_FLAGS) $(CFLAGS) $(ARCH) -c $< -o $@
+build/crt0.o:
+	$(PATH)$(PREFIX)as -mthumb-interwork $(HRTDIR)\crt0.s -obuild\crt0.o
 	
 build/%.o: data/%.c
 	$(PATH)$(PREFIX)gcc -DHRT_WITH_LIBHEART $(HRT_FLAGS) $(CFLAGS) $(ARCH) -c $< -o $@
@@ -36,7 +33,7 @@ build\main.elf: $(OBJECTS)
 	$(PATH)$(PREFIX)gcc -specs=gba_mb.specs  $(ARCH) $(OBJECTS) $(LIBDIRS) $(LIBS) -o build/main.elf
 else ifneq ($(USE_MULTIBOOT),yes)
 build\main.elf: $(OBJECTS)
-	$(PATH)$(PREFIX)gcc -specs=gba.specs $(ARCH) $(OBJECTS) $(LIBDIRS) $(LIBS) -o build/main.elf	
+	$(PATH)$(PREFIX)gcc -T$(HRTDIR)\inkscript.ld $(ARCH) $(OBJECTS) $(LIBDIRS) $(LIBS) -o build/main.elf	
 endif
 	
 $(GBFSFILE): $(COMPFILES)

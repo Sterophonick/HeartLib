@@ -89,7 +89,7 @@ TODO:
 
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 80
-#define HRT_BUILD_DATE 063206122018
+#define HRT_BUILD_DATE 105706132018
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -972,7 +972,8 @@ extern const unsigned short font_matrixBitmap[6080];
 extern const unsigned short font_milkbottleTiles[3072];
 extern const unsigned short font_milkbottlePal[16];
 
-//Defines for Functions
+/*Function helpers
+These are for the functions with a lot of arguments, and serve really good as a way of simplifying everything.*/
 #define OBJ_SIZE_8X8 0
 #define OBJ_SIZE_16X16 1
 #define OBJ_SIZE_32X32 2
@@ -1083,6 +1084,23 @@ extern const unsigned short font_milkbottlePal[16];
 #define BG_1            (1)
 #define BG_2            (2)
 #define BG_3            (3)
+
+#define RRR_CLEAR_EWRAM_ENABLE 1
+#define RRR_CLEAR_EWRAM_DISABLE 0
+#define RRR_CLEAR_IWRAM_ENABLE 1
+#define RRR_CLEAR_IWRAM_DISABLE 0
+#define RRR_CLEAR_PALETTE_ENABLE 1
+#define RRR_CLEAR_PALETTE_DISABLE 0
+#define RRR_CLEAR_VRAM_ENABLE 1
+#define RRR_CLEAR_VRAM_DISABLE 0
+#define RRR_CLEAR_OAM_ENABLE 1
+#define RRR_CLEAR_OAM_DISABLE 0
+#define RRR_CLEAR_SIO_ENABLE 1
+#define RRR_CLEAR_SIO_DISABLE 0
+#define RRR_CLEAR_SOUND_ENABLE 1
+#define RRR_CLEAR_SOUND_DISABLE 0
+#define RRR_CLEAR_ALL_OTHER_ENABLE 1
+#define RRR_CLEAR_ALL_OTHER_DISABLE 0
 //
 
 ///////////////////////////FUNCTIONS////////////////////////////

@@ -1,5 +1,5 @@
 //File: libheart.h - The NEW Definitive GBA Header File
-//Date: March 2018
+//Date: June 2018
 //Author: Sterophonick
 //Derived from gba.h by eloist and agb_lib.h by me, Inspired by Hamlib's mygba.h, who da heck remembers that library amirite?
 //This library is designed to make GBA Programming easy to do, and for everyone to be able to do it, not unlike HAMLib (rip 2001-2011 =( may god rest ur soul)
@@ -89,7 +89,7 @@ TODO:
 
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 80
-#define HRT_BUILD_DATE 112606122018
+#define HRT_BUILD_DATE 105706132018
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -340,6 +340,13 @@ typedef struct _GameMap
 #ifndef JPEG_OUTPUT_TYPE
 #define JPEG_OUTPUT_TYPE unsigned short
 #endif
+
+typedef struct tBUP {
+    u16 sourceLength;     //Length of Source Data in bytes (0-0xFFFF)
+    u8 sourceWidth;       //Width of Source Units in bits (only 1,2,4,8 supported)
+    u8 destWidth;         //Width of Destination Units in bits (only 1,2,4,8,16,32 supported)
+    u32 destOffset;       //31-bit Data Offset (Bit 0-30), and Zero Data Flag (Bit 31)
+} BUP;
 
 //Logic Gates - So you don't have to remember the syntax for all the logic gates. It's a lifesaver.
 #define NOT  !
@@ -654,10 +661,6 @@ typedef struct _GameMap
 #define ACCESS_32(location)		*(volatile u32 *) (location)
 #define MEM_PAL_COL_PTR(x)		 (u16*) (0x05000000+(x<<1))	// Palette color pointer
 #define MEM_PAL_OBJ_PTR(x)		 (u16*) (0x05000200+(x<<1))	// Palette color pointer
-#define HRT_EWRAM_DATA __attribute__ ((section (".ewram"))) = {0}
-#define HRT_IWRAM_DATA __attribute__ ((section (".iwram"))) = {0}
-#define HRT_IWRAM_CODE__attribute__ ((section (".iwram"), long_call))
-#define HRT_EWRAM_CODE __attribute__ ((section (".ewram"), long_call))
 #define SIZEOF_8BIT(x)          (sizeof(x))
 #define SIZEOF_16BIT(x)         (sizeof(x)/2)
 #define SIZEOF_32BIT(x)         (sizeof(x)/4)
@@ -680,8 +683,13 @@ typedef struct _GameMap
 #define CONV_FLOAT_TO_SFP16(n)  ((sfp16)((n)*256))
 #define CONV_FLOAT_TO_SFP32(n)  ((sfp32)((n)*65536))
 ////
-
 //
+
+#define HRT_EWRAM_DATA __attribute__((section(".ewram")))
+#define HRT_IWRAM_DATA __attribute__((section(".iwram")))
+#define HRT_EWRAM_BSS __attribute__((section(".sbss")))
+#define HRT_EWRAM_CODE __attribute__((section(".ewram"), long_call))
+#define HRT_IWRAM_CODE __attribute__((section(".iwram"), long_call))
 
 #define MAX_INTS	15
 #define INT_VECTOR	*(IntFn *)(0x03007ffc)		// BIOS Interrupt vector
@@ -964,7 +972,8 @@ extern const unsigned short font_matrixBitmap[6080];
 extern const unsigned short font_milkbottleTiles[3072];
 extern const unsigned short font_milkbottlePal[16];
 
-//Defines for Functions
+/*Function helpers
+These are for the functions with a lot of arguments, and serve really good as a way of simplifying everything.*/
 #define OBJ_SIZE_8X8 0
 #define OBJ_SIZE_16X16 1
 #define OBJ_SIZE_32X32 2
@@ -1075,6 +1084,23 @@ extern const unsigned short font_milkbottlePal[16];
 #define BG_1            (1)
 #define BG_2            (2)
 #define BG_3            (3)
+
+#define RRR_CLEAR_EWRAM_ENABLE 1
+#define RRR_CLEAR_EWRAM_DISABLE 0
+#define RRR_CLEAR_IWRAM_ENABLE 1
+#define RRR_CLEAR_IWRAM_DISABLE 0
+#define RRR_CLEAR_PALETTE_ENABLE 1
+#define RRR_CLEAR_PALETTE_DISABLE 0
+#define RRR_CLEAR_VRAM_ENABLE 1
+#define RRR_CLEAR_VRAM_DISABLE 0
+#define RRR_CLEAR_OAM_ENABLE 1
+#define RRR_CLEAR_OAM_DISABLE 0
+#define RRR_CLEAR_SIO_ENABLE 1
+#define RRR_CLEAR_SIO_DISABLE 0
+#define RRR_CLEAR_SOUND_ENABLE 1
+#define RRR_CLEAR_SOUND_DISABLE 0
+#define RRR_CLEAR_ALL_OTHER_ENABLE 1
+#define RRR_CLEAR_ALL_OTHER_DISABLE 0
 //
 
 ///////////////////////////FUNCTIONS////////////////////////////
@@ -1366,6 +1392,8 @@ void hrt_SetBGXY(u8 bg, u16 x, u16 y); //Sets X and Y coordinates of a BG
 void hrt_SetBGX(u8 bg, u16 x); //Sets X coordinate of a BG
 void hrt_SetBGY(u8 bg, u16 y); //Sets Y coordinate of a BG
 void hrt_DestroyOBJ(u8 objno); //Erases a sprite
+u8 hrt_ConfigRegisterRamReset(u8 clearwram, u8 cleariwram, u8 clearpal, u8 clearvram, u8 clearoam, u8 resetsio, u8 resetsnd, u8 resetall); //Returns a byte for the mode of RegisterRamReset
+void hrt_BitUnPack(void* source, void* destination, BUP* data); //Bitunpack
 
 #ifdef __cplusplus
 }
