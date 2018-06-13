@@ -89,7 +89,7 @@ TODO:
 
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 80
-#define HRT_BUILD_DATE 062706122018
+#define HRT_BUILD_DATE 063206122018
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -661,10 +661,6 @@ typedef struct tBUP {
 #define ACCESS_32(location)		*(volatile u32 *) (location)
 #define MEM_PAL_COL_PTR(x)		 (u16*) (0x05000000+(x<<1))	// Palette color pointer
 #define MEM_PAL_OBJ_PTR(x)		 (u16*) (0x05000200+(x<<1))	// Palette color pointer
-#define HRT_EWRAM_DATA __attribute__ ((section (".ewram"))) = {0}
-#define HRT_IWRAM_DATA __attribute__ ((section (".iwram"))) = {0}
-#define HRT_IWRAM_CODE__attribute__ ((section (".iwram"), long_call))
-#define HRT_EWRAM_CODE __attribute__ ((section (".ewram"), long_call))
 #define SIZEOF_8BIT(x)          (sizeof(x))
 #define SIZEOF_16BIT(x)         (sizeof(x)/2)
 #define SIZEOF_32BIT(x)         (sizeof(x)/4)
@@ -687,8 +683,13 @@ typedef struct tBUP {
 #define CONV_FLOAT_TO_SFP16(n)  ((sfp16)((n)*256))
 #define CONV_FLOAT_TO_SFP32(n)  ((sfp32)((n)*65536))
 ////
-
 //
+
+#define HRT_EWRAM_DATA __attribute__((section(".ewram")))
+#define HRT_IWRAM_DATA __attribute__((section(".iwram")))
+#define HRT_EWRAM_BSS __attribute__((section(".sbss")))
+#define HRT_EWRAM_CODE __attribute__((section(".ewram"), long_call))
+#define HRT_IWRAM_CODE __attribute__((section(".iwram"), long_call))
 
 #define MAX_INTS	15
 #define INT_VECTOR	*(IntFn *)(0x03007ffc)		// BIOS Interrupt vector
