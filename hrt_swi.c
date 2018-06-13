@@ -193,3 +193,11 @@ u8 hrt_ConfigRegisterRamReset(u8 clearwram, u8 cleariwram, u8 clearpal, u8 clear
 		temp |= (resetall << 7);
 	}
 }
+
+void hrt_BitUnPack(void* source, void* destination, BUP* data)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+				hrt_SystemCall(16);
+	}
+}

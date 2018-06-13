@@ -89,7 +89,7 @@ TODO:
 
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 80
-#define HRT_BUILD_DATE 055306122018
+#define HRT_BUILD_DATE 062706122018
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -340,6 +340,13 @@ typedef struct _GameMap
 #ifndef JPEG_OUTPUT_TYPE
 #define JPEG_OUTPUT_TYPE unsigned short
 #endif
+
+typedef struct tBUP {
+    u16 sourceLength;     //Length of Source Data in bytes (0-0xFFFF)
+    u8 sourceWidth;       //Width of Source Units in bits (only 1,2,4,8 supported)
+    u8 destWidth;         //Width of Destination Units in bits (only 1,2,4,8,16,32 supported)
+    u32 destOffset;       //31-bit Data Offset (Bit 0-30), and Zero Data Flag (Bit 31)
+} BUP;
 
 //Logic Gates - So you don't have to remember the syntax for all the logic gates. It's a lifesaver.
 #define NOT  !
@@ -1366,6 +1373,8 @@ void hrt_SetBGXY(u8 bg, u16 x, u16 y); //Sets X and Y coordinates of a BG
 void hrt_SetBGX(u8 bg, u16 x); //Sets X coordinate of a BG
 void hrt_SetBGY(u8 bg, u16 y); //Sets Y coordinate of a BG
 void hrt_DestroyOBJ(u8 objno); //Erases a sprite
+u8 hrt_ConfigRegisterRamReset(u8 clearwram, u8 cleariwram, u8 clearpal, u8 clearvram, u8 clearoam, u8 resetsio, u8 resetsnd, u8 resetall); //Returns a byte for the mode of RegisterRamReset
+void hrt_BitUnPack(void* source, void* destination, BUP* data); //Bitunpack
 
 #ifdef __cplusplus
 }
