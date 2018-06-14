@@ -88,8 +88,8 @@ TODO:
 #define LIBHEART_H
 
 #define HRT_VERSION_MAJOR 0
-#define HRT_VERSION_MINOR 80
-#define HRT_BUILD_DATE 105706132018
+#define HRT_VERSION_MINOR 81
+#define HRT_BUILD_DATE "04016142018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -439,7 +439,10 @@ typedef struct tBUP {
 #define AGBPrint 0xFF
 
 #ifdef HRT_EXPERIMENTAL
-#define MULTIBOOT const u8 __gba_multiboot = 1; //Type 'MULTIBOOT' at the beginning of a project, and the file will be compiled as a multiboot ROM.
+#define GBA_MODE(mode) const int __gba_mode = (mode);
+#define MODE_CART 0
+#define MODE_MB 1
+#define MODE_ER 2
 #endif
 
 //Bits
@@ -651,9 +654,6 @@ typedef struct tBUP {
 #define PI                   3.14159265359
 #define RADIAN(n)    (((float) n)/ (float) 180 * PI)
 
-#define HRT_EWRAM_BSS	__attribute__((section(".sbss")))
-#define HRT_ALIGN(m)	__attribute__((aligned (m)))
-
 //Taken from HAM's mygba.h
 #define FIXED s32
 #define ACCESS_8(location)		*(volatile u8 *)  (location)
@@ -690,6 +690,7 @@ typedef struct tBUP {
 #define HRT_EWRAM_BSS __attribute__((section(".sbss")))
 #define HRT_EWRAM_CODE __attribute__((section(".ewram"), long_call))
 #define HRT_IWRAM_CODE __attribute__((section(".iwram"), long_call))
+#define HRT_ALIGN(m)	__attribute__((aligned (m)))
 
 #define MAX_INTS	15
 #define INT_VECTOR	*(IntFn *)(0x03007ffc)		// BIOS Interrupt vector
