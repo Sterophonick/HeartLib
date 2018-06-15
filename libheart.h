@@ -89,7 +89,7 @@ TODO:
 
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 81
-#define HRT_BUILD_DATE "04016142018"
+#define HRT_BUILD_DATE "091706152018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -260,6 +260,36 @@ u8* ROM0;
 u8* ROM1;
 u8* ROM2;
 u8* EEPROM;
+
+typedef struct t_BGAffineSource {
+     s32 x;				/*!< Original data's center X coordinate (8bit fractional portion)			*/
+     s32 y;				/*!< Original data's center Y coordinate (8bit fractional portion)			*/
+     s16 tX;			/*!< Display's center X coordinate																			*/
+     s16 tY;			/*!< Display's center Y coordinate																			*/
+     s16 sX;			/*!< Scaling ratio in X direction (8bit fractional portion)							*/
+     s16 sY;			/*!< Scaling ratio in Y direction (8bit fractional portion)							*/
+     u16 theta;		/*!< Angle of rotation (8bit fractional portion) Effective Range 0-FFFF	*/
+} BGAffineSource;
+typedef struct t_BGAffineDest {
+     s16 pa;		/*!< Difference in X coordinate along same line	*/
+     s16 pb;		/*!< Difference in X coordinate along next line	*/
+     s16 pc;		/*!< Difference in Y coordinate along same line	*/
+     s16 pd;		/*!< Difference in Y coordinate along next line	*/
+     s32 x;			/*!< Start X coordinate													*/
+     s32 y;			/*!< Start Y coordinate													*/
+} BGAffineDest;
+typedef struct t_ObjAffineSource {
+     s16 sX;			/*!< Scaling ratio in X direction (8bit fractional portion)							*/
+     s16 sY;			/*!< Scaling ratio in Y direction (8bit fractional portion)							*/
+     u16 theta;		/*!< Angle of rotation (8bit fractional portion) Effective Range 0-FFFF	*/
+} ObjAffineSource;
+typedef struct t_ObjAffineDest {
+     s16 pa;		/*!< Difference in X coordinate along same line */
+     s16 pb;		/*!< Difference in X coordinate along next line */
+     s16 pc;		/*!< Difference in Y coordinate along same line */
+     s16 pd;		/*!< Difference in Y coordinate along next line */
+} ObjAffineDest;
+
 enum LCDC_IRQ {
     LCDC_VBL_FLAG = (1 << 0),
     LCDC_HBL_FLAG = (1 << 1),
@@ -341,12 +371,51 @@ typedef struct _GameMap
 #define JPEG_OUTPUT_TYPE unsigned short
 #endif
 
-typedef struct tBUP {
-    u16 sourceLength;     //Length of Source Data in bytes (0-0xFFFF)
-    u8 sourceWidth;       //Width of Source Units in bits (only 1,2,4,8 supported)
-    u8 destWidth;         //Width of Destination Units in bits (only 1,2,4,8,16,32 supported)
-    u32 destOffset;       //31-bit Data Offset (Bit 0-30), and Zero Data Flag (Bit 31)
+typedef struct {
+	u16 SrcNum;				// Source Data Byte Size
+	u8  SrcBitNum;			// 1 Source Data Bit Number
+	u8  DestBitNum;			// 1 Destination Data Bit Number
+	u32 DestOffset:31;		// Number added to Source Data
+	u32 DestOffset0_On:1;	// Flag to add/not add Offset to 0 Data
 } BUP;
+
+typedef struct {
+	u16 type;
+	u16 stat;
+	u32 freq;
+	u32 loop;
+	u32 size;
+	s8 data[1];
+} WaveData;
+
+typedef struct {
+	u8 Status;
+	u8 reserved1;
+	u8 RightVol;
+	u8 LeftVol;
+	u8 Attack;
+	u8 Decay;
+	u8 Sustain;
+	u8 Release;
+	u8 reserved2[24];
+	u32 fr;
+	WaveData *wp;
+	u32 reserved3[6];
+} SoundChannel;
+
+typedef struct {
+	u32 ident;
+	vu8 DmaCount;
+	u8 reverb;
+	u8 maxchn;
+	u8 masvol;
+	u8 freq;
+	u8 mode;
+	u8 r2[6];
+	u32 r3[16];
+	SoundChannel vchn[12];
+	s8 pcmbuf[1584*2];
+} SoundArea;
 
 //Logic Gates - So you don't have to remember the syntax for all the logic gates. It's a lifesaver.
 #define NOT  !
@@ -437,13 +506,6 @@ typedef struct tBUP {
 #define SoundDriverVSyncOn 0x29
 #define GetJumpList 0x2A
 #define AGBPrint 0xFF
-
-#ifdef HRT_EXPERIMENTAL
-#define GBA_MODE(mode) const int __gba_mode = (mode);
-#define MODE_CART 0
-#define MODE_MB 1
-#define MODE_ER 2
-#endif
 
 //Bits
 #define BIT00  0x0001
@@ -1102,6 +1164,11 @@ These are for the functions with a lot of arguments, and serve really good as a 
 #define RRR_CLEAR_SOUND_DISABLE 0
 #define RRR_CLEAR_ALL_OTHER_ENABLE 1
 #define RRR_CLEAR_ALL_OTHER_DISABLE 0
+
+#define BUP_OUTPUT_CONTINUOUS 2
+#define BUP_OUTPUT_OAM 8
+
+#define NDS_CRC_INITIAL_DEFUALT 0xFFFF
 //
 
 ///////////////////////////FUNCTIONS////////////////////////////
@@ -1395,6 +1462,26 @@ void hrt_SetBGY(u8 bg, u16 y); //Sets Y coordinate of a BG
 void hrt_DestroyOBJ(u8 objno); //Erases a sprite
 u8 hrt_ConfigRegisterRamReset(u8 clearwram, u8 cleariwram, u8 clearpal, u8 clearvram, u8 clearoam, u8 resetsio, u8 resetsnd, u8 resetall); //Returns a byte for the mode of RegisterRamReset
 void hrt_BitUnPack(void* source, void* destination, BUP* data); //Bitunpack
+void hrt_ObjAffineSet(ObjAffineSource *source, void *dest, s32 num, s32 offset); //Creates a set of sprite affine data
+void hrt_BgAffineSet(BGAffineSource *source, BGAffineDest *dest, s32 num); //Creates a set of sprite affine data
+void hrt_SoundDriverInit(SoundArea *sa); //Initializes the BIOS sound driver
+void hrt_SoundDriverMode(u32 mode); //SWI
+u32  hrt_MidiKey2Freq(WaveData *wa, u8 mk, u8 fp); //Calculates the value of the assignment to ((SoundArea)sa).vchn[x].fr when playing the wave data, wa, with the interval (MIDI KEY) mk and the fine adjustment value (halftones=256) fp. 
+void hrt_SoundDriverMain(); //Main of the BIOS sound driver
+void hrt_SoundDriverVsync(); //Resets the sound DMA, call this after every 1/60 of a second
+void hrt_SoundChannelClear(); //Stops sound and clears the FIFO registers
+void hrt_SoundDriverVsyncOff(); //Used to stop sound DMA.
+void hrt_SoundDriverVsyncOn(); //Restarts the sound DMA.
+void hrt_SoundWhatever0(); //Undocumented - Unknown
+void hrt_SoundWhatever1(); //Undocumented - Unknown
+void hrt_SoundWhatever2(); //Undocumented - Unknown
+void hrt_SoundWhatever3(); //Undocumented - Unknown
+void hrt_SoundWhatever4(); //Undocumented - Unknown
+void hrt_SoundGetJumpList(void* dest); //Undocumented - receives pointers to 36 additional sound-related  BIOS functions
+void hrt_NDS_WaitByLoop(s32 delay); //NDS/DSi Only - Performs a wait
+u16 hrt_NDS_GetCRC16(u16 initial, u32 start, u32 length); //NDS/DSi Only - calculates CRC16 of a specified memory portion.
+u8 hrt_NDS_IsDebugger(); //NDS Only - Detects whether or not this ROM is running on a Debug DS Model.
+
 
 #ifdef __cplusplus
 }

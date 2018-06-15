@@ -13,6 +13,10 @@
 .global hrt_DivArm
 .global hrt_DivArmMod
 .global hrt_DivArmAbs
+.global	hrt_SoundDriverMode
+.global	hrt_SoundDriverInit
+.global	hrt_MidiKey2Freq
+.global hrt_SoundGetJumpList
 .arm
 
 hrt_Crash:
@@ -20,7 +24,7 @@ hrt_Crash:
   ldrb r3, [r3]
   cmp r3, #1
   bxne lr
-  SWI 255 << 16
+  swi 255 << 16
   bx lr
   
 hrt_Sqrt:
@@ -28,7 +32,7 @@ hrt_Sqrt:
   ldrb r3, [r3]
   cmp r3, #1
   bne sqrtexit
-  SWI 8 << 16
+  swi 8 << 16
   
 sqrtexit:
   bx lr 
@@ -39,7 +43,7 @@ hrt_RegisterRamReset:
   ldrb r3, [r3]
   cmp r3, #1
   bxne lr
-  SWI 1 << 16
+  swi 1 << 16
   bx lr
 
 hrt_ArcTan:
@@ -47,7 +51,7 @@ hrt_ArcTan:
   ldrb r3, [r3]
   cmp r3, #1
   bne arctexit
-  SWI 9 << 16
+  swi 9 << 16
   
 arctexit:
   bx lr 
@@ -57,7 +61,7 @@ hrt_ArcTan2:
   ldrb r3, [r3]
   cmp r3, #1
   bne arct2exit
-  SWI 10 << 16
+  swi 10 << 16
   
 arct2exit:
   bx lr 
@@ -67,7 +71,7 @@ hrt_DivMod:
   ldrb r3, [r3]
   cmp r3, #1
   bne divmodexit
-  SWI 6 << 16
+  swi 6 << 16
   mov r0, r1
   
 divmodexit:
@@ -78,7 +82,7 @@ hrt_DivAbs:
   ldrb r3, [r3]
   cmp r3, #1
   bne divabsexit
-  SWI 6 << 16
+  swi 6 << 16
   mov	r0, r3
 
 divabsexit:
@@ -126,6 +130,40 @@ hrt_DivArmAbs:
 	
 divarmmodeexit:
   bx	lr
+  
+hrt_SoundDriverMode:
+  ldr r3, hrt_start
+  ldrb r3, [r3]
+  cmp r3, #1
+  bxne lr
+  swi		27 << 16
+  bx		lr
+  
+hrt_SoundDriverInit:
+  ldr r3, hrt_start
+  ldrb r3, [r3]
+  cmp r3, #1
+  bxne lr
+  swi		26 << 16
+  bx		lr
+  
+MidiKey2Freq:
+  ldr r3, hrt_start 
+  ldrb r3, [r3]
+  cmp r3, #1
+  bne mk2fexit
+  swi 31<< 16
+  
+mk2fexit:
+	bx lr
+	
+hrt_SoundGetJumpList:
+  ldr r3, hrt_start
+  ldrb r3, [r3]
+  cmp r3, #1
+  bxne lr
+  swi		42 << 16
+  bx		lr
   
 hrt_start:
   .word __hrt_system
