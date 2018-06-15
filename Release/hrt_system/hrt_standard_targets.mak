@@ -1,5 +1,6 @@
 # HeartLib API Automated Build System (ABS)
 # This file is designed for HeartLib-compliant makefiles 
+
 PREFIX = arm-none-eabi-
 GBFSFILE = build/data.hrt
 LIBS += -lheart -lm -lstdc++ -lsupc++ -lgcc -lc -lgcc
@@ -28,14 +29,15 @@ build/crt0.o:
 build/%.o: data/%.c
 	$(PATH)$(PREFIX)gcc -DHRT_WITH_LIBHEART $(HRT_FLAGS) $(CFLAGS) $(ARCH) -c $< -o $@
 
-ifeq ($(USE_MULTIBOOT),yes)
 build\main.elf: $(OBJECTS)
-	$(PATH)$(PREFIX)gcc -specs=gba_mb.specs  $(ARCH) $(OBJECTS) $(LIBDIRS) $(LIBS) -o build/main.elf
-else ifneq ($(USE_MULTIBOOT),yes)
-build\main.elf: $(OBJECTS)
-	$(PATH)$(PREFIX)gcc -T$(HRTDIR)\inkscript.ld $(ARCH) $(OBJECTS) $(LIBDIRS) $(LIBS) -o build/main.elf	
+ifeq ($(MAKE_MODE),multiboot)
+	$(PATH)$(PREFIX)gcc -specs=gba_mb.specs -msys-crt0=build\crt0.o $(ARCH) $(OBJECTS) $(LIBDIRS) $(LIBS) -o build/main.elf
+else ifeq ($(MAKE_ME),ereader)
+	$(PATH)$(PREFIX)gcc -specs=gba_er.specs -nostdlib $(ARCH) $(OBJECTS) $(LIBDIRS) $(LIBS) -o build/main.elf
+else
+	$(PATH)$(PREFIX)gcc -specs=gba.specs -nostdlib $(ARCH) $(OBJECTS) $(LIBDIRS) $(LIBS) -o build/main.elf
 endif
-	
+
 $(GBFSFILE): $(COMPFILES)
 	gbfs $(GBFSFILE) $(COMPFILES)
 	
