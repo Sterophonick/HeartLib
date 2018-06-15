@@ -13,7 +13,7 @@
 //
 //======================================================================
 
-const unsigned short font_matrixBitmap[6080] __attribute__((aligned(4)))=
+const unsigned char font_matrixBitmap[6080] __attribute__((aligned(4)))=
 {
 	0,0,0,0,0,0,0,0,
 	0,0,0,0,0,0,0,0,

@@ -89,7 +89,7 @@ TODO:
 
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 81
-#define HRT_BUILD_DATE "091706152018"
+#define HRT_BUILD_DATE "103906152018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -242,6 +242,12 @@ typedef struct
 
 #ifdef HRT_ADMIN
 extern gba_system __hrt_system;
+const double SIN[360];
+const double COS[360];
+const double RAD[360];
+const unsigned char font_matrixBitmap[6080];
+const unsigned short font_milkbottleTiles[3072];
+const unsigned short font_milkbottlePal[16];
 #endif
 
 /*System Pointers*/
@@ -1028,12 +1034,6 @@ Sound;
 //eof
 
 const GBFS_FILE *find_first_gbfs_file(const void *start);
-extern const double SIN[360];
-extern const double COS[360];
-extern const double RAD[360];
-extern const unsigned short font_matrixBitmap[6080];
-extern const unsigned short font_milkbottleTiles[3072];
-extern const unsigned short font_milkbottlePal[16];
 
 /*Function helpers
 These are for the functions with a lot of arguments, and serve really good as a way of simplifying everything.*/
@@ -1165,8 +1165,8 @@ These are for the functions with a lot of arguments, and serve really good as a 
 #define RRR_CLEAR_ALL_OTHER_ENABLE 1
 #define RRR_CLEAR_ALL_OTHER_DISABLE 0
 
-#define BUP_OUTPUT_CONTINUOUS 2
-#define BUP_OUTPUT_OAM 8
+#define OBJAFF_OUTPUT_CONTINUOUS 2
+#define OBJAFF_OUTPUT_OAM 8
 
 #define NDS_CRC_INITIAL_DEFUALT 0xFFFF
 //
@@ -1252,8 +1252,6 @@ double hrt_Distance(int x1, int y1, int x2, int y2); //Returns distance between 
 double hrt_Slope(int x1, int y1, int x2, int y2); //Returns slope between 2 different points
 void hrt_SetTile(u8 x, u8 y, int tileno); //Sets a specific tile to a given value.
 void hrt_SetFXAlphaLevel(u8 src, u8 dst); //Sets REG_BLDALPHA
-//void hrt_DrawTextTile(int x, int y, char* str); //Unfinished -- Ignore this
-//void hrt_InitTextTile(u8 bgno); //Unfinished -- Ignore this.
 void hrt_FillPalette(int paltype, u16 color); //Fills BG or OBJ palette witha specified color.
 void hrt_AGBPrint(const char *msg); //hrt_AGBPrint is interesting. Using this will make the ROM put a message into the output log if AGBPrint is enabled on VisualBoyAdvance. I found a technique that doesn't crash on hardware or other emulators.
 void *hrt_Memcpy(void *dest, const void *src, size_t len); //Copies Memory from one place to another.
@@ -1481,7 +1479,8 @@ void hrt_SoundGetJumpList(void* dest); //Undocumented - receives pointers to 36 
 void hrt_NDS_WaitByLoop(s32 delay); //NDS/DSi Only - Performs a wait
 u16 hrt_NDS_GetCRC16(u16 initial, u32 start, u32 length); //NDS/DSi Only - calculates CRC16 of a specified memory portion.
 u8 hrt_NDS_IsDebugger(); //NDS Only - Detects whether or not this ROM is running on a Debug DS Model.
-
+void hrt_InitTiledText(u8 bg); //initializes the tiled text.
+void hrt_PrintOnTilemap(u8 tx, u8 ty, char* str); //Writes with tiled text
 
 #ifdef __cplusplus
 }

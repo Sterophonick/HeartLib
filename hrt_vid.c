@@ -5,6 +5,9 @@ u16* BGTileMem = (u16*)0x6004000;
 u16* FrontBuffer = (u16*)0x6000000;
 u16* BackBuffer = (u16*)0x600A000;
 extern gba_system __hrt_system;
+const double SIN[360];
+const double COS[360];
+const double RAD[360];
 
 void hrt_FlipBGBuffer(void)
 {

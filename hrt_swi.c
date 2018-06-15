@@ -182,7 +182,7 @@ u8 hrt_ConfigRegisterRamReset(u8 clearwram, u8 cleariwram, u8 clearpal, u8 clear
 {
 	if (__hrt_system.hrt_start == 1)
 	{
-		u8 temp;
+		u8 temp = 0;
 		temp |= (clearwram << 0);
 		temp |= (cleariwram << 1);
 		temp |= (clearpal << 2);
@@ -206,10 +206,10 @@ void hrt_BitUnPack(void* source, void* destination, BUP* data)
 
 void hrt_ObjAffineSet(ObjAffineSource *source, void *dest, s32 num, s32 offset)
 {
-	SystemCall (15);
+	hrt_SystemCall (15);
 }
 
 void hrt_BgAffineSet(BGAffineSource *source, BGAffineDest *dest, s32 num)
 {
-	SystemCall (14);
+	hrt_SystemCall (14);
 }

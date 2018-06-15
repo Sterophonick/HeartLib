@@ -1,5 +1,7 @@
 #include "libheart.h"
 extern gba_system __hrt_system;
+const unsigned char font_matrixBitmap[6080];
+u16* tram = (u16*)0x06000800;
 
 u16 _____colors[3] = {
 	0x0000, 0x0421, 0x7FFF
@@ -38,27 +40,36 @@ void hrt_PrintOnBitmap(int left, int top, char *str) {
     }
 }
 
-/*
-void hrt_InitTextTile(u8 bgno)
+void hrt_InitTiledText(u8 bg)
 {
-	int i;
-	if (hrt_start == 1) {
-		for (i = 0; i < 2304; i++)
+	BUP temp;
+	u16 i;
+    if (__hrt_system.hrt_start == 1) {
+		temp.SrcNum = 6080;
+		temp.SrcBitNum = 8;
+		temp.DestBitNum = 4;
+		temp.DestOffset = 0;
+		temp.DestOffset0_On = 0;
+		hrt_BitUnPack((void*)font_matrixBitmap, (u16*)0x06000800, &temp);
+		hrt_SetBGPalEntry(0, 0x0000);
+		hrt_SetBGPalEntry(1, 0x0421);
+		hrt_SetBGPalEntry(2, 0x7FFF);
+		REG_BGxCNT(bg) = 0x0000;
+		for(i=0; i < 768; i++)
 		{
-			BGTileMem[i] = font_milkbottleTiles[i];
+			VRAM[i] = 64;
 		}
-		hrt_offsetBGTile = 2304;
 	}
 }
 
-void hrt_DrawTextTile(int x, int y, char* str)
+void hrt_PrintOnTilemap(u8 tx, u8 ty, char* str)
 {
-	if (hrt_start == 1) {
-		int pos;
-		while (*str) {
-			VRAM[y * 120 + x] = *str++;
-		}
-		pos++;
+	if (__hrt_system.hrt_start == 1) {
+		        int pos = 0;
+        while (*str) {
+            VRAM[ty*256+tx+pos] = *str++;
+			 VRAM[ty*256+tx+pos] += 32;
+            pos += 1;
+        }
 	}
 }
-*/
