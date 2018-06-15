@@ -74,7 +74,7 @@ GBA Specs:
 	aPlib
 	Scrolling Map Edge Drawing
 	JPEG Decoding for Serious image compression
-	ADPCM (Shoutouts to NRX)
+	ADPCM 8ad (kudos to Damian Yerrick)
 
 TODO:
 		Implement Tiled Text
@@ -88,8 +88,8 @@ TODO:
 #define LIBHEART_H
 
 #define HRT_VERSION_MAJOR 0
-#define HRT_VERSION_MINOR 81
-#define HRT_BUILD_DATE "103906152018"
+#define HRT_VERSION_MINOR 85
+#define HRT_BUILD_DATE "105406152018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -267,6 +267,12 @@ u8* ROM1;
 u8* ROM2;
 u8* EEPROM;
 
+typedef struct ADGlobals
+{
+	const unsigned char *data;
+	int last_sample;
+	int last_index;
+} ADGlobals;
 typedef struct t_BGAffineSource {
      s32 x;				/*!< Original data's center X coordinate (8bit fractional portion)			*/
      s32 y;				/*!< Original data's center Y coordinate (8bit fractional portion)			*/
@@ -1022,17 +1028,6 @@ extern mm_word	mp_writepos;
 #endif
 //eof
 
-// ADPCM
-typedef struct
-{
-	unsigned long sampleRate;
-	unsigned long length;
-	unsigned char noCompress;
-	unsigned char __attribute__((aligned(4))) data[];
-}
-Sound;
-//eof
-
 const GBFS_FILE *find_first_gbfs_file(const void *start);
 
 /*Function helpers
@@ -1445,12 +1440,7 @@ void hrt_DSPWinOut1DisableOBJ(void); //Disables Sprites for WinOut 1
 void hrt_DSPWinOut1EnableBlend(void); //Enables Blend for WinOut 1
 void hrt_DSPWinOut1DisableBlend(void); //Disables Blend for WinOut 1
 int hrt_DecodeJPEG(const unsigned char *data, volatile JPEG_OUTPUT_TYPE *out, int outWidth, int outHeight); //Decodes a JPEG Image. (FINALLY)
-unsigned char hrt_InitADPCM(unsigned char numberChannels); //Initializes ADPCM
-void hrt_DestroyADPCM(void); //Destroys ADPCM
-unsigned char hrt_StartADPCM(const Sound* sound, signed char repeat, unsigned char channel); //Plays ADPCM Sound
-unsigned char hrt_StopADPCM(unsigned char channel); //Stops ADPCM Channel
-signed char  hrt_GetADPCMStatus(unsigned char channel); //Returns ADPCM Status
-void __attribute__((section(".iwram"), long_call)) hrt_ADPCMDecodeVBL(unsigned char channel); //Decodes ADPCM on VBL
+void __attribute__ ((long_call)) hrt_ADPCMDecode(signed char *dst, const unsigned char *src, unsigned int len, ADGlobals* data); //Decodes ADPCM on VBL
 void hrt_SetLargeScrollMapX(u8 MapNo, s32 x); //X Scrolls a large map
 void hrt_SetLargeScrollMapY(u8 MapNo, s32 y); //Y Scrolls a large map
 void hrt_SetBitmapTextColors(u16 outside, u16 inside); //Sets colors of the bitmap text engine
