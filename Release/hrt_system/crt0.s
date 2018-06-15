@@ -183,10 +183,98 @@ CIDLoop:
 	stmia	r2!, {r0}
 	sub	r3, #4
 	bne	CIDLoop
+
 	
 CIDExit:
 	bx	lr
+
+
+#ifdef __ELF__
+#define TYPE(x) .type x,function
+#else
+#define TYPE(x)
+#endif
+#ifdef __ARM_EABI__
+	 .eabi_attribute 24, 0
+	.eabi_attribute 25, 1
+#endif  __ARM_EABI__ 
+.macro FUNC_START
+#ifdef __thumb__
+	.thumb
+	push	{r3, r4, r5, r6, r7, lr}
+#else
+	.arm
+	mov	ip, sp
+	stmdb	sp!, {r3, r4, r5, r6, r7, r8, r9, sl, fp, ip, lr, pc}
+	sub	fp, ip, #4
+#endif
+.endm
+		
+	.section	.init
+	.align 2
+	.global	_init
+#ifdef __thumb__
+	.thumb_func
+#endif
+	.type _init,function
+
+_init:
+	FUNC_START
+	
+		
+	.section	.fini
+	.align	2
+	.global	_fini
+#ifdef __thumb__
+	.thumb_func
+#endif
+	.type _fini,function
+
+_fini:
+	FUNC_START
+
+
+#if defined(__ELF__) && defined(__linux__)
+.section .note.GNU-stack,"",%progbits
+.previous
+#endif
+
+#ifdef __ARM_EABI__
+	.eabi_attribute 25, 1
+#endif
+
+.macro FUNC_END
+#ifdef __thumb__
+	.thumb
+	
+	pop	{r3, r4, r5, r6, r7}
+	pop	{r3}
+	mov	lr, r3
+#else
+	.arm
+	
+	sub	sp, fp, #40
+	ldmfd	sp, {r4, r5, r6, r7, r8, r9, sl, fp, sp, lr}
+#endif
+	
+#if defined __THUMB_INTERWORK__ || defined __thumb__
+	bx	lr
+#else
+	mov	pc, lr
+#endif
+.endm
+		
+	
+	.section	".init"
+	;;
+	FUNC_END
+	
+	.section	".fini"
+	;;
+	FUNC_END
+	
+
+
 	.align
 	.pool
 	.end
-

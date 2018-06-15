@@ -5,7 +5,7 @@ PREFIX = arm-none-eabi-
 GBFSFILE = build/data.hrt
 LIBS += -lheart -lm -lstdc++ -lsupc++ -lgcc -lc -lgcc
 OBJECTS += build/crt0.o
-SOURCES += src/crt0.s
+SOURCES += $(HRTDIR)\crt0.s
 HRT_FLAGS += -nostartfiles
 HRTDIR = C:\devkitPro\devkitARM\hrt_system
 
@@ -18,10 +18,10 @@ build/%.o: src/%.cpp $(HEADERS)
 	$(PATH)$(PREFIX)g++ -DHRT_WITH_LIBHEART $(HRT_FLAGS) $(CPPFLAGS) $(ARCH) -c $< -o $@
 	
 build/%.out: src/%.s $(ASMINC)
-	$(PATH)$(PREFIX)as $(ARCH) $< -o $@
+	$(PATH)$(PREFIX)as -mthumb-interwork $< -o $@
 	
 build/%.out: data\%.s
-	$(PATH)$(PREFIX)as $(ARCH) $< -o $@
+	$(PATH)$(PREFIX)as -mthumb-interwork $< -o $@
 	
 build/crt0.o:
 	$(PATH)$(PREFIX)as -mthumb-interwork $(HRTDIR)\crt0.s -obuild\crt0.o
@@ -31,11 +31,11 @@ build/%.o: data/%.c
 
 build\main.elf: $(OBJECTS)
 ifeq ($(MAKE_MODE),multiboot)
-	$(PATH)$(PREFIX)gcc -specs=gba_mb.specs -msys-crt0=build\crt0.o $(ARCH) $(OBJECTS) $(LIBDIRS) $(LIBS) -o build/main.elf
+	$(PATH)$(PREFIX)gcc -specs=gba_mb.specs -nostartfiles $(ARCH) $(OBJECTS) $(LIBDIRS) $(LIBS) -o build/main.elf
 else ifeq ($(MAKE_ME),ereader)
-	$(PATH)$(PREFIX)gcc -specs=gba_er.specs -nostdlib $(ARCH) $(OBJECTS) $(LIBDIRS) $(LIBS) -o build/main.elf
+	$(PATH)$(PREFIX)gcc -specs=gba_er.specs -nostartfiles $(ARCH) $(OBJECTS) $(LIBDIRS) $(LIBS) -o build/main.elf
 else
-	$(PATH)$(PREFIX)gcc -specs=gba.specs -nostdlib $(ARCH) $(OBJECTS) $(LIBDIRS) $(LIBS) -o build/main.elf
+	$(PATH)$(PREFIX)gcc -specs=gba.specs -nostartfiles $(ARCH) $(OBJECTS) $(LIBDIRS) $(LIBS) -o build/main.elf
 endif
 
 $(GBFSFILE): $(COMPFILES)

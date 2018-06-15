@@ -19,7 +19,7 @@ GAME_CODE = SMPL
 VERSION = 1
 LIBDIRS = 
 HRT_FLAGS = -DHRT_USE_MBV2LIB  -DHRT_ADMIN
-USE_MULTIBOOT = no
+MAKE_MODE = multiboot
 MORECLEAN = data/soundbank.s inc/soundbank.h
 
 include C:\devkitPro\devkitARM\hrt_system\hrt_standard_targets.mak
