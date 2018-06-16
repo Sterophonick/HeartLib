@@ -6,7 +6,7 @@
 //This Library is Dedicated to Stevendog98, who is wanting to make GBA Games. This is to give him a head start on the GBA.
 //This Library is going to be huge. It will probably be one of the best GBA Libraries in recent years.
 
-/*In case some of you don't know, agb_lib.h was a sh*tty library made by me.
+/*In case some of you don't know, agb_lib.h was a shoddy library made by me.
  Development for it started around August of 2016, when I was in 6th grade (JEEBUS). 
  A lot of my old projects used this library, and it made it easier for a while. 
  This was until I found that including code and data in a header file was not a good idea.
@@ -90,7 +90,7 @@ TODO:
 
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 85
-#define HRT_BUILD_DATE "112006162018"
+#define HRT_BUILD_DATE "031006162018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -473,6 +473,14 @@ typedef struct {
 #define COLOR_MEDGRAY      0x5294
 #define COLOR_ORANGE 0x029F
 #define COLOR_CYAN 0x7FE0
+#define COLOR_ECRU 0x42D8
+#define COLOR_MAUVE 0x5216
+#define COLOR_PUCE 0x4E39
+#define COLOR_CRIMSON 0x1C5B
+#define COLOR_AZURE 0x7DE0
+#define COLOR_CHARTREUSE 0x03EF
+#define COLOR_TAWNY 0x0159
+
 
 //bios calls
 #define SoftReset 0x00
@@ -1165,6 +1173,11 @@ These are for the functions with a lot of arguments, and serve really good as a 
 #define OBJAFF_OUTPUT_OAM 8
 
 #define NDS_CRC_INITIAL_DEFAULT 0xFFFF
+
+#define CUSTOMHALT_HALT 0x00
+#define CUSTOMHALT_GBA_STOP 0x80
+#define CUSTOMHALT_NDS_HALT 0x80
+#define CUSTOMHALT_NDS_SLEEP 0xC0
 //
 
 ///////////////////////////FUNCTIONS////////////////////////////
@@ -1181,15 +1194,10 @@ static inline u32 hrt_GetBiosChecksum(void)
 #endif
     return result;
 }//Returns BIOS Checksum. Return value differs if you are playing on a Prototype GBA, Release GBA, or a Nintendo DS.
-void hrt_InitInterrupt(void) __attribute__((deprecated)); //Initialize interrupts mirror
 void hrt_irqInit(void); //Initialize Interrupts
-IntFn *hrt_SetInterrupt(irqMASK mask, IntFn function) __attribute__((deprecated)); //Set Interrupt Function Mirror
 IntFn *hrt_irqSet(irqMASK mask, IntFn function); //Set Interrupt Function
-void hrt_EnableInterrupt(irqMASK mask) __attribute__((deprecated)); //Enable Interrupt Mirror
 void hrt_irqEnable(int mask); //Enable Interrupt
-void hrt_DisableInterrupt(irqMASK mask) __attribute__((deprecated)); //Disable Interrupt Mirror
 void hrt_irqDisable(int mask); //Disable Interrupt
-void hrt_IntrMain(void); //Main Interrupt
 void hrt_Diff8bitUnFilterWram(u32 source, u32 dest); //Decompresses Diff8bit to EWRAM
 void hrt_Diff8bitUnFilterVram(u32 source, u32 dest); //Decompresses Diff8bit to VRAM
 void hrt_Diff16bitUnFilter(u32 source, u32 dest); //Decompresses Diff16bit
@@ -1456,22 +1464,28 @@ void hrt_BgAffineSet(BGAffineSource *source, BGAffineDest *dest, s32 num); //Cre
 void hrt_SoundDriverInit(SoundArea *sa); //Initializes the BIOS sound driver
 void hrt_SoundDriverMode(u32 mode); //SWI
 u32  hrt_MidiKey2Freq(WaveData *wa, u8 mk, u8 fp); //Calculates the value of the assignment to ((SoundArea)sa).vchn[x].fr when playing the wave data, wa, with the interval (MIDI KEY) mk and the fine adjustment value (halftones=256) fp. 
-void hrt_SoundDriverMain(); //Main of the BIOS sound driver
-void hrt_SoundDriverVsync(); //Resets the sound DMA, call this after every 1/60 of a second
-void hrt_SoundChannelClear(); //Stops sound and clears the FIFO registers
-void hrt_SoundDriverVsyncOff(); //Used to stop sound DMA.
-void hrt_SoundDriverVsyncOn(); //Restarts the sound DMA.
-void hrt_SoundWhatever0(); //Undocumented - Unknown
-void hrt_SoundWhatever1(); //Undocumented - Unknown
-void hrt_SoundWhatever2(); //Undocumented - Unknown
-void hrt_SoundWhatever3(); //Undocumented - Unknown
-void hrt_SoundWhatever4(); //Undocumented - Unknown
+void hrt_SoundDriverMain(void); //Main of the BIOS sound driver
+void hrt_SoundDriverVsync(void); //Resets the sound DMA, call this after every 1/60 of a second
+void hrt_SoundChannelClear(void); //Stops sound and clears the FIFO registers
+void hrt_SoundDriverVsyncOff(void); //Used to stop sound DMA.
+void hrt_SoundDriverVsyncOn(void); //Restarts the sound DMA.
+void hrt_SoundWhatever0(void); //Undocumented - Unknown
+void hrt_SoundWhatever1(void); //Undocumented - Unknown
+void hrt_SoundWhatever2(void); //Undocumented - Unknown
+void hrt_SoundWhatever3(void); //Undocumented - Unknown
+void hrt_SoundWhatever4(void); //Undocumented - Unknown
 void hrt_SoundGetJumpList(void* dest); //Undocumented - receives pointers to 36 additional sound-related  BIOS functions
 void hrt_NDS_WaitByLoop(s32 delay); //NDS/DSi Only - Performs a wait
 u16 hrt_NDS_GetCRC16(u16 initial, u32 start, u32 length); //NDS/DSi Only - calculates CRC16 of a specified memory portion.
-u8 hrt_NDS_IsDebugger(); //NDS Only - Detects whether or not this ROM is running on a Debug DS Model.
+u8 hrt_NDS_IsDebugger(void); //NDS Only - Detects whether or not this ROM is running on a Debug DS Model.
 void hrt_InitTiledText(u8 bg); //initializes the tiled text.
 void hrt_PrintOnTilemap(u8 tx, u8 ty, char* str); //Writes with tiled text
+void hrt_CustomHalt(u8 reserved1, u8 reserved2, u8 param); //performs the customhalt SWI
+u16 hrt_NDS_GetSineTable(u8 index); //NDS/DSi Only
+u16 hrt_NDS_GetPitchTable(u16 index); //NDS/DSi Only
+u16 hrt_NDS_GetVolumeTable(u16 index); //NDS/DSi Only
+void hrt_NDS_CustomPost(u32 value); //NDS/DSi Only
+void hrt_NDS_GetBootProcs(void); //NDS/DSi Only
 
 #ifdef __cplusplus
 }

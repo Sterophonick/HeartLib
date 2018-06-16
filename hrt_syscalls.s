@@ -18,6 +18,7 @@
 .global	hrt_MidiKey2Freq
 .global hrt_SoundGetJumpList
 .global hrt_SoftReset
+.global hrt_CustomHalt
 .arm
 
 hrt_Crash:
@@ -180,6 +181,14 @@ hrt_SoftReset:
 	mov		sp, r1
 	swi		1
 	swi		0
+  bx		lr
+  
+hrt_CustomHalt:
+  ldr r3, hrt_start
+  ldrb r3, [r3]
+  cmp r3, #1
+  bxne lr
+  swi		39 << 16
   bx		lr
 
 hrt_start:

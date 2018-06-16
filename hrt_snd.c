@@ -9,70 +9,70 @@ void hrt_ConfigSOUNDCNT(u8 psgmasvol, u8 loudA, u8 loudB, u8 enablear, u8 enable
 	}
 }
 
-void hrt_SoundDriverMain()
+void hrt_SoundDriverMain(void)
 {
 	if (__hrt_system.hrt_start == 1) {
 		hrt_SystemCall(28);
 	}
 }
 
-void hrt_SoundDriverVsync()
+void hrt_SoundDriverVsync(void)
 {
 	if (__hrt_system.hrt_start == 1) {
 		hrt_SystemCall(29);
 	}
 }
 
-void hrt_SoundChannelClear()
+void hrt_SoundChannelClear(void)
 {
 	if (__hrt_system.hrt_start == 1) {
 		hrt_SystemCall(30);
 	}
 }
 
-void hrt_SoundDriverVsyncOff()
+void hrt_SoundDriverVsyncOff(void)
 {
 	if (__hrt_system.hrt_start == 1) {
 		hrt_SystemCall(40);
 	}
 }
 
-void hrt_SoundDriverVsyncOn()
+void hrt_SoundDriverVsyncOn(void)
 {
 	if (__hrt_system.hrt_start == 1) {
 		hrt_SystemCall(41);
 	}
 }
 
-void hrt_SoundWhatever0()
+void hrt_SoundWhatever0(void)
 {
 	if (__hrt_system.hrt_start == 1) {
 		hrt_SystemCall(0x20);
 	}
 }
 
-void hrt_SoundWhatever1()
+void hrt_SoundWhatever1(void)
 {
 	if (__hrt_system.hrt_start == 1) {
 		hrt_SystemCall(0x21);
 	}
 }
 
-void hrt_SoundWhatever2()
+void hrt_SoundWhatever2(void)
 {
 	if (__hrt_system.hrt_start == 1) {
 		hrt_SystemCall(0x22);
 	}
 }
 
-void hrt_SoundWhatever3()
+void hrt_SoundWhatever3(void)
 {
 	if (__hrt_system.hrt_start == 1) {
 		hrt_SystemCall(0x23);
 	}
 }
 
-void hrt_SoundWhatever4()
+void hrt_SoundWhatever4(void)
 {
 	if (__hrt_system.hrt_start == 1) {
 		hrt_SystemCall(0x24);

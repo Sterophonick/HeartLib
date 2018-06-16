@@ -60,5 +60,9 @@ u32 hrt_CreateRNG(void)
 }
 u32 hrt_RNGRange(u32 low, u32 high)
 {
-	return (hrt_CreateRNG() % high) + low;
+	if (__hrt_system.hrt_start == 1)
+	{
+		return (hrt_CreateRNG() % high) + low;
+	}
+	return 0;
 }

@@ -2,6 +2,7 @@
 extern gba_system __hrt_system;
 
 struct IntTable IntrTable[MAX_INTS];
+void hrt_IntrMain(void);
 
 void hrt_dummy(void) {};
 void hrt_InitInterrupt(void) {
