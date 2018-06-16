@@ -206,34 +206,11 @@ void hrt_MoveSpriteInDirection(u8 sprite, u16 direction, int steps)
 
 u16 hrt_PointOBJTowardsPosition(u8 sprite, int x, int y)
 {
-	int delta_x;
-	int delta_y;
-	u16 direction;
 	if (__hrt_system.hrt_start == 1)
 	{
-		delta_x = x - hrt_GetOBJX(sprite);
-		delta_y = y - hrt_GetOBJY(sprite);
-		if (delta_y == 0)
-		{
-			if (delta_x < 0)
-			{
-				return 270;
-			}
-			else
-			{
-				return 90;
-			}
-		}
-		else {
-			if (delta_y < 0)
-			{
-				direction = (180 + (atan(delta_x / delta_y)));
-			}
-			else {
-				direction =(atan(delta_x / delta_y));
-			}
-		}
-		return direction;
+		u32 temp;
+		temp = hrt_ArcTan2(x - hrt_GetOBJX(sprite), y - hrt_GetOBJY(sprite));
+		return temp;
 	}
 	return 0;
 }

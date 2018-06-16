@@ -17,6 +17,7 @@
 .global	hrt_SoundDriverInit
 .global	hrt_MidiKey2Freq
 .global hrt_SoundGetJumpList
+.global hrt_SoftReset
 .arm
 
 hrt_Crash:
@@ -165,6 +166,22 @@ hrt_SoundGetJumpList:
   swi		42 << 16
   bx		lr
   
+hrt_SoftReset:
+    ldr r3, hrt_start
+  ldrb r3, [r3]
+  cmp r3, #1
+  bxne lr
+	ldr		r3, =0x03007FFA
+	strb	r0,[r3, #0]
+	ldr		r3, =0x04000208
+	mov		r2, #0
+	strb	r2, [r3, #0]
+	ldr		r1, =0x03007f00
+	mov		sp, r1
+	swi		1
+	swi		0
+  bx		lr
+
 hrt_start:
   .word __hrt_system
   

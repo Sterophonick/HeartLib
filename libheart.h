@@ -75,6 +75,7 @@ GBA Specs:
 	Scrolling Map Edge Drawing
 	JPEG Decoding for Serious image compression
 	ADPCM 8ad (kudos to Damian Yerrick)
+	Some Nintendo DS BIOS functions
 
 TODO:
 		Implement Tiled Text
@@ -89,7 +90,7 @@ TODO:
 
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 85
-#define HRT_BUILD_DATE "011306152018"
+#define HRT_BUILD_DATE "112006162018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -1163,7 +1164,7 @@ These are for the functions with a lot of arguments, and serve really good as a 
 #define OBJAFF_OUTPUT_CONTINUOUS 2
 #define OBJAFF_OUTPUT_OAM 8
 
-#define NDS_CRC_INITIAL_DEFUALT 0xFFFF
+#define NDS_CRC_INITIAL_DEFAULT 0xFFFF
 //
 
 ///////////////////////////FUNCTIONS////////////////////////////
@@ -1301,10 +1302,10 @@ double hrt_AreaCircle(double r); //Calculates the Area of any given circle
 void hrt_ConfigWININ(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 bld, u8 bg0_2, u8 bg1_2, u8 bg2_2, u8 bg3_2, u8 obj_2, u8 bld_2); //configs REG_WININ
 void hrt_ConfigWINOUT(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 bld, u8 bg0_obj, u8 bg1_obj, u8 bg2_obj, u8 bg3_obj, u8 obj_obj, u8 bld_obj); //Configs REG_WINOUT
 u32 hrt_RNGRange(u32 low, u32 high); // Creates a Random number between a range.
-int __dputchar(int c); //MBV2Lib print
-void	mbv2_dprintf(char *str, ...); //Mbv2Lib print
-void	mbv2_dfprintf(int fp, char *str, ...);//Mbv2Lib print
-int		mbv2_dputchar(int c); //Mbv2Lib print
+int __dputchar(int c);
+void	mbv2_dprintf(char *str, ...); 
+void	mbv2_dfprintf(int fp, char *str, ...);
+int		mbv2_dputchar(int c); 
 int		mbv2_dgetch(void);
 int		mbv2_dkbhit(void);
 int		mbv2_dfopen(const char *file, const char *type);

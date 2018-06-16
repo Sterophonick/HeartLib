@@ -113,13 +113,6 @@ void hrt_ColdReset(void)
     }
 }
 
-void hrt_SoftReset(void)
-{
-    if (__hrt_system.hrt_start == 1) {
-        asm volatile("swi 0x00"::);
-    }
-}
-
 void hrt_VblankIntrWait(void)
 {
     if (__hrt_system.hrt_start == 1) {

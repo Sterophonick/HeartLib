@@ -460,11 +460,14 @@ int main()
                     if (rot == -1) {
                         rot = 0;
                     }
+                    hrt_AffineOBJ(0, rot % 360, x_scale, x_scale);
+		    if (keyDown(KEY_SELECT)) {
+			hrt_AffineOBJ(0, hrt_PointOBJTowardsPosition(0, 0, 0) % 360, 256, 256);
+		    }
                     if (keyDown(KEY_START)) {
                         asm volatile("swi 0x00"::);
                     }
                     hrt_SetOBJXY(0, x, y);
-                    hrt_AffineOBJ(0, rot % 360, x_scale, x_scale);
                     hrt_VblankIntrWait();
                     hrt_CopyOAM();
                 }
