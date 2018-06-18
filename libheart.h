@@ -90,7 +90,7 @@ TODO:
 
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 85
-#define HRT_BUILD_DATE "031006162018"
+#define HRT_BUILD_DATE "081206172018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -480,7 +480,8 @@ typedef struct {
 #define COLOR_AZURE 0x7DE0
 #define COLOR_CHARTREUSE 0x03EF
 #define COLOR_TAWNY 0x0159
-
+#define COLOR_BUFF 0x437E
+#define COLOR_CINEREOUS 0x3E13
 
 //bios calls
 #define SoftReset 0x00
@@ -1252,8 +1253,8 @@ void hrt_Assert(char* func, int arg, char* desc); //Error message
 void hrt_ConfigBG(u8 bg, u8 priority, u8 tilebase, u8 mosaic, u8 color256, u8 tilemapbase, u8 wraparound, u8 dimensions); //Configures BG
 void hrt_LineWipe(u16 color, int time, u8 mode); //Wipe from hrt_DrawLine
 void hrt_SetMosaic(u8 bh, u8 bv, u8 oh, u8 ov); //Sets Mosaic Level -- Not Tested Yet.
-double hrt_Distance(int x1, int y1, int x2, int y2); //Returns distance between 2 different points
-double hrt_Slope(int x1, int y1, int x2, int y2); //Returns slope between 2 different points
+s32 hrt_Distance(int x1, int y1, int x2, int y2); //Returns distance between 2 different points
+s32 hrt_Slope(int x1, int y1, int x2, int y2); //Returns slope between 2 different points
 void hrt_SetTile(u8 x, u8 y, int tileno); //Sets a specific tile to a given value.
 void hrt_SetFXAlphaLevel(u8 src, u8 dst); //Sets REG_BLDALPHA
 void hrt_FillPalette(int paltype, u16 color); //Fills BG or OBJ palette witha specified color.
@@ -1304,9 +1305,9 @@ void mmEffectCancel(mm_sfxhand handle); //Stops sound effect
 void mmEffectRelease(mm_sfxhand handle); //Releases Sound Effect?
 void mmSetEffectsVolume(mm_word volume); //Set Sound effect volume
 void mmEffectCancelAll(void); //Cancel all sound effects
-double hrt_VolumeCylinder(double r, double h); //Calculates the volume of any given cylinder
-double hrt_AreaTriangle(double a, double b); //Calculates the area of a right triangle
-double hrt_AreaCircle(double r); //Calculates the Area of any given circle
+s32 hrt_VolumeCylinder(double r, double h); //Calculates the volume of any given cylinder
+s32 hrt_AreaTriangle(double a, double b); //Calculates the area of a right triangle
+s32 hrt_AreaCircle(double r); //Calculates the Area of any given circle
 void hrt_ConfigWININ(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 bld, u8 bg0_2, u8 bg1_2, u8 bg2_2, u8 bg3_2, u8 obj_2, u8 bld_2); //configs REG_WININ
 void hrt_ConfigWINOUT(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 bld, u8 bg0_obj, u8 bg1_obj, u8 bg2_obj, u8 bg3_obj, u8 obj_obj, u8 bld_obj); //Configs REG_WINOUT
 u32 hrt_RNGRange(u32 low, u32 high); // Creates a Random number between a range.

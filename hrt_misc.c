@@ -12,7 +12,24 @@ extern void sleep12();
 extern void __hrt_exittoez4();
 extern gba_system __hrt_system;
 
-double hrt_Distance(int x1, int y1, int x2, int y2)
+void hrt_Assert(char* func, int arg, char* desc)
+{
+    if (__hrt_system.hrt_start == 1) {
+        u8* buf[256];
+        hrt_SetDSPMode(3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
+        hrt_FillScreen(0x0000);
+        hrt_PrintOnBitmap(0, 0, "HEARTLIB HAS CRASHED!");
+        hrt_PrintOnBitmap(0, 9, "FUNCTION: ");
+        hrt_PrintOnBitmap(80, 9, (char*)func);
+        sprintf((char*)buf, "ARG: %d", arg);
+        hrt_PrintOnBitmap(0, 18, (char*)buf);
+        hrt_PrintOnBitmap(0, 27, (char*)desc);
+        hrt_PrintOnBitmap(0, 54, "PLEASE RESET THE CONSOLE");
+        while (1);
+    }
+}
+
+s32 hrt_Distance(int x1, int y1, int x2, int y2)
 {
 	if (__hrt_system.hrt_start == 1) {
 		return sqrt(((x2 - x1) ^ 2) + ((y2 - y1) ^ 2));
@@ -20,7 +37,7 @@ double hrt_Distance(int x1, int y1, int x2, int y2)
 	return 0;
 }
 
-double hrt_Slope(int x1, int y1, int x2, int y2)
+s32 hrt_Slope(int x1, int y1, int x2, int y2)
 {
 	if (__hrt_system.hrt_start == 1) {
 		return ((y2 - y1) / (x2 - x1));
@@ -50,7 +67,7 @@ void hrt_SleepF(u32 frames) {
 	}
 }
 
-double hrt_VolumeCylinder(double r, double h)
+s32 hrt_VolumeCylinder(double r, double h)
 {
 	if (__hrt_system.hrt_start == 1)
 	{
@@ -59,7 +76,7 @@ double hrt_VolumeCylinder(double r, double h)
 	return 0;
 }
 
-double hrt_AreaTriangle(double a, double b)
+s32 hrt_AreaTriangle(double a, double b)
 {
 	if (__hrt_system.hrt_start == 1)
 	{
@@ -68,7 +85,7 @@ double hrt_AreaTriangle(double a, double b)
 	return 0;
 }
 
-double hrt_AreaCircle(double r)
+s32 hrt_AreaCircle(double r)
 {
 	if (__hrt_system.hrt_start == 1)
 	{

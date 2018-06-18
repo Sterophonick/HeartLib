@@ -530,23 +530,6 @@ void hrt_ConfigBG(u8 bg, u8 priority, u8 tilebase, u8 mosaic, u8 color256, u8 ti
     }
 }
 
-void hrt_Assert(char* func, int arg, char* desc)
-{
-    if (__hrt_system.hrt_start == 1) {
-        u8* buf[256];
-        hrt_SetDSPMode(3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
-        hrt_FillScreen(0x0000);
-        hrt_PrintOnBitmap(0, 0, "HEARTLIB HAS CRASHED!");
-        hrt_PrintOnBitmap(0, 9, "FUNCTION: ");
-        hrt_PrintOnBitmap(80, 9, (char*)func);
-        sprintf((char*)buf, "ARG: %d", arg);
-        hrt_PrintOnBitmap(0, 18, (char*)buf);
-        hrt_PrintOnBitmap(0, 27, (char*)desc);
-        hrt_PrintOnBitmap(0, 54, "PLEASE RESET THE CONSOLE");
-        while (1);
-    }
-}
-
 void hrt_LineWipe(u16 color, int time, u8 mode)
 {
     if (__hrt_system.hrt_start == 1) {
