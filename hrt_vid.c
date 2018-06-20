@@ -1119,7 +1119,7 @@ void hrt_DSPWinOutOBJDisableBlend(void)
 	}
 }
 
-void hrt_SetBGXY(u8 bg, u16 x, u16 y)
+void hrt_SetBGXY(u8 bg, s16 x, s16 y)
 {
 	if(__hrt_system.hrt_start == 1)
 	{
@@ -1128,7 +1128,7 @@ void hrt_SetBGXY(u8 bg, u16 x, u16 y)
 	}
 }
 
-void hrt_SetBGX(u8 bg, u16 x)
+void hrt_SetBGX(u8 bg, s16 x)
 {
 	if(__hrt_system.hrt_start == 1)
 	{
@@ -1136,10 +1136,28 @@ void hrt_SetBGX(u8 bg, u16 x)
 	}
 }
 
-void hrt_SetBGY(u8 bg, u16 y)
+void hrt_SetBGY(u8 bg, s16 y)
 {
 	if(__hrt_system.hrt_start == 1)
 	{
 		REG_BGxVOFS(bg) = y;
 	}
+}
+
+s16 hrt_GetBGX(u8 bg)
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_BGxHOFS(bg);
+	}
+	return 0;
+}
+
+s16 hrt_GetBGY(u8 bg)
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_BGxVOFS(bg);
+	}
+	return 0;
 }

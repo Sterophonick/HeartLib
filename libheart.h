@@ -14,13 +14,14 @@
  so I decided to make this library instead.
  I was also running out of ideas for functions, and I ended up with functions that would
  add and subract numbers. Just... yeah.
- It was not a good library.
- */
+ It was not a good library.*/
+ 
+ /* Please make some issues or pull requests on the source page of this library, so you
+ can make some contributions or fixes to HeartLib. Support is greatly appreciated! */
 
 //Some functions don't work yet so be patient!
 /*
 	List:
-		Tiled Text
 		Sprites moving in direction
 */
 
@@ -88,9 +89,9 @@ TODO:
 #ifndef LIBHEART_H
 #define LIBHEART_H
 
-#define HRT_VERSION_MAJOR 1
-#define HRT_VERSION_MINOR 00
-#define HRT_BUILD_DATE "124306202018"
+#define HRT_VERSION_MAJOR 0
+#define HRT_VERSION_MINOR 95
+#define HRT_BUILD_DATE "125806202018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -1202,8 +1203,8 @@ These are for the functions with a lot of
 //
 
 ///////////////////////////FUNCTIONS////////////////////////////
-// These functions will allow the user control over objects, sound,///
-////registers, memory, bitmaps, palettes, and many other things./////
+// These functions will allow the user control over objects, sound,   //
+//// registers, memory, bitmaps, palettes, and many other things.   ////
 ///////////////////////////////////////////////////////////////
 static inline u32 hrt_GetBiosChecksum(void)
 {
@@ -1472,9 +1473,9 @@ void __attribute__ ((long_call)) hrt_ADPCMDecode(signed char *dst, const unsigne
 void hrt_SetLargeScrollMapX(u8 MapNo, s32 x); //X Scrolls a large map
 void hrt_SetLargeScrollMapY(u8 MapNo, s32 y); //Y Scrolls a large map
 void hrt_SetBitmapTextColors(u16 outside, u16 inside); //Sets colors of the bitmap text engine
-void hrt_SetBGXY(u8 bg, u16 x, u16 y); //Sets X and Y coordinates of a BG
-void hrt_SetBGX(u8 bg, u16 x); //Sets X coordinate of a BG
-void hrt_SetBGY(u8 bg, u16 y); //Sets Y coordinate of a BG
+void hrt_SetBGXY(u8 bg, s16 x, s16 y); //Sets X and Y coordinates of a BG
+void hrt_SetBGX(u8 bg, s16 x); //Sets X coordinate of a BG
+void hrt_SetBGY(u8 bg, s16 y); //Sets Y coordinate of a BG
 void hrt_DestroyOBJ(u8 objno); //Erases a sprite
 u8 hrt_ConfigRegisterRamReset(u8 clearwram, u8 cleariwram, u8 clearpal, u8 clearvram, u8 clearoam, u8 resetsio, u8 resetsnd, u8 resetall); //Returns a byte for the mode of RegisterRamReset
 void hrt_BitUnPack(void* source, void* destination, BUP* data); //Bitunpack
@@ -1512,6 +1513,8 @@ u8 hrt_GetOBJOffset(u8 objno); //Returns offset of a sprite
 int hrt_ExtractMultipleBits(int number, int k, int p); //Returns the value of multiple bits
 void hrt_EnableOBJAffine(u8 objno); //Enables Affine for a sprite
 void hrt_DisableOBJAffine(u8 objno); //Disables Affine for a sprite
+s16 hrt_GetBGX(u8 bg); //Returns the X Position of a background 
+s16 hrt_GetBGY(u8 bg); //Returns the Y position of a background
 
 #ifdef __cplusplus
 }
