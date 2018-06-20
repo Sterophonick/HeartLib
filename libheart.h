@@ -90,7 +90,7 @@ TODO:
 
 #define HRT_VERSION_MAJOR 1
 #define HRT_VERSION_MINOR 00
-#define HRT_BUILD_DATE "060706192018"
+#define HRT_BUILD_DATE "100706202018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -230,6 +230,10 @@ typedef     u16     ufp16;  //8:8 fixed point
 typedef     u32     ufp32;  //24:8 fixed point
 typedef s32 FIXED;
 
+typedef float dec8;
+typedef double dec16;
+typedef long double ldec16;
+
 /*HeartLib System variables
 DON'T TOUCH THESE*/
 typedef struct
@@ -265,9 +269,9 @@ u16* OAMData;
 u16* BGPaletteMem;
 u16* OBJPaletteMem;
 u16* BGTileMem;
-u8* SaveData;
+u8* SRAM;
 u16* OAM;
-u8* ExtWRAM;
+u8* EWRAM;
 u8* BIOS;
 u8* IWRAM;
 u8* MMIO;
@@ -1074,6 +1078,8 @@ These are for the functions with a lot of
 #define OBJ_MODE_ALPHA 1
 #define OBJ_MODE_WINDOW 2
 #define OBJ_MODE_PROHIBITED 3
+#define OBJ_MOSAIC_ENABLE 1
+#define OBJ_MOSAIC_DISABLE 0
 
 #define FX_TARGET1_BG0_ENABLE 1
 #define FX_TARGET1_BG0_DISABLE 0
@@ -1225,8 +1231,6 @@ void hrt_SetOBJXY(u8 spr, s16 x, s16 y); // Sets Position of a Sprite
 void hrt_SetOffset(u8 no, u32 amount); //Sets offset for bg or obj gfx, tile, or pal data
 u32 hrt_GetOffset(u8 no); //Returns the offset of bg or obj gfx data.
 void hrt_CloneOBJ(int ospr, int nspr); //Creates clone of sprite
-void hrt_SaveInt(u16 offset, int value); //Saves to SRAM
-int hrt_LoadInt(u16 offset); //Loads from SRAM
 void hrt_DrawChar(int mode, int left, int top, char letter); //Draws text on Bitmap
 void hrt_PrintOnBitmap(int left, int top, char *str); //Draws text on Bitmap
 void hrt_SleepF(u32 frames); //sleeps for set amount of frames

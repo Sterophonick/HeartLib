@@ -3,8 +3,8 @@ extern gba_system __hrt_system;
 
 struct IntTable IntrTable[MAX_INTS];
 void hrt_IntrMain(void);
-
 void hrt_dummy(void) {};
+
 void hrt_InitInterrupt(void) {
 	if (__hrt_system.hrt_start == 1) {
 		hrt_irqInit();

@@ -1,49 +1,18 @@
 #include "libheart.h"
 extern gba_system __hrt_system;
-#define	SRAM		0x0E000000
-
-u8* SaveData = (u8*)0x0E000000;
-void hrt_SaveInt(u16 offset, int value) //saves to SRAM
-{
-	if (__hrt_system.hrt_start == 1) {
-		int i;
-		char string[7];
-		sprintf(string, "%d", value);
-		for (i = 0; i < 32768; i++)
-		{
-			if (string[i] == 0)
-			{
-				break;
-			}
-			*(u8 *)(SRAM + offset + i) = string[i];
-		}
-	}
-}
-int hrt_LoadInt(u16 offset) //Loads from SRAM
-{
-	if (__hrt_system.hrt_start == 1) {
-		int  i;
-		char string[7];
-		for (i = 0; i != 7; i++)
-		{
-			string[i] = *(u8 *)(SRAM + offset + i);
-		}
-		return atoi(string);
-	}
-	return 0;
-}
+u8* SRAM = (u8*)0x0E000000;
 
 void hrt_SaveByte(int offset, u8 value)
 {
 	if (__hrt_system.hrt_start == 1) {
-		SaveData[offset] = value;
+		SRAM[offset] = value;
 	}
 }
 
 u8 hrt_LoadByte(int offset)
 {
 	if (__hrt_system.hrt_start == 1) {
-		return SaveData[offset];
+		return SRAM[offset];
 	}
 	return 0;
 }

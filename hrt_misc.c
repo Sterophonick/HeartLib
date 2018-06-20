@@ -1,5 +1,5 @@
 #include "libheart.h"
-u8* ExtWRAM = (u8*)0x2000000;
+u8* EWRAM = (u8*)0x2000000;
 u8* BIOS = (u8*)0x00000000;
 u8* IWRAM = (u8*)0x03000000;
 u8* MMIO = (u8*)0x04000000;
