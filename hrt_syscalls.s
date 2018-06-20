@@ -19,14 +19,25 @@
 .global hrt_SoundGetJumpList
 .global hrt_SoftReset
 .global hrt_CustomHalt
+.global hrt_JumpExecutionToAddress
 .arm
+
+hrt_JumpExecutionToAddress:
+  ldr r3, hrt_start
+  ldrb r3, [r3]
+  cmp r3, #1
+  bxne lr
+  b r0
+  bx lr
 
 hrt_Crash:
   ldr r3, hrt_start
   ldrb r3, [r3]
   cmp r3, #1
   bxne lr
-  swi 255 << 16
+  mov r0,#0x40000000
+  mov r14,pc
+  bx r0
   bx lr
   
 hrt_Sqrt:

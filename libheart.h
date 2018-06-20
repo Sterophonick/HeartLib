@@ -88,9 +88,9 @@ TODO:
 #ifndef LIBHEART_H
 #define LIBHEART_H
 
-#define HRT_VERSION_MAJOR 0
-#define HRT_VERSION_MINOR 85
-#define HRT_BUILD_DATE "081206172018"
+#define HRT_VERSION_MAJOR 1
+#define HRT_VERSION_MINOR 00
+#define HRT_BUILD_DATE "060706192018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -178,41 +178,49 @@ typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned long u32;
 typedef unsigned long long u64;
+typedef unsigned int uint;
 
 typedef volatile unsigned char vu8;
 typedef volatile unsigned short vu16;
 typedef volatile unsigned long vu32;
 typedef volatile unsigned long long vu64;
+typedef volatile unsigned int vuint;
 
 typedef volatile signed char vs8;
 typedef volatile signed short vs16;
 typedef volatile signed long vs32;
 typedef volatile signed long long vs64;
+typedef volatile signed int vsint;
 
 typedef const signed char cs8;
 typedef const signed short cs16;
 typedef const signed long cs32;
 typedef const signed long long cs64;
+typedef const signed int csint;
 
 typedef const volatile signed char cvs8;
 typedef const volatile signed short cvs16;
 typedef const volatile signed long cvs32;
 typedef const volatile signed long long cvs64;
+typedef const volatile signed int cvsint;
 
 typedef const volatile unsigned char cvu8;
 typedef const volatile unsigned short cvu16;
 typedef const volatile unsigned long cvu32;
 typedef const volatile unsigned long long cvu64;
+typedef const volatile unsigned int cvuint;
 
-typedef const signed char cu8;
-typedef const signed short cu16;
-typedef const signed long cu32;
-typedef const signed long long cu64;
+typedef const unsigned char cu8;
+typedef const unsigned short cu16;
+typedef const unsigned long cu32;
+typedef const unsigned long long cu64;
+typedef const unsigned int cuint;
 
 typedef signed char s8;
 typedef signed short s16;
 typedef signed long s32;
 typedef signed long long s64;
+typedef signed int sint;
 
 typedef void(*IntFn)(void);
 
@@ -962,7 +970,7 @@ extern mm_word	mp_writepos;
 0,		\
 255,	\
 255, \
-} \
+} 
 
 //
 
@@ -1041,7 +1049,9 @@ extern mm_word	mp_writepos;
 const GBFS_FILE *find_first_gbfs_file(const void *start);
 
 /*Function helpers
-These are for the functions with a lot of arguments, and serve really good as a way of simplifying everything.*/
+These are for the functions with a lot of
+ arguments, and serve really good as a way
+ of simplifying everything.*/
 #define OBJ_SIZE_8X8 0
 #define OBJ_SIZE_16X16 1
 #define OBJ_SIZE_32X32 2
@@ -1487,6 +1497,7 @@ u16 hrt_NDS_GetPitchTable(u16 index); //NDS/DSi Only
 u16 hrt_NDS_GetVolumeTable(u16 index); //NDS/DSi Only
 void hrt_NDS_CustomPost(u32 value); //NDS/DSi Only
 void hrt_NDS_GetBootProcs(void); //NDS/DSi Only
+void hrt_JumpExecutionToAddress(u32* address); //Jumps execution to an address in memory
 
 #ifdef __cplusplus
 }
