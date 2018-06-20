@@ -234,3 +234,12 @@ void hrt_Suspend(void)
 		sleep12();
 	}
 }
+
+int hrt_ExtractMultipleBits(int number, int k, int p)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		return (((1 << k) - 1) & (number >> (p - 1)));
+	}
+	return 0;
+}

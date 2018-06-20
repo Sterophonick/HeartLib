@@ -358,3 +358,55 @@ void hrt_DestroyOBJ(u8 objno)
 		sprites[objno].attribute2 = 0;
 	}
 }
+
+u8 hrt_GetOBJPalette(u8 objno)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		return sprites[objno].attribute2 & 12;
+	}
+	return 0;
+}
+
+u8 hrt_GetOBJPriority(u8 objno)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		return sprites[objno].attribute2 & 10;
+	}
+	return 0;
+}
+
+u8 hrt_GetOBJOffset(u8 objno)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		return sprites[objno].attribute2 & 0;
+	}
+	return 0;
+}
+
+u8 hrt_GetOBJSize(u8 objno)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		return sprites[objno].attribute1 & 14;
+	}
+	return 0;
+}
+
+void hrt_EnableOBJAffine(u8 objno)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		sprites[objno].attribute0 |= (1 << 8);
+	}
+}
+
+void hrt_DisableOBJAffine(u8 objno)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		sprites[objno].attribute0 &= ~(NOT_BIT08);
+	}
+}

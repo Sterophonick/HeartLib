@@ -90,7 +90,7 @@ TODO:
 
 #define HRT_VERSION_MAJOR 1
 #define HRT_VERSION_MINOR 00
-#define HRT_BUILD_DATE "100706202018"
+#define HRT_BUILD_DATE "124306202018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -1195,6 +1195,10 @@ These are for the functions with a lot of
 #define CUSTOMHALT_GBA_STOP 0x80
 #define CUSTOMHALT_NDS_HALT 0x80
 #define CUSTOMHALT_NDS_SLEEP 0xC0
+
+#define BIOSChecksum_UNKNOWN 0x00000000
+#define BIOSChecksum_GBA 0xBAAE187f
+#define BIOSChecksum_NDS 0xBAAE1880
 //
 
 ///////////////////////////FUNCTIONS////////////////////////////
@@ -1502,6 +1506,12 @@ u16 hrt_NDS_GetVolumeTable(u16 index); //NDS/DSi Only
 void hrt_NDS_CustomPost(u32 value); //NDS/DSi Only
 void hrt_NDS_GetBootProcs(void); //NDS/DSi Only
 void hrt_JumpExecutionToAddress(u32* address); //Jumps execution to an address in memory
+u8 hrt_GetOBJPalette(u8 objno); //Returns palette of a Sprite
+u8 hrt_GetOBJPriority(u8 objno); //Returns Priority of a sprite
+u8 hrt_GetOBJOffset(u8 objno); //Returns offset of a sprite
+int hrt_ExtractMultipleBits(int number, int k, int p); //Returns the value of multiple bits
+void hrt_EnableOBJAffine(u8 objno); //Enables Affine for a sprite
+void hrt_DisableOBJAffine(u8 objno); //Disables Affine for a sprite
 
 #ifdef __cplusplus
 }
