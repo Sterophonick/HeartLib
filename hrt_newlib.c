@@ -10,7 +10,8 @@ void _abort(void)
 	_start();
 }
 int _getpid(void)
-{
+{	
+	_start();
 	return 1;
 }
 int gettimeofday(struct timeval *__restrict __p,

@@ -16,6 +16,17 @@ void hrt_ConfigMapLayerDrawing(u8 numLayers, u16 *tileset, s16 dimensionsx, s16 
 	}
 }
 
+void hrt_DrawFullLargeScrollMap()
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		u32 j, i;
+		for (i = 0; i < gGameMap[i].numLayers; i++)
+			for (j = 0; j < 32; j++)
+				MapLayerDrawStripH(i, fptochar(gGameMap[i].layer[i].scroll.y) + j);
+	}
+}
+
 void hrt_SetLargeScrollMapX(u8 MapNo, s32 x)
 {
 	if (__hrt_system.hrt_start == 1)

@@ -90,8 +90,8 @@ TODO:
 #define LIBHEART_H
 
 #define HRT_VERSION_MAJOR 0
-#define HRT_VERSION_MINOR 95
-#define HRT_BUILD_DATE "125806202018"
+#define HRT_VERSION_MINOR 96
+#define HRT_BUILD_DATE "011106202018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -726,6 +726,8 @@ typedef struct {
 #define REG_BGxVOFS(x)                    (ACCESS_16(0x0400000B+(x*4))) //macro for a bg
 #define REG_DMAxSAD(x)                    (ACCESS_32(0x040000B0+(x*0x0C))) //Macro for a DMA Source
 #define REG_DMAxDAD(x)                    (ACCESS_32(0x040000B4+(x*0x0C))) //Macro for a DMA Destination
+#define REG_TMxCNT_L(x)                 (ACCESS_16(0x04000100+(x*4)))
+#define REG_TMxCNT_H(x)                 (ACCESS_16(0x04000102+(x*4)))
 
 //keys
 #define KEY_A 1
@@ -1515,6 +1517,7 @@ void hrt_EnableOBJAffine(u8 objno); //Enables Affine for a sprite
 void hrt_DisableOBJAffine(u8 objno); //Disables Affine for a sprite
 s16 hrt_GetBGX(u8 bg); //Returns the X Position of a background 
 s16 hrt_GetBGY(u8 bg); //Returns the Y position of a background
+void hrt_DrawFullLargeScrollMap();
 
 #ifdef __cplusplus
 }
