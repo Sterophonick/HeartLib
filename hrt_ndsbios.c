@@ -15,6 +15,7 @@ u16 hrt_NDS_GetCRC16(u16 initial, u32 start, u32 length)
 	{
 		hrt_SystemCall(14);
 	}
+	return 0;
 }
 
 u8 hrt_NDS_IsDebugger(void)
@@ -23,6 +24,7 @@ u8 hrt_NDS_IsDebugger(void)
 	{
 		hrt_SystemCall(15);
 	}
+	return 0;
 }
 
 u16 hrt_NDS_GetSineTable(u8 index)
@@ -31,6 +33,7 @@ u16 hrt_NDS_GetSineTable(u8 index)
 	{
 		hrt_SystemCall(0x1A);
 	}
+	return 0;
 }
 
 u16 hrt_NDS_GetPitchTable(u16 index)
@@ -39,6 +42,7 @@ u16 hrt_NDS_GetPitchTable(u16 index)
 	{
 		hrt_SystemCall(0x1B);
 	}
+	return 0;
 }
 
 u16 hrt_NDS_GetVolumeTable(u16 index)
@@ -47,6 +51,7 @@ u16 hrt_NDS_GetVolumeTable(u16 index)
 	{
 		hrt_SystemCall(0x1C);
 	}
+	return 0;
 }
 
 void hrt_NDS_CustomPost(u32 value)

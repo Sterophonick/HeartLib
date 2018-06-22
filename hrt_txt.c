@@ -2,6 +2,7 @@
 extern gba_system __hrt_system;
 const unsigned char font_matrixBitmap[6080];
 u16* tram = (u16*)0x06000800;
+		char __outstr[256];
 
 u16 _____colors[3] = {
 	0x0000, 0x0421, 0x7FFF
@@ -30,11 +31,16 @@ void hrt_DrawChar(int mode, int left, int top, char letter) {
     }
 }
 
-void hrt_PrintOnBitmap(int left, int top, char *str) {
+void hrt_PrintOnBitmap(int left, int top, char *str, ...) {
     if (__hrt_system.hrt_start == 1) {
+		va_list args;
+		char *string = __outstr;
+		va_start(args, str);
+		vsprintf(__outstr, str, args);
+		va_end(args);
         int pos = 0;
-        while (*str) {
-            hrt_DrawChar(3, left + pos, top, *str++);
+        while (*string) {
+            hrt_DrawChar(3, left + pos, top, *string++);
             pos += 8;
         }
     }
@@ -62,12 +68,17 @@ void hrt_InitTiledText(u8 bg)
 	}
 }
 
-void hrt_PrintOnTilemap(u8 tx, u8 ty, char* str)
+void hrt_PrintOnTilemap(u8 tx, u8 ty, char* str, ...)
 {
 	if (__hrt_system.hrt_start == 1) {
-		        int pos = 0;
-        while (*str) {
-            VRAM[ty*256+tx+pos] = *str++;
+		va_list args;
+		char *string = __outstr;
+		va_start(args, str);
+		vsprintf(__outstr, str, args);
+		va_end(args);
+		int pos = 0;
+        while (*string) {
+            VRAM[ty*256+tx+pos] = *string++;
 			 VRAM[ty*256+tx+pos] += 32;
             pos += 1;
         }

@@ -318,6 +318,10 @@ const unsigned char JPEG_ToZigZag[JPEG_DCTSIZE2] = {
     JPEG_FTOFIX (JPEG_AAN_5 * JPEG_AAN_##B), \
     JPEG_FTOFIX (JPEG_AAN_6 * JPEG_AAN_##B), \
     JPEG_FTOFIX (JPEG_AAN_7 * JPEG_AAN_##B)
+	
+int JPEG_HuffmanTable_Read(JPEG_HuffmanTable *huffmanTable, const unsigned char **dataBase);
+int JPEG_HuffmanTable_Skip(const unsigned char **dataBase);
+
 const JPEG_FIXED_TYPE JPEG_AANScaleFactor[JPEG_DCTSIZE2] = {
 	JPEG_AAN_LINE(0),
 	JPEG_AAN_LINE(1),
@@ -877,6 +881,7 @@ int JPEG_Decoder_ReadHeaders(JPEG_Decoder *decoder, const unsigned char **dataBa
 			JPEG_Assert(length >= 2);
 			data += 2;
 			while (data < end) {
+				#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 				int pair, slot, precision;
 				pair = *data++;
 				precision = pair >> 4;

@@ -1,18 +1,3 @@
-/*
-Copyright 2002 Damian Yerrick
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-*/
-
-
 /* This code assumes a LITTLE ENDIAN target.  It'll need a boatload
    of itohs and itohl calls if converted to run on Sega Genesis.  It
    also assumes that the target uses 16-bit short and 32-bit longs.
@@ -68,6 +53,7 @@ const void *gbfs_get_obj(const GBFS_FILE *file,	const char *name,	u32 *len)
 		GBFS_ENTRY *dirbase = (GBFS_ENTRY *)((char *)file + file->dir_off);
 		size_t n_entries = file->dir_nmemb;
 		GBFS_ENTRY *here;
+		#pragma GCC diagnostic ignored "-Wstringop-truncation"
 		strncpy(key, name, 24);
 		here = bsearch(key, dirbase,
 			n_entries, sizeof(GBFS_ENTRY),

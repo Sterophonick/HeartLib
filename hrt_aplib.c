@@ -37,6 +37,7 @@ u32 aP_d_getgamma()
 u32 hrt_aPlibUnpack(u8 *source, u8 *destination)
 {
     if (__hrt_system.hrt_start == 1) {
+		#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
         u32 offs, len, R0, LWM;
         s32 done;
         s32 i;

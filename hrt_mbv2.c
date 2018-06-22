@@ -182,10 +182,9 @@ void mbv2_dprintf(char *str, ...)
 	if (__hrt_system.hrt_start == 1)
 	{
 		va_list args;
-		int i;
 		char *string = __outstr;
 		va_start(args, str);
-		i = vsprintf(__outstr, str, args);
+		vsprintf(__outstr, str, args);
 		va_end(args);
 		while (*string) {
 			mbv2_dputchar(*string++);
@@ -197,10 +196,9 @@ void mbv2_dfprintf(int fp, char *str, ...)
 	if (__hrt_system.hrt_start == 1)
 	{
 		va_list args;
-		int i;
 		char *string = __outstr;
 		va_start(args, str);
-		i = vsprintf(__outstr, str, args);
+		vsprintf(__outstr, str, args);
 		va_end(args);
 		while (*string) {
 			__dputchar(__ESCCHR);

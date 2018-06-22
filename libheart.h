@@ -22,7 +22,7 @@
 //Some functions don't work yet so be patient!
 /*
 	List:
-		Sprites moving in direction
+		Sprites moving in a specified direction
 */
 
 /*
@@ -78,9 +78,7 @@ GBA Specs:
 	Some Nintendo DS BIOS functions
 
 TODO:
-		Implement Tiled Text
-		Game Boy Player Functions?
-		PogoShell Functions?
+		Exit to flashcart for other cards
 		Finish Easy Build System
 */
 #ifdef HRT_WITH_LIBHEART
@@ -89,8 +87,8 @@ TODO:
 #define LIBHEART_H
 
 #define HRT_VERSION_MAJOR 0
-#define HRT_VERSION_MINOR 96
-#define HRT_BUILD_DATE "091106222018"
+#define HRT_VERSION_MINOR 98
+#define HRT_BUILD_DATE "011006222018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -255,30 +253,30 @@ typedef struct
 
 #ifdef HRT_ADMIN
 extern gba_system __hrt_system;
-const double SIN[360];
-const double COS[360];
-const double RAD[360];
-const unsigned char font_matrixBitmap[6080];
-const unsigned short font_milkbottleTiles[3072];
-const unsigned short font_milkbottlePal[16];
+extern const double SIN[360];
+extern const double COS[360];
+extern const double RAD[360];
+extern const unsigned char font_matrixBitmap[6080];
+extern const unsigned short font_milkbottleTiles[3072];
+extern const unsigned short font_milkbottlePal[16];
 #endif
 
 /*System Pointers*/
-u16* VRAM;
-u16* OAMData;
-u16* BGPaletteMem;
-u16* OBJPaletteMem;
-u16* BGTileMem;
-u8* SRAM;
-u16* OAM;
-u8* EWRAM;
-u8* BIOS;
-u8* IWRAM;
-u8* MMIO;
-u8* ROM0;
-u8* ROM1;
-u8* ROM2;
-u8* EEPROM;
+extern u16* VRAM;
+extern u16* OAMData;
+extern u16* BGPaletteMem;
+extern u16* OBJPaletteMem;
+extern u16* BGTileMem;
+extern u8* SRAM;
+extern u16* OAM;
+extern u8* EWRAM;
+extern u8* BIOS;
+extern u8* IWRAM;
+extern u8* MMIO;
+extern u8* ROM0;
+extern u8* ROM1;
+extern u8* ROM2;
+extern u8* EEPROM;
 
 typedef struct ADGlobals
 {
@@ -1238,7 +1236,7 @@ void hrt_SetOffset(u8 no, u32 amount); //Sets offset for bg or obj gfx, tile, or
 u32 hrt_GetOffset(u8 no); //Returns the offset of bg or obj gfx data.
 void hrt_CloneOBJ(int ospr, int nspr); //Creates clone of sprite
 void hrt_DrawChar(int mode, int left, int top, char letter); //Draws text on Bitmap
-void hrt_PrintOnBitmap(int left, int top, char *str); //Draws text on Bitmap
+void hrt_PrintOnBitmap(int left, int top, char *str, ...); //Draws text on Bitmap
 void hrt_SleepF(u32 frames); //sleeps for set amount of frames
 void hrt_DrawPixel(int Mode, int x, int y, unsigned short color); //Draws pixel on screen
 u16 hrt_GetPixel(u8 mode, int x, int y); //Gets pixel Color of screen
@@ -1442,9 +1440,9 @@ void hrt_FXDisableOBJTarget2(void); //Disables.
 void hrt_FXEnableBackdropTarget2(void); //Enables Backdrop for Target 2
 void hrt_FXDisableBackdropTarget2(void); //Disables.
 u32 hrt_aPlibUnpack(u8 *source, u8 *destination); //aPlib Unpack.
-void hrt_ConfigMapLayerDrawing(u8 numLayers, u16 *tileset, s16 dimensionsx, s16 dimensionsy, u16 *map, s32 x, s32 y, u8 MapNo); //Configures map for large scrolling
-void hrt_DrawMapLayerStripH(u8 MapNo, int layerIdx, int srcY); //Draws a Horizontal Map Strip, for vertical scrolling
-void hrt_DrawMapLayerStripV(u8 MapNo, int layerIdx, int srcX); //Draws a Vertical Map Strip, for horizontal scrolling
+void hrt_ConfigMapLayerDrawing(u8 numLayers, u16 *tileset, s16 dimensionsx, s16 dimensionsy, u16 *map, s32 x, s32 y); //Configures map for large scrolling
+void hrt_DrawMapLayerStripH(int layerIdx, int srcY); //Draws a Horizontal Map Strip, for vertical scrolling
+void hrt_DrawMapLayerStripV(int layerIdx, int srcX); //Draws a Vertical Map Strip, for horizontal scrolling
 void hrt_DSPWinIn0EnableBG(u8 layer); //Enables Specified BG for winin 0
 void hrt_DSPWinIn0DisableBG(u8 layer); //Disables Specified BG for winin 0
 void hrt_DSPWinIn0EnableOBJ(void); //Enables Sprites for winin 0
@@ -1470,8 +1468,8 @@ void hrt_DSPWinOut1DisableOBJ(void); //Disables Sprites for WinOut 1
 void hrt_DSPWinOut1EnableBlend(void); //Enables Blend for WinOut 1
 void hrt_DSPWinOut1DisableBlend(void); //Disables Blend for WinOut 1
 int hrt_DecodeJPEG(const unsigned char *data, volatile JPEG_OUTPUT_TYPE *out, int outWidth, int outHeight); //Decodes a JPEG Image. (FINALLY)
-void hrt_SetLargeScrollMapX(u8 MapNo, s32 x); //X Scrolls a large map
-void hrt_SetLargeScrollMapY(u8 MapNo, s32 y); //Y Scrolls a large map
+void hrt_SetLargeScrollMapX(s32 x); //X Scrolls a large map
+void hrt_SetLargeScrollMapY(s32 y); //Y Scrolls a large map
 void hrt_SetBitmapTextColors(u16 outside, u16 inside); //Sets colors of the bitmap text engine
 void hrt_SetBGXY(u8 bg, s16 x, s16 y); //Sets X and Y coordinates of a BG
 void hrt_SetBGX(u8 bg, s16 x); //Sets X coordinate of a BG
@@ -1499,7 +1497,7 @@ void hrt_NDS_WaitByLoop(s32 delay); //NDS/DSi Only - Performs a wait
 u16 hrt_NDS_GetCRC16(u16 initial, u32 start, u32 length); //NDS/DSi Only - calculates CRC16 of a specified memory portion.
 u8 hrt_NDS_IsDebugger(void); //NDS Only - Detects whether or not this ROM is running on a Debug DS Model.
 void hrt_InitTiledText(u8 bg); //initializes the tiled text.
-void hrt_PrintOnTilemap(u8 tx, u8 ty, char* str); //Writes with tiled text
+void hrt_PrintOnTilemap(u8 tx, u8 ty, char* str, ...); //Writes with tiled text
 void hrt_CustomHalt(u8 reserved1, u8 reserved2, u8 param); //performs the customhalt SWI
 u16 hrt_NDS_GetSineTable(u8 index); //NDS/DSi Only
 u16 hrt_NDS_GetPitchTable(u16 index); //NDS/DSi Only
