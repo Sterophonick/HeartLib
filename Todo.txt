@@ -1,40 +1,19 @@
 - Functions for properly configuring all registers
 
-- Functions for enabling/disabling sprite affine.
-
-- Text on tiled backgrounds
-
-- SRAM Format Editor
-
 - Complete Documentation for all source files.
 
-- Finish Automated Build System:
-
-  - Targets:
-  
-      - ADPCM sounds
-      
-      - E-Reader
-      
-      - Mode 4 bitmaps to .bin
-      
-      - Mode 3/5 Bitmaps to .bin
-      
-      - Tilemaps to .bin
-      
-      - Sprites to .bin
-      
-      - Debugging
-      
-      
-      
-
-- Figure out how to get the tool for ADPCM to work.
+- Finish Automated Build System
 
 - Working functions for sprites moving in a specific direction, or for sprites pointing toward a specific direction
 
-- BitUnPack SWI function
-
 - Functions for all remining SWI functions.
 
-- 
+- Functions for detecting whether or not a bg is enabled, a sprite attribute is enabled, an fx layer is enabled, etc.
+
+- Test mbv2lib
+
+- Test all functions to see if they work properly.
+
+- More function helper defines
+
+- Win32 version of MB.EXE.
