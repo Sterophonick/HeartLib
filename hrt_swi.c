@@ -193,16 +193,22 @@ void hrt_BitUnPack(void* source, void* destination, BUP* data)
 {
 	if (__hrt_system.hrt_start == 1)
 	{
-				hrt_SystemCall(16);
+		hrt_SystemCall(16);
 	}
 }
 
 void hrt_ObjAffineSet(ObjAffineSource *source, void *dest, s32 num, s32 offset)
 {
-	hrt_SystemCall (15);
+	if (__hrt_system.hrt_start == 1)
+	{
+		hrt_SystemCall (15);
+	}
 }
 
 void hrt_BgAffineSet(BGAffineSource *source, BGAffineDest *dest, s32 num)
 {
-	hrt_SystemCall (14);
+	if (__hrt_system.hrt_start == 1)
+	{
+		hrt_SystemCall (14);
+	}
 }

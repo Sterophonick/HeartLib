@@ -377,7 +377,7 @@ u8 hrt_GetOBJPriority(u8 objno)
 	return 0;
 }
 
-u8 hrt_GetOBJOffset(u8 objno)
+u16 hrt_GetOBJOffset(u8 objno)
 {
 	if (__hrt_system.hrt_start == 1)
 	{
@@ -409,4 +409,76 @@ void hrt_DisableOBJAffine(u8 objno)
 	{
 		sprites[objno].attribute0 &= ~(NOT_BIT08);
 	}
+}
+
+u8 hrt_IsOBJAffine(u8 objno)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		return sprites[objno].attribute0 & 8;
+	}
+	return 0;
+}
+
+u8 hrt_IsOBJDoubleSize(u8 objno)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		return sprites[objno].attribute0 & 9;
+	}
+	return 0;
+}
+
+u8 hrt_IsOBJMosaic(u8 objno)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		return sprites[objno].attribute0 & 12;
+	}
+	return 0;
+}
+
+u8 hrt_GetOBJColorMode(u8 objno)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		return sprites[objno].attribute0 & 12;
+	}
+	return 0;
+}
+
+u8 hrt_IsOBJHFlip(u8 objno)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		return sprites[objno].attribute1 & 12;
+	}
+	return 0;
+}
+
+u8 hrt_IsOBJVFlip(u8 objno)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		return sprites[objno].attribute1 & 13;
+	}
+	return 0;
+}
+
+u8 hrt_GetOBJShape(u8 objno)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		return sprites[objno].attribute0 & 14;
+	}
+	return 0;
+}
+
+u8 hrt_GetOBJMode(u8 objno)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		return sprites[objno].attribute0 & 10;
+	}
+	return 0;
 }

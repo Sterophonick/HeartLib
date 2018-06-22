@@ -1161,3 +1161,66 @@ s16 hrt_GetBGY(u8 bg)
 	}
 	return 0;
 }
+
+u8 hrt_GetBGPriority(u8 bg)
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_BGxCNT(bg) & 0;
+	}
+	return 0;
+}
+
+u8 hrt_GetBGTileBase(u8 bg)
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_BGxCNT(bg) & 2;
+	}
+	return 0;
+}
+
+u8 hrt_GetBGMapBase(u8 bg)
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_BGxCNT(bg) & 8;
+	}
+	return 0;
+}
+
+u8 hrt_GetBGScreenSize(u8 bg)
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_BGxCNT(bg) & 14;
+	}
+	return 0;
+}
+
+u8 hrt_IsBGWraparound(u8 bg)
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_BGxCNT(bg) & 13;
+	}
+	return 0;
+}
+
+u8 hrt_IsBGMosaic(u8 bg)
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_BGxCNT(bg) & 6;
+	}
+	return 0;
+}
+
+u8 hrt_DSPIsBGEnabled(u8 bgno)
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_BGxCNT(bgno) & (8+bgno);
+	}
+	return 0;
+}

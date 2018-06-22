@@ -1,10 +1,6 @@
 #include "libheart.h"
 
 extern void _start(void);
-void _ATTRIBUTE((__noreturn__)) _exit(__attribute__((unused)) int n)
-{
-	_start();
-}
 void _abort(void)
 {
 	_start();

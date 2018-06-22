@@ -75,7 +75,6 @@ GBA Specs:
 	aPlib
 	Scrolling Map Edge Drawing
 	JPEG Decoding for Serious image compression
-	ADPCM 8ad (kudos to Damian Yerrick)
 	Some Nintendo DS BIOS functions
 
 TODO:
@@ -91,7 +90,7 @@ TODO:
 
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 96
-#define HRT_BUILD_DATE "011106202018"
+#define HRT_BUILD_DATE "091106222018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -403,7 +402,7 @@ typedef struct {
 	u8  DestBitNum;			// 1 Destination Data Bit Number
 	u32 DestOffset:31;		// Number added to Source Data
 	u32 DestOffset0_On:1;	// Flag to add/not add Offset to 0 Data
-} BUP;
+} BUP; //TOAD
 
 typedef struct {
 	u16 type;
@@ -1471,7 +1470,6 @@ void hrt_DSPWinOut1DisableOBJ(void); //Disables Sprites for WinOut 1
 void hrt_DSPWinOut1EnableBlend(void); //Enables Blend for WinOut 1
 void hrt_DSPWinOut1DisableBlend(void); //Disables Blend for WinOut 1
 int hrt_DecodeJPEG(const unsigned char *data, volatile JPEG_OUTPUT_TYPE *out, int outWidth, int outHeight); //Decodes a JPEG Image. (FINALLY)
-void __attribute__ ((long_call)) hrt_ADPCMDecode(signed char *dst, const unsigned char *src, unsigned int len, ADGlobals* data); //Decodes ADPCM on VBL
 void hrt_SetLargeScrollMapX(u8 MapNo, s32 x); //X Scrolls a large map
 void hrt_SetLargeScrollMapY(u8 MapNo, s32 y); //Y Scrolls a large map
 void hrt_SetBitmapTextColors(u16 outside, u16 inside); //Sets colors of the bitmap text engine
@@ -1511,13 +1509,28 @@ void hrt_NDS_GetBootProcs(void); //NDS/DSi Only
 void hrt_JumpExecutionToAddress(u32* address); //Jumps execution to an address in memory
 u8 hrt_GetOBJPalette(u8 objno); //Returns palette of a Sprite
 u8 hrt_GetOBJPriority(u8 objno); //Returns Priority of a sprite
-u8 hrt_GetOBJOffset(u8 objno); //Returns offset of a sprite
+u16 hrt_GetOBJOffset(u8 objno); //Returns offset of a sprite
 int hrt_ExtractMultipleBits(int number, int k, int p); //Returns the value of multiple bits
 void hrt_EnableOBJAffine(u8 objno); //Enables Affine for a sprite
 void hrt_DisableOBJAffine(u8 objno); //Disables Affine for a sprite
 s16 hrt_GetBGX(u8 bg); //Returns the X Position of a background 
 s16 hrt_GetBGY(u8 bg); //Returns the Y position of a background
 void hrt_DrawFullLargeScrollMap();
+u8 hrt_GetBGPriority(u8 bg); //Returns the priority value of a background
+u8 hrt_GetBGTileBase(u8 bg); //Returns the tile base of a background
+u8 hrt_GetBGMapBase(u8 bg); //Returns the map base of a background
+u8 hrt_GetBGScreenSize(u8 bg); //Returns the screen size bit
+u8 hrt_IsBGWraparound(u8 bg); //Detects whether or not BG2 or BG3 are set to wrap around
+u8 hrt_IsBGMosaic(u8 bg); //Detects whether or not a BG is mosaic
+u8 hrt_IsOBJAffine(u8 objno); //Detects whether or not a sprite is set to affine mode
+u8 hrt_IsOBJDoubleSize(u8 objno); //Detects whether or not a sprite is set to be double size
+u8 hrt_IsOBJMosaic(u8 objno); //Detects whether or not a sprite is set to mosaic
+u8 hrt_GetOBJColorMode(u8 objno); //Returns the color mode of a sprite (0=16 colors, 1=256 colors)
+u8 hrt_DSPIsBGEnabled(u8 bgno); //Detects whether or not a specified BG is enabled
+u8 hrt_IsOBJHFlip(u8 objno); //Detects whether or not a sprite is horizontally flipped
+u8 hrt_IsOBJVFlip(u8 objno); //Detects whehter or not a sprite is vertically flipped
+u8 hrt_GetOBJSize(u8 objno); //Returns the size of a sprite
+u8 hrt_GetOBJMode(u8 objno); //Returns the mode of a sprite
 
 #ifdef __cplusplus
 }

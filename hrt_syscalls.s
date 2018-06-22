@@ -20,6 +20,8 @@
 .global hrt_SoftReset
 .global hrt_CustomHalt
 .global hrt_JumpExecutionToAddress
+.global _start
+.global _exit
 .arm
 
 hrt_JumpExecutionToAddress:
@@ -27,8 +29,7 @@ hrt_JumpExecutionToAddress:
   ldrb r3, [r3]
   cmp r3, #1
   bxne lr
-  b r0
-  bx lr
+  bx r0
 
 hrt_Crash:
   ldr r3, hrt_start
@@ -201,6 +202,9 @@ hrt_CustomHalt:
   bxne lr
   swi		39 << 16
   bx		lr
+  
+_exit:
+  b _start
 
 hrt_start:
   .word __hrt_system
