@@ -32,7 +32,7 @@ At the moment, it its only compatible with C. It will not work with C++.
  
  - Functions for ALL the GBA BIOS calls
  
- - Real Time Clock stuff.
+ - Real Time Clock functions.
  
  - Random Number Generator
  
@@ -44,10 +44,10 @@ At the moment, it its only compatible with C. It will not work with C++.
  
  - Bitmaps
  
- - ADPCM Lib (Shoutouts to Nrx, YodaJR, and OMG)
- 
  - Drawing text to the screen in bitmap and tile modes.
  
  - Drawing new data to the screen when scrolling very large backgrounds.
+ 
+ - Tools for graphics conversion, graphics editing, and map making.
  
  - Many more things!
