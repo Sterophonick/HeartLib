@@ -4,6 +4,7 @@
 
 	.section	".crt0","ax"
 	.global     _start
+	.global _init
 	.align
 	.arm
 	.cpu arm7tdmi

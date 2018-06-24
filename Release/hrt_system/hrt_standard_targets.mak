@@ -38,7 +38,7 @@ ifeq ($(USE_MULTIBOOT),yes)
 else
 	$(EXECPATH)\$(PREFIX)cpp -P $(HRTDIR)\lnkscript.x -o $(HRTDIR)\hrt_lnkscript.ld
 endif
-	$(EXECPATH)\$(PREFIX)ld --gc-sections -T$(HRTDIR)\hrt_lnkscript.ld -nostartfiles -nostdlib $(ARCH) $(LIBDIRS)  $(OBJECTS)  $(DEVKITPRO)\lib\gcc\arm-none-eabi\8.1.0\crti.o $(DEVKITPRO)\lib\gcc\arm-none-eabi\8.1.0\crtbegin.o $(DEVKITPRO)\lib\gcc\arm-none-eabi\8.1.0\crtend.o $(DEVKITPRO)\lib\gcc\arm-none-eabi\8.1.0\crtn.o $(DEVKITPRO)\lib\gcc\arm-none-eabi\8.1.0\crtfastmath.o $(LIBS) -o build/main.elf
+	$(EXECPATH)\$(PREFIX)ld --gc-sections -T$(HRTDIR)\hrt_lnkscript.ld -nostartfiles -nostdlib $(ARCH) $(LIBDIRS)  $(OBJECTS) $(DEVKITPRO)\lib\gcc\arm-none-eabi\8.1.0\crti.o $(DEVKITPRO)\lib\gcc\arm-none-eabi\8.1.0\crtn.o $(DEVKITPRO)\lib\gcc\arm-none-eabi\8.1.0\crtbegin.o $(DEVKITPRO)\lib\gcc\arm-none-eabi\8.1.0\crtend.o $(DEVKITPRO)\lib\gcc\arm-none-eabi\8.1.0\crtfastmath.o $(LIBS) -o build/main.elf
 
 $(GBFSFILE): $(COMPFILES)
 	gbfs $(GBFSFILE) $(COMPFILES)
