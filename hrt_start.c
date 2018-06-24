@@ -3,6 +3,7 @@ gba_system __hrt_system;
 
 void hrt_Init(void)
 {
+	const char* temp = "This ROM was created using HeartLib.";
 	__hrt_system.hrt_start = 1;
 	__asm("mov r0, #253"::);
 	__asm("swi 1"::);

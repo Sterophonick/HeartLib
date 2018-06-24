@@ -88,7 +88,7 @@ TODO:
 
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 98
-#define HRT_BUILD_DATE "011006222018"
+#define HRT_BUILD_DATE "053506232018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -968,7 +968,7 @@ enum {
 extern mm_byte	mp_mix_seg;
 extern mm_word	mp_writepos;
 
-#define MM_CREATE_SOUNDEFFECT(name, id, rate, handle, volume, panning)       mm_sound_effect (name) = { \
+#define mmCreateEffect(name, id, rate, handle, volume, panning)       mm_sound_effect (name) = { \
 { id} ,	\
 (int)(1.0f * (1 << 10)), \
 0,		\

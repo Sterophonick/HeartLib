@@ -1,42 +1,44 @@
 # HeartLib API Automated Build System (ABS)
 # This file is designed for HeartLib-compliant makefiles 
 
+DEVKITPRO = C:\devkitPro\devkitARM
 PREFIX = arm-none-eabi-
 GBFSFILE = build/data.hrt
-LIBS += -lheart -lm -lstdc++ -lsupc++ -lgcc -lc -lgcc
+LIBS += -lheart -lm -lstdc++ -lsupc++ -lgcc -lc -lgcc -lsysbase -lc
+LIBDIRS += -L$(DEVKITPRO)\arm-none-eabi\lib -L$(DEVKITPRO)\lib\gcc\arm-none-eabi\8.1.0 -L$(DEVKITPRO)\lib -L$(DEVKITPRO)\lib\gcc\arm-none-eabi\8.1.0\thumb -L$(DEVKITPRO)\arm-none-eabi\lib\thumb -L$(DEVKITPRO)\lib\gcc\arm-none-eabi\8.1.0\be
 OBJECTS += build/crt0.o
 SOURCES += $(HRTDIR)\crt0.s
 HRT_FLAGS += -nostartfiles
-HRTDIR = C:\devkitPro\devkitARM\hrt_system
+HRTDIR = $(DEVKITPRO)\hrt_system
+EXECPATH = $(DEVKITPRO)\bin
 
 default: $(PROGNAME).gba 
 
 build/%.o: src/%.c $(HEADERS)
-	$(PATH)$(PREFIX)gcc -DHRT_WITH_LIBHEART $(HRT_FLAGS) $(CFLAGS) $(ARCH) -c $< -o $@
+	$(EXECPATH)\$(PREFIX)gcc -DHRT_WITH_LIBHEART $(HRT_FLAGS) $(CFLAGS) $(ARCH) -c $< -o $@
 	
 build/%.o: src/%.cpp $(HEADERS)
-	$(PATH)$(PREFIX)g++ -DHRT_WITH_LIBHEART $(HRT_FLAGS) $(CPPFLAGS) $(ARCH) -c $< -o $@
+	$(EXECPATH)\$(PREFIX)g++ -DHRT_WITH_LIBHEART $(HRT_FLAGS) $(CPPFLAGS) $(ARCH) -c $< -o $@
 	
 build/%.out: src/%.s $(ASMINC)
-	$(PATH)$(PREFIX)as -mthumb-interwork $< -o $@
+	$(EXECPATH)\$(PREFIX)as -mthumb-interwork $< -o $@
 	
 build/%.out: data\%.s
-	$(PATH)$(PREFIX)as -mthumb-interwork $< -o $@
+	$(EXECPATH)\$(PREFIX)as -mthumb-interwork $< -o $@
 	
 build/crt0.o:
-	$(PATH)$(PREFIX)as -mthumb-interwork $(HRTDIR)\crt0.s -obuild\crt0.o
+	$(EXECPATH)\$(PREFIX)as -mthumb-interwork $(HRTDIR)\crt0.s -obuild\crt0.o
 	
 build/%.o: data/%.c
-	$(PATH)$(PREFIX)gcc -DHRT_WITH_LIBHEART $(HRT_FLAGS) $(CFLAGS) $(ARCH) -c $< -o $@
+	$(EXECPATH)\$(PREFIX)gcc -DHRT_WITH_LIBHEART $(HRT_FLAGS) $(CFLAGS) $(ARCH) -c $< -o $@
 
 build\main.elf: $(OBJECTS)
-ifeq ($(MAKE_MODE),multiboot)
-	$(PATH)$(PREFIX)gcc -specs=gba_mb.specs -nostartfiles $(ARCH) $(OBJECTS) $(LIBDIRS) $(LIBS) -o build/main.elf
-else ifeq ($(MAKE_ME),ereader)
-	$(PATH)$(PREFIX)gcc -specs=gba_er.specs -nostartfiles $(ARCH) $(OBJECTS) $(LIBDIRS) $(LIBS) -o build/main.elf
+ifeq ($(USE_MULTIBOOT),yes)
+	$(EXECPATH)\$(PREFIX)cpp -P -DHRT_MB $(HRTDIR)\lnkscript.x -o $(HRTDIR)\hrt_lnkscript.ld
 else
-	$(PATH)$(PREFIX)gcc -specs=gba.specs -nostartfiles $(ARCH) $(OBJECTS) $(LIBDIRS) $(LIBS) -o build/main.elf
+	$(EXECPATH)\$(PREFIX)cpp -P $(HRTDIR)\lnkscript.x -o $(HRTDIR)\hrt_lnkscript.ld
 endif
+	$(EXECPATH)\$(PREFIX)ld --gc-sections -T$(HRTDIR)\hrt_lnkscript.ld -nostartfiles -nostdlib $(ARCH) $(LIBDIRS)  $(OBJECTS)  $(LIBS) -o build/main.elf
 
 $(GBFSFILE): $(COMPFILES)
 	gbfs $(GBFSFILE) $(COMPFILES)
@@ -47,16 +49,16 @@ data\$(MMDATAFILE).s build\$(MMDATAFILE).bin inc\$(MMDATAFILE).h: $(MAXMODFILES)
 
 $(PROGNAME).gba: build\main.elf $(GBFSFILE)
 ifneq ($(GBFSFILE),)
-	$(PATH)$(PREFIX)objcopy -O binary build/main.elf $(PROGNAME).gba
+	$(EXECPATH)\$(PREFIX)objcopy -O binary build/main.elf $(PROGNAME).gba
 	C:\devkitPro\msys\bin\mv $(PROGNAME).gba main.gba
 	padbin 256 main.gba
 	/usr/bin/cat main.gba $(GBFSFILE)>main2.gba
 	/usr/bin/cat main2.gba >$(PROGNAME).gba
 	/usr/bin/rm main2.gba main.gba
-	$(PATH)gbafix $(PROGNAME).gba -t$(INTERNALNAME) -c$(GAME_CODE) -v$(VERSION)
+	$(EXECPATH)\gbafix $(PROGNAME).gba -t$(INTERNALNAME) -c$(GAME_CODE) -v$(VERSION)
 else
-	$(PATH)$(PREFIX)objcopy -O binary build/main.elf $(PROGNAME).gba
-	$(PATH)\gbafix $(PROGNAME).gba -t$(INTERNALNAME) -c$(GAME_CODE) -v$(VERSION)
+	$(EXECPATH)\$(PREFIX)objcopy -O binary build/main.elf $(PROGNAME).gba
+	$(EXECPATH)\gbafix $(PROGNAME).gba -t$(INTERNALNAME) -c$(GAME_CODE) -v$(VERSION)
 endif
 	
 clean:

@@ -6,7 +6,7 @@
 //This Library is Dedicated to Stevendog98, who is wanting to make GBA Games. This is to give him a head start on the GBA.
 //This Library is going to be huge. It will probably be one of the best GBA Libraries in recent years.
 
-/*In case some of you don't know, agb_lib.h was a sh*tty library made by me.
+/*In case some of you don't know, agb_lib.h was a shoddy library made by me.
  Development for it started around August of 2016, when I was in 6th grade (JEEBUS). 
  A lot of my old projects used this library, and it made it easier for a while. 
  This was until I found that including code and data in a header file was not a good idea.
@@ -14,14 +14,15 @@
  so I decided to make this library instead.
  I was also running out of ideas for functions, and I ended up with functions that would
  add and subract numbers. Just... yeah.
- It was not a good library.
- */
+ It was not a good library.*/
+ 
+ /* Please make some issues or pull requests on the source page of this library, so you
+ can make some contributions or fixes to HeartLib. Support is greatly appreciated! */
 
 //Some functions don't work yet so be patient!
 /*
 	List:
-		Tiled Text
-		Sprites moving in direction
+		Sprites moving in a specified direction
 */
 
 /*
@@ -74,12 +75,10 @@ GBA Specs:
 	aPlib
 	Scrolling Map Edge Drawing
 	JPEG Decoding for Serious image compression
-	ADPCM (Shoutouts to NRX)
+	Some Nintendo DS BIOS functions
 
 TODO:
-		Implement Tiled Text
-		Game Boy Player Functions?
-		PogoShell Functions?
+		Exit to flashcart for other cards
 		Finish Easy Build System
 */
 #ifdef HRT_WITH_LIBHEART
@@ -88,8 +87,8 @@ TODO:
 #define LIBHEART_H
 
 #define HRT_VERSION_MAJOR 0
-#define HRT_VERSION_MINOR 81
-#define HRT_BUILD_DATE "04016142018"
+#define HRT_VERSION_MINOR 98
+#define HRT_BUILD_DATE "053506232018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -177,41 +176,49 @@ typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned long u32;
 typedef unsigned long long u64;
+typedef unsigned int uint;
 
 typedef volatile unsigned char vu8;
 typedef volatile unsigned short vu16;
 typedef volatile unsigned long vu32;
 typedef volatile unsigned long long vu64;
+typedef volatile unsigned int vuint;
 
 typedef volatile signed char vs8;
 typedef volatile signed short vs16;
 typedef volatile signed long vs32;
 typedef volatile signed long long vs64;
+typedef volatile signed int vsint;
 
 typedef const signed char cs8;
 typedef const signed short cs16;
 typedef const signed long cs32;
 typedef const signed long long cs64;
+typedef const signed int csint;
 
 typedef const volatile signed char cvs8;
 typedef const volatile signed short cvs16;
 typedef const volatile signed long cvs32;
 typedef const volatile signed long long cvs64;
+typedef const volatile signed int cvsint;
 
 typedef const volatile unsigned char cvu8;
 typedef const volatile unsigned short cvu16;
 typedef const volatile unsigned long cvu32;
 typedef const volatile unsigned long long cvu64;
+typedef const volatile unsigned int cvuint;
 
-typedef const signed char cu8;
-typedef const signed short cu16;
-typedef const signed long cu32;
-typedef const signed long long cu64;
+typedef const unsigned char cu8;
+typedef const unsigned short cu16;
+typedef const unsigned long cu32;
+typedef const unsigned long long cu64;
+typedef const unsigned int cuint;
 
 typedef signed char s8;
 typedef signed short s16;
 typedef signed long s32;
 typedef signed long long s64;
+typedef signed int sint;
 
 typedef void(*IntFn)(void);
 
@@ -220,6 +227,10 @@ typedef     s32     sfp32;  //1:19:8 fixed point
 typedef     u16     ufp16;  //8:8 fixed point
 typedef     u32     ufp32;  //24:8 fixed point
 typedef s32 FIXED;
+
+typedef float dec8;
+typedef double dec16;
+typedef long double ldec16;
 
 /*HeartLib System variables
 DON'T TOUCH THESE*/
@@ -242,24 +253,66 @@ typedef struct
 
 #ifdef HRT_ADMIN
 extern gba_system __hrt_system;
+extern const double SIN[360];
+extern const double COS[360];
+extern const double RAD[360];
+extern const unsigned char font_matrixBitmap[6080];
+extern const unsigned short font_milkbottleTiles[3072];
+extern const unsigned short font_milkbottlePal[16];
 #endif
 
 /*System Pointers*/
-u16* VRAM;
-u16* OAMData;
-u16* BGPaletteMem;
-u16* OBJPaletteMem;
-u16* BGTileMem;
-u8* SaveData;
-u16* OAM;
-u8* ExtWRAM;
-u8* BIOS;
-u8* IWRAM;
-u8* MMIO;
-u8* ROM0;
-u8* ROM1;
-u8* ROM2;
-u8* EEPROM;
+extern u16* VRAM;
+extern u16* OAMData;
+extern u16* BGPaletteMem;
+extern u16* OBJPaletteMem;
+extern u16* BGTileMem;
+extern u8* SRAM;
+extern u16* OAM;
+extern u8* EWRAM;
+extern u8* BIOS;
+extern u8* IWRAM;
+extern u8* MMIO;
+extern u8* ROM0;
+extern u8* ROM1;
+extern u8* ROM2;
+extern u8* EEPROM;
+
+typedef struct ADGlobals
+{
+	const unsigned char *data;
+	int last_sample;
+	int last_index;
+} ADGlobals;
+typedef struct t_BGAffineSource {
+     s32 x;				/*!< Original data's center X coordinate (8bit fractional portion)			*/
+     s32 y;				/*!< Original data's center Y coordinate (8bit fractional portion)			*/
+     s16 tX;			/*!< Display's center X coordinate																			*/
+     s16 tY;			/*!< Display's center Y coordinate																			*/
+     s16 sX;			/*!< Scaling ratio in X direction (8bit fractional portion)							*/
+     s16 sY;			/*!< Scaling ratio in Y direction (8bit fractional portion)							*/
+     u16 theta;		/*!< Angle of rotation (8bit fractional portion) Effective Range 0-FFFF	*/
+} BGAffineSource;
+typedef struct t_BGAffineDest {
+     s16 pa;		/*!< Difference in X coordinate along same line	*/
+     s16 pb;		/*!< Difference in X coordinate along next line	*/
+     s16 pc;		/*!< Difference in Y coordinate along same line	*/
+     s16 pd;		/*!< Difference in Y coordinate along next line	*/
+     s32 x;			/*!< Start X coordinate													*/
+     s32 y;			/*!< Start Y coordinate													*/
+} BGAffineDest;
+typedef struct t_ObjAffineSource {
+     s16 sX;			/*!< Scaling ratio in X direction (8bit fractional portion)							*/
+     s16 sY;			/*!< Scaling ratio in Y direction (8bit fractional portion)							*/
+     u16 theta;		/*!< Angle of rotation (8bit fractional portion) Effective Range 0-FFFF	*/
+} ObjAffineSource;
+typedef struct t_ObjAffineDest {
+     s16 pa;		/*!< Difference in X coordinate along same line */
+     s16 pb;		/*!< Difference in X coordinate along next line */
+     s16 pc;		/*!< Difference in Y coordinate along same line */
+     s16 pd;		/*!< Difference in Y coordinate along next line */
+} ObjAffineDest;
+
 enum LCDC_IRQ {
     LCDC_VBL_FLAG = (1 << 0),
     LCDC_HBL_FLAG = (1 << 1),
@@ -341,12 +394,51 @@ typedef struct _GameMap
 #define JPEG_OUTPUT_TYPE unsigned short
 #endif
 
-typedef struct tBUP {
-    u16 sourceLength;     //Length of Source Data in bytes (0-0xFFFF)
-    u8 sourceWidth;       //Width of Source Units in bits (only 1,2,4,8 supported)
-    u8 destWidth;         //Width of Destination Units in bits (only 1,2,4,8,16,32 supported)
-    u32 destOffset;       //31-bit Data Offset (Bit 0-30), and Zero Data Flag (Bit 31)
-} BUP;
+typedef struct {
+	u16 SrcNum;				// Source Data Byte Size
+	u8  SrcBitNum;			// 1 Source Data Bit Number
+	u8  DestBitNum;			// 1 Destination Data Bit Number
+	u32 DestOffset:31;		// Number added to Source Data
+	u32 DestOffset0_On:1;	// Flag to add/not add Offset to 0 Data
+} BUP; //TOAD
+
+typedef struct {
+	u16 type;
+	u16 stat;
+	u32 freq;
+	u32 loop;
+	u32 size;
+	s8 data[1];
+} WaveData;
+
+typedef struct {
+	u8 Status;
+	u8 reserved1;
+	u8 RightVol;
+	u8 LeftVol;
+	u8 Attack;
+	u8 Decay;
+	u8 Sustain;
+	u8 Release;
+	u8 reserved2[24];
+	u32 fr;
+	WaveData *wp;
+	u32 reserved3[6];
+} SoundChannel;
+
+typedef struct {
+	u32 ident;
+	vu8 DmaCount;
+	u8 reverb;
+	u8 maxchn;
+	u8 masvol;
+	u8 freq;
+	u8 mode;
+	u8 r2[6];
+	u32 r3[16];
+	SoundChannel vchn[12];
+	s8 pcmbuf[1584*2];
+} SoundArea;
 
 //Logic Gates - So you don't have to remember the syntax for all the logic gates. It's a lifesaver.
 #define NOT  !
@@ -391,6 +483,15 @@ typedef struct tBUP {
 #define COLOR_MEDGRAY      0x5294
 #define COLOR_ORANGE 0x029F
 #define COLOR_CYAN 0x7FE0
+#define COLOR_ECRU 0x42D8
+#define COLOR_MAUVE 0x5216
+#define COLOR_PUCE 0x4E39
+#define COLOR_CRIMSON 0x1C5B
+#define COLOR_AZURE 0x7DE0
+#define COLOR_CHARTREUSE 0x03EF
+#define COLOR_TAWNY 0x0159
+#define COLOR_BUFF 0x437E
+#define COLOR_CINEREOUS 0x3E13
 
 //bios calls
 #define SoftReset 0x00
@@ -437,13 +538,6 @@ typedef struct tBUP {
 #define SoundDriverVSyncOn 0x29
 #define GetJumpList 0x2A
 #define AGBPrint 0xFF
-
-#ifdef HRT_EXPERIMENTAL
-#define GBA_MODE(mode) const int __gba_mode = (mode);
-#define MODE_CART 0
-#define MODE_MB 1
-#define MODE_ER 2
-#endif
 
 //Bits
 #define BIT00  0x0001
@@ -629,6 +723,8 @@ typedef struct tBUP {
 #define REG_BGxVOFS(x)                    (ACCESS_16(0x0400000B+(x*4))) //macro for a bg
 #define REG_DMAxSAD(x)                    (ACCESS_32(0x040000B0+(x*0x0C))) //Macro for a DMA Source
 #define REG_DMAxDAD(x)                    (ACCESS_32(0x040000B4+(x*0x0C))) //Macro for a DMA Destination
+#define REG_TMxCNT_L(x)                 (ACCESS_16(0x04000100+(x*4)))
+#define REG_TMxCNT_H(x)                 (ACCESS_16(0x04000102+(x*4)))
 
 //keys
 #define KEY_A 1
@@ -872,13 +968,13 @@ enum {
 extern mm_byte	mp_mix_seg;
 extern mm_word	mp_writepos;
 
-#define MM_CREATE_SOUNDEFFECT(name, id, rate, handle, volume, panning)       mm_sound_effect (name) = { \
+#define mmCreateEffect(name, id, rate, handle, volume, panning)       mm_sound_effect (name) = { \
 { id} ,	\
 (int)(1.0f * (1 << 10)), \
 0,		\
 255,	\
 255, \
-} \
+} 
 
 //
 
@@ -954,27 +1050,12 @@ extern mm_word	mp_writepos;
 #endif
 //eof
 
-// ADPCM
-typedef struct
-{
-	unsigned long sampleRate;
-	unsigned long length;
-	unsigned char noCompress;
-	unsigned char __attribute__((aligned(4))) data[];
-}
-Sound;
-//eof
-
 const GBFS_FILE *find_first_gbfs_file(const void *start);
-extern const double SIN[360];
-extern const double COS[360];
-extern const double RAD[360];
-extern const unsigned short font_matrixBitmap[6080];
-extern const unsigned short font_milkbottleTiles[3072];
-extern const unsigned short font_milkbottlePal[16];
 
 /*Function helpers
-These are for the functions with a lot of arguments, and serve really good as a way of simplifying everything.*/
+These are for the functions with a lot of
+ arguments, and serve really good as a way
+ of simplifying everything.*/
 #define OBJ_SIZE_8X8 0
 #define OBJ_SIZE_16X16 1
 #define OBJ_SIZE_32X32 2
@@ -997,6 +1078,8 @@ These are for the functions with a lot of arguments, and serve really good as a 
 #define OBJ_MODE_ALPHA 1
 #define OBJ_MODE_WINDOW 2
 #define OBJ_MODE_PROHIBITED 3
+#define OBJ_MOSAIC_ENABLE 1
+#define OBJ_MOSAIC_DISABLE 0
 
 #define FX_TARGET1_BG0_ENABLE 1
 #define FX_TARGET1_BG0_DISABLE 0
@@ -1102,11 +1185,25 @@ These are for the functions with a lot of arguments, and serve really good as a 
 #define RRR_CLEAR_SOUND_DISABLE 0
 #define RRR_CLEAR_ALL_OTHER_ENABLE 1
 #define RRR_CLEAR_ALL_OTHER_DISABLE 0
+
+#define OBJAFF_OUTPUT_CONTINUOUS 2
+#define OBJAFF_OUTPUT_OAM 8
+
+#define NDS_CRC_INITIAL_DEFAULT 0xFFFF
+
+#define CUSTOMHALT_HALT 0x00
+#define CUSTOMHALT_GBA_STOP 0x80
+#define CUSTOMHALT_NDS_HALT 0x80
+#define CUSTOMHALT_NDS_SLEEP 0xC0
+
+#define BIOSChecksum_UNKNOWN 0x00000000
+#define BIOSChecksum_GBA 0xBAAE187f
+#define BIOSChecksum_NDS 0xBAAE1880
 //
 
 ///////////////////////////FUNCTIONS////////////////////////////
-// These functions will allow the user control over objects, sound,///
-////registers, memory, bitmaps, palettes, and many other things./////
+// These functions will allow the user control over objects, sound,   //
+//// registers, memory, bitmaps, palettes, and many other things.   ////
 ///////////////////////////////////////////////////////////////
 static inline u32 hrt_GetBiosChecksum(void)
 {
@@ -1118,15 +1215,10 @@ static inline u32 hrt_GetBiosChecksum(void)
 #endif
     return result;
 }//Returns BIOS Checksum. Return value differs if you are playing on a Prototype GBA, Release GBA, or a Nintendo DS.
-void hrt_InitInterrupt(void) __attribute__((deprecated)); //Initialize interrupts mirror
 void hrt_irqInit(void); //Initialize Interrupts
-IntFn *hrt_SetInterrupt(irqMASK mask, IntFn function) __attribute__((deprecated)); //Set Interrupt Function Mirror
 IntFn *hrt_irqSet(irqMASK mask, IntFn function); //Set Interrupt Function
-void hrt_EnableInterrupt(irqMASK mask) __attribute__((deprecated)); //Enable Interrupt Mirror
 void hrt_irqEnable(int mask); //Enable Interrupt
-void hrt_DisableInterrupt(irqMASK mask) __attribute__((deprecated)); //Disable Interrupt Mirror
 void hrt_irqDisable(int mask); //Disable Interrupt
-void hrt_IntrMain(void); //Main Interrupt
 void hrt_Diff8bitUnFilterWram(u32 source, u32 dest); //Decompresses Diff8bit to EWRAM
 void hrt_Diff8bitUnFilterVram(u32 source, u32 dest); //Decompresses Diff8bit to VRAM
 void hrt_Diff16bitUnFilter(u32 source, u32 dest); //Decompresses Diff16bit
@@ -1143,10 +1235,8 @@ void hrt_SetOBJXY(u8 spr, s16 x, s16 y); // Sets Position of a Sprite
 void hrt_SetOffset(u8 no, u32 amount); //Sets offset for bg or obj gfx, tile, or pal data
 u32 hrt_GetOffset(u8 no); //Returns the offset of bg or obj gfx data.
 void hrt_CloneOBJ(int ospr, int nspr); //Creates clone of sprite
-void hrt_SaveInt(u16 offset, int value); //Saves to SRAM
-int hrt_LoadInt(u16 offset); //Loads from SRAM
 void hrt_DrawChar(int mode, int left, int top, char letter); //Draws text on Bitmap
-void hrt_PrintOnBitmap(int left, int top, char *str); //Draws text on Bitmap
+void hrt_PrintOnBitmap(int left, int top, char *str, ...); //Draws text on Bitmap
 void hrt_SleepF(u32 frames); //sleeps for set amount of frames
 void hrt_DrawPixel(int Mode, int x, int y, unsigned short color); //Draws pixel on screen
 u16 hrt_GetPixel(u8 mode, int x, int y); //Gets pixel Color of screen
@@ -1181,12 +1271,10 @@ void hrt_Assert(char* func, int arg, char* desc); //Error message
 void hrt_ConfigBG(u8 bg, u8 priority, u8 tilebase, u8 mosaic, u8 color256, u8 tilemapbase, u8 wraparound, u8 dimensions); //Configures BG
 void hrt_LineWipe(u16 color, int time, u8 mode); //Wipe from hrt_DrawLine
 void hrt_SetMosaic(u8 bh, u8 bv, u8 oh, u8 ov); //Sets Mosaic Level -- Not Tested Yet.
-double hrt_Distance(int x1, int y1, int x2, int y2); //Returns distance between 2 different points
-double hrt_Slope(int x1, int y1, int x2, int y2); //Returns slope between 2 different points
+s32 hrt_Distance(int x1, int y1, int x2, int y2); //Returns distance between 2 different points
+s32 hrt_Slope(int x1, int y1, int x2, int y2); //Returns slope between 2 different points
 void hrt_SetTile(u8 x, u8 y, int tileno); //Sets a specific tile to a given value.
 void hrt_SetFXAlphaLevel(u8 src, u8 dst); //Sets REG_BLDALPHA
-//void hrt_DrawTextTile(int x, int y, char* str); //Unfinished -- Ignore this
-//void hrt_InitTextTile(u8 bgno); //Unfinished -- Ignore this.
 void hrt_FillPalette(int paltype, u16 color); //Fills BG or OBJ palette witha specified color.
 void hrt_AGBPrint(const char *msg); //hrt_AGBPrint is interesting. Using this will make the ROM put a message into the output log if AGBPrint is enabled on VisualBoyAdvance. I found a technique that doesn't crash on hardware or other emulators.
 void *hrt_Memcpy(void *dest, const void *src, size_t len); //Copies Memory from one place to another.
@@ -1235,16 +1323,16 @@ void mmEffectCancel(mm_sfxhand handle); //Stops sound effect
 void mmEffectRelease(mm_sfxhand handle); //Releases Sound Effect?
 void mmSetEffectsVolume(mm_word volume); //Set Sound effect volume
 void mmEffectCancelAll(void); //Cancel all sound effects
-double hrt_VolumeCylinder(double r, double h); //Calculates the volume of any given cylinder
-double hrt_AreaTriangle(double a, double b); //Calculates the area of a right triangle
-double hrt_AreaCircle(double r); //Calculates the Area of any given circle
+s32 hrt_VolumeCylinder(double r, double h); //Calculates the volume of any given cylinder
+s32 hrt_AreaTriangle(double a, double b); //Calculates the area of a right triangle
+s32 hrt_AreaCircle(double r); //Calculates the Area of any given circle
 void hrt_ConfigWININ(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 bld, u8 bg0_2, u8 bg1_2, u8 bg2_2, u8 bg3_2, u8 obj_2, u8 bld_2); //configs REG_WININ
 void hrt_ConfigWINOUT(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 bld, u8 bg0_obj, u8 bg1_obj, u8 bg2_obj, u8 bg3_obj, u8 obj_obj, u8 bld_obj); //Configs REG_WINOUT
 u32 hrt_RNGRange(u32 low, u32 high); // Creates a Random number between a range.
-int __dputchar(int c); //MBV2Lib print
-void	mbv2_dprintf(char *str, ...); //Mbv2Lib print
-void	mbv2_dfprintf(int fp, char *str, ...);//Mbv2Lib print
-int		mbv2_dputchar(int c); //Mbv2Lib print
+int __dputchar(int c);
+void	mbv2_dprintf(char *str, ...); 
+void	mbv2_dfprintf(int fp, char *str, ...);
+int		mbv2_dputchar(int c); 
 int		mbv2_dgetch(void);
 int		mbv2_dkbhit(void);
 int		mbv2_dfopen(const char *file, const char *type);
@@ -1352,9 +1440,9 @@ void hrt_FXDisableOBJTarget2(void); //Disables.
 void hrt_FXEnableBackdropTarget2(void); //Enables Backdrop for Target 2
 void hrt_FXDisableBackdropTarget2(void); //Disables.
 u32 hrt_aPlibUnpack(u8 *source, u8 *destination); //aPlib Unpack.
-void hrt_ConfigMapLayerDrawing(u8 numLayers, u16 *tileset, s16 dimensionsx, s16 dimensionsy, u16 *map, s32 x, s32 y, u8 MapNo); //Configures map for large scrolling
-void hrt_DrawMapLayerStripH(u8 MapNo, int layerIdx, int srcY); //Draws a Horizontal Map Strip, for vertical scrolling
-void hrt_DrawMapLayerStripV(u8 MapNo, int layerIdx, int srcX); //Draws a Vertical Map Strip, for horizontal scrolling
+void hrt_ConfigMapLayerDrawing(u8 numLayers, u16 *tileset, s16 dimensionsx, s16 dimensionsy, u16 *map, s32 x, s32 y); //Configures map for large scrolling
+void hrt_DrawMapLayerStripH(int layerIdx, int srcY); //Draws a Horizontal Map Strip, for vertical scrolling
+void hrt_DrawMapLayerStripV(int layerIdx, int srcX); //Draws a Vertical Map Strip, for horizontal scrolling
 void hrt_DSPWinIn0EnableBG(u8 layer); //Enables Specified BG for winin 0
 void hrt_DSPWinIn0DisableBG(u8 layer); //Disables Specified BG for winin 0
 void hrt_DSPWinIn0EnableOBJ(void); //Enables Sprites for winin 0
@@ -1380,21 +1468,67 @@ void hrt_DSPWinOut1DisableOBJ(void); //Disables Sprites for WinOut 1
 void hrt_DSPWinOut1EnableBlend(void); //Enables Blend for WinOut 1
 void hrt_DSPWinOut1DisableBlend(void); //Disables Blend for WinOut 1
 int hrt_DecodeJPEG(const unsigned char *data, volatile JPEG_OUTPUT_TYPE *out, int outWidth, int outHeight); //Decodes a JPEG Image. (FINALLY)
-unsigned char hrt_InitADPCM(unsigned char numberChannels); //Initializes ADPCM
-void hrt_DestroyADPCM(void); //Destroys ADPCM
-unsigned char hrt_StartADPCM(const Sound* sound, signed char repeat, unsigned char channel); //Plays ADPCM Sound
-unsigned char hrt_StopADPCM(unsigned char channel); //Stops ADPCM Channel
-signed char  hrt_GetADPCMStatus(unsigned char channel); //Returns ADPCM Status
-void __attribute__((section(".iwram"), long_call)) hrt_ADPCMDecodeVBL(unsigned char channel); //Decodes ADPCM on VBL
-void hrt_SetLargeScrollMapX(u8 MapNo, s32 x); //X Scrolls a large map
-void hrt_SetLargeScrollMapY(u8 MapNo, s32 y); //Y Scrolls a large map
+void hrt_SetLargeScrollMapX(s32 x); //X Scrolls a large map
+void hrt_SetLargeScrollMapY(s32 y); //Y Scrolls a large map
 void hrt_SetBitmapTextColors(u16 outside, u16 inside); //Sets colors of the bitmap text engine
-void hrt_SetBGXY(u8 bg, u16 x, u16 y); //Sets X and Y coordinates of a BG
-void hrt_SetBGX(u8 bg, u16 x); //Sets X coordinate of a BG
-void hrt_SetBGY(u8 bg, u16 y); //Sets Y coordinate of a BG
+void hrt_SetBGXY(u8 bg, s16 x, s16 y); //Sets X and Y coordinates of a BG
+void hrt_SetBGX(u8 bg, s16 x); //Sets X coordinate of a BG
+void hrt_SetBGY(u8 bg, s16 y); //Sets Y coordinate of a BG
 void hrt_DestroyOBJ(u8 objno); //Erases a sprite
 u8 hrt_ConfigRegisterRamReset(u8 clearwram, u8 cleariwram, u8 clearpal, u8 clearvram, u8 clearoam, u8 resetsio, u8 resetsnd, u8 resetall); //Returns a byte for the mode of RegisterRamReset
 void hrt_BitUnPack(void* source, void* destination, BUP* data); //Bitunpack
+void hrt_ObjAffineSet(ObjAffineSource *source, void *dest, s32 num, s32 offset); //Creates a set of sprite affine data
+void hrt_BgAffineSet(BGAffineSource *source, BGAffineDest *dest, s32 num); //Creates a set of sprite affine data
+void hrt_SoundDriverInit(SoundArea *sa); //Initializes the BIOS sound driver
+void hrt_SoundDriverMode(u32 mode); //SWI
+u32  hrt_MidiKey2Freq(WaveData *wa, u8 mk, u8 fp); //Calculates the value of the assignment to ((SoundArea)sa).vchn[x].fr when playing the wave data, wa, with the interval (MIDI KEY) mk and the fine adjustment value (halftones=256) fp. 
+void hrt_SoundDriverMain(void); //Main of the BIOS sound driver
+void hrt_SoundDriverVsync(void); //Resets the sound DMA, call this after every 1/60 of a second
+void hrt_SoundChannelClear(void); //Stops sound and clears the FIFO registers
+void hrt_SoundDriverVsyncOff(void); //Used to stop sound DMA.
+void hrt_SoundDriverVsyncOn(void); //Restarts the sound DMA.
+void hrt_SoundWhatever0(void); //Undocumented - Unknown
+void hrt_SoundWhatever1(void); //Undocumented - Unknown
+void hrt_SoundWhatever2(void); //Undocumented - Unknown
+void hrt_SoundWhatever3(void); //Undocumented - Unknown
+void hrt_SoundWhatever4(void); //Undocumented - Unknown
+void hrt_SoundGetJumpList(void* dest); //Undocumented - receives pointers to 36 additional sound-related  BIOS functions
+void hrt_NDS_WaitByLoop(s32 delay); //NDS/DSi Only - Performs a wait
+u16 hrt_NDS_GetCRC16(u16 initial, u32 start, u32 length); //NDS/DSi Only - calculates CRC16 of a specified memory portion.
+u8 hrt_NDS_IsDebugger(void); //NDS Only - Detects whether or not this ROM is running on a Debug DS Model.
+void hrt_InitTiledText(u8 bg); //initializes the tiled text.
+void hrt_PrintOnTilemap(u8 tx, u8 ty, char* str, ...); //Writes with tiled text
+void hrt_CustomHalt(u8 reserved1, u8 reserved2, u8 param); //performs the customhalt SWI
+u16 hrt_NDS_GetSineTable(u8 index); //NDS/DSi Only
+u16 hrt_NDS_GetPitchTable(u16 index); //NDS/DSi Only
+u16 hrt_NDS_GetVolumeTable(u16 index); //NDS/DSi Only
+void hrt_NDS_CustomPost(u32 value); //NDS/DSi Only
+void hrt_NDS_GetBootProcs(void); //NDS/DSi Only
+void hrt_JumpExecutionToAddress(u32* address); //Jumps execution to an address in memory
+u8 hrt_GetOBJPalette(u8 objno); //Returns palette of a Sprite
+u8 hrt_GetOBJPriority(u8 objno); //Returns Priority of a sprite
+u16 hrt_GetOBJOffset(u8 objno); //Returns offset of a sprite
+int hrt_ExtractMultipleBits(int number, int k, int p); //Returns the value of multiple bits
+void hrt_EnableOBJAffine(u8 objno); //Enables Affine for a sprite
+void hrt_DisableOBJAffine(u8 objno); //Disables Affine for a sprite
+s16 hrt_GetBGX(u8 bg); //Returns the X Position of a background 
+s16 hrt_GetBGY(u8 bg); //Returns the Y position of a background
+void hrt_DrawFullLargeScrollMap();
+u8 hrt_GetBGPriority(u8 bg); //Returns the priority value of a background
+u8 hrt_GetBGTileBase(u8 bg); //Returns the tile base of a background
+u8 hrt_GetBGMapBase(u8 bg); //Returns the map base of a background
+u8 hrt_GetBGScreenSize(u8 bg); //Returns the screen size bit
+u8 hrt_IsBGWraparound(u8 bg); //Detects whether or not BG2 or BG3 are set to wrap around
+u8 hrt_IsBGMosaic(u8 bg); //Detects whether or not a BG is mosaic
+u8 hrt_IsOBJAffine(u8 objno); //Detects whether or not a sprite is set to affine mode
+u8 hrt_IsOBJDoubleSize(u8 objno); //Detects whether or not a sprite is set to be double size
+u8 hrt_IsOBJMosaic(u8 objno); //Detects whether or not a sprite is set to mosaic
+u8 hrt_GetOBJColorMode(u8 objno); //Returns the color mode of a sprite (0=16 colors, 1=256 colors)
+u8 hrt_DSPIsBGEnabled(u8 bgno); //Detects whether or not a specified BG is enabled
+u8 hrt_IsOBJHFlip(u8 objno); //Detects whether or not a sprite is horizontally flipped
+u8 hrt_IsOBJVFlip(u8 objno); //Detects whehter or not a sprite is vertically flipped
+u8 hrt_GetOBJSize(u8 objno); //Returns the size of a sprite
+u8 hrt_GetOBJMode(u8 objno); //Returns the mode of a sprite
 
 #ifdef __cplusplus
 }
