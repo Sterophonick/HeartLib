@@ -10,6 +10,8 @@
  Development for it started around August of 2016, when I was in 6th grade (JEEBUS). 
  A lot of my old projects used this library, and it made it easier for a while. 
  This was until I found that including code and data in a header file was not a good idea.
+ It also was very basic. It was basically copied code from other GBA Projects. It only had
+ Mode 3 Text, Sprites, BG Movement, Keys, bitmap drawing, and very simple DMA sound.
  I was disappointed that HAMLib was not compatible with DevKitARM or DevKitAdvance,
  so I decided to make this library instead.
  I was also running out of ideas for functions, and I ended up with functions that would
@@ -88,7 +90,7 @@ TODO:
 
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 98
-#define HRT_BUILD_DATE "094606242018"
+#define HRT_BUILD_DATE "060907072018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -231,6 +233,10 @@ typedef s32 FIXED;
 typedef float dec8;
 typedef double dec16;
 typedef long double ldec16;
+
+typedef long int dword;
+typedef short int word;
+typedef char byte;
 
 /*HeartLib System variables
 DON'T TOUCH THESE*/
@@ -400,7 +406,7 @@ typedef struct {
 	u8  DestBitNum;			// 1 Destination Data Bit Number
 	u32 DestOffset:31;		// Number added to Source Data
 	u32 DestOffset0_On:1;	// Flag to add/not add Offset to 0 Data
-} BUP; //TOAD
+} BUP; //BitUnPack
 
 typedef struct {
 	u16 type;
@@ -1513,7 +1519,7 @@ void hrt_EnableOBJAffine(u8 objno); //Enables Affine for a sprite
 void hrt_DisableOBJAffine(u8 objno); //Disables Affine for a sprite
 s16 hrt_GetBGX(u8 bg); //Returns the X Position of a background 
 s16 hrt_GetBGY(u8 bg); //Returns the Y position of a background
-void hrt_DrawFullLargeScrollMap();
+void hrt_DrawFullLargeScrollMap(); //Draws an entire large scrolling map
 u8 hrt_GetBGPriority(u8 bg); //Returns the priority value of a background
 u8 hrt_GetBGTileBase(u8 bg); //Returns the tile base of a background
 u8 hrt_GetBGMapBase(u8 bg); //Returns the map base of a background
@@ -1529,6 +1535,8 @@ u8 hrt_IsOBJHFlip(u8 objno); //Detects whether or not a sprite is horizontally f
 u8 hrt_IsOBJVFlip(u8 objno); //Detects whehter or not a sprite is vertically flipped
 u8 hrt_GetOBJSize(u8 objno); //Returns the size of a sprite
 u8 hrt_GetOBJMode(u8 objno); //Returns the mode of a sprite
+void hrt_SaveByteEEP(u32 offset, u8 value); //Save a byte to EEPROM
+u8 hrt_LoadByteEEP(u32 offset); //Load a byte from EEPROM
 
 #ifdef __cplusplus
 }

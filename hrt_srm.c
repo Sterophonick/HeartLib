@@ -16,3 +16,18 @@ u8 hrt_LoadByte(int offset)
 	}
 	return 0;
 }
+
+void hrt_SaveByteEEP(u32 offset, u8 value)
+{
+	if (__hrt_system.hrt_start == 1) {
+		EEPROM[offset] = value;
+	}
+}
+
+u8 hrt_LoadByteEEP(u32 offset)
+{
+	if (__hrt_system.hrt_start == 1) {
+		return EEPROM[offset];
+	}
+	return 0;
+}

@@ -208,8 +208,11 @@ u16 hrt_PointOBJTowardsPosition(u8 sprite, int x, int y)
 {
 	if (__hrt_system.hrt_start == 1)
 	{
-		u32 temp;
-		temp = hrt_ArcTan2(x - hrt_GetOBJX(sprite), y - hrt_GetOBJY(sprite));
+		u16 temp;
+		int dx, dy;
+		dx = x - hrt_GetOBJX(sprite);
+		dy = y - hrt_GetOBJY(sprite);
+		temp = atan(dy/dx);
 		return temp;
 	}
 	return 0;

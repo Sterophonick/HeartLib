@@ -2,7 +2,7 @@
 extern gba_system __hrt_system;
 const unsigned char font_matrixBitmap[6080];
 u16* tram = (u16*)0x06000800;
-		char __outstr[256];
+char __outstr[256];
 
 u16 _____colors[3] = {
 	0x0000, 0x0421, 0x7FFF
@@ -79,7 +79,7 @@ void hrt_PrintOnTilemap(u8 tx, u8 ty, char* str, ...)
 		int pos = 0;
         while (*string) {
             VRAM[ty*256+tx+pos] = *string++;
-			 VRAM[ty*256+tx+pos] += 32;
+			VRAM[ty*256+tx+pos] += 32;
             pos += 1;
         }
 	}
