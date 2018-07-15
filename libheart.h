@@ -93,7 +93,7 @@ TODO:
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 9
 #define HRT_VERSION_PATCH 8
-#define HRT_BUILD_DATE "020507152018"
+#define HRT_BUILD_DATE "021507152018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -476,6 +476,12 @@ typedef struct {
 #define MODE_5_HEIGHT 120
 //
 
+#define ODD(v)                         ((v)&1)
+#define MIN(a,b)                       (((a)<(b))?(a):(b))
+#define MID(a,b,c)                     (MAX(MIN((a),(b)),MIN((a),(c)))
+#define MAX(a,b)                       (((a)>(b))?(a):(b))
+#define LIMIT(Value,ValueMin,ValueMax) (MIN(MAX((Value), (ValueMin)), (ValueMax)))
+
 //colors
 #define COLOR_BLACK        0x0000
 #define COLOR_MAROON       0x0010
@@ -801,7 +807,21 @@ typedef struct {
 #define HRT_EWRAM_BSS __attribute__((section(".sbss")))
 #define HRT_EWRAM_CODE __attribute__((section(".ewram"), long_call))
 #define HRT_IWRAM_CODE __attribute__((section(".iwram"), long_call))
-#define HRT_ALIGN(m)	__attribute__((aligned (m)))
+
+#define ATTR_ALIGNED(n)             __attribute__ ((aligned(n)))
+#define ATTR_PACKED                 __attribute__ ((packed))
+#define ATTR_SECTION(name)          __attribute__ ((section(name)))
+#define ATTR_DEPRECATED             __attribute__ ((deprecated))
+#define ATTR_NOINLINE               __attribute__ ((noinline))
+#define ATTR_FORCEINLINE            __attribute__ ((always_inline))
+#define ATTR_USED                   __attribute__ ((used))
+#define ATTR_WEAK                   __attribute__ ((weak))
+#define ATTR_NORETURN               __attribute__ ((noreturn))
+#define ATTR_PURE                   __attribute__ ((pure))
+#define ATTR_UNUSED                 __attribute__ ((unused))
+#define ATTR_COMMON                 __attribute__ ((common))
+#define ATTR_NOCOMMON               __attribute__ ((nocommon))
+#define ATTR_NOINSTRUMENT			__attribute__ ((no_instrument_function))
 
 #define MAX_INTS	15
 #define INT_VECTOR	*(IntFn *)(0x03007ffc)		// BIOS Interrupt vector
