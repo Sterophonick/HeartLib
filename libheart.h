@@ -90,7 +90,7 @@ TODO:
 
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 98
-#define HRT_BUILD_DATE "084607142018"
+#define HRT_BUILD_DATE "014307152018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -260,9 +260,8 @@ typedef struct
 
 #ifdef HRT_ADMIN
 extern gba_system __hrt_system;
-extern const double SIN[360];
-extern const double COS[360];
-extern const double RAD[360];
+extern const s16 SIN[360];
+extern const s16 COS[360];
 extern const unsigned char font_matrixBitmap[6080];
 extern const unsigned short font_milkbottleTiles[3072];
 extern const unsigned short font_milkbottlePal[16];
@@ -456,6 +455,12 @@ typedef struct {
 #define XOR  ^
 #define XNOR !^
 //
+
+#define USE_EEPROM  const char __sm[13] = "EEPROM_Vnnn";
+#define USE_SRAM const char __sm[13] = "SRAM_Vnnn"
+#define USE_FLASH const char __sm[13] = "FLASH_Vnnn"
+#define USE_FLASH512 const char __sm[13] = "FLASH512_Vnnn"
+#define USE_FLASH1M const char __sm[13] = "FLASH1M_Vnnn"
 
 //Screen Widths/Heights
 #define GBA_SCREEN_WIDTH 240
@@ -800,6 +805,9 @@ typedef struct {
 #define TRUE 1
 #define FALSE 0
 #define NULL ((void *)0)
+
+#define BOUNDS(num, min, max) \
+		((num) < (min) ? (min) : ((num) > (max) ? (max) : (num)))
 
 //Systemcall
 #if	defined	( __thumb__ )
@@ -1340,15 +1348,15 @@ void hrt_ConfigWININ(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 bld, u8 bg0_2, u
 void hrt_ConfigWINOUT(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 bld, u8 bg0_obj, u8 bg1_obj, u8 bg2_obj, u8 bg3_obj, u8 obj_obj, u8 bld_obj); //Configs REG_WINOUT
 u32 hrt_RNGRange(u32 low, u32 high); // Creates a Random number between a range.
 int __dputchar(int c);
-void	mbv2_dprintf(char *str, ...); 
-void	mbv2_dfprintf(int fp, char *str, ...);
-int		mbv2_dputchar(int c); 
-int		mbv2_dgetch(void);
-int		mbv2_dkbhit(void);
-int		mbv2_dfopen(const char *file, const char *type);
-int		mbv2_dfclose(int fp);
-int		mbv2_dfgetc(int fp);
-int		mbv2_dfputc(int ch, int fp);
+void mbv2_dprintf(char *str, ...); 
+void mbv2_dfprintf(int fp, char *str, ...);
+int	mbv2_dputchar(int c); 
+int	mbv2_dgetch(void);
+int	mbv2_dkbhit(void);
+int	mbv2_dfopen(const char *file, const char *type);
+int	mbv2_dfclose(int fp);
+int	mbv2_dfgetc(int fp);
+int	mbv2_dfputc(int ch, int fp);
 void	mbv2_drewind(int fp);
 void hrt_ConfigSIONormal(u8 sc, u8 isc, u8 si_state, u8 soinact, u8 start, u8 length, u8 mode, u8 irq); //Configures REG_SIOCNT
 void hrt_ConfigSIOMultiplayer(u8 baudrate, u8 busy, u8 irq); //Configures SIOCNT in multiplayer mode
@@ -1380,8 +1388,8 @@ void hrt_DisableRTC(void); //Disables RTC
 void hrt_DisableSoftReset(void); //Disables Soft-reset on VblankIntrWait();
 u16 hrt_PointOBJTowardsPosition(u8 sprite, int x, int y); //Rotates a sprite toward a set direction
 void hrt_MoveSpriteInDirection(u8 sprite, u16 direction, int steps); //Moves sprite in a set direction
-void hrt_SetOBJX(u8 spr, s16 x); //Sets just the X position of a sprite
-void hrt_SetOBJY(u8 spr, s16 Y); //Sets just the Y position of a sprite
+void hrt_SetOBJX(u8 spr, u8 x); //Sets just the X position of a sprite
+void hrt_SetOBJY(u8 spr, u8 Y); //Sets just the Y position of a sprite
 void hrt_DSPSetBGMode(u8 mode); //Sets the REG_DISPCNT BG Mode.
 void hrt_DSPEnableForceBlank(void); //Enables Force Blank
 void hrt_DSPDisableForceBlank(void); //Disables Force Blank
@@ -1425,12 +1433,12 @@ void hrt_CpuFastSet(const void *source, void *dest, u32 mode); //Performs CpuFas
 void hrt_RegisterRamReset(int ResetFlags); //SWI 0x01
 void hrt_Crash(void); //Crashes the ROM
 u16 hrt_Sqrt(u32 X); //BIOS call for Square Root
-s32	hrt_Div(s32 Number, s32 Divisor); //SWI 0x06
-s32	hrt_DivMod(s32 Number, s32 Divisor); //SWI 0x06
-u32	hrt_DivAbs(s32 Number, s32 Divisor); //SWI 0x06
-s32	hrt_DivArm(s32 Divisor, s32 Number);  //SWI 0x07
-s32	hrt_DivArmMod(s32 Divisor, s32 Number); //SWI 0x07
-u32	hrt_DivArmAbs(s32 Divisor, s32 Number); //SWI 0x07
+s32 hrt_Div(s32 Number, s32 Divisor); //SWI 0x06
+s32 hrt_DivMod(s32 Number, s32 Divisor); //SWI 0x06
+u32 hrt_DivAbs(s32 Number, s32 Divisor); //SWI 0x06
+s32 hrt_DivArm(s32 Divisor, s32 Number);  //SWI 0x07
+s32 hrt_DivArmMod(s32 Divisor, s32 Number); //SWI 0x07
+u32 hrt_DivArmAbs(s32 Divisor, s32 Number); //SWI 0x07
 s16 hrt_ArcTan(s16 Tan); //SWI 0x09
 u16 hrt_ArcTan2(s16 X, s16 Y); //SWI 0x0A
 void hrt_IntrWait(u32 ReturnFlag, u32 IntFlag); //SWI 0x04
