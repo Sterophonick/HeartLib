@@ -243,3 +243,15 @@ int hrt_ExtractMultipleBits(int number, int k, int p)
 	}
 	return 0;
 }
+
+void hrt_FillMemory(u32* addr, u32 count, u8 value)
+{
+	u32 i;
+	if (__hrt_system.hrt_start == 1)
+	{
+		for(i = 0; i < count; i++)
+		{
+			addr[i] = value;
+		}
+	}
+}

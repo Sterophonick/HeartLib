@@ -175,7 +175,7 @@ void hrt_SetOBJY(u8 spr, s16 y)
 	}
 }
 
-void hrt_SetOBJXY(u8 spr, s16 x, s16 y)
+void hrt_SetOBJXY(u8 spr, u8 x, u8 y)
 {
 	if (__hrt_system.hrt_start == 1) {
 		sprites[spr].attribute0 &= 0xFF00;

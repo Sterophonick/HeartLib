@@ -90,7 +90,7 @@ TODO:
 
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 98
-#define HRT_BUILD_DATE "060907072018"
+#define HRT_BUILD_DATE "084607142018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -255,6 +255,7 @@ typedef struct
 	u8 __hrt_tiledtext;
 	u8 __hrt_tiledtext_color1;
 	u8 __hrt_tiledtext_color2;
+	u8 __hrt_savemode;
 }gba_system;
 
 #ifdef HRT_ADMIN
@@ -1205,6 +1206,9 @@ These are for the functions with a lot of
 #define BIOSChecksum_UNKNOWN 0x00000000
 #define BIOSChecksum_GBA 0xBAAE187f
 #define BIOSChecksum_NDS 0xBAAE1880
+
+#define SAVE_MODE_SRAM 0
+#define SAVE_MODE_EEPROM 1
 //
 
 ///////////////////////////FUNCTIONS////////////////////////////
@@ -1237,7 +1241,7 @@ void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hflip, u8 vfli
 void hrt_LoadOBJPal(unsigned int * pal, u16 size); //Loads OBJ Palette
 void hrt_LoadOBJGFX(unsigned int * gfx,int size); //loads OBJ GFX
 void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale,s32 y_scale); //Scales and Rotates an object with the affine flag set to 1.
-void hrt_SetOBJXY(u8 spr, s16 x, s16 y); // Sets Position of a Sprite
+void hrt_SetOBJXY(u8 spr, u8 x, u8 y); // Sets Position of a Sprite
 void hrt_SetOffset(u8 no, u32 amount); //Sets offset for bg or obj gfx, tile, or pal data
 u32 hrt_GetOffset(u8 no); //Returns the offset of bg or obj gfx data.
 void hrt_CloneOBJ(int ospr, int nspr); //Creates clone of sprite
@@ -1535,8 +1539,8 @@ u8 hrt_IsOBJHFlip(u8 objno); //Detects whether or not a sprite is horizontally f
 u8 hrt_IsOBJVFlip(u8 objno); //Detects whehter or not a sprite is vertically flipped
 u8 hrt_GetOBJSize(u8 objno); //Returns the size of a sprite
 u8 hrt_GetOBJMode(u8 objno); //Returns the mode of a sprite
-void hrt_SaveByteEEP(u32 offset, u8 value); //Save a byte to EEPROM
-u8 hrt_LoadByteEEP(u32 offset); //Load a byte from EEPROM
+void hrt_SetSaveMode(u8 mode); //Sets the save mode to either SRAM or EEPROM
+void hrt_FillMemory(u32* addr, u32 count, u8 value); //Fills a section of memory with a specified value
 
 #ifdef __cplusplus
 }
