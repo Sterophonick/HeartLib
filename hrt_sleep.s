@@ -2,8 +2,6 @@
 .align
 .pool
 .text
-.align
-.pool
 REG_BASE      = 0x4000000 
 REG_DISPCNT      = 0x00 
 REG_P1CNT      = 0x132 

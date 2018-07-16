@@ -2,6 +2,7 @@
 	.extern	IntrTable
 	.code 32
 	.global	hrt_IntrMain
+	.align
 	
 hrt_IntrMain:
 	mov	r3, #0x4000000		@ REG_BASE
