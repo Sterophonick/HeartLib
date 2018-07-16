@@ -91,7 +91,7 @@ TODO:
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 9
 #define HRT_VERSION_PATCH 8
-#define HRT_BUILD_DATE "010907160218"
+#define HRT_BUILD_DATE "012307162018"
 
 #ifdef  __cplusplus
 #include <iostream>

@@ -1,5 +1,5 @@
 # HeartLib Game Boy Advance Development API
-Comprehensive API for Nintendo GBA inspired by HAMLib and its respective extrension, HEL lib.
+Comprehensive API for Nintendo GBA inspired by HAMLib and its respective extension, HEL lib.
 
 # The library
 This library is undergoing heavy development. It is currenty my most heavily worked on GBA Project.

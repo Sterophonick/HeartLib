@@ -1,5 +1,3 @@
- .align
- .pool
  .section .iwram, "ax", %progbits 
  .align
  .pool
