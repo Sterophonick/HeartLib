@@ -1314,3 +1314,21 @@ u8 hrt_FXGetBlendMode()
 	}
 	return 0;
 }
+
+u8 hrt_DSPIsHBlankUnlocked()
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_DISPCNT & 5;
+	}
+	return 0;
+}
+
+u8 hrt_DSPIsFrameSelect()
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_DISPCNT & 4;
+	}
+	return 0;
+}

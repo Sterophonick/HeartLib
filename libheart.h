@@ -93,7 +93,7 @@ TODO:
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 9
 #define HRT_VERSION_PATCH 8
-#define HRT_BUILD_DATE "071307152018"
+#define HRT_BUILD_DATE "073607152018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -1571,6 +1571,8 @@ HEART_API u8 hrt_FXTarget2IsObjLayerEnabled(); //Detects if the OBJ layer in tar
 HEART_API u8 hrt_FXTarget1IsBackdropEnabled(); //Detects if the backdrop in target 1 of REG_BLDCNT is enabled
 HEART_API u8 hrt_FXTarget2IsBackdropEnabled(); //Detects if the backdrop in target 2 of REG_BLDCNT is enabled
 HEART_API u8 hrt_FXGetBlendMode(); //Returns the blend mode of REG_BLDCNT
+HEART_API u8 hrt_DSPIsHBlankUnlocked(); //Detects if Hblank is unlocked in REG_DISPCNT
+HEART_API u8 hrt_DSPIsFrameSelect(); //Detects if frame select is enabled in REG_DISPCNT
 
 #ifdef __cplusplus
 }
