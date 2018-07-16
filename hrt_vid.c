@@ -526,7 +526,7 @@ void hrt_ConfigBG(u8 bg, u8 priority, u8 tilebase, u8 mosaic, u8 color256, u8 ti
 		REG_BGxCNT(bg) = 0x01 * priority | 0x04 * tilebase | 0x40 * mosaic | 0x80 * color256 | 0x100 * tilemapbase | 0x2000 * wraparound | 0x4000 * dimensions;
 	}
     else {
-        hrt_Assert("HRT_CONFIGBG()", 1, "INVALID ARGUMENT");
+        hrt_Assert("hrt_ConfigBG()", 1, "Invalid Argument");
     }
 }
 
@@ -1329,6 +1329,42 @@ u8 hrt_DSPIsFrameSelect()
 	if(__hrt_system.hrt_start == 1)
 	{
 		return REG_DISPCNT & 4;
+	}
+	return 0;
+}
+
+u8 hrt_DSPIsWin0Enabled()
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_DISPCNT & 0xD;
+	}
+	return 0;
+}
+
+u8 hrt_DSPIsWin1Enabled()
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_DISPCNT & 0xE;
+	}
+	return 0;
+}
+
+u8 hrt_DSPIsOBJWinEnabled()
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_DISPCNT & 0xF;
+	}
+	return 0;
+}
+
+u8 hrt_DSPIsLinearOBJEnabled()
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_DISPCNT &6;
 	}
 	return 0;
 }

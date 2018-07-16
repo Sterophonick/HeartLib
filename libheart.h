@@ -88,12 +88,10 @@ TODO:
 #ifndef LIBHEART_H
 #define LIBHEART_H
 
-#define HEART_API extern
-
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 9
 #define HRT_VERSION_PATCH 8
-#define HRT_BUILD_DATE "085007152018"
+#define HRT_BUILD_DATE "125407162018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -176,6 +174,8 @@ HEART_API  "C" {
 
 /*HeartLib Typedefs
 These are used as shortened types.*/
+#define HEART_API extern
+
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned long u32;
@@ -1573,6 +1573,10 @@ HEART_API u8 hrt_FXTarget2IsBackdropEnabled(); //Detects if the backdrop in targ
 HEART_API u8 hrt_FXGetBlendMode(); //Returns the blend mode of REG_BLDCNT
 HEART_API u8 hrt_DSPIsHBlankUnlocked(); //Detects if Hblank is unlocked in REG_DISPCNT
 HEART_API u8 hrt_DSPIsFrameSelect(); //Detects if frame select is enabled in REG_DISPCNT
+HEART_API u8 hrt_DSPIsWin0Enabled(); //Detects if window 0 is enabled.
+HEART_API u8 hrt_DSPIsWin1Enabled(); //Detects if window 1 is enabled.
+HEART_API u8 hrt_DSPIsOBJWinEnabled(); //Detects if obj window is enabled.
+HEART_API u8 hrt_DSPIsLinearOBJEnabled(); //Detects if linear obj tile mapping is enabled.
 
 #ifdef __cplusplus
 }

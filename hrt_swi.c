@@ -215,7 +215,7 @@ void hrt_BgAffineSet(BGAffineSource *source, BGAffineDest *dest, s32 num)
 
 u32 hrt_GetBiosChecksum(void)
 {
-	register u32 result;
+	register u32 result = 0;
 	if (__hrt_system.hrt_start == 1)
 	{
 	#if   defined   (__thumb__)
