@@ -51,8 +51,8 @@ hrt_Sqrt:
 sqrtexit:
   bx lr 
 
-
 hrt_RegisterRamReset:
+  ldr r8, .L2
   ldr r3, hrt_start
   ldrb r3, [r3]
   cmp r3, #1
@@ -208,4 +208,9 @@ _exit:
 
 hrt_start:
   .word __hrt_system
+  
+ .LC0:
+        .ascii  "This ROM was created using HeartLib.\000"
+.L2:
+        .word   .LC0
   

@@ -93,7 +93,7 @@ TODO:
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 9
 #define HRT_VERSION_PATCH 8
-#define HRT_BUILD_DATE "021507152018"
+#define HRT_BUILD_DATE "065707152018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -151,7 +151,6 @@ HEART_API  "C" {
 #include <stdnoreturn.h>
 #include <wchar.h>
 #include <tgmath.h>
-#include <stdbool.h>
 #include <stddef.h>
 #include <wctype.h>
 #include <stdfix.h>
@@ -1088,8 +1087,6 @@ HEART_API mm_word	mp_writepos;
 #endif
 //eof
 
-const GBFS_FILE *find_first_gbfs_file(const void *start);
-
 /*Function helpers
 These are for the functions with a lot of
  arguments, and serve really good as a way
@@ -1246,16 +1243,7 @@ These are for the functions with a lot of
 // These functions will allow the user control over objects, sound,   //
 //// registers, memory, bitmaps, palettes, and many other things.   ////
 ///////////////////////////////////////////////////////////////
-static inline u32 hrt_GetBiosChecksum(void)
-{
-    register u32 result;
-#if   defined   ( __thumb__ )
-    __asm ("SWI   0x0d\nmov %0,r0\n" :  "=r"(result) :: "r1", "r2", "r3");
-#else
-    __asm ("SWI   0x0d<<16\nmov %0,r0\n" : "=r"(result) :: "r1", "r2", "r3");
-#endif
-    return result;
-}//Returns BIOS Checksum. Return value differs if you are playing on a Prototype GBA, Release GBA, or a Nintendo DS.
+HEART_API u32 hrt_GetBiosChecksum(void);//Returns BIOS Checksum. Return value differs if you are playing on a Prototype GBA, Release GBA, or a Nintendo DS.
 HEART_API void hrt_irqInit(void); //Initialize Interrupts
 HEART_API IntFn *hrt_irqSet(irqMASK mask, IntFn function); //Set Interrupt Function
 HEART_API void hrt_irqEnable(int mask); //Enable Interrupt
@@ -1296,6 +1284,7 @@ HEART_API void hrt_TopWipe(u16 color, int time, int mode); //Wipe from Top
 HEART_API void hrt_BottomWipe(u16 color, int time, int mode); //Wipe from Bottom
 HEART_API void hrt_CircleWipe(u16 color, int time, int mode); //Circle wipe -- beroken for now.
 HEART_API void hrt_CoolScanLines(u16 color, int time, int mode); //Cooler scanlines, acts funny on mGBA.
+HEART_API const GBFS_FILE *find_first_gbfs_file(const void *start);
 HEART_API u16 hrt_GetBGPalEntry(int slot); //Returns Color of BG Palette Entry
 HEART_API u16 hrt_GetOBJPalEntry(int slot); //Returns Color of OBJ Palette Entry
 HEART_API void hrt_SetBGPalEntry(int slot, u16 color); //Sets color of BG Palette Entry
@@ -1373,13 +1362,13 @@ HEART_API u32 hrt_RNGRange(u32 low, u32 high); // Creates a Random number betwee
 HEART_API int __dputchar(int c);
 HEART_API void mbv2_dprintf(char *str, ...); 
 HEART_API void mbv2_dfprintf(int fp, char *str, ...);
-HEART_API int	mbv2_dputchar(int c); 
-HEART_API int	mbv2_dgetch(void);
-HEART_API int	mbv2_dkbhit(void);
-HEART_API int	mbv2_dfopen(const char *file, const char *type);
-HEART_API int	mbv2_dfclose(int fp);
-HEART_API int	mbv2_dfgetc(int fp);
-HEART_API int	mbv2_dfputc(int ch, int fp);
+HEART_API int mbv2_dputchar(int c); 
+HEART_API int mbv2_dgetch(void);
+HEART_API int mbv2_dkbhit(void);
+HEART_API int mbv2_dfopen(const char *file, const char *type);
+HEART_API int mbv2_dfclose(int fp);
+HEART_API int mbv2_dfgetc(int fp);
+HEART_API int mbv2_dfputc(int ch, int fp);
 HEART_API void	mbv2_drewind(int fp);
 HEART_API void hrt_ConfigSIONormal(u8 sc, u8 isc, u8 si_state, u8 soinact, u8 start, u8 length, u8 mode, u8 irq); //Configures REG_SIOCNT
 HEART_API void hrt_ConfigSIOMultiplayer(u8 baudrate, u8 busy, u8 irq); //Configures SIOCNT in multiplayer mode
@@ -1572,6 +1561,9 @@ HEART_API u8 hrt_GetOBJSize(u8 objno); //Returns the size of a sprite
 HEART_API u8 hrt_GetOBJMode(u8 objno); //Returns the mode of a sprite
 HEART_API void hrt_SetSaveMode(u8 mode); //Sets the save mode to either SRAM or EEPROM
 HEART_API void hrt_FillMemory(u32* addr, u32 count, u8 value); //Fills a section of memory with a specified value
+HEART_API u8 hrt_FXGetAlphaSourceLevel(); //Returns alpha blending source level.
+HEART_API u8 hrt_FXGetAlphaDestLevel(); //Returns alpha blending destination level.
+HEART_API u8 hrt_FXGetBlendLevel(); //Returns fade blending value.
 
 #ifdef __cplusplus
 }

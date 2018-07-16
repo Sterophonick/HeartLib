@@ -1224,3 +1224,30 @@ u8 hrt_DSPIsBGEnabled(u8 bgno)
 	}
 	return 0;
 }
+
+u8 hrt_FXGetAlphaSourceLevel()
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_BLDALPHA_L;
+	}
+	return 0;
+}
+
+u8 hrt_FXGetAlphaDestLevel()
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_BLDALPHA_H;
+	}
+	return 0;
+}
+
+u8 hrt_FXGetBlendLevel()
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_BLDY;
+	}
+	return 0;
+}

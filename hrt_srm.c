@@ -5,7 +5,7 @@ u8* SRAM = (u8*)0x0E000000;
 void hrt_SetSaveMode(u8 mode)
 {
 	if (__hrt_system.hrt_start == 1) {
-		__hrt_system.__hrt_savemode == mode;
+		__hrt_system.__hrt_savemode = mode;
 	}
 }
 
