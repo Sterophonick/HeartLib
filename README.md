@@ -1,4 +1,4 @@
-# HeartLib
+# HeartLib Game Boy Advance Development API
 Comprehensive API for Nintendo GBA inspired by HAMLib.
 
 # The library
