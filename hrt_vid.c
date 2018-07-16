@@ -1251,3 +1251,66 @@ u8 hrt_FXGetBlendLevel()
 	}
 	return 0;
 }
+
+u8 hrt_FXTarget1IsBgLayerEnabled(u8 bgno)
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_BLDCNT & bgno;
+	}
+	return 0;
+}
+
+u8 hrt_FXTarget2IsBgLayerEnabled(u8 bgno)
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_BLDCNT & (bgno+8);
+	}
+	return 0;
+}
+
+u8 hrt_FXTarget1IsObjLayerEnabled()
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_BLDCNT & 4;
+	}
+	return 0;
+}
+
+u8 hrt_FXTarget2IsObjLayerEnabled()
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_BLDCNT & 0xC;
+	}
+	return 0;
+}
+
+u8 hrt_FXTarget1IsBackdropEnabled()
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_BLDCNT & 5;
+	}
+	return 0;
+}
+
+u8 hrt_FXTarget2IsBackdropEnabled()
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return REG_BLDCNT & 0xD;
+	}
+	return 0;
+}
+
+u8 hrt_FXGetBlendMode()
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		return (REG_BLDCNT & 0x6) + (REG_BLDCNT & 0x7);
+	}
+	return 0;
+}

@@ -215,9 +215,9 @@ void hrt_BgAffineSet(BGAffineSource *source, BGAffineDest *dest, s32 num)
 
 u32 hrt_GetBiosChecksum(void)
 {
+	register u32 result;
 	if (__hrt_system.hrt_start == 1)
 	{
-		register u32 result;
 	#if   defined   (__thumb__)
 		__asm ("SWI   0x0d\nmov %0,r0\n" :  "=r"(result) :: "r1", "r2", "r3");
 	#else

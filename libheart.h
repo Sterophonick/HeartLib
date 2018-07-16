@@ -93,7 +93,7 @@ TODO:
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 9
 #define HRT_VERSION_PATCH 8
-#define HRT_BUILD_DATE "065707152018"
+#define HRT_BUILD_DATE "071307152018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -1564,6 +1564,13 @@ HEART_API void hrt_FillMemory(u32* addr, u32 count, u8 value); //Fills a section
 HEART_API u8 hrt_FXGetAlphaSourceLevel(); //Returns alpha blending source level.
 HEART_API u8 hrt_FXGetAlphaDestLevel(); //Returns alpha blending destination level.
 HEART_API u8 hrt_FXGetBlendLevel(); //Returns fade blending value.
+HEART_API u8 hrt_FXTarget1IsBgLayerEnabled(u8 bgno); //Detects if a BG is enabled in target 1 of REG_BLDCNT
+HEART_API u8 hrt_FXTarget2IsBgLayerEnabled(u8 bgno); //Detects if a BG is enabled in target 2 of REG_BLDCNT
+HEART_API u8 hrt_FXTarget1IsObjLayerEnabled(); //Detects if the OBJ layer in target 1 of REG_BLDCNT is enabled
+HEART_API u8 hrt_FXTarget2IsObjLayerEnabled(); //Detects if the OBJ layer in target 2 of REG_BLDCNT is enabled
+HEART_API u8 hrt_FXTarget1IsBackdropEnabled(); //Detects if the backdrop in target 1 of REG_BLDCNT is enabled
+HEART_API u8 hrt_FXTarget2IsBackdropEnabled(); //Detects if the backdrop in target 2 of REG_BLDCNT is enabled
+HEART_API u8 hrt_FXGetBlendMode(); //Returns the blend mode of REG_BLDCNT
 
 #ifdef __cplusplus
 }
