@@ -141,7 +141,7 @@ void hrt_FXDisableBackdropTarget2(void)
 	}
 }
 
-u8 hrt_FXGetAlphaSourceLevel()
+u8 hrt_FXGetAlphaSourceLevel(void)
 {
 	if(__hrt_system.hrt_start == 1)
 	{
@@ -150,7 +150,7 @@ u8 hrt_FXGetAlphaSourceLevel()
 	return 0;
 }
 
-u8 hrt_FXGetAlphaDestLevel()
+u8 hrt_FXGetAlphaDestLevel(void)
 {
 	if(__hrt_system.hrt_start == 1)
 	{
@@ -159,7 +159,7 @@ u8 hrt_FXGetAlphaDestLevel()
 	return 0;
 }
 
-u8 hrt_FXGetBlendLevel()
+u8 hrt_FXGetBlendLevel(void)
 {
 	if(__hrt_system.hrt_start == 1)
 	{

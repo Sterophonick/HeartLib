@@ -91,7 +91,7 @@ TODO:
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 9
 #define HRT_VERSION_PATCH 8
-#define HRT_BUILD_DATE "051607202018"
+#define HRT_BUILD_DATE "055007202018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -463,7 +463,7 @@ typedef struct {
 #define XNOR !^
 //
 
-#define USE_EEPROM  const char __sm[13] = "EEPROM_Vnnn";
+#define USE_EEPROM  const char __sm[13] = "EEPROM_Vnnn"
 #define USE_SRAM const char __sm[13] = "SRAM_Vnnn"
 #define USE_FLASH const char __sm[13] = "FLASH_Vnnn"
 #define USE_FLASH512 const char __sm[13] = "FLASH512_Vnnn"
@@ -480,7 +480,6 @@ typedef struct {
 #define MODE_5_HEIGHT 120
 //
 
-#define ODD(v)                         ((v)&1)
 #define MIN(a,b)                       (((a)<(b))?(a):(b))
 #define MID(a,b,c)                     (MAX(MIN((a),(b)),MIN((a),(c)))
 #define MAX(a,b)                       (((a)>(b))?(a):(b))
@@ -1560,22 +1559,23 @@ HEART_API u8 hrt_GetOBJSize(u8 objno); //Returns the size of a sprite
 HEART_API u8 hrt_GetOBJMode(u8 objno); //Returns the mode of a sprite
 HEART_API void hrt_SetSaveMode(u8 mode); //Sets the save mode to either SRAM or EEPROM
 HEART_API void hrt_FillMemory(u32* addr, u32 count, u8 value); //Fills a section of memory with a specified value
-HEART_API u8 hrt_FXGetAlphaSourceLevel(); //Returns alpha blending source level.
-HEART_API u8 hrt_FXGetAlphaDestLevel(); //Returns alpha blending destination level.
-HEART_API u8 hrt_FXGetBlendLevel(); //Returns fade blending value.
+HEART_API u8 hrt_FXGetAlphaSourceLevel(void); //Returns alpha blending source level.
+HEART_API u8 hrt_FXGetAlphaDestLevel(void); //Returns alpha blending destination level.
+HEART_API u8 hrt_FXGetBlendLevel(void); //Returns fade blending value.
 HEART_API u8 hrt_FXTarget1IsBgLayerEnabled(u8 bgno); //Detects if a BG is enabled in target 1 of REG_BLDCNT
 HEART_API u8 hrt_FXTarget2IsBgLayerEnabled(u8 bgno); //Detects if a BG is enabled in target 2 of REG_BLDCNT
-HEART_API u8 hrt_FXTarget1IsObjLayerEnabled(); //Detects if the OBJ layer in target 1 of REG_BLDCNT is enabled
-HEART_API u8 hrt_FXTarget2IsObjLayerEnabled(); //Detects if the OBJ layer in target 2 of REG_BLDCNT is enabled
-HEART_API u8 hrt_FXTarget1IsBackdropEnabled(); //Detects if the backdrop in target 1 of REG_BLDCNT is enabled
-HEART_API u8 hrt_FXTarget2IsBackdropEnabled(); //Detects if the backdrop in target 2 of REG_BLDCNT is enabled
-HEART_API u8 hrt_FXGetBlendMode(); //Returns the blend mode of REG_BLDCNT
-HEART_API u8 hrt_DSPIsHBlankUnlocked(); //Detects if Hblank is unlocked in REG_DISPCNT
-HEART_API u8 hrt_DSPIsFrameSelect(); //Detects if frame select is enabled in REG_DISPCNT
-HEART_API u8 hrt_DSPIsWin0Enabled(); //Detects if window 0 is enabled.
-HEART_API u8 hrt_DSPIsWin1Enabled(); //Detects if window 1 is enabled.
-HEART_API u8 hrt_DSPIsOBJWinEnabled(); //Detects if obj window is enabled.
-HEART_API u8 hrt_DSPIsLinearOBJEnabled(); //Detects if linear obj tile mapping is enabled.
+HEART_API u8 hrt_FXTarget1IsObjLayerEnabled(void); //Detects if the OBJ layer in target 1 of REG_BLDCNT is enabled
+HEART_API u8 hrt_FXTarget2IsObjLayerEnabled(void); //Detects if the OBJ layer in target 2 of REG_BLDCNT is enabled
+HEART_API u8 hrt_FXTarget1IsBackdropEnabled(void); //Detects if the backdrop in target 1 of REG_BLDCNT is enabled
+HEART_API u8 hrt_FXTarget2IsBackdropEnabled(void); //Detects if the backdrop in target 2 of REG_BLDCNT is enabled
+HEART_API u8 hrt_FXGetBlendMode(void); //Returns the blend mode of REG_BLDCNT
+HEART_API u8 hrt_DSPIsHBlankUnlocked(void); //Detects if Hblank is unlocked in REG_DISPCNT
+HEART_API u8 hrt_DSPIsFrameSelect(void); //Detects if frame select is enabled in REG_DISPCNT
+HEART_API u8 hrt_DSPIsWin0Enabled(void); //Detects if window 0 is enabled.
+HEART_API u8 hrt_DSPIsWin1Enabled(void); //Detects if window 1 is enabled.
+HEART_API u8 hrt_DSPIsOBJWinEnabled(void); //Detects if obj window is enabled.
+HEART_API u8 hrt_DSPIsLinearOBJEnabled(void); //Detects if linear obj tile mapping is enabled.
+HEART_API u8 hrt_IsNumberOdd(u32 number); //Detects if a number is an  number
 
 #ifdef __cplusplus
 }

@@ -236,3 +236,13 @@ void hrt_FillMemory(u32* addr, u32 count, u8 value)
 		}
 	}
 }
+
+u8 hrt_IsNumberOdd(u32 number)
+{
+	register u8 ret = 0;
+	if(__hrt_system.hrt_start == 1)
+	{
+		ret = (number % 2 == 1) ? 1 : 0;
+	}
+	return ret;
+}
