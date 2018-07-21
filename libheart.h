@@ -91,7 +91,7 @@ TODO:
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 9
 #define HRT_VERSION_PATCH 8
-#define HRT_BUILD_DATE "012307162018"
+#define HRT_BUILD_DATE "051607202018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -232,13 +232,18 @@ typedef     u16     ufp16;  //8:8 fixed point
 typedef     u32     ufp32;  //24:8 fixed point
 typedef s32 FIXED;
 
-typedef float dec8;
-typedef double dec16;
-typedef long double ldec16;
+typedef float f16;
+typedef double f32;
+typedef long double lf32;
 
 typedef long int dword;
 typedef short int word;
 typedef char byte;
+
+#define reg register
+#define sivoid static inline void
+#define svoid static void
+#define ivoid inline void
 
 /*HeartLib System variables
 DON'T TOUCH THESE*/
@@ -1374,7 +1379,6 @@ HEART_API void hrt_ConfigSIONormal(u8 sc, u8 isc, u8 si_state, u8 soinact, u8 st
 HEART_API void hrt_ConfigSIOMultiplayer(u8 baudrate, u8 busy, u8 irq); //Configures SIOCNT in multiplayer mode
 HEART_API void hrt_ConfigLowSCCNT(u8 baudrate, u8 cts, u8 paritycnt, u8 length, u8 fifo, u8 parityenable, u8 send, u8 receive, u8 irq); //Configures REG_SIOCNT in UART mode
 HEART_API void hrt_ConfigJOYCNT(u8 reset, u8 receive, u8 send, u8 irq); //Configures JoyCNT
-HEART_API void hrt_EnableSoftReset(void); //Enables Soft-Reset
 HEART_API u16 hrt_GenerateColorFromRGB(u32 red, u32 green, u32 blue); //Creates a 15-bit BGR color value from 24-bit RGB values
 HEART_API u16 hrt_GetRedValueFromBGR(u16 bgr); //Returns the 24-bit RGB Red Color value from a 15-bit BGR color value
 HEART_API u16 hrt_GetGreenValueFromBGR(u16 bgr); //Returns the 24-bit RGB Green Color value from a 15-bit BGR color value
@@ -1392,12 +1396,7 @@ HEART_API u16 hrt_GetPixelInMode4(int x, int y); //Gives Mode 4 Pixel
 HEART_API u16 hrt_GetPixelInMode3(int x, int y); //Gives Mode 3 Pixel
 HEART_API u8 hrt_GetOBJX(u8 sprite); //Returns OBJ X position
 HEART_API u8 hrt_GetOBJY(u8 sprite); //Returns OBJ Y position
-HEART_API void hrt_DisableCopyOAMOnVBL(void); //Disables Copying OAM on VblankIntWait();
-HEART_API void hrt_EnableCopyOAMOnVBL(void); //Enables Copying OAM on VblankIntWait();
-HEART_API void hrt_DisablemmFrameonVBL(void); //Disables mmFrame() on VblankIntrWait();
-HEART_API void hrt_EnablemmFrameonVBL(void); //Enables mmFrame() on VblankIntrWait();
 HEART_API void hrt_DisableRTC(void); //Disables RTC
-HEART_API void hrt_DisableSoftReset(void); //Disables Soft-reset on VblankIntrWait();
 HEART_API u16 hrt_PointOBJTowardsPosition(u8 sprite, int x, int y); //Rotates a sprite toward a set direction
 HEART_API void hrt_MoveSpriteInDirection(u8 sprite, u16 direction, int steps); //Moves sprite in a set direction
 HEART_API void hrt_SetOBJX(u8 spr, u8 x); //Sets just the X position of a sprite

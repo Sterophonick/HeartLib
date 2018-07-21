@@ -117,17 +117,6 @@ void hrt_VblankIntrWait(void)
 {
     if (__hrt_system.hrt_start == 1) {
         asm volatile("swi 0x05"::);
-        if (__hrt_system.__copyoamonvbl == 1) {
-            hrt_CopyOAM();
-        }
-        if (__hrt_system.__hrt_reset == 1) {
-            if ((keyDown(KEY_A))AND(keyDown(KEY_B))AND(keyDown(KEY_SELECT))AND(keyDown(KEY_START))) {
-                asm volatile("swi 0x00"::);
-            }
-        }
-        if (__hrt_system.__hrt_mmframeonvbl == 1) {
-            mmFrame();
-        }
     }
 }
 

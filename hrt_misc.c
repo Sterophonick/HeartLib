@@ -12,20 +12,28 @@ extern void sleep12();
 extern void __hrt_exittoez4();
 extern gba_system __hrt_system;
 
+extern char* hrt_lang_crash_msg;
+extern char* hrt_lang_crash_func;
+extern char* hrt_lang_crash_arg;
+extern char* hrt_lang_crash_reset;
+
 void hrt_Assert(char* func, int arg, char* desc)
 {
     if (__hrt_system.hrt_start == 1) {
-        u8* buf[256];
         hrt_SetDSPMode(3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
         hrt_FillScreen(0x0000);
-        hrt_PrintOnBitmap(0, 0, "HEARTLIB HAS CRASHED!");
-        hrt_PrintOnBitmap(0, 9, "FUNCTION: ");
-        hrt_PrintOnBitmap(80, 9, (char*)func);
-        sprintf((char*)buf, "ARG: %d", arg);
-        hrt_PrintOnBitmap(0, 18, (char*)buf);
-        hrt_PrintOnBitmap(0, 27, (char*)desc);
-        hrt_PrintOnBitmap(0, 54, "PLEASE RESET THE CONSOLE");
-        while (1);
+        hrt_PrintOnBitmap(0, 0, (char*)hrt_lang_crash_msg);
+        hrt_PrintOnBitmap(0, 8, (char*)hrt_lang_crash_func);
+        hrt_PrintOnBitmap(80, 8, (char*)func);
+        hrt_PrintOnBitmap(0, 16, "%s%d", (char*)hrt_lang_crash_arg, (int)arg);
+        hrt_PrintOnBitmap(0, 24, (char*)desc);
+        hrt_PrintOnBitmap(0, 32, (char*)hrt_lang_crash_reset);
+		hrt_irqDisable(IRQ_VBLANK);
+		hrt_irqDisable(IRQ_KEYPAD);
+        while (1)
+		{
+			hrt_VblankIntrWait();
+		}
     }
 }
 
@@ -99,36 +107,9 @@ void hrt_EnableRTC(void)
 	__hrt_system.__hrt_rtc = 1;
 }
 
-void hrt_EnableSoftReset(void)
-{
-	__hrt_system.__hrt_reset = 1;
-}
-
-void hrt_DisableSoftReset(void)
-{
-	__hrt_system.__hrt_reset = 0;
-}
-
 void hrt_DisableRTC(void)
 {
 	__hrt_system.__hrt_rtc = 0;
-}
-
-void hrt_EnablemmFrameonVBL(void)
-{
-	__hrt_system.__hrt_mmframeonvbl = 1;
-}
-void hrt_DisablemmFrameonVBL(void)
-{
-	__hrt_system.__hrt_mmframeonvbl = 0;
-}
-void hrt_EnableCopyOAMOnVBL(void)
-{
-	__hrt_system.__copyoamonvbl = 1;
-}
-void hrt_DisableCopyOAMOnVBL(void)
-{
-	__hrt_system.__copyoamonvbl = 0;
 }
 
 int hrt_GetRTCTime(void)
