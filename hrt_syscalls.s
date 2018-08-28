@@ -3,6 +3,7 @@
  .text
 .code 16
 .global hrt_Crash
+.global hrt_Assert
 .global	hrt_Sqrt
 .global hrt_RegisterRamReset
 .global	hrt_ArcTan
@@ -161,7 +162,7 @@ hrt_SoundDriverInit:
   swi		26 << 16
   bx		lr
   
-MidiKey2Freq:
+hrt_MidiKey2Freq:
   ldr r3, hrt_start 
   ldrb r3, [r3]
   cmp r3, #1
@@ -177,22 +178,6 @@ hrt_SoundGetJumpList:
   cmp r3, #1
   bxne lr
   swi		42 << 16
-  bx		lr
-  
-hrt_SoftReset:
-    ldr r3, hrt_start
-  ldrb r3, [r3]
-  cmp r3, #1
-  bxne lr
-	ldr		r3, =0x03007FFA
-	strb	r0,[r3, #0]
-	ldr		r3, =0x04000208
-	mov		r2, #0
-	strb	r2, [r3, #0]
-	ldr		r1, =0x03007f00
-	mov		sp, r1
-	swi		1
-	swi		0
   bx		lr
   
 hrt_CustomHalt:
@@ -213,4 +198,3 @@ hrt_start:
         .ascii  "This ROM was created using HeartLib.\000"
 .L2:
         .word   .LC0
-  

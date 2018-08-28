@@ -134,7 +134,7 @@ void hrt_LoadBGPal(u16* data, u16 length)
 {
     if (__hrt_system.hrt_start == 1) {
         int i;
-        for (i = 0; i < 255; i++) {
+        for (i = 0; i < length; i++) {
             BGPaletteMem[i+__hrt_system.hrt_offsetBGPal] = data[i];
         }
         __hrt_system.hrt_offsetBGPal += length;

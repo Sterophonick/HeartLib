@@ -28,7 +28,6 @@ void hrt_Assert(char* func, int arg, char* desc)
         hrt_PrintOnBitmap(0, 16, "%s%d", (char*)hrt_lang_crash_arg, (int)arg);
         hrt_PrintOnBitmap(0, 24, (char*)desc);
         hrt_PrintOnBitmap(0, 32, (char*)hrt_lang_crash_reset);
-		hrt_irqDisable(IRQ_VBLANK);
 		hrt_irqDisable(IRQ_KEYPAD);
         while (1)
 		{

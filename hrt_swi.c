@@ -61,12 +61,7 @@ inline void hrt_LZ77UnCompWRAM(u32 source, u32 dest)
 inline void hrt_LZ77UnCompVRAM(u32 source, u32 dest)
 {
     if (__hrt_system.hrt_start == 1) {
-        asm("mov r0, %0\n"
-            "mov r1, %1\n"
-            "swi 0x12\n"
-            :
-            : "r" (source), "r" (dest)
-            : "r0", "r1");
+	hrt_SystemCall(0x12);
     }
 }
 inline void hrt_RLUnCompVram(u32 source, u32 dest)
@@ -178,6 +173,13 @@ u8 hrt_ConfigRegisterRamReset(u8 clearwram, u8 cleariwram, u8 clearpal, u8 clear
 	return 0;
 }
 
+void hrt_SoftReset(void)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		hrt_SystemCall(0);
+	}
+}
 void hrt_BitUnPack(void* source, void* destination, BUP* data)
 {
 	if (__hrt_system.hrt_start == 1)

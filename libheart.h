@@ -260,8 +260,10 @@ typedef struct
 	u8  __hrt_reset;
 	u8 __hrt_rtc;
 	u8 __hrt_tiledtext;
+	u8 __hrt_tiledtext_color0;
 	u8 __hrt_tiledtext_color1;
 	u8 __hrt_tiledtext_color2;
+	u8 __hrt_tiledtext_palno;
 	u8 __hrt_savemode;
 }gba_system;
 
@@ -1010,11 +1012,11 @@ HEART_API mm_byte	mp_mix_seg;
 HEART_API mm_word	mp_writepos;
 
 #define mmCreateEffect(name, id, rate, handle, volume, panning)       mm_sound_effect (name) = { \
-{ id} ,	\
-(int)(1.0f * (1 << 10)), \
-0,		\
-255,	\
-255, \
+{ (id)} ,	\
+(rate), \
+(handle),		\
+(volume),	\
+(panning), \
 } 
 
 //
@@ -1576,6 +1578,7 @@ HEART_API u8 hrt_DSPIsWin1Enabled(void); //Detects if window 1 is enabled.
 HEART_API u8 hrt_DSPIsOBJWinEnabled(void); //Detects if obj window is enabled.
 HEART_API u8 hrt_DSPIsLinearOBJEnabled(void); //Detects if linear obj tile mapping is enabled.
 HEART_API u8 hrt_IsNumberOdd(u32 number); //Detects if a number is an  number
+HEART_API void hrt_ClearTiledText(void); //Clears the tiled text map.
 
 #ifdef __cplusplus
 }
