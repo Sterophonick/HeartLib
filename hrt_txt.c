@@ -8,6 +8,18 @@ u16 _____colors[3] = {
 	0x0000, 0x0421, 0x7FFF
 };
 
+void hrt_SetPaletteOfTiledText(u8 pal)
+{
+	int i;
+	if(__hrt_system.hrt_start == 1) {
+		__hrt_system.__hrt_tiledtext_palno = pal;
+		for(i=0; i < 1024; i++)
+		{
+			VRAM[i] |= (pal << 12);
+		}
+	}
+}
+
 void hrt_SetBitmapTextColors(u16 outside, u16 inside)
 {
 	if(__hrt_system.hrt_start == 1) {
@@ -82,6 +94,7 @@ void hrt_PrintOnTilemap(u8 tx, u8 ty, char* str, ...)
 			VRAM[(ty*32+tx+pos)%1024] += 32;
             pos += 1;
         }
+		hrt_SetPaletteOfTiledText(__hrt_system.__hrt_tiledtext_palno);
 	}
 }
 

@@ -27,19 +27,19 @@ void hrt_DrawFullLargeScrollMap()
 	}
 }
 
-void hrt_SetLargeScrollMapX(s32 x)
+void hrt_SetLargeScrollMapX(s32 x, u8 i)
 {
 	if (__hrt_system.hrt_start == 1)
 	{
-		gGameMap.layer[1].scroll.x = x;
+		gGameMap.layer[i].scroll.x = x;
 	}
 }
 
-void hrt_SetLargeScrollMapY(s32 y)
+void hrt_SetLargeScrollMapY(s32 y, u8 i)
 {
 	if (__hrt_system.hrt_start == 1)
 	{
-		gGameMap.layer[1].scroll.y = y;
+		gGameMap.layer[i].scroll.y = y;
 	}
 }
 
@@ -79,4 +79,41 @@ void hrt_DrawMapLayerStripV(int layerIdx, int srcX)
 			dest[((scrollYChar + i) & 31) * 32] = gGameMap.tileset[(tile << 2) + xOffset + yOffset];
 		}
 	}
+}
+
+void hrt_SetLargeMapXY(s32 x, s32 y)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		gGameMap.layer[1].scroll.y = y;
+		gGameMap.layer[1].scroll.x = x;
+	}
+}
+
+
+s32 hrt_GetLargeMapX(u8 i)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		return gGameMap.layer[i].scroll.x;
+	}
+	return 0;
+}
+
+s32 hrt_GetLargeMapY(u8 i)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		return gGameMap.layer[i].scroll.y;
+	}
+	return 0;
+}
+
+u8 hrt_GetNumLayers()
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		return gGameMap.numLayers;
+	}
+	return 0;
 }

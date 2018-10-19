@@ -91,7 +91,7 @@ TODO:
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 9
 #define HRT_VERSION_PATCH 8
-#define HRT_BUILD_DATE "055007202018"
+#define HRT_BUILD_DATE "064610192018"
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -255,14 +255,9 @@ typedef struct
 	u32 hrt_offsetBGMap;
 	u32 hrt_offsetBGTile;
 	u32 hrt_offsetBGPal;
-	u8 __hrt_mmframeonvbl;
-	u8 __copyoamonvbl;
 	u8  __hrt_reset;
 	u8 __hrt_rtc;
 	u8 __hrt_tiledtext;
-	u8 __hrt_tiledtext_color0;
-	u8 __hrt_tiledtext_color1;
-	u8 __hrt_tiledtext_color2;
 	u8 __hrt_tiledtext_palno;
 	u8 __hrt_savemode;
 }gba_system;
@@ -1498,8 +1493,8 @@ HEART_API void hrt_DSPWinOut1DisableOBJ(void); //Disables Sprites for WinOut 1
 HEART_API void hrt_DSPWinOut1EnableBlend(void); //Enables Blend for WinOut 1
 HEART_API void hrt_DSPWinOut1DisableBlend(void); //Disables Blend for WinOut 1
 HEART_API int hrt_DecodeJPEG(const unsigned char *data, volatile JPEG_OUTPUT_TYPE *out, int outWidth, int outHeight); //Decodes a JPEG Image. (FINALLY)
-HEART_API void hrt_SetLargeScrollMapX(s32 x); //X Scrolls a large map
-HEART_API void hrt_SetLargeScrollMapY(s32 y); //Y Scrolls a large map
+HEART_API void hrt_SetLargeScrollMapX(s32 x, u8 i); //X Scrolls a large map
+HEART_API void hrt_SetLargeScrollMapY(s32 y, u8 i); //Y Scrolls a large map
 HEART_API void hrt_SetBitmapTextColors(u16 outside, u16 inside); //Sets colors of the bitmap text engine
 HEART_API void hrt_SetBGXY(u8 bg, s16 x, s16 y); //Sets X and Y coordinates of a BG
 HEART_API void hrt_SetBGX(u8 bg, s16 x); //Sets X coordinate of a BG
@@ -1579,6 +1574,10 @@ HEART_API u8 hrt_DSPIsOBJWinEnabled(void); //Detects if obj window is enabled.
 HEART_API u8 hrt_DSPIsLinearOBJEnabled(void); //Detects if linear obj tile mapping is enabled.
 HEART_API u8 hrt_IsNumberOdd(u32 number); //Detects if a number is an  number
 HEART_API void hrt_ClearTiledText(void); //Clears the tiled text map.
+HEART_API s32 hrt_GetLargeMapX(u8 i); //Returns large map X
+HEART_API s32 hrt_GetLargeMapY(u8 i); //Returns large map Y
+HEART_API u8 hrt_GetNumLayers(); //Return large map layer count
+HEART_API void hrt_SetPaletteOfTiledText(u8 pal); //Sets palette of tiled text.
 
 #ifdef __cplusplus
 }
