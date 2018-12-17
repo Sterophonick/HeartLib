@@ -430,3 +430,51 @@ void hrt_DSPWinOutOBJDisableBlend(void)
 		REG_WINOUT &= NOT_BIT13;
 	}
 }
+
+void hrt_FXToggleBGTarget1(u8 layer)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		REG_BLDCNT ^= 1UL << layer;
+	}
+}
+
+void hrt_FXToggleBGTarget2(u8 layer)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		REG_BLDCNT ^= 1UL << (8+layer);
+	}
+}
+
+void hrt_FXToggleOBJTarget1(void)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		REG_BLDCNT ^= BIT04;
+	}
+}
+
+void hrt_FXToggleOBJTarget2(void)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		REG_BLDCNT ^= BIT12;
+	}
+}
+
+void hrt_FXToggleBackdropTarget1(void)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		REG_BLDCNT ^= BIT05;
+	}
+}
+
+void hrt_FXToggleBackdropTarget2(void)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		REG_BLDCNT ^= BIT13;
+	}
+}

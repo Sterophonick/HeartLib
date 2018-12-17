@@ -104,14 +104,14 @@ void hrt_AGBPrint(const char *msg)
 void hrt_ColdReset(void)
 {
     if (__hrt_system.hrt_start == 1) {
-        asm volatile("swi 0x26"::);
+       hrt_SystemCall(0x26);
     }
 }
 
 void hrt_VblankIntrWait(void)
 {
     if (__hrt_system.hrt_start == 1) {
-        asm volatile("swi 0x05"::);
+        hrt_SystemCall(5);
     }
 }
 

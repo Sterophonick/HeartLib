@@ -37,7 +37,7 @@ extern gba_system __hrt_system;
 #define JPEG_FIXED_TYPE long int
 #endif
 #if JPEG_OUTPUT_RGB8
-#define JPEG_OUTPUT_TYPE unsigned int
+#define unsigned short unsigned int
 
 #define JPEG_Convert_Limit(VALUE) ((VALUE) < 0 ? 0 : (VALUE) > 255 ? 255 : (VALUE))
 
@@ -486,15 +486,15 @@ JPEG_FUNCTION_END(JPEG_DecodeCoefficients)
 static void JPEG_ConvertBlock(
 	signed char *YBlock, signed char *CbBlock, signed char *CrBlock,
 	int YHorzFactor, int YVertFactor, int CbHorzFactor, int CbVertFactor, int CrHorzFactor, int CrVertFactor, int horzMax, int vertMax,
-	char M211, volatile JPEG_OUTPUT_TYPE *out, int outStride, const unsigned char *ComponentRange)
+	char M211, volatile unsigned short *out, int outStride, const unsigned char *ComponentRange)
 {
 	int px, py;
 	ComponentRange += 32;
 #if JPEG_FASTER_M211
 	if (M211) {
 		for (py = 0; py < 2 * JPEG_DCTSIZE; py += 2) {
-			volatile JPEG_OUTPUT_TYPE *row = &out[outStride * py];
-			volatile JPEG_OUTPUT_TYPE *rowEnd = row + JPEG_DCTSIZE * 2;
+			volatile unsigned short *row = &out[outStride * py];
+			volatile unsigned short *rowEnd = row + JPEG_DCTSIZE * 2;
 			for (; row < rowEnd; row += 2, YBlock += 2, CbBlock++, CrBlock++) {
 				int Cb = *CbBlock, Cr = *CrBlock;
 				JPEG_Convert(row[0], YBlock[0], Cb, Cr);
@@ -513,7 +513,7 @@ static void JPEG_ConvertBlock(
 		signed char *YScan = YBlock + (py * YVertFactor >> 8) * (horzMax * YHorzFactor >> 8);
 		signed char *CbScan = CbBlock + (py * CbVertFactor >> 8) * (horzMax * CbHorzFactor >> 8);
 		signed char *CrScan = CrBlock + (py * CrVertFactor >> 8) * (horzMax * CrHorzFactor >> 8);
-		volatile JPEG_OUTPUT_TYPE *row = &out[outStride * py];
+		volatile unsigned short *row = &out[outStride * py];
 		for (px = 0; px < horzMax; px++, row++) {
 			int Y = YScan[px * YHorzFactor >> 8];
 			int Cb = CbScan[px * CbHorzFactor >> 8];
@@ -540,7 +540,7 @@ static void JPEG_ConvertBlock(
 	(void)outStride;
 }
 JPEG_FUNCTION_END(JPEG_ConvertBlock)
-int JPEG_Decoder_ReadImage(JPEG_Decoder *decoder, const unsigned char **dataBase, volatile JPEG_OUTPUT_TYPE *out, int outWidth, int outHeight)
+int JPEG_Decoder_ReadImage(JPEG_Decoder *decoder, const unsigned char **dataBase, volatile unsigned short *out, int outWidth, int outHeight)
 {
 	JPEG_FrameHeader *frame = &decoder->frame;
 	JPEG_ScanHeader *scan = &decoder->scan;
@@ -567,7 +567,7 @@ int JPEG_Decoder_ReadImage(JPEG_Decoder *decoder, const unsigned char **dataBase
 	int restartInterval = decoder->restartInterval;
 	void(*ConvertBlock) (signed char *, signed char *, signed char *,
 		int, int, int, int, int, int, int, int, char,
-		volatile JPEG_OUTPUT_TYPE *, int, const unsigned char *)
+		volatile unsigned short *, int, const unsigned char *)
 		= &JPEG_ConvertBlock;
 	void(*IDCT_Columns) (JPEG_FIXED_TYPE *) = &JPEG_IDCT_Columns;
 	void(*IDCT_Rows) (const JPEG_FIXED_TYPE *, signed char *, int) = &JPEG_IDCT_Rows;
@@ -1010,7 +1010,7 @@ int JPEG_HuffmanTable_Read(JPEG_HuffmanTable *huffmanTable, const unsigned char 
 	*dataBase = data;
 	return 1;
 }
-int hrt_DecodeJPEG(const unsigned char *data, volatile JPEG_OUTPUT_TYPE *out, int outWidth, int outHeight)
+int hrt_DecodeJPEG(const unsigned char *data, volatile unsigned short *out, int outWidth, int outHeight)
 {
 	if (__hrt_system.hrt_start == 1)
 	{

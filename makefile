@@ -4,7 +4,7 @@ CPPFILES =
 SOURCES = hrt_oam.c hrt_snd.c hrt_srm.c hrt_swi.c hrt_txt.c hrt_vid.c hrt_gbfs.c hrt_start.c hrt_int.c hrt_font.c hrt_misc.c hrt_tmr.c hrt_pcx.c hrt_rng.c hrt_mbv2.c hrt_sio.c hrt_jpg.c hrt_newlib.c hrt_aplib.c hrt_strip.c hrt_ndsbios.c hrt_fx.c hrt_lang.c
 ASM = hrt_intdispatch.s hrt_syscalls.s hrt_sleep.s hrt_ez4exit.s hrt_rtc.s
 LIBS= libheart.a
-CFLAGS = -DHRT_WITH_LIBHEART -DHRT_USE_MBV2LIB -Wall -Ofast -march=armv4t -Wno-switch -Wno-multichar -ffast-math -mlong-calls -mcpu=arm7tdmi -mtune=arm7tdmi -marm -faggressive-loop-optimizations -fverbose-asm 
+CFLAGS = -DHRT_WITH_LIBHEART -DHRT_USE_MBV2LIB -Wall -Os -march=armv4t -Wno-switch -Wno-multichar -ffast-math -mlong-calls -mcpu=arm7tdmi -mtune=arm7tdmi -marm -faggressive-loop-optimizations -mapcs-frame
 ARCH = -mthumb -mthumb-interwork
 SPECS = -specs=gba.specs
 PREFIX = C:\devkitPro\devkitARM\bin\arm-none-eabi-
@@ -14,7 +14,7 @@ build/%.o: %.c $(HEADERS)
 build/%.o: %.cpp $(HEADERS)
 	$(PREFIX)g++ $(CFLAGS) $(ARCH) -c $< -o $@
 build/%.out: %.s
-	$(PREFIX)as  -mthumb -mthumb-interwork -mcpu=arm7tdmi $< -o $@
+	$(PREFIX)as -march=armv4t -mthumb-interwork -mcpu=arm7tdmi $< -o $@
 libheart.a: $(OBJECTS)
 	$(PREFIX)ar -r libheart.a $(OBJECTS)
 	cp libheart.a C:\devkitPro\devkitARM\arm-none-eabi\lib

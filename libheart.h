@@ -1,8 +1,8 @@
 //File: libheart.h - The NEW Definitive GBA Header File
-//Date: June 2018
+//Date: December 2018
 //Author: Sterophonick
 //Derived from gba.h by eloist and agb_lib.h by me, Inspired by Hamlib's mygba.h, who da heck remembers that library amirite?
-//This library is designed to make GBA Programming easy to do, and for everyone to be able to do it, not unlike HAMLib (rip 2001-2011 =( may god rest ur soul)
+//This library is designed to make GBA Programming easy to do, and for everyone to be able to do it, not unlike HAMLib (rip ngine.de 2001-2011 =( may god rest ur soul)
 //This Library is Dedicated to Stevendog98, who is wanting to make GBA Games. This is to give him a head start on the GBA.
 //This Library is going to be huge. It will probably be one of the best GBA Libraries in recent years.
 
@@ -21,10 +21,14 @@
  /* Please make some issues or pull requests on the source page of this library, so you
  can make some contributions or fixes to HeartLib. Support is greatly appreciated! */
 
-//Some functions don't work yet so be patient!
+//Some functions don't work properly yet so be patient!
 /*
 	List:
-		Sprites moving in a specified direction
+		Sprites moving/pointing in a specified direction
+		Palette fading (Grayscale, other palettes, bright, dark)
+		BG Affine (working properly tho)
+		Setting palette no. of BG
+		Drawing triangles
 */
 
 /*
@@ -47,7 +51,7 @@ GBA Specs:
 	Screen Wipes (Mode 3 at the moment)
 	Sprites
 	Affine Transformation - BG and OBJ
-	Sound (Shoutouts to 3DSage)
+	Sound (Shoutouts to libgba)
 	DMA
 	Palettes
 	Scrolling
@@ -72,16 +76,18 @@ GBA Specs:
 	Typedefs
 	Defines for making those larger functions easier to understand.
 	Real-Time Clock Stuff (Shoutouts to Dwedit)
-	Mode 7?
-	Exit to EZ4 (Shoutouts to Dwedit and GodBolt)
+	Exit to EZ4/EZ-OMEGA (Shoutouts to Dwedit and GodBolt)
 	aPlib
 	Scrolling Map Edge Drawing
-	JPEG Decoding for Serious image compression
+	JPEG Decoding for Serious image compression (but its slow af)
 	Some Nintendo DS BIOS functions
 
 TODO:
 		Exit to flashcart for other cards
 		Finish Easy Build System
+		Pogoshell plugin things?
+		
+		Rumble?
 */
 #ifdef HRT_WITH_LIBHEART
 
@@ -90,8 +96,10 @@ TODO:
 
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 9
-#define HRT_VERSION_PATCH 8
-#define HRT_BUILD_DATE "064610192018"
+#define HRT_VERSION_PATCH 5
+#define HRT_BUILD_DATE "040412162018"
+
+#define HEART_API extern
 
 #ifdef  __cplusplus
 #include <iostream>
@@ -174,7 +182,6 @@ HEART_API  "C" {
 
 /*HeartLib Typedefs
 These are used as shortened types.*/
-#define HEART_API extern
 
 typedef unsigned char u8;
 typedef unsigned short u16;
@@ -225,6 +232,17 @@ typedef signed long long s64;
 typedef signed int sint;
 
 typedef void(*IntFn)(void);
+typedef void (*FuncPtr)(void);
+typedef int (*IntFPtr)(void);
+typedef u8 (*u8FPtr)(void);
+typedef u16 (*u16FPtr)(void);
+typedef u32 (*u32FPtr)(void);
+typedef u64 (*u64FPtr)(void);
+typedef s8 (*s8FPtr)(void);
+typedef s16 (*s16FPtr)(void);
+typedef s32 (*s32FPtr)(void);
+typedef s64 (*s64FPtr)(void);
+
 
 typedef     s16     sfp16;  //1:7:8 fixed point
 typedef     s32     sfp32;  //1:19:8 fixed point
@@ -236,13 +254,13 @@ typedef float f16;
 typedef double f32;
 typedef long double lf32;
 
+typedef long long int qword;
 typedef long int dword;
 typedef short int word;
 typedef char byte;
 
-#define reg register
-#define sivoid static inline void
-#define svoid static void
+#define stivoid static inline void
+#define stvoid static void
 #define ivoid inline void
 
 /*HeartLib System variables
@@ -288,12 +306,6 @@ HEART_API u8* ROM1;
 HEART_API u8* ROM2;
 HEART_API u8* EEPROM;
 
-typedef struct ADGlobals
-{
-	const unsigned char *data;
-	int last_sample;
-	int last_index;
-} ADGlobals;
 typedef struct t_BGAffineSource {
      s32 x;				/*!< Original data's center X coordinate (8bit fractional portion)			*/
      s32 y;				/*!< Original data's center Y coordinate (8bit fractional portion)			*/
@@ -399,10 +411,6 @@ typedef struct _GameMap
 #define BG_SCRN_VRAM(n) ((u16*)(0x6000000 + ((n) << 11))) 
 #define fptochar(x) ((x) >> 11) 
 #define inttofp(x) ((x) << 8) 
-
-#ifndef JPEG_OUTPUT_TYPE
-#define JPEG_OUTPUT_TYPE unsigned short
-#endif
 
 typedef struct {
 	u16 SrcNum;				// Source Data Byte Size
@@ -599,7 +607,7 @@ typedef struct {
 
 //All GBA Registers - Copied from GBATek
 #define REG_DISPCNT *(u16*)0x04000000 //Display Control
-#define REG_UNKNOWN0 *(u16*)0x04000002 //Unknown - Green Swap?
+#define REG_UNKNOWN0 *(u16*)0x04000002 //Undocumented - Green Swap?
 #define REG_DISPSTAT *(u16*)0x04000004 //General LCD Status
 #define REG_VCOUNT *(vu16*)0x04000006 //Vertical Counter
 #define REG_BG0CNT *(u16*)0x04000008 //BG0 Control
@@ -758,10 +766,10 @@ typedef struct {
 #define KEY_DOWN 128
 #define KEY_R 256
 #define KEY_L 512
-#define KEY_ALL 0x03FF
+#define KEY_ANY 0x03FF
 #define KEYS        *(volatile u16*)0x04000130
 #define keyDown(k)  (~KEYS & k)
-#define KEY_ANY_PRESSED (keyDown(KEY_A))OR(keyDown(KEY_B))OR(keyDown(KEY_L))OR(keyDown(KEY_R))OR(keyDown(KEY_SELECT))OR(keyDown(KEY_START))OR(keyDown(KEY_UP))OR(keyDown(KEY_DOWN))OR(keyDown(KEY_LEFT))OR(keyDown(KEY_RIGHT))
+#define KEY_ANY_PRESSED (~KEYS & KEY_ANY)
 //
 #define	REG_BASE	0x04000000
 #define RIGHT(n)    (n)
@@ -802,11 +810,11 @@ typedef struct {
 ////
 //
 
-#define HRT_EWRAM_DATA __attribute__((section(".ewram")))
-#define HRT_IWRAM_DATA __attribute__((section(".iwram")))
-#define HRT_EWRAM_BSS __attribute__((section(".sbss")))
-#define HRT_EWRAM_CODE __attribute__((section(".ewram"), long_call))
-#define HRT_IWRAM_CODE __attribute__((section(".iwram"), long_call))
+#define EWRAM_DATA __attribute__((section(".ewram")))
+#define IWRAM_DATA __attribute__((section(".iwram")))
+#define EWRAM_BSS __attribute__((section(".sbss")))
+#define EWRAM_CODE __attribute__((section(".ewram"), long_call))
+#define IWRAM_CODE __attribute__((section(".iwram"), long_call))
 
 #define ATTR_ALIGNED(n)             __attribute__ ((aligned(n)))
 #define ATTR_PACKED                 __attribute__ ((packed))
@@ -1092,118 +1100,113 @@ HEART_API mm_word	mp_writepos;
 These are for the functions with a lot of
  arguments, and serve really good as a way
  of simplifying everything.*/
-#define OBJ_SIZE_8X8 0
-#define OBJ_SIZE_16X16 1
-#define OBJ_SIZE_32X32 2
-#define OBJ_SIZE_64X64 3
-#define OBJ_SHAPE_NORMAL 0
-#define OBJ_SHAPE_WIDE 1
-#define OBJ_SHAPE_TALL 2
-#define OBJ_SHAPE_PROHIBITED 3
-#define OBJ_AFFINE_ENABLE 1
-#define OBJ_AFFINE_DISABLE 0
-#define OBJ_HFLIP_ENABLE 1
-#define OBJ_HFLIP_DISABLE 0
-#define OBJ_VFLIP_ENABLE 1
-#define OBJ_VFLIP_DISABLE 0
-#define OBJ_DOUBLESIZE_ENABLE 1
-#define OBJ_DOUBLESIZE_DISABLE 0
-#define OBJ_PAL_16 0
-#define OBJ_PAL_256 1
-#define OBJ_MODE_NORMAL 0
-#define OBJ_MODE_ALPHA 1
-#define OBJ_MODE_WINDOW 2
-#define OBJ_MODE_PROHIBITED 3
-#define OBJ_MOSAIC_ENABLE 1
-#define OBJ_MOSAIC_DISABLE 0
-
-#define FX_TARGET1_BG0_ENABLE 1
-#define FX_TARGET1_BG0_DISABLE 0
-#define FX_TARGET1_BG1_ENABLE 1
-#define FX_TARGET1_BG1_DISABLE 0
-#define FX_TARGET1_BG2_ENABLE 1
-#define FX_TARGET1_BG2_DISABLE 0
-#define FX_TARGET1_BG3_ENABLE 1
-#define FX_TARGET1_BG3_DISABLE 0
-#define FX_TARGET1_OBJ_ENABLE 1
-#define FX_TARGET1_OBJ_DISABLE 0
-#define FX_TARGET1_BACKDROP_ENABLE 1
-#define FX_TARGET1_BACKDROP_DISABLE 0
-#define FX_MODE_NONE 0
-#define FX_MODE_ALPHA 1
-#define FX_MODE_BRIGHTEN 2
-#define FX_MODE_DARKEN 3
-#define FX_TARGET2_BG0_ENABLE 1
-#define FX_TARGET2_BG0_DISABLE 0
-#define FX_TARGET2_BG1_ENABLE 1
-#define FX_TARGET2_BG1_DISABLE 0
-#define FX_TARGET2_BG2_ENABLE 1
-#define FX_TARGET2_BG2_DISABLE 0
-#define FX_TARGET2_BG3_ENABLE 1
-#define FX_TARGET2_BG3_DISABLE 0
-#define FX_TARGET2_OBJ_ENABLE 1
-#define FX_TARGET2_OBJ_DISABLE 0
-#define FX_TARGET2_BACKDROP_ENABLE 1
-#define FX_TARGET2_BACKDROP_DISABLE 0
-
-#define DSP_MODE_0 0
-#define DSP_MODE_1 1
-#define DSP_MODE_2 2
-#define DSP_MODE_3 3
-#define DSP_MODE_4 4
-#define DSP_MODE_5 5
-#define DSP_CGB_ENABLE 1
-#define DSP_FRAMESELECT_ENABLE 1
-#define DSP_FRAMESELECT_DISABLE 0
-#define DSP_UNLOCKED_HBLANK_ENABLE 1
-#define DSP_UNLOCKED_HBLANK_DISABLE 0
-#define DSP_OBJ_MAP_1D 1
-#define DSP_OBJ_MAP_2D 0
-#define DSP_BG0_ENABLE 1
-#define DSP_BG0_DISABLE 0
-#define DSP_BG1_ENABLE 1
-#define DSP_BG1_DISABLE 0
-#define DSP_BG2_ENABLE 1
-#define DSP_BG2_DISABLE 0
-#define DSP_BG3_ENABLE 1
-#define DSP_BG3_DISABLE 0
-#define DSP_OBJ_ENABLE 1
-#define DSP_OBJ_DISABLE 0
-#define DSP_WIN0_ENABLE 1
-#define DSP_WIN0_DISABLE 0
-#define DSP_WIN1_ENABLE 1
-#define DSP_WIN1_DISABLE 0
-#define DSP_OBJWIN_ENABLE 1
-#define DSP_OBJWIN_DISABLE 0
-
-#define PAL_BG 0
-#define PAL_OBJ 1
-
-#define OFF_OAMDATA 0
-#define OFF_OAMPAL 1
-#define OFF_BGMAP 2
-#define OFF_BGPAL 3
-#define OFF_BGTILE 4
-
-#define BGXCNT_SIZE_256X256 0
-#define BGXCNT_SIZE_512X256 1
-#define BGXCNT_SIZE_256X512 2
-#define BGXCNT_SIZE_512X512 3
-
-#define DMA_INCREMENT 0
-#define DMA_DECREMENT 1
-#define DMA_FIXED 2
-#define DMA_INC_AND_RELOAD 3
-
-#define DMA_TIMING_IMMEDIATE 0
-#define DMA_TIMING_VBLANK 1
-#define DMA_TIMING_HBLANK 2
-#define DMA_TIMING_AUDIOFIFO 3
-
-#define BG_0            (0)
-#define BG_1            (1)
-#define BG_2            (2)
-#define BG_3            (3)
+enum
+{
+	OBJ_SIZE_8X8 = 0,
+	OBJ_SIZE_16X16 = 1,
+	OBJ_SIZE_32X32 = 2,
+	OBJ_SIZE_64X64 = 3,
+	OBJ_SHAPE_NORMAL = 0,
+	OBJ_SHAPE_WIDE = 1,
+	OBJ_SHAPE_TALL = 2,
+	OBJ_SHAPE_PROHIBITED = 3,
+	OBJ_AFFINE_DISABLE = 0,
+	OBJ_AFFINE_ENABLE = 1,
+	OBJ_HFLIP_DISABLE = 0,
+	OBJ_HFLIP_ENABLE = 1,
+	OBJ_VFLIP_DISABLE = 0,
+	OBJ_VFLIP_ENABLE = 1,
+	OBJ_DOUBLESIZE_DISABLE = 0,
+	OBJ_DOUBLESIZE_ENABLE = 1,
+	OBJ_PAL_16 = 0,
+	OBJ_PAL_256 = 1,
+	OBJ_MODE_NORMAL = 0,
+	OBJ_MODE_ALPHA = 1,
+	OBJ_MODE_WINDOW = 2,
+	OBJ_MODE_PROHIBITED = 3,
+	OBJ_MOSAIC_DISABLE = 0,
+	OBJ_MOSAIC_ENABLE = 1,
+	FX_TARGET1_BG0_DISABLE = 0,
+	FX_TARGET1_BG0_ENABLE = 1,
+	FX_TARGET1_BG1_DISABLE = 0,
+	FX_TARGET1_BG1_ENABLE = 1,
+	FX_TARGET1_BG2_DISABLE = 0,
+	FX_TARGET1_BG2_ENABLE = 1,
+	FX_TARGET1_BG3_DISABLE = 0,
+	FX_TARGET1_BG3_ENABLE = 1,
+	FX_TARGET1_OBJ_DISABLE = 0,
+	FX_TARGET1_OBJ_ENABLE = 1,
+	FX_TARGET1_BACKDROP_DISABLE = 0,
+	FX_TARGET1_BACKDROP_ENABLE = 1,
+	FX_MODE_NONE = 0,
+	FX_MODE_ALPHA = 1,
+	FX_MODE_BRIGHTEN = 2,
+	FX_MODE_DARKEN = 3,
+	FX_TARGET2_BG0_DISABLE = 0,
+	FX_TARGET2_BG0_ENABLE = 1,
+	FX_TARGET2_BG1_DISABLE = 0,
+	FX_TARGET2_BG1_ENABLE = 1,
+	FX_TARGET2_BG2_DISABLE = 0,
+	FX_TARGET2_BG2_ENABLE = 1,
+	FX_TARGET2_BG3_DISABLE = 0,
+	FX_TARGET2_BG3_ENABLE = 1,
+	FX_TARGET2_OBJ_DISABLE = 0,
+	FX_TARGET2_OBJ_ENABLE = 1,
+	FX_TARGET2_BACKDROP_DISABLE = 0,
+	FX_TARGET2_BACKDROP_ENABLE = 1,
+	DSP_MODE_0 = 0,
+	DSP_CGB_ENABLE = 1,
+	DSP_MODE_1 = 1,
+	DSP_MODE_2 = 2,
+	DSP_MODE_3 = 3,
+	DSP_MODE_4 = 4,
+	DSP_MODE_5 = 5,
+	DSP_FRAMESELECT_ENABLE = 1,
+	DSP_FRAMESELECT_DISABLE = 0,
+	DSP_UNLOCKED_HBLANK_ENABLE = 1,
+	DSP_UNLOCKED_HBLANK_DISABLE = 0,
+	DSP_OBJ_MAP_2D = 0,
+	DSP_OBJ_MAP_1D = 1,
+	DSP_BG0_ENABLE = 1,
+	DSP_BG0_DISABLE = 0,
+	DSP_BG1_ENABLE = 1,
+	DSP_BG1_DISABLE = 0,
+	DSP_BG2_ENABLE = 1,
+	DSP_BG2_DISABLE = 0,
+	DSP_BG3_ENABLE = 1,
+	DSP_BG3_DISABLE = 0,
+	DSP_OBJ_ENABLE = 1,
+	DSP_OBJ_DISABLE = 0,
+	DSP_WIN0_ENABLE = 1,
+	DSP_WIN0_DISABLE = 1,
+	DSP_WIN1_ENABLE = 1,
+	DSP_WIN1_DISABLE = 1,
+	DSP_OBJWIN_ENABLE = 1,
+	DSP_OBJWIN_DISABLE = 1,
+	PAL_BG = 0,
+	PAL_OBJ = 1,
+	OFF_OAMDATA = 0,
+	OFF_OAMPAL = 1,
+	OFF_BGMAP = 2,
+	OFF_BGPAL = 3,
+	OFF_BGTILE = 4,
+	BGXCNT_SIZE_256X256 = 0,
+	BGXCNT_SIZE_512X256 = 1,
+	BGXCNT_SIZE_256X512 = 2,
+	BGXCNT_SIZE_512X512 = 3,
+	DMA_INCREMENT = 0,
+	DMA_DECREMENT = 1,
+	DMA_FIXED = 2,
+	DMA_INC_AND_RELOAD = 3,
+	DMA_TIMING_IMMEDIATE = 0,
+	DMA_TIMING_VBLANK = 1,
+	DMA_TIMING_HBLANK = 2,
+	DMA_TIMING_AUDIOFIFO = 3,
+	BG_0 = 0,
+	BG_1 = 1,
+	BG_2 = 2,
+	BG_3 = 3,
+};
 
 #define RRR_CLEAR_EWRAM_ENABLE 1
 #define RRR_CLEAR_EWRAM_DISABLE 0
@@ -1240,6 +1243,8 @@ These are for the functions with a lot of
 #define SAVE_MODE_EEPROM 1
 //
 
+#define AgbMain main //allow devkitadv style of int main
+
 ///////////////////////////FUNCTIONS////////////////////////////
 // These functions will allow the user control over objects, sound,   //
 //// registers, memory, bitmaps, palettes, and many other things.   ////
@@ -1261,7 +1266,7 @@ HEART_API void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hfli
 HEART_API void hrt_LoadOBJPal(unsigned int * pal, u16 size); //Loads OBJ Palette
 HEART_API void hrt_LoadOBJGFX(unsigned int * gfx,int size); //loads OBJ GFX
 HEART_API void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale,s32 y_scale); //Scales and Rotates an object with the affine flag set to 1.
-HEART_API void hrt_SetOBJXY(u8 spr, u8 x, u8 y); // Sets Position of a Sprite
+HEART_API void hrt_SetOBJXY(u8 spr, s16 x, s16 y); // Sets Position of a Sprite
 HEART_API void hrt_SetOffset(u8 no, u32 amount); //Sets offset for bg or obj gfx, tile, or pal data
 HEART_API u32 hrt_GetOffset(u8 no); //Returns the offset of bg or obj gfx data.
 HEART_API void hrt_CloneOBJ(int ospr, int nspr); //Creates clone of sprite
@@ -1387,16 +1392,15 @@ HEART_API int hrt_GetRTCMinute_H(void); //Gets the Minute of the RTC (WIP)
 HEART_API int hrt_GetRTCMinute_L(void); //Gets the Minute of the RTC (WIP)
 HEART_API int hrt_GetRTCSecond_H(void); //Gets the Second of the RTC (WIP)
 HEART_API int hrt_GetRTCSecond_L(void); //Gets the Second of the RTC (WIP)
-HEART_API void hrt_EditBG(u8 bg, int x, int y, int x_size, int y_size, int angle, int centerx, int centery); //Edits BG
-HEART_API u16 hrt_GetPixelInMode4(int x, int y); //Gives Mode 4 Pixel
+HEART_API u8 hrt_GetPixelInMode4(int x, int y); //Gives Mode 4 Pixel
 HEART_API u16 hrt_GetPixelInMode3(int x, int y); //Gives Mode 3 Pixel
 HEART_API u8 hrt_GetOBJX(u8 sprite); //Returns OBJ X position
 HEART_API u8 hrt_GetOBJY(u8 sprite); //Returns OBJ Y position
 HEART_API void hrt_DisableRTC(void); //Disables RTC
 HEART_API u16 hrt_PointOBJTowardsPosition(u8 sprite, int x, int y); //Rotates a sprite toward a set direction
 HEART_API void hrt_MoveSpriteInDirection(u8 sprite, u16 direction, int steps); //Moves sprite in a set direction
-HEART_API void hrt_SetOBJX(u8 spr, u8 x); //Sets just the X position of a sprite
-HEART_API void hrt_SetOBJY(u8 spr, u8 Y); //Sets just the Y position of a sprite
+HEART_API void hrt_SetOBJX(u8 spr, s16 x); //Sets just the X position of a sprite
+HEART_API void hrt_SetOBJY(u8 spr, s16 Y); //Sets just the Y position of a sprite
 HEART_API void hrt_DSPSetBGMode(u8 mode); //Sets the REG_DISPCNT BG Mode.
 HEART_API void hrt_DSPEnableForceBlank(void); //Enables Force Blank
 HEART_API void hrt_DSPDisableForceBlank(void); //Disables Force Blank
@@ -1492,7 +1496,7 @@ HEART_API void hrt_DSPWinOut1EnableOBJ(void); //Enables Sprites for WinOut 1
 HEART_API void hrt_DSPWinOut1DisableOBJ(void); //Disables Sprites for WinOut 1
 HEART_API void hrt_DSPWinOut1EnableBlend(void); //Enables Blend for WinOut 1
 HEART_API void hrt_DSPWinOut1DisableBlend(void); //Disables Blend for WinOut 1
-HEART_API int hrt_DecodeJPEG(const unsigned char *data, volatile JPEG_OUTPUT_TYPE *out, int outWidth, int outHeight); //Decodes a JPEG Image. (FINALLY)
+HEART_API int hrt_DecodeJPEG(const unsigned char *data, volatile unsigned short *out, int outWidth, int outHeight); //Decodes a JPEG Image. (FINALLY)
 HEART_API void hrt_SetLargeScrollMapX(s32 x, u8 i); //X Scrolls a large map
 HEART_API void hrt_SetLargeScrollMapY(s32 y, u8 i); //Y Scrolls a large map
 HEART_API void hrt_SetBitmapTextColors(u16 outside, u16 inside); //Sets colors of the bitmap text engine
@@ -1533,7 +1537,6 @@ HEART_API void hrt_JumpExecutionToAddress(u32* address); //Jumps execution to an
 HEART_API u8 hrt_GetOBJPalette(u8 objno); //Returns palette of a Sprite
 HEART_API u8 hrt_GetOBJPriority(u8 objno); //Returns Priority of a sprite
 HEART_API u16 hrt_GetOBJOffset(u8 objno); //Returns offset of a sprite
-HEART_API int hrt_ExtractMultipleBits(int number, int k, int p); //Returns the value of multiple bits
 HEART_API void hrt_EnableOBJAffine(u8 objno); //Enables Affine for a sprite
 HEART_API void hrt_DisableOBJAffine(u8 objno); //Disables Affine for a sprite
 HEART_API s16 hrt_GetBGX(u8 bg); //Returns the X Position of a background 
@@ -1572,12 +1575,43 @@ HEART_API u8 hrt_DSPIsWin0Enabled(void); //Detects if window 0 is enabled.
 HEART_API u8 hrt_DSPIsWin1Enabled(void); //Detects if window 1 is enabled.
 HEART_API u8 hrt_DSPIsOBJWinEnabled(void); //Detects if obj window is enabled.
 HEART_API u8 hrt_DSPIsLinearOBJEnabled(void); //Detects if linear obj tile mapping is enabled.
-HEART_API u8 hrt_IsNumberOdd(u32 number); //Detects if a number is an  number
+HEART_API u8 hrt_IsNumberOdd(u32 number); //Detects if a number is an odd number
 HEART_API void hrt_ClearTiledText(void); //Clears the tiled text map.
 HEART_API s32 hrt_GetLargeMapX(u8 i); //Returns large map X
 HEART_API s32 hrt_GetLargeMapY(u8 i); //Returns large map Y
-HEART_API u8 hrt_GetNumLayers(); //Return large map layer count
+HEART_API u8 hrt_GetNumLayers(void); //Return large map layer count
 HEART_API void hrt_SetPaletteOfTiledText(u8 pal); //Sets palette of tiled text.
+HEART_API void hrt_SetPaletteOfBGMap(u16 mapdata, u16 size, u8 pal); //Sets the palette of a BG Map.
+HEART_API void hrt_EnableGreenSwap(void); //Enables Green Swap
+HEART_API void hrt_DisableGreenSwap(void); //Disables Green Swap
+HEART_API void hrt_EnableBGWraparound(void); //Enables BG Wraparound (BG 2 and 3 only) (also how did I miss this one!??!)
+HEART_API void hrt_DisableBGWraparound(void); //Disbles BG Wraparound (BG 2 and 3 only) (also how did I miss this one!??!)
+HEART_API void hrt_AffineBG(u8 layer, s32 angle, u32 zoom, u32 cx, u32 cy); //Rotates and scales a background
+HEART_API void hrt_AddByteToMemGroup8(u8* offset, int value, u32 wordcount); //Adds a value to each byte in a group of memory
+HEART_API void hrt_AddByteToMemGroup16(u16* offset, int value, u32 wordcount); //Adds a value to each byte in a group of memory
+HEART_API void hrt_AddByteToMemGroup32(u32* offset, int value, u32 wordcount); //Adds a value to each byte in a group of memory
+HEART_API void hrt_DrawBitmapSector(u16* pbg,u16 x, u16 y, u16 w, u16 h); //Draws a sector of a bitmap in mode 3 (!!!NOTE!!! USES DMA 3)
+HEART_API void hrt_DrawHollowRectangle(int r, int c, int width, int height, u16 color, int mode); //Draw a hollow rectangle
+HEART_API void hrt_DSPToggleBG(u8 bgno); //Toggles a BG in the display register
+HEART_API void hrt_FXToggleBGTarget1(u8 layer); //Toggles a BG in the blend register (target 1)
+HEART_API void hrt_FXToggleBGTarget2(u8 layer); //Toggles a BG in the blend register (target 2)
+HEART_API void hrt_DSPToggleOBJ(void); //Toggles the OBJ layer
+HEART_API void hrt_DSPToggleForceBlank(void); //Toggles Force Blank 
+HEART_API void hrt_DSPToggleLinearOBJ(void); //Toggles Linear OBJ Tile mapping
+HEART_API void hrt_irqToggle(int mask); //Toggles an interrupt
+HEART_API void hrt_ToggleOBJAffine(u8 objno); //Toggles the Affine bit of a sprite
+HEART_API void hrt_ToggleOBJVFlip(u8 objno); //Toggles the VFlip bit of a sprite
+HEART_API void hrt_ToggleOBJHFlip(u8 objno); //Toggles the HFlip bit of a sprite
+HEART_API void hrt_FXToggleOBJTarget1(void); //Toggles OBJ in the blend register (target 1)
+HEART_API void hrt_FXToggleOBJTarget2(void); //Toggles OBJ in the blend register (target 2)
+HEART_API u8 hrt_SwapNibbles(u8 n); //Swaps two nybbles in a single byte
+HEART_API void hrt_EZFSetRompage(u16 page); //Function for EZ-Flash cartridges only, but it allows access to the ROM Page. Located in IWRAM.
+HEART_API u16 hrt_SwapBytesInWord(u16 word); //Swaps two bytes in a word
+HEART_API int hrt_SwapWordsInDWord(u32 dword); //Swaps two words (16bit) in a dword (32bit)
+HEART_API void hrt_FXToggleBackdropTarget1(void); //Toggles the backdrop in the blend register (target 1)
+HEART_API void hrt_FXToggleBackdropTarget2(void); //Toggles the backdrop in the blend register (target 2)
+HEART_API void hrt_ToggleOBJMosaic(u8 objno); //Toggles mosaic for a sprite
+HEART_API void hrt_ToggleOBJDoubleSize(u8 objno); //Toggles OBJ Double size
 
 #ifdef __cplusplus
 }

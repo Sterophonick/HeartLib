@@ -101,13 +101,9 @@ const s16 COS[360] = {  256,  255,  255,  255,  255,  255,  254,  254,  253,  25
 void hrt_CopyOAM(void)
 {
 	if (__hrt_system.hrt_start == 1) {
-		u16 loop;
-		u16* temp;
+		register u16* temp;
 		temp = (u16*)sprites;
-		for (loop = 0; loop < 128 * 4; loop++)
-		{
-			OAM[loop] = temp[loop];
-		}
+		memcpy(OAM, temp, 128*4);
 	}
 }
 void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset)
@@ -130,7 +126,7 @@ void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hflip, u8 vfli
 void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale, s32 y_scale)
 {
 	if (__hrt_system.hrt_start == 1) {
-		s32 pa, pb, pc, pd;
+		register s32 pa, pb, pc, pd;
 		pa = ((x_scale) * (s32)COS[angle % 360]) >> 8;
 		pb = ((y_scale) * (s32)SIN[angle % 360]) >> 8;
 		pc = ((x_scale) * (s32)-SIN[angle % 360]) >> 8;
@@ -141,29 +137,27 @@ void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale, s32 y_scale)
 		rotData[rotDataIndex].pd = pd;
 	}
 }
-void hrt_SetOBJX(u8 spr, u8 x)
+void hrt_SetOBJX(u8 spr, s16 x)
 {
 	if (__hrt_system.hrt_start == 1) {
 		sprites[spr].attribute1 &= 0xFE00;
-		sprites[spr].attribute1 |= x;
+		sprites[spr].attribute1 |= x % 511;
 	}
 }
 
-void hrt_SetOBJY(u8 spr, u8 y)
+void hrt_SetOBJY(u8 spr, s16 y)
 {
 	if (__hrt_system.hrt_start == 1) {
 		sprites[spr].attribute0 &= 0xFF00;
-		sprites[spr].attribute0 |= y;
+		sprites[spr].attribute0 |= y % 255;
 	}
 }
 
-void hrt_SetOBJXY(u8 spr, u8 x, u8 y)
+void hrt_SetOBJXY(u8 spr, s16 x, s16 y)
 {
 	if (__hrt_system.hrt_start == 1) {
-		sprites[spr].attribute0 &= 0xFF00;
-		sprites[spr].attribute0 |= y;
-		sprites[spr].attribute1 &= 0xFE00;
-		sprites[spr].attribute1 |= x;
+		hrt_SetOBJX(spr, x);
+		hrt_SetOBJY(spr, y);
 	}
 }
 
@@ -180,8 +174,8 @@ void hrt_CloneOBJ(int ospr, int nspr) //duplicates a Sprite
 
 void hrt_MoveSpriteInDirection(u8 sprite, u16 direction, int steps)
 {
-	int x = hrt_GetOBJX(sprite);
-	int y = hrt_GetOBJY(sprite);
+	register int x = hrt_GetOBJX(sprite);
+	register int y = hrt_GetOBJY(sprite);
 	if (__hrt_system.hrt_start == 1)
 	{
 		x += steps * SIN[direction];
@@ -191,8 +185,8 @@ void hrt_MoveSpriteInDirection(u8 sprite, u16 direction, int steps)
 }
 
 s32 math_atan2 (FIXED y, FIXED x) {
-	FIXED xabs, yabs;
-	FIXED f, g;
+	register FIXED xabs, yabs;
+	register FIXED f, g;
 
 	x = x << 8;
 	y = y << 8;
@@ -236,11 +230,11 @@ u16 hrt_PointOBJTowardsPosition(u8 sprite, int x, int y)
 {
 	if (__hrt_system.hrt_start == 1)
 	{
-		u16 temp;
-		int dx, dy;
+		register u16 temp;
+		register int dx, dy;
 		dx = x - hrt_GetOBJX(sprite);
 		dy = y - hrt_GetOBJY(sprite);
-		temp = math_atan2(dy, dx) % 360;
+		temp = hrt_ArcTan2(x, y) % 360;
 		return temp;
 	}
 	return 0;
@@ -248,7 +242,7 @@ u16 hrt_PointOBJTowardsPosition(u8 sprite, int x, int y)
 
 u8 hrt_GetOBJX(u8 sprite)
 {
-	u8 spriteX = 0;
+	register u8 spriteX = 0;
 	if (__hrt_system.hrt_start == 1)
 	{
 		spriteX = (((s16)(sprites[sprite].attribute1 << 7)) >> 7) + (4 << (sprites[sprite].attribute1 >> 14));
@@ -259,7 +253,7 @@ u8 hrt_GetOBJX(u8 sprite)
 
 u8 hrt_GetOBJY(u8 sprite)
 {
-	u8 spriteY = 0;
+	register u8 spriteY = 0;
 	if (__hrt_system.hrt_start == 1)
 	{
 		spriteY = (((s16)(sprites[sprite].attribute0 << 8)) >> 8) + (4 << (sprites[sprite].attribute1 >> 14));
@@ -513,3 +507,45 @@ u8 hrt_GetOBJMode(u8 objno)
 	}
 	return 0;
 }
+
+void hrt_ToggleOBJAffine(u8 objno)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		sprites[objno].attribute0 ^= (1 << 8);
+	}
+}
+
+void hrt_ToggleOBJHFlip(u8 objno)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		sprites[objno].attribute1 ^= 12;
+	}
+}
+
+
+void hrt_ToggleOBJVFlip(u8 objno)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		sprites[objno].attribute1 ^= 13;
+	}
+}
+
+void hrt_ToggleOBJMosaic(u8 objno)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		sprites[objno].attribute0 ^= 12;
+	}
+}
+
+void hrt_ToggleOBJDoubleSize(u8 objno)
+{
+	if (__hrt_system.hrt_start == 1)
+	{
+		sprites[objno].attribute0 ^= 9;
+	}
+}
+

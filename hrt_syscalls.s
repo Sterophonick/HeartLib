@@ -23,6 +23,8 @@
 .global hrt_JumpExecutionToAddress
 .global _start
 .global _exit
+.global hrt_CopyOAM
+.global sprites
 .arm
 
 hrt_JumpExecutionToAddress:
@@ -187,7 +189,6 @@ hrt_CustomHalt:
   bxne lr
   swi		39 << 16
   bx		lr
-  
 _exit:
   b _start
 

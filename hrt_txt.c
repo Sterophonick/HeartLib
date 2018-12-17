@@ -1,6 +1,6 @@
 #include "libheart.h"
 extern gba_system __hrt_system;
-const unsigned char font_matrixBitmap[6080];
+extern unsigned char font_matrixBitmap[6080];
 u16* tram = (u16*)0x06000800;
 char __outstr2[32];
 
@@ -10,7 +10,7 @@ u16 _____colors[3] = {
 
 void hrt_SetPaletteOfTiledText(u8 pal)
 {
-	int i;
+	register int i;
 	if(__hrt_system.hrt_start == 1) {
 		__hrt_system.__hrt_tiledtext_palno = pal;
 		for(i=0; i < 1024; i++)
@@ -30,8 +30,8 @@ void hrt_SetBitmapTextColors(u16 outside, u16 inside)
 
 void hrt_DrawChar(int mode, int left, int top, char letter) {
     if (__hrt_system.hrt_start == 1) {
-        int x, y;
-		u8 temp;
+        register int x, y;
+		register u8 temp;
         for (y = 0; y < 8; y++)
             for (x = 0; x < 8; x++) {
 				temp = font_matrixBitmap[(letter - 32) * 64 + y * 8 + x];
@@ -50,7 +50,7 @@ void hrt_PrintOnBitmap(int left, int top, char *str, ...) {
 		va_start(args, str);
 		vsprintf(__outstr2, str, args);
 		va_end(args);
-        int pos = 0;
+        register int pos = 0;
         while (*string) {
             hrt_DrawChar(3, left + pos, top, *string++);
             pos += 8;
@@ -61,7 +61,7 @@ void hrt_PrintOnBitmap(int left, int top, char *str, ...) {
 void hrt_InitTiledText(u8 bg)
 {
 	BUP temp;
-	u16 i;
+	register u16 i;
     if (__hrt_system.hrt_start == 1) {
 		temp.SrcNum = 6080;
 		temp.SrcBitNum = 8;
@@ -88,7 +88,7 @@ void hrt_PrintOnTilemap(u8 tx, u8 ty, char* str, ...)
 		va_start(args, str);
 		vsprintf(__outstr2, str, args);
 		va_end(args);
-		int pos = 0;
+		register int pos = 0;
         while (*string) {
             VRAM[(ty*32+tx+pos)%1024] = *string++;
 			VRAM[(ty*32+tx+pos)%1024] += 32;
@@ -100,9 +100,9 @@ void hrt_PrintOnTilemap(u8 tx, u8 ty, char* str, ...)
 
 void hrt_ClearTiledText(void)
 {
-	u16 i;
+	register u16 i;
 	if(__hrt_system.hrt_start == 1) {
-		for(i=0; i < 1024; i++)
+		for(i=0; i<1024; i++)
 		{
 			VRAM[i] = 64;
 		}

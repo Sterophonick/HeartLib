@@ -13,7 +13,7 @@ void hrt_InitInterrupt(void) {
 
 void hrt_irqInit(void) {
 	if (__hrt_system.hrt_start == 1) {
-		int i;
+		register int i;
 		for (i = 0; i < MAX_INTS; i++)
 		{
 			IntrTable[i].handler = hrt_dummy;
@@ -32,7 +32,7 @@ IntFn* hrt_SetInterrupt(irqMASK mask, IntFn function) {
 
 IntFn* hrt_irqSet(irqMASK mask, IntFn function) {
 	if (__hrt_system.hrt_start == 1) {
-		int i;
+		register int i;
 		for (i = 0;; i++) {
 			if (!IntrTable[i].mask || IntrTable[i].mask == mask) break;
 		}
@@ -59,6 +59,18 @@ void hrt_irqEnable(int mask) {
 		if (mask & IRQ_VCOUNT) REG_DISPSTAT |= LCDC_VCNT;
 		REG_IE |= mask;
 		REG_IME = 1;
+	}
+}
+
+void hrt_irqToggle(int mask) {
+	if (__hrt_system.hrt_start == 1) {
+		REG_IME = 0;
+
+		if (mask & IRQ_VBLANK) REG_DISPSTAT ^= LCDC_VBL;
+		if (mask & IRQ_HBLANK) REG_DISPSTAT ^= LCDC_HBL;
+		if (mask & IRQ_VCOUNT) REG_DISPSTAT ^= LCDC_VCNT;
+		REG_IE ^= mask;
+		REG_IME ^= 1;
 	}
 }
 

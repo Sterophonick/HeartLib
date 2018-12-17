@@ -47,7 +47,7 @@ u32 hrt_CreateRNG(void)
 {
 	if (__hrt_system.hrt_start == 1)
 	{
-		u32 y;
+		register u32 y;
 		if (--left < 0)
 			return(hrt_ReloadRNG());
 		y = *next++;
