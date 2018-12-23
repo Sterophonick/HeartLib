@@ -21,17 +21,17 @@ void hrt_DecodePCX(const u8 *PCXBuffer, u16 * ScreenAddr, u16* Palette)
 {
 	if (__hrt_system.hrt_start == 1) {
 		u8 Buf[240];
-		int c, l, r, g, b;
-		int i;
+		register int c, l, r, g, b;
+		register int i;
 		u16 *Scrn = ScreenAddr;
 		pcx_header *header = (pcx_header *)PCXBuffer;
-		u8 *Data = (u8*)PCXBuffer + sizeof(pcx_header);
-		int Width = (header->x2 - header->x1) + 1;
-		int Height = (header->y2 - header->y1) + 1;
+		register u8 *Data = (u8*)PCXBuffer + sizeof(pcx_header);
+		register int Width = (header->x2 - header->x1) + 1;
+		register int Height = (header->y2 - header->y1) + 1;
 		Width = ((Width + 1) >> 1) << 1;
 		if (Width > 240 || Height > 160) return;
-		u8 *wptr = Buf;
-		int j, k;
+		register u8 *wptr = Buf;
+		register int j, k;
 		for (j = 0; j < Height; j++)
 		{
 			for (k = 0; k < Width;)

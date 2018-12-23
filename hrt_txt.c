@@ -61,7 +61,6 @@ void hrt_PrintOnBitmap(int left, int top, char *str, ...) {
 void hrt_InitTiledText(u8 bg)
 {
 	BUP temp;
-	register u16 i;
     if (__hrt_system.hrt_start == 1) {
 		temp.SrcNum = 6080;
 		temp.SrcBitNum = 8;
@@ -73,10 +72,7 @@ void hrt_InitTiledText(u8 bg)
 		hrt_SetBGPalEntry(1, 0x0421);
 		hrt_SetBGPalEntry(2, 0x7FFF);
 		REG_BGxCNT(bg) = 0x0000;
-		for(i=0; i < 1024; i++)
-		{
-			VRAM[i] = 64;
-		}
+		hrt_ClearTiledText();
 	}
 }
 

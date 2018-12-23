@@ -13,11 +13,14 @@ void hrt_SetSaveMode(u8 mode)
 void hrt_SaveByte(int offset, u8 value)
 {
 	if (__hrt_system.hrt_start == 1) {
-		if(__hrt_system.__hrt_savemode == 0)
+		switch(__hrt_system.__hrt_savemode)
 		{
-			SRAM[offset] = value;
-		}else{
-			EEPROM[offset] = value;
+			case 0:
+				SRAM[offset] = value;
+				break;
+			case 1:
+				EEPROM[offset] = value;
+				break;
 		}
 	}
 }
@@ -25,11 +28,14 @@ void hrt_SaveByte(int offset, u8 value)
 u8 hrt_LoadByte(int offset)
 {
 	if (__hrt_system.hrt_start == 1) {
-		if(__hrt_system.__hrt_savemode == 0)
+		switch(__hrt_system.__hrt_savemode)
 		{
-			return SRAM[offset];
-		}else{
-			return EEPROM[offset];
+			case 0:
+				return SRAM[offset];
+				break;
+			case 1:
+				return EEPROM[offset];
+				break;
 		}
 	}
 	return 0;

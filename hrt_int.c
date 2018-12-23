@@ -90,3 +90,14 @@ void hrt_irqDisable(int mask) {
 		REG_IME = 1;
 	}
 }
+
+void hrt_ClearIRQTable(void)
+{
+	if (__hrt_system.hrt_start == 1) {
+		for (register int i = 0; i < MAX_INTS; i++)
+		{
+			IntrTable[i].handler = hrt_dummy;
+			IntrTable[i].mask = 0;
+		}	
+	}
+}

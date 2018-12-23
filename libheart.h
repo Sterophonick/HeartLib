@@ -85,53 +85,22 @@ GBA Specs:
 TODO:
 		Exit to flashcart for other cards
 		Finish Easy Build System
-		Pogoshell plugin things?
+		Heavily optimize the code so that it runs as fast as possible
 		
 		Rumble?
 */
 #ifdef HRT_WITH_LIBHEART
 
+#pragma once
 #ifndef LIBHEART_H
 #define LIBHEART_H
 
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 9
 #define HRT_VERSION_PATCH 5
-#define HRT_BUILD_DATE "040412162018"
+#define HRT_BUILD_DATE "020012282018"
 
 #define HEART_API extern
-
-#ifdef  __cplusplus
-#include <iostream>
-#include <cstdlib>
-#include <csignal>
-#include <csetjmp>
-#include <cstdarg>
-#include <typeinfo>
-#include <typeindex>
-#include <type_traits>
-#include <bitset>
-#include <functional>
-#include <utility>
-#include <ctime>
-#include <chrono>
-#include <cstddef>
-#include <initializer_list>
-#include <tuple>
-#include <any>
-#include <optional>
-#include <variant>
-#include <new>
-#include <memory>
-#include <scoped_allocator>
-#include <climits>
-#include <cfloat>
-#include <cstdint>
-#include <cstdint>
-#include <cinttypes>
-#include <limits>
-#include <exception>
-#endif
 
 #ifdef __cplusplus
 HEART_API  "C" {
@@ -139,46 +108,10 @@ HEART_API  "C" {
 
 #include <stdio.h>
 #include <stdint.h>
-#include <float.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <string.h>
-#include <stdbool.h>
-#include <math.h>
-#include <assert.h>
-#include <ctype.h>
-#include <setjmp.h>
-#include <signal.h>
 #include <stdarg.h>
-#include <time.h>
-#include <complex.h>
-#include <stdalign.h>
-#include <locale.h>
-#include <stdnoreturn.h>
-#include <wchar.h>
-#include <tgmath.h>
-#include <stddef.h>
-#include <wctype.h>
-#include <stdfix.h>
-#include <ctype.h>
-#include <fastmath.h>
-#include <cpio.h>
-#include <alloca.h>
-#include <iso646.h>
-#include <memory.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <sys/fcntl.h>
-#include <errno.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <_ansi.h>
-#include <reent.h>
-#include <sys/time.h>
-#include <sys/times.h>
-#include <sys/timespec.h>
-#include <sys/_timeval.h>
-#include <sys/cdefs.h>
+#include <stdbool.h>
 
 /*HeartLib Typedefs
 These are used as shortened types.*/
@@ -468,12 +401,6 @@ typedef struct {
 #define XNOR !^
 //
 
-#define USE_EEPROM  const char __sm[13] = "EEPROM_Vnnn"
-#define USE_SRAM const char __sm[13] = "SRAM_Vnnn"
-#define USE_FLASH const char __sm[13] = "FLASH_Vnnn"
-#define USE_FLASH512 const char __sm[13] = "FLASH512_Vnnn"
-#define USE_FLASH1M const char __sm[13] = "FLASH1M_Vnnn"
-
 //Screen Widths/Heights
 #define GBA_SCREEN_WIDTH 240
 #define GBA_SCREEN_HEIGHT 160
@@ -746,12 +673,14 @@ typedef struct {
 #define REG_UNKNOWN21  *(u16*)0x04000411 //Not Used
 #define REG_UNKNOWN22  *(u32*)0x04000800 //Undocumented - Internal Memory Control(R/W)
 #define REG_UNKNOWN23  *(u16*)0x04000804 //Not Used
+#define REG_POGOFILEPTR *(u8**)0x0203FBFC //Pogoshell File Pointer
 
 #define REG_BGxCNT(x)                 (ACCESS_16(0x04000008+(x*2))) //Macro for a BG
 #define REG_BGxHOFS(x)                    (ACCESS_16(0x0400000A+(x*4))) //macro for a bg
 #define REG_BGxVOFS(x)                    (ACCESS_16(0x0400000B+(x*4))) //macro for a bg
 #define REG_DMAxSAD(x)                    (ACCESS_32(0x040000B0+(x*0x0C))) //Macro for a DMA Source
 #define REG_DMAxDAD(x)                    (ACCESS_32(0x040000B4+(x*0x0C))) //Macro for a DMA Destination
+#define REG_DMAxCNT(x)					(ACCESS_32(0x040000B8+(x*0x0C))) //Macro for a DMA Control
 #define REG_TMxCNT_L(x)                 (ACCESS_16(0x04000100+(x*4)))
 #define REG_TMxCNT_H(x)                 (ACCESS_16(0x04000102+(x*4)))
 
@@ -1014,13 +943,15 @@ enum {
 HEART_API mm_byte	mp_mix_seg;
 HEART_API mm_word	mp_writepos;
 
-#define mmCreateEffect(name, id, rate, handle, volume, panning)       mm_sound_effect (name) = { \
+#define mmCreateStaticEffect(name, id, rate, handle, volume, panning)       mm_sound_effect (name) = { \
 { (id)} ,	\
 (rate), \
 (handle),		\
 (volume),	\
 (panning), \
-} 
+}
+
+#define mmReconfigEffect(name, id, rate, handle, volume, panning) 
 
 //
 
@@ -1206,8 +1137,11 @@ enum
 	BG_1 = 1,
 	BG_2 = 2,
 	BG_3 = 3,
+	WINDOW_0 = 0,
+	WINDOW_1 = 1,
+	WINDOW_OBJ = 2,
 };
-
+ 
 #define RRR_CLEAR_EWRAM_ENABLE 1
 #define RRR_CLEAR_EWRAM_DISABLE 0
 #define RRR_CLEAR_IWRAM_ENABLE 1
@@ -1303,7 +1237,6 @@ HEART_API void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount,
 HEART_API void hrt_SetFXLevel(u8 level); //Sets BLDY level
 HEART_API void hrt_SetFXMode(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 backdrop, u8 mode, u8 bg0_2, u8 bg1_2, u8 bg2_2, u8 bg3_2, u8 obj_2, u8 backdrop_2); //Sets BLDCNT Mode
 HEART_API void hrt_SetDSPMode(u8 mode, u8 CGB, u8 framesel, u8 unlockedhblank, u8 objmap, u8 forceblank, u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 win0, u8 win1, u8 objwin); //Sets REG_DISPCNT, but it is a lot clearer what you have to do.
-HEART_API void hrt_Assert(char* func, int arg, char* desc); //Error message
 HEART_API void hrt_ConfigBG(u8 bg, u8 priority, u8 tilebase, u8 mosaic, u8 color256, u8 tilemapbase, u8 wraparound, u8 dimensions); //Configures BG
 HEART_API void hrt_LineWipe(u16 color, int time, u8 mode); //Wipe from hrt_DrawLine
 HEART_API void hrt_SetMosaic(u8 bh, u8 bv, u8 oh, u8 ov); //Sets Mosaic Level -- Not Tested Yet.
@@ -1313,7 +1246,6 @@ HEART_API void hrt_SetTile(u8 x, u8 y, int tileno); //Sets a specific tile to a 
 HEART_API void hrt_SetFXAlphaLevel(u8 src, u8 dst); //Sets REG_BLDALPHA
 HEART_API void hrt_FillPalette(int paltype, u16 color); //Fills BG or OBJ palette witha specified color.
 HEART_API void hrt_AGBPrint(const char *msg); //hrt_AGBPrint is interesting. Using this will make the ROM put a message into the output log if AGBPrint is enabled on VisualBoyAdvance. I found a technique that doesn't crash on hardware or other emulators.
-HEART_API void *hrt_Memcpy(void *dest, const void *src, size_t len); //Copies Memory from one place to another.
 HEART_API void hrt_VblankIntrWait(void); //Waits for Vblank Interrupt.
 HEART_API void hrt_Suspend(void); //Suspends the console. Unfinished.
 HEART_API void hrt_EZ4Exit(void); //Exits to Ez-Flash IV Menu.
@@ -1408,12 +1340,8 @@ HEART_API void hrt_DSPEnableBG(u8 layer);  //Enables a selected BG Mode
 HEART_API void hrt_DSPDisableBG(u8 layer);  //Enables a selected BG Mode
 HEART_API void hrt_DSPEnableOBJ(void); //Enables OBJ
 HEART_API void hrt_DSPDisableOBJ(void); //Disables OBJ
-HEART_API void hrt_DSPEnableWIN0(void); //Enables Win0
-HEART_API void hrt_DSPDisableWIN0(void); //Disables Win0
-HEART_API void hrt_DSPEnableWIN1(void); //Enables Win1
-HEART_API void hrt_DSPDisableWIN1(void); //Disables Win1
-HEART_API void hrt_DSPEnableWINOBJ(void); //Enables WinOBJ
-HEART_API void hrt_DSPDisableWINOBJ(void); //Disables WinOBJ
+HEART_API void hrt_DSPEnableWIN(u8 win); //Enables Window
+HEART_API void hrt_DSPDisableWIN(u8 win); //Disables Window
 HEART_API void hrt_DSPEnableLinearOBJ(void); //Enables Linear OBJ Tile Mapping
 HEART_API void hrt_DSPDisableLinearOBJ(void); //Disables Linear OBJ TIle Mapping
 HEART_API u8 hrt_DSPGetBGMode(void); //Returns DSP Mode
@@ -1455,47 +1383,29 @@ HEART_API u16 hrt_ArcTan2(s16 X, s16 Y); //SWI 0x0A
 HEART_API void hrt_IntrWait(u32 ReturnFlag, u32 IntFlag); //SWI 0x04
 HEART_API void hrt_Halt(void); //SWI 2
 HEART_API void hrt_Stop(void); //SWI 3
-HEART_API void hrt_FXEnableBGTarget1(u8 layer); //Enables the specified BG for Target 1
-HEART_API void hrt_FXDisableBGTarget1(u8 layer); //Disables the specified BG for Target 1
-HEART_API void hrt_FXEnableOBJTarget1(void); //Enables the Blend Control flag for Sprites in target 1
-HEART_API void hrt_FXDisableOBJTarget1(void); //Disables.
-HEART_API void hrt_FXEnableBackdropTarget1(void); //Enables Backdrop for target 1
-HEART_API void hrt_FXDisableBackdropTarget1(void); //Disables.
+HEART_API void hrt_FXEnableBG(u8 layer, u8 target); //Enables a BG for a specified target
+HEART_API void hrt_FXDisableBG(u8 layer, u8 target); //Disables a BG for a specified target
+HEART_API void hrt_FXEnableOBJ(u8 target); //Enables the OBJ layer for a specified target
+HEART_API void hrt_FXDisableOBJ(u8 target); //Disables the OBJ layer for a specified target
+HEART_API void hrt_FXEnableBackdrop(u8 target); //Enables Backdrop for a specified target
+HEART_API void hrt_FXDisableBackdrop(u8 target); //Disables.
 HEART_API void hrt_FXSetBlendMode(u8 mode); //Sets blend mode
-HEART_API void hrt_FXEnableBGTarget2(u8 layer); //Enables the specified BG for Target 2
-HEART_API void hrt_FXDisableBGTarget2(u8 layer); //Disables the specified BG for Target 2
-HEART_API void hrt_FXEnableOBJTarget2(void); //Enables the Blend Control flag for Sprites in Target 2
-HEART_API void hrt_FXDisableOBJTarget2(void); //Disables.
-HEART_API void hrt_FXEnableBackdropTarget2(void); //Enables Backdrop for Target 2
-HEART_API void hrt_FXDisableBackdropTarget2(void); //Disables.
 HEART_API u32 hrt_aPlibUnpack(u8 *source, u8 *destination); //aPlib Unpack.
 HEART_API void hrt_ConfigMapLayerDrawing(u8 numLayers, u16 *tileset, s16 dimensionsx, s16 dimensionsy, u16 *map, s32 x, s32 y); //Configures map for large scrolling
 HEART_API void hrt_DrawMapLayerStripH(int layerIdx, int srcY); //Draws a Horizontal Map Strip, for vertical scrolling
 HEART_API void hrt_DrawMapLayerStripV(int layerIdx, int srcX); //Draws a Vertical Map Strip, for horizontal scrolling
-HEART_API void hrt_DSPWinIn0EnableBG(u8 layer); //Enables Specified BG for winin 0
-HEART_API void hrt_DSPWinIn0DisableBG(u8 layer); //Disables Specified BG for winin 0
-HEART_API void hrt_DSPWinIn0EnableOBJ(void); //Enables Sprites for winin 0
-HEART_API void hrt_DSPWinIn0DisableOBJ(void); //Disables Sprites for winin 0
-HEART_API void hrt_DSPWinIn0EnableBlend(void); //Enables Blend for winin 0
-HEART_API void hrt_DSPWinIn0DisableBlend(void); //Disables Blend for winin 0
-HEART_API void hrt_DSPWinIn1EnableBG(u8 layer); //Enables Specified BG for WinIn 1
-HEART_API void hrt_DSPWinIn1DisableBG(u8 layer); //Disables Specified BG for WinIn 1
-HEART_API void hrt_DSPWinIn1EnableOBJ(void); //Enables Sprites for WinIn 1
-HEART_API void hrt_DSPWinIn1DisableOBJ(void); //Disables Sprites for WinIn 1
-HEART_API void hrt_DSPWinIn1EnableBlend(void); //Enables Blend for WinIn 1
-HEART_API void hrt_DSPWinIn1DisableBlend(void); //Disables Blend for WinIn 1
-HEART_API void hrt_DSPWinOutEnableBG(u8 layer); //Enables specified BG for WinOut 0
-HEART_API void hrt_DSPWinOutDisableBG(u8 layer); //Disables specified BG for WinOut 0
-HEART_API void hrt_DSPWinOutEnableOBJ(void); //Enables Sprites for WinOut 0
-HEART_API void hrt_DSPWinOutDisableOBJ(void); //Disables Sprites for WinOut 0
-HEART_API void hrt_DSPWinOutEnableBlend(void); //Enables Blend for WinOut 0
-HEART_API void hrt_DSPWinOutDisableBlend(void); //Disables Blend for WinOut 0
-HEART_API void hrt_DSPWinOutOBJEnableBG(u8 layer); //Enables specified BG for WinOut OBJ
-HEART_API void hrt_DSPWinOutOBJDisableBG(u8 layer); //Disables specified BG for WinOut OBJ
-HEART_API void hrt_DSPWinOut1EnableOBJ(void); //Enables Sprites for WinOut 1
-HEART_API void hrt_DSPWinOut1DisableOBJ(void); //Disables Sprites for WinOut 1
-HEART_API void hrt_DSPWinOut1EnableBlend(void); //Enables Blend for WinOut 1
-HEART_API void hrt_DSPWinOut1DisableBlend(void); //Disables Blend for WinOut 1
+HEART_API void hrt_DSPWinInEnableBG(u8 layer, u8 win); //Enables Specified BG for winin 
+HEART_API void hrt_DSPWinInDisableBG(u8 layer, u8 win); //Disables Specified BG for winin 
+HEART_API void hrt_DSPWinInEnableOBJ(u8 win); //Enables Sprites for winin 
+HEART_API void hrt_DSPWinInDisableOBJ(u8 win); //Disables Sprites for winin
+HEART_API void hrt_DSPWinInEnableBlend(u8 win); //Enables Blend for winin
+HEART_API void hrt_DSPWinInDisableBlend(u8 win); //Disables Blend for winin
+HEART_API void hrt_DSPWinOutEnableBG(u8 layer, u8 win); //Enables specified BG for WinOut
+HEART_API void hrt_DSPWinOutDisableBG(u8 layer, u8 win); //Disables specified BG for WinOut
+HEART_API void hrt_DSPWinOutEnableOBJ(u8 win); //Enables Sprites for WinOut 
+HEART_API void hrt_DSPWinOutDisableOBJ(u8 win); //Disables Sprites for WinOut 
+HEART_API void hrt_DSPWinOutEnableBlend(u8 win); //Enables Blend for WinOut 
+HEART_API void hrt_DSPWinOutDisableBlend(u8 win); //Disables Blend for WinOut
 HEART_API int hrt_DecodeJPEG(const unsigned char *data, volatile unsigned short *out, int outWidth, int outHeight); //Decodes a JPEG Image. (FINALLY)
 HEART_API void hrt_SetLargeScrollMapX(s32 x, u8 i); //X Scrolls a large map
 HEART_API void hrt_SetLargeScrollMapY(s32 y, u8 i); //Y Scrolls a large map
@@ -1558,22 +1468,16 @@ HEART_API u8 hrt_IsOBJVFlip(u8 objno); //Detects whehter or not a sprite is vert
 HEART_API u8 hrt_GetOBJSize(u8 objno); //Returns the size of a sprite
 HEART_API u8 hrt_GetOBJMode(u8 objno); //Returns the mode of a sprite
 HEART_API void hrt_SetSaveMode(u8 mode); //Sets the save mode to either SRAM or EEPROM
-HEART_API void hrt_FillMemory(u32* addr, u32 count, u8 value); //Fills a section of memory with a specified value
 HEART_API u8 hrt_FXGetAlphaSourceLevel(void); //Returns alpha blending source level.
 HEART_API u8 hrt_FXGetAlphaDestLevel(void); //Returns alpha blending destination level.
 HEART_API u8 hrt_FXGetBlendLevel(void); //Returns fade blending value.
-HEART_API u8 hrt_FXTarget1IsBgLayerEnabled(u8 bgno); //Detects if a BG is enabled in target 1 of REG_BLDCNT
-HEART_API u8 hrt_FXTarget2IsBgLayerEnabled(u8 bgno); //Detects if a BG is enabled in target 2 of REG_BLDCNT
-HEART_API u8 hrt_FXTarget1IsObjLayerEnabled(void); //Detects if the OBJ layer in target 1 of REG_BLDCNT is enabled
-HEART_API u8 hrt_FXTarget2IsObjLayerEnabled(void); //Detects if the OBJ layer in target 2 of REG_BLDCNT is enabled
-HEART_API u8 hrt_FXTarget1IsBackdropEnabled(void); //Detects if the backdrop in target 1 of REG_BLDCNT is enabled
-HEART_API u8 hrt_FXTarget2IsBackdropEnabled(void); //Detects if the backdrop in target 2 of REG_BLDCNT is enabled
+HEART_API u8 hrt_FXIsBgLayerEnabled(u8 bgno, u8 target); //Detects if a BG layer is enabled in a specified target
+HEART_API u8 hrt_FXIsObjLayerEnabled(u8 target); //Detects if the OBJ layer in a specified target is enabled
+HEART_API u8 hrt_FXIsBackdropEnabled(u8 target); //Detects if the backdrop in target 1 of REG_BLDCNT is enabled
 HEART_API u8 hrt_FXGetBlendMode(void); //Returns the blend mode of REG_BLDCNT
 HEART_API u8 hrt_DSPIsHBlankUnlocked(void); //Detects if Hblank is unlocked in REG_DISPCNT
 HEART_API u8 hrt_DSPIsFrameSelect(void); //Detects if frame select is enabled in REG_DISPCNT
-HEART_API u8 hrt_DSPIsWin0Enabled(void); //Detects if window 0 is enabled.
-HEART_API u8 hrt_DSPIsWin1Enabled(void); //Detects if window 1 is enabled.
-HEART_API u8 hrt_DSPIsOBJWinEnabled(void); //Detects if obj window is enabled.
+HEART_API u8 hrt_DSPIsWinEnabled(u8 window); //Detects if Window is enabled
 HEART_API u8 hrt_DSPIsLinearOBJEnabled(void); //Detects if linear obj tile mapping is enabled.
 HEART_API u8 hrt_IsNumberOdd(u32 number); //Detects if a number is an odd number
 HEART_API void hrt_ClearTiledText(void); //Clears the tiled text map.
@@ -1593,8 +1497,7 @@ HEART_API void hrt_AddByteToMemGroup32(u32* offset, int value, u32 wordcount); /
 HEART_API void hrt_DrawBitmapSector(u16* pbg,u16 x, u16 y, u16 w, u16 h); //Draws a sector of a bitmap in mode 3 (!!!NOTE!!! USES DMA 3)
 HEART_API void hrt_DrawHollowRectangle(int r, int c, int width, int height, u16 color, int mode); //Draw a hollow rectangle
 HEART_API void hrt_DSPToggleBG(u8 bgno); //Toggles a BG in the display register
-HEART_API void hrt_FXToggleBGTarget1(u8 layer); //Toggles a BG in the blend register (target 1)
-HEART_API void hrt_FXToggleBGTarget2(u8 layer); //Toggles a BG in the blend register (target 2)
+HEART_API void hrt_FXToggleBGTarget1(u8 layer, u8 target); //Toggles a BG in the blend register (specified target)
 HEART_API void hrt_DSPToggleOBJ(void); //Toggles the OBJ layer
 HEART_API void hrt_DSPToggleForceBlank(void); //Toggles Force Blank 
 HEART_API void hrt_DSPToggleLinearOBJ(void); //Toggles Linear OBJ Tile mapping
@@ -1602,16 +1505,22 @@ HEART_API void hrt_irqToggle(int mask); //Toggles an interrupt
 HEART_API void hrt_ToggleOBJAffine(u8 objno); //Toggles the Affine bit of a sprite
 HEART_API void hrt_ToggleOBJVFlip(u8 objno); //Toggles the VFlip bit of a sprite
 HEART_API void hrt_ToggleOBJHFlip(u8 objno); //Toggles the HFlip bit of a sprite
-HEART_API void hrt_FXToggleOBJTarget1(void); //Toggles OBJ in the blend register (target 1)
-HEART_API void hrt_FXToggleOBJTarget2(void); //Toggles OBJ in the blend register (target 2)
+HEART_API void hrt_FXToggleOBJ(u8 target); //Toggles OBJ in the blend register (specified target)
 HEART_API u8 hrt_SwapNibbles(u8 n); //Swaps two nybbles in a single byte
 HEART_API void hrt_EZFSetRompage(u16 page); //Function for EZ-Flash cartridges only, but it allows access to the ROM Page. Located in IWRAM.
 HEART_API u16 hrt_SwapBytesInWord(u16 word); //Swaps two bytes in a word
 HEART_API int hrt_SwapWordsInDWord(u32 dword); //Swaps two words (16bit) in a dword (32bit)
-HEART_API void hrt_FXToggleBackdropTarget1(void); //Toggles the backdrop in the blend register (target 1)
-HEART_API void hrt_FXToggleBackdropTarget2(void); //Toggles the backdrop in the blend register (target 2)
+HEART_API void hrt_FXToggleBackdrop(u8 target); //Toggles the backdrop in the blend register (specified target)
 HEART_API void hrt_ToggleOBJMosaic(u8 objno); //Toggles mosaic for a sprite
 HEART_API void hrt_ToggleOBJDoubleSize(u8 objno); //Toggles OBJ Double size
+HEART_API void hrt_8BitWriteToVRAM(u32 offset, u8 value); //Performs an 8-Bit write to VRAM. Perfect for Mode 4.
+HEART_API void hrt_DSPToggleFrameSelect(void); //Toggles frame select in the display register
+HEART_API void hrt_DSPToggleWin(u8 win); //Toggles a window
+HEART_API void hrt_ToggleBGMosaic(u8 bg); //Toggles the mosaic bit in a bg
+HEART_API bool hrt_DetectPogoshell(void); //Detects if the ROM is a Pogoshell ROM
+HEART_API u8  ham_FadePal(u8 palno,s8 delta_per_call); //test
+HEART_API void hrt_ClearIRQTable(void); //Clears the IRQ Table
+HEART_API void hrt_DestroyBG(u8 bg); //Clears a Background
 
 #ifdef __cplusplus
 }

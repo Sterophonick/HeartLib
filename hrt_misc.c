@@ -16,24 +16,6 @@ extern char* hrt_lang_crash_func;
 extern char* hrt_lang_crash_arg;
 extern char* hrt_lang_crash_reset;
 
-void hrt_Assert(char* func, int arg, char* desc)
-{
-    if (__hrt_system.hrt_start == 1) {
-        hrt_SetDSPMode(3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
-        hrt_FillScreen(0x0000);
-        hrt_PrintOnBitmap(0, 0, (char*)hrt_lang_crash_msg);
-        hrt_PrintOnBitmap(0, 8, (char*)hrt_lang_crash_func);
-        hrt_PrintOnBitmap(80, 8, (char*)func);
-        hrt_PrintOnBitmap(0, 16, "%s%d", (char*)hrt_lang_crash_arg, (int)arg);
-        hrt_PrintOnBitmap(0, 24, (char*)desc);
-        hrt_PrintOnBitmap(0, 32, (char*)hrt_lang_crash_reset);
-		hrt_irqDisable(IRQ_KEYPAD);
-        while (1)
-		{
-			hrt_VblankIntrWait();
-		}
-    }
-}
 
 s32 hrt_Distance(int x1, int y1, int x2, int y2)
 {
@@ -47,18 +29,6 @@ s32 hrt_Slope(int x1, int y1, int x2, int y2)
 {
 	if (__hrt_system.hrt_start == 1) {
 		return ((y2 - y1) / (x2 - x1));
-	}
-	return 0;
-}
-
-void *hrt_Memcpy(void *dest, const void *src, size_t len)
-{
-	if (__hrt_system.hrt_start == 1) {
-		register char *d = dest;
-		register const char *s = src;
-		while (len--)
-			*d++ = *s++;
-		return dest;
 	}
 	return 0;
 }
@@ -153,7 +123,7 @@ int hrt_GetRTCMinute_H(void)
 	{
 		if (__hrt_system.__hrt_rtc == 1)
 		{
-			int timer = hrt_GetRTCTime();
+			register int timer = hrt_GetRTCTime();
 			return ((timer >> 12) & 15);
 		}
 	}
@@ -201,8 +171,7 @@ void hrt_EZ4Exit(void)
 {
 	if (__hrt_system.hrt_start == 1)
 	{
-		hrt_DMA_Copy(3, (u8*)0x02000000, (u8*)&sprites, 0x3FF, 0x80800000);
-		hrt_CopyOAM();
+		memset(OAM, 0, 1024);
 		__hrt_exittoez4();
 	}
 }
@@ -211,18 +180,6 @@ void hrt_Suspend(void)
 	if (__hrt_system.hrt_start == 1)
 	{
 		sleep12();
-	}
-}
-
-void hrt_FillMemory(u32* addr, u32 count, u8 value)
-{
-	register u32 i;
-	if (__hrt_system.hrt_start == 1)
-	{
-		for(i = 0; i < count; i++)
-		{
-			addr[i] = value;
-		}
 	}
 }
 
@@ -240,7 +197,7 @@ void hrt_AddByteToMemGroup8(u8* offset, int value, u32 wordcount)
 {
 	if(__hrt_system.hrt_start == 1)
 	{
-		for(u32 i = 0; i < wordcount; i++)
+		for(register u32 i = 0; i < wordcount; i++)
 		{
 			offset[i] = value;
 		}
@@ -251,7 +208,7 @@ void hrt_AddByteToMemGroup16(u16* offset, int value, u32 wordcount)
 {
 	if(__hrt_system.hrt_start == 1)
 	{
-		for(u32 i = 0; i < wordcount; i++)
+		for(register u32 i = 0; i < wordcount; i++)
 		{
 			offset[i] = value;
 		}
@@ -305,6 +262,39 @@ int hrt_SwapWordsInDWord(u32 dword)
 	if(__hrt_system.hrt_start == 1)
 	{
 		return (((dword) << 16)&0xffFF0000)|((dword>>16)&0x0000FFff);
+	}
+	return 0;
+}
+
+void hrt_8BitWriteToVRAM(u32 offset, u8 value)
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		register u16 temp;
+		switch(hrt_IsNumberOdd(value))
+		{
+			case 0:
+				temp = VRAM[offset/2];
+				temp &= ~0xFF;
+				temp |= value & 0xFF;
+				VRAM[offset/2] = temp;
+				break;
+			case 1:
+				temp = VRAM[offset/2];
+				temp &= ~0xFF00;
+				temp |= ((value) << 8) & 0xFF00;
+				VRAM[offset/2] = temp;
+				break;
+		}
+	}		
+}
+
+bool hrt_DetectPogoshell(void)
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		register u32 pogotemp=(u32)(*(u8**)0x0203FBFC);
+		return ((pogotemp & 0xFE000000) == 0x08000000)?1:0;
 	}
 	return 0;
 }

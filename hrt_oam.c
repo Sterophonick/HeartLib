@@ -109,16 +109,19 @@ void hrt_CopyOAM(void)
 void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset)
 {
 	if (__hrt_system.hrt_start == 1) {
-		if (affine == 1) {
-			sprites[spr].attribute0 = (color * 8192) | (shape * 0x4000) | (mode * 0x400) | (mosaic * 0x1000) | (0x100) | (dblsize * 0x200) | sty;
-			sprites[spr].attribute1 = (size * 16384) | ((spr) << 9) | (hflip * 4096) | (vflip * 8192) | stx;
-			sprites[spr].attribute2 = (512 + offset) | ((priority) << 10) | ((pal) << 12);
-			hrt_AffineOBJ(spr, 0, 256, 256);
-		}
-		else {
-			sprites[spr].attribute0 = (color * 8192) | (shape * 0x4000) | (mode * 0x400) | (mosaic * 0x1000) | (dblsize * 0x200) | sty;
-			sprites[spr].attribute1 = (size * 16384) | hflip * 4096 | (vflip * 8192) | stx;
-			sprites[spr].attribute2 = (512 + offset) | ((priority) << 10) | ((pal) << 12);
+		switch(affine)
+		{
+			case 1:
+				sprites[spr].attribute0 = (color * 8192) | (shape * 0x4000) | (mode * 0x400) | (mosaic * 0x1000) | (0x100) | (dblsize * 0x200) | sty;
+				sprites[spr].attribute1 = (size * 16384) | ((spr) << 9) | (hflip * 4096) | (vflip * 8192) | stx;
+				sprites[spr].attribute2 = (512 + offset) | ((priority) << 10) | ((pal) << 12);
+				hrt_AffineOBJ(spr, 0, 256, 256);
+				break;
+			default:
+				sprites[spr].attribute0 = (color * 8192) | (shape * 0x4000) | (mode * 0x400) | (mosaic * 0x1000) | (dblsize * 0x200) | sty;
+				sprites[spr].attribute1 = (size * 16384) | hflip * 4096 | (vflip * 8192) | stx;
+				sprites[spr].attribute2 = (512 + offset) | ((priority) << 10) | ((pal) << 12);
+				break;
 		}
 	}
 }
@@ -126,15 +129,10 @@ void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hflip, u8 vfli
 void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale, s32 y_scale)
 {
 	if (__hrt_system.hrt_start == 1) {
-		register s32 pa, pb, pc, pd;
-		pa = ((x_scale) * (s32)COS[angle % 360]) >> 8;
-		pb = ((y_scale) * (s32)SIN[angle % 360]) >> 8;
-		pc = ((x_scale) * (s32)-SIN[angle % 360]) >> 8;
-		pd = ((y_scale) * (s32)COS[angle % 360]) >> 8;
-		rotData[rotDataIndex].pa = pa;
-		rotData[rotDataIndex].pb = pb;
-		rotData[rotDataIndex].pc = pc;
-		rotData[rotDataIndex].pd = pd;
+		rotData[rotDataIndex].pa = (s32)(((x_scale) * (s32)COS[angle % 360]) >> 8);
+		rotData[rotDataIndex].pb = (s32)(((y_scale) * (s32)SIN[angle % 360]) >> 8);
+		rotData[rotDataIndex].pc = (s32)(((x_scale) * (s32)-SIN[angle % 360]) >> 8);
+		rotData[rotDataIndex].pd = (s32)(((y_scale) * (s32)COS[angle % 360]) >> 8);
 	}
 }
 void hrt_SetOBJX(u8 spr, s16 x)
@@ -245,19 +243,16 @@ u8 hrt_GetOBJX(u8 sprite)
 	register u8 spriteX = 0;
 	if (__hrt_system.hrt_start == 1)
 	{
-		spriteX = (((s16)(sprites[sprite].attribute1 << 7)) >> 7) + (4 << (sprites[sprite].attribute1 >> 14));
-		return spriteX;
+		return (((s16)(sprites[sprite].attribute0 << 8)) >> 8) + (4 << (sprites[sprite].attribute1 >> 14));
 	}
 	return 0;
 }
 
 u8 hrt_GetOBJY(u8 sprite)
 {
-	register u8 spriteY = 0;
 	if (__hrt_system.hrt_start == 1)
 	{
-		spriteY = (((s16)(sprites[sprite].attribute0 << 8)) >> 8) + (4 << (sprites[sprite].attribute1 >> 14));
-		return spriteY;
+		return (((s16)(sprites[sprite].attribute0 << 8)) >> 8) + (4 << (sprites[sprite].attribute1 >> 14));
 	}
 	return 0;
 }

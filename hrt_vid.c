@@ -86,20 +86,7 @@ void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode)
     if (__hrt_system.hrt_start == 1) {
             REG_DMAxSAD(channel) = (u32)source;
             REG_DMAxDAD(channel) = (u32)dest;
-            switch (channel) {
-				case 0:
-				    REG_DMA0CNT = WordCount | mode;
-					break;
-				case 1:
-				    REG_DMA1CNT = WordCount | mode;
-					break;
-				case 2:
-				    REG_DMA2CNT = WordCount | mode;
-					break;
-				case 3:
-				    REG_DMA3CNT = WordCount | mode;
-					break;
-			}
+			REG_DMAxCNT(channel) = WordCount | mode;
     }
 }
 
@@ -117,14 +104,26 @@ void hrt_LoadBGPal(u16* data, u16 length)
 void hrt_DrawPixel(int Mode, int x, int y, unsigned short color)
 {
     if (__hrt_system.hrt_start == 1) {
-        if (Mode == 3) {
-            VRAM[y * 240 + x] = color;
-        }
-        else if (Mode == 4) {
-            VRAM[y * 120 + x] = color;
-        }
-        else if (Mode == 5) {
-            VRAM[y * 120 + x] = color;
+		register u16 pal;
+		switch(Mode)
+		{
+			case 3:
+				VRAM[y * 240 + x] = color;
+				break;
+			case 4:
+				pal = VRAM[y * 120 + x]; //returns the pixel color at the position given
+				if(hrt_IsNumberOdd(pal)) {
+					pal = pal & 0xFF;
+					pal |= ((u8)color << 8);
+				}else{
+					pal = pal & 0xFF00;
+					pal |= (u8)color;
+				}
+				VRAM[y*120+x] = pal;
+				break;
+			case 5:
+				VRAM[y * 120 + x] = color;
+				break;
         }
     }
 }
@@ -154,22 +153,23 @@ u8 hrt_GetPixelInMode4(int x, int y)
 void hrt_CyclePalette(int start, int amount, int pal)
 {
     if (__hrt_system.hrt_start == 1) {
-        if (pal == 0) {
-            register int i;
-            ACCESS_16(MEM_PAL_COL_PTR(amount)) = ACCESS_16(MEM_PAL_COL_PTR(1));
-            for (i = 0; i < amount; i++) {
-                ACCESS_16(MEM_PAL_COL_PTR((i+start))) = ACCESS_16(MEM_PAL_COL_PTR((i + 1 + start)));
-            }
-        }
-        if (pal == 1) {
-            register int i;
-            ACCESS_16(MEM_PAL_OBJ_PTR((amount - start))) = ACCESS_16(MEM_PAL_OBJ_PTR(1));
-            for (i = 0; i < amount; i++) {
-                ACCESS_16(MEM_PAL_OBJ_PTR((i+start))) = ACCESS_16(MEM_PAL_OBJ_PTR((i + 1 + start)));
-            }
+		register int i;
+		switch(pal)
+		{
+			case 0:
+				ACCESS_16(MEM_PAL_COL_PTR(amount)) = ACCESS_16(MEM_PAL_COL_PTR(1));
+				for (i = 0; i < amount; i++) {
+					ACCESS_16(MEM_PAL_COL_PTR((i+start))) = ACCESS_16(MEM_PAL_COL_PTR((i + 1 + start)));
+				}
+				break;
+			case 1:
+				ACCESS_16(MEM_PAL_OBJ_PTR((amount - start))) = ACCESS_16(MEM_PAL_OBJ_PTR(1));
+				for (i = 0; i < amount; i++) {
+					ACCESS_16(MEM_PAL_OBJ_PTR((i+start))) = ACCESS_16(MEM_PAL_OBJ_PTR((i + 1 + start)));
+				}
+				break;
         }
     }
-    return;
 }
 
 void hrt_InvertPalette(int start, int amount, int pal)
@@ -463,25 +463,16 @@ void hrt_LoadBGMap(u16* data, int length)
 void hrt_FillPalette(int paltype, u16 color)   //fills a palette of the selection with the same color for each slot
 {
     if (__hrt_system.hrt_start == 1) {
-        register int pixpos;
-        if (paltype == 0) { //BGPaletteMem
-            for (pixpos = 0; pixpos < 256; pixpos++) {
-                BGPaletteMem[pixpos] = color;
-            }
-        }
-        else {
-            if (paltype == 1) { //OBJPaletteMem
-                for (pixpos = 0; pixpos < 256; pixpos++) {
-                    OBJPaletteMem[pixpos] = color;
-                }
-            }
-            else {   //if no kind of mem is selected
-                hrt_SetDSPMode(3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                hrt_Assert("hrt_FillPalette()", 1, "Invalid Argument");
-                while (1); //stops the program due to an invalid type
-            }
-        }
-    }
+		switch(paltype)
+		{
+			case 0: //BGPaletteMem
+				memset(BGPaletteMem, color, 256);
+				break;
+			case 1: //OBJPaletteMem
+				memset(OBJPaletteMem, color, 256);
+				break;
+		}
+   }
 }
 
 void hrt_SetDSPMode(u8 mode, u8 CGB, u8 framesel, u8 unlockedhblank, u8 objmap, u8 forceblank, u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 win0, u8 win1, u8 objwin)
@@ -634,45 +625,17 @@ void hrt_DSPDisableOBJ(void)
     }
 }
 
-void hrt_DSPEnableWIN0(void)
+void hrt_DSPEnableWIN(u8 win)
 {
     if (__hrt_system.hrt_start == 1) {
-        REG_DISPCNT |= 0x2000;
+        REG_DISPCNT |= (1UL << (13+win));
     }
 }
 
-void hrt_DSPDisableWIN0(void)
+void hrt_DSPDisableWIN(u8 win)
 {
     if (__hrt_system.hrt_start == 1) {
-        REG_DISPCNT &= 0xDFFF;
-    }
-}
-
-void hrt_DSPEnableWIN1(void)
-{
-    if (__hrt_system.hrt_start == 1) {
-        REG_DISPCNT |= 0x4000;
-    }
-}
-
-void hrt_DSPDisableWIN1(void)
-{
-    if (__hrt_system.hrt_start == 1) {
-        REG_DISPCNT &= 0xBFFF;
-    }
-}
-
-void hrt_DSPEnableWINOBJ(void)
-{
-    if (__hrt_system.hrt_start == 1) {
-        REG_DISPCNT |= 0x8000;
-    }
-}
-
-void hrt_DSPDisableWINOBJ(void)
-{
-    if (__hrt_system.hrt_start == 1) {
-        REG_DISPCNT &= 0x7FFF;
+        REG_DISPCNT &= ~(1UL << (13+win));
     }
 }
 
@@ -885,29 +848,11 @@ u8 hrt_DSPIsFrameSelect()
 	return 0;
 }
 
-u8 hrt_DSPIsWin0Enabled()
+u8 hrt_DSPIsWinEnabled(u8 window)
 {
 	if(__hrt_system.hrt_start == 1)
 	{
-		return REG_DISPCNT & 0xD;
-	}
-	return 0;
-}
-
-u8 hrt_DSPIsWin1Enabled()
-{
-	if(__hrt_system.hrt_start == 1)
-	{
-		return REG_DISPCNT & 0xE;
-	}
-	return 0;
-}
-
-u8 hrt_DSPIsOBJWinEnabled()
-{
-	if(__hrt_system.hrt_start == 1)
-	{
-		return REG_DISPCNT & 0xF;
+		return REG_DISPCNT & (0xD+window);
 	}
 	return 0;
 }
@@ -1028,4 +973,35 @@ void hrt_DSPToggleLinearOBJ(void)
     if (__hrt_system.hrt_start == 1) {
         REG_DISPCNT ^= 0x0040;
     }
+}
+
+
+void hrt_DSPToggleFrameSelect(void)
+{
+    if (__hrt_system.hrt_start == 1) {
+        REG_DISPCNT ^= 0x0010;
+    }
+}
+
+void hrt_DSPToggleWin(u8 win)
+{
+    if (__hrt_system.hrt_start == 1) {
+       REG_DISPCNT ^= (1UL << (13+win));
+    }
+}
+
+void hrt_ToggleBGMosaic(u8 bg)
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		REG_BGxCNT(bg) ^= 0x40;
+	}
+}
+
+void hrt_DestroyBG(u8 bg)
+{
+	if(__hrt_system.hrt_start == 1)
+	{
+		REG_BGxCNT(bg) = 0;
+	}
 }
