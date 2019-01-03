@@ -1,3 +1,18 @@
+/*****************************************************\
+*    								8       8                                            8     8            8  8                                          *
+*    								8       8                                            8     8                8                                          *
+*    								88888    888       888    8  88    888  8            8  8  88                                   *
+*    								8       8  8       8           8  88    8    8     8            8  88    8                                 *
+*    								8       8  88888    8888  8             8     8            8  8      8                                 *
+*    								8       8  8           8       8  8             8     8            8  8      8                                 *
+*    								8       8    8888    8888  8               8    88888  8  8888                                  *
+*    																		HeartLib                                                                   *
+*    A comprehensive game/app engine for the Nintendo® Game Boy Advance™        *
+*    												Licensed under the GNU GPL v3.0                                             *
+*                                               View the LICENSE file for details                                         *
+*    														2017-2019 Sterophonick                                                    *
+*    																	For Tubooboo                                                               *
+\*****************************************************/
 #include "libheart.h"
 u8* EWRAM = (u8*)0x2000000;
 u8* BIOS = (u8*)0x00000000;
@@ -19,7 +34,7 @@ extern char* hrt_lang_crash_reset;
 
 s32 hrt_Distance(int x1, int y1, int x2, int y2)
 {
-	if (__hrt_system.hrt_start == 1) {
+	if (__hrt_system.hrt_start) {
 		return hrt_Sqrt(((x2 - x1) ^ 2) + ((y2 - y1) ^ 2));
 	}
 	return 0;
@@ -27,14 +42,14 @@ s32 hrt_Distance(int x1, int y1, int x2, int y2)
 
 s32 hrt_Slope(int x1, int y1, int x2, int y2)
 {
-	if (__hrt_system.hrt_start == 1) {
+	if (__hrt_system.hrt_start) {
 		return ((y2 - y1) / (x2 - x1));
 	}
 	return 0;
 }
 
 void hrt_SleepF(u32 frames) {
-	if (__hrt_system.hrt_start == 1) {
+	if (__hrt_system.hrt_start) {
 		register int i;
 		i = frames;
 		while (i--) {
@@ -45,7 +60,7 @@ void hrt_SleepF(u32 frames) {
 
 s32 hrt_VolumeCylinder(double r, double h)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		return (PI)*(r * r)*h;
 	}
@@ -54,7 +69,7 @@ s32 hrt_VolumeCylinder(double r, double h)
 
 s32 hrt_AreaTriangle(double a, double b)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		return (1 / 2)*(a*b);
 	}
@@ -63,7 +78,7 @@ s32 hrt_AreaTriangle(double a, double b)
 
 s32 hrt_AreaCircle(double r)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		return (PI)*(r * r);
 	}
@@ -82,7 +97,7 @@ void hrt_DisableRTC(void)
 
 int hrt_GetRTCTime(void)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		if (__hrt_system.__hrt_rtc == 1)
 		{
@@ -94,7 +109,7 @@ int hrt_GetRTCTime(void)
 
 int hrt_GetRTCHour_H(void)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		if (__hrt_system.__hrt_rtc == 1)
 		{
@@ -106,7 +121,7 @@ int hrt_GetRTCHour_H(void)
 }
 int hrt_GetRTCHour_L(void)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		if (__hrt_system.__hrt_rtc == 1)
 		{
@@ -119,7 +134,7 @@ int hrt_GetRTCHour_L(void)
 
 int hrt_GetRTCMinute_H(void)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		if (__hrt_system.__hrt_rtc == 1)
 		{
@@ -131,7 +146,7 @@ int hrt_GetRTCMinute_H(void)
 }
 int hrt_GetRTCMinute_L()
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		if (__hrt_system.__hrt_rtc == 1)
 		{
@@ -144,7 +159,7 @@ int hrt_GetRTCMinute_L()
 
 int hrt_GetRTCSecond_H(void)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		if (__hrt_system.__hrt_rtc == 1)
 		{
@@ -156,7 +171,7 @@ int hrt_GetRTCSecond_H(void)
 }
 int hrt_GetRTCSecond_L(void)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		if (__hrt_system.__hrt_rtc == 1)
 		{
@@ -169,7 +184,7 @@ int hrt_GetRTCSecond_L(void)
 
 void hrt_EZ4Exit(void)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		memset(OAM, 0, 1024);
 		__hrt_exittoez4();
@@ -177,7 +192,7 @@ void hrt_EZ4Exit(void)
 }
 void hrt_Suspend(void)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		sleep12();
 	}
@@ -186,7 +201,7 @@ void hrt_Suspend(void)
 u8 hrt_IsNumberOdd(u32 number)
 {
 	register u8 ret = 0;
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		ret = (number % 2 == 1) ? 1 : 0;
 	}
@@ -195,7 +210,7 @@ u8 hrt_IsNumberOdd(u32 number)
 
 void hrt_AddByteToMemGroup8(u8* offset, int value, u32 wordcount)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		for(register u32 i = 0; i < wordcount; i++)
 		{
@@ -206,7 +221,7 @@ void hrt_AddByteToMemGroup8(u8* offset, int value, u32 wordcount)
 
 void hrt_AddByteToMemGroup16(u16* offset, int value, u32 wordcount)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		for(register u32 i = 0; i < wordcount; i++)
 		{
@@ -217,7 +232,7 @@ void hrt_AddByteToMemGroup16(u16* offset, int value, u32 wordcount)
 
 void hrt_AddByteToMemGroup32(u32* offset, int value, u32 wordcount)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		for(register u32 i = 0; i < wordcount; i++)
 		{
@@ -228,7 +243,7 @@ void hrt_AddByteToMemGroup32(u32* offset, int value, u32 wordcount)
 
 u8 hrt_SwapNibbles(u8 n)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		return ( (n & 0x0F)<<4 | (n & 0xF0)>>4 );
 	}
@@ -237,7 +252,7 @@ u8 hrt_SwapNibbles(u8 n)
 
 void IWRAM_CODE hrt_EZFSetRompage(u16 page)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		*(vu16 *)0x9fe0000 = 0xd200;
 		*(vu16 *)0x8000000 = 0x1500;
@@ -250,7 +265,7 @@ void IWRAM_CODE hrt_EZFSetRompage(u16 page)
 
 u16 hrt_SwapBytesInWord(u16 word)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		return ((word<<8)&0xff00)|((word>>8)&0x00ff);
 	}
@@ -259,7 +274,7 @@ u16 hrt_SwapBytesInWord(u16 word)
 
 int hrt_SwapWordsInDWord(u32 dword)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		return (((dword) << 16)&0xffFF0000)|((dword>>16)&0x0000FFff);
 	}
@@ -268,7 +283,7 @@ int hrt_SwapWordsInDWord(u32 dword)
 
 void hrt_8BitWriteToVRAM(u32 offset, u8 value)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		register u16 temp;
 		switch(hrt_IsNumberOdd(value))
@@ -291,10 +306,19 @@ void hrt_8BitWriteToVRAM(u32 offset, u8 value)
 
 bool hrt_DetectPogoshell(void)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		register u32 pogotemp=(u32)(*(u8**)0x0203FBFC);
 		return ((pogotemp & 0xFE000000) == 0x08000000)?1:0;
 	}
 	return 0;
+}
+
+void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode)
+{
+    if (__hrt_system.hrt_start) {
+            REG_DMAxSAD(channel) = (u32)source;
+            REG_DMAxDAD(channel) = (u32)dest;
+			REG_DMAxCNT(channel) = WordCount | mode;
+    }
 }

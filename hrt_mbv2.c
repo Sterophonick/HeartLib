@@ -1,3 +1,19 @@
+/*****************************************************\
+*    								8       8                                            8     8            8  8                                          *
+*    								8       8                                            8     8                8                                          *
+*    								88888    888       888    8  88    888  8            8  8  88                                   *
+*    								8       8  8       8           8  88    8    8     8            8  88    8                                 *
+*    								8       8  88888    8888  8             8     8            8  8      8                                 *
+*    								8       8  8           8       8  8             8     8            8  8      8                                 *
+*    								8       8    8888    8888  8               8    88888  8  8888                                  *
+*    																		HeartLib                                                                   *
+*    A comprehensive game/app engine for the Nintendo® Game Boy Advance™        *
+*    												Licensed under the GNU GPL v3.0                                             *
+*                                               View the LICENSE file for details                                         *
+*    														2017-2019 Sterophonick                                                    *
+*    																	For Tubooboo                                                               *
+\*****************************************************/
+//This code comes from libgba so shoutouts to them.
 #include "libheart.h"
 extern gba_system __hrt_system;
 
@@ -11,7 +27,7 @@ int koutptr = 0;
 
 int __dputchar(int c)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		int rcv;
 		static int LastChar = 0;
@@ -70,7 +86,7 @@ int __dputchar(int c)
 }
 int mbv2_dputchar(int c)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		(void)__dputchar(c);
 		if (c == __ESCCHR) {
@@ -82,7 +98,7 @@ int mbv2_dputchar(int c)
 }
 int mbv2_dgetch(void)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		int c;
 		// If no character is in FIFO then wait for one.
@@ -98,7 +114,7 @@ int mbv2_dgetch(void)
 }
 int mbv2_dfgetch(void)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		int c;
 		// If no character is in FIFO then wait for one.
@@ -114,7 +130,7 @@ int mbv2_dfgetch(void)
 }
 int mbv2_dkbhit(void)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		return(kinptr != koutptr);
 	}
@@ -122,7 +138,7 @@ int mbv2_dkbhit(void)
 }
 int mbv2_dfopen(const char *file, const char *type)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		__dputchar(__ESCCHR);
 		__dputchar(__ESC_FOPEN);
@@ -140,7 +156,7 @@ int mbv2_dfopen(const char *file, const char *type)
 }
 int mbv2_dfclose(int fp)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		__dputchar(__ESCCHR);
 		__dputchar(__ESC_FCLOSE);
@@ -150,7 +166,7 @@ int mbv2_dfclose(int fp)
 }
 int mbv2_dfgetc(int fp)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		__dputchar(__ESCCHR);
 		__dputchar(__ESC_FGETC);
@@ -160,7 +176,7 @@ int mbv2_dfgetc(int fp)
 }
 int mbv2_dfputc(int ch, int fp)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		__dputchar(__ESCCHR);
 		__dputchar(__ESC_FPUTC);
@@ -171,7 +187,7 @@ int mbv2_dfputc(int ch, int fp)
 }
 void mbv2_drewind(int fp)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		__dputchar(__ESCCHR);
 		__dputchar(__ESC_REWIND);
@@ -179,7 +195,7 @@ void mbv2_drewind(int fp)
 }
 void mbv2_dprintf(char *str, ...)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		va_list args;
 		char *string = __outstr;
@@ -193,7 +209,7 @@ void mbv2_dprintf(char *str, ...)
 }
 void mbv2_dfprintf(int fp, char *str, ...)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		va_list args;
 		char *string = __outstr;

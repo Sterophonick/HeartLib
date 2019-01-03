@@ -1,3 +1,18 @@
+/*****************************************************\
+*    								8       8                                            8     8            8  8                                          *
+*    								8       8                                            8     8                8                                          *
+*    								88888    888       888    8  88    888  8            8  8  88                                   *
+*    								8       8  8       8           8  88    8    8     8            8  88    8                                 *
+*    								8       8  88888    8888  8             8     8            8  8      8                                 *
+*    								8       8  8           8       8  8             8     8            8  8      8                                 *
+*    								8       8    8888    8888  8               8    88888  8  8888                                  *
+*    																		HeartLib                                                                   *
+*    A comprehensive game/app engine for the Nintendo® Game Boy Advance™        *
+*    												Licensed under the GNU GPL v3.0                                             *
+*                                               View the LICENSE file for details                                         *
+*    														2017-2019 Sterophonick                                                    *
+*    																	For Tubooboo                                                               *
+\*****************************************************/
 #include "libheart.h"
 extern gba_system __hrt_system;
    typedef struct {
@@ -19,11 +34,11 @@ extern gba_system __hrt_system;
 
 void hrt_DecodePCX(const u8 *PCXBuffer, u16 * ScreenAddr, u16* Palette)
 {
-	if (__hrt_system.hrt_start == 1) {
+	if (__hrt_system.hrt_start) {
 		u8 Buf[240];
 		register int c, l, r, g, b;
 		register int i;
-		u16 *Scrn = ScreenAddr;
+		register u16 *Scrn = ScreenAddr;
 		pcx_header *header = (pcx_header *)PCXBuffer;
 		register u8 *Data = (u8*)PCXBuffer + sizeof(pcx_header);
 		register int Width = (header->x2 - header->x1) + 1;
@@ -55,7 +70,7 @@ void hrt_DecodePCX(const u8 *PCXBuffer, u16 * ScreenAddr, u16* Palette)
 					k++;
 				}
 			}
-			u16* ptr = (u16 *)Buf;
+			register u16* ptr = (u16 *)Buf;
 			for (i = 0; i < Width >> 1; i++)
 			{
 				*(Scrn++) = *(ptr++);
@@ -63,8 +78,8 @@ void hrt_DecodePCX(const u8 *PCXBuffer, u16 * ScreenAddr, u16* Palette)
 			wptr = Buf;
 		}
 		Data++;
-		u16 * GBA_Palette = Palette;
-		u16 color;
+		register u16 * GBA_Palette = Palette;
+		register u16 color;
 		for (i = 0; i < 256; i++)
 		{
 			r = *(Data++);

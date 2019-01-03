@@ -1,3 +1,18 @@
+/*****************************************************\
+*    								8       8                                            8     8            8  8                                          *
+*    								8       8                                            8     8                8                                          *
+*    								88888    888       888    8  88    888  8            8  8  88                                   *
+*    								8       8  8       8           8  88    8    8     8            8  88    8                                 *
+*    								8       8  88888    8888  8             8     8            8  8      8                                 *
+*    								8       8  8           8       8  8             8     8            8  8      8                                 *
+*    								8       8    8888    8888  8               8    88888  8  8888                                  *
+*    																		HeartLib                                                                   *
+*    A comprehensive game/app engine for the Nintendo® Game Boy Advance™        *
+*    												Licensed under the GNU GPL v3.0                                             *
+*                                               View the LICENSE file for details                                         *
+*    														2017-2019 Sterophonick                                                    *
+*    																	For Tubooboo                                                               *
+\*****************************************************/
 #include "libheart.h"
 extern gba_system __hrt_system;
 
@@ -1012,7 +1027,7 @@ int JPEG_HuffmanTable_Read(JPEG_HuffmanTable *huffmanTable, const unsigned char 
 }
 int hrt_DecodeJPEG(const unsigned char *data, volatile unsigned short *out, int outWidth, int outHeight)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		JPEG_Decoder decoder;
 		if (!JPEG_Decoder_ReadHeaders(&decoder, &data)) {

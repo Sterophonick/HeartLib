@@ -1,3 +1,18 @@
+/*****************************************************\
+*    								8       8                                            8     8            8  8                                          *
+*    								8       8                                            8     8                8                                          *
+*    								88888    888       888    8  88    888  8            8  8  88                                   *
+*    								8       8  8       8           8  88    8    8     8            8  88    8                                 *
+*    								8       8  88888    8888  8             8     8            8  8      8                                 *
+*    								8       8  8           8       8  8             8     8            8  8      8                                 *
+*    								8       8    8888    8888  8               8    88888  8  8888                                  *
+*    																		HeartLib                                                                   *
+*    A comprehensive game/app engine for the Nintendo® Game Boy Advance™        *
+*    												Licensed under the GNU GPL v3.0                                             *
+*                                               View the LICENSE file for details                                         *
+*    														2017-2019 Sterophonick                                                    *
+*    																	For Tubooboo                                                               *
+\*****************************************************/
 #include "libheart.h"
 u16* VRAM 	=(u16*)0x6000000;
 u16* BGPaletteMem 	=(u16*)0x5000000;
@@ -11,10 +26,11 @@ extern s16 RAD[360];
 
 void hrt_SetPaletteOfBGMap(u16 mapdata, u16 size, u8 pal)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
 		register u16 i;
 		for(i=0; i < size; i++)
 		{
+			VRAM[(mapdata*2048)+i] &= 0xF000;
 			VRAM[(mapdata*2048)+i] |= (pal << 12);
 		}
 	}
@@ -22,7 +38,7 @@ void hrt_SetPaletteOfBGMap(u16 mapdata, u16 size, u8 pal)
 
 void hrt_FlipBGBuffer(void)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         if (REG_DISPCNT & 0x10) {                                                 //back buffer is current buffer, switch to font buffer
             REG_DISPCNT &= ~0x10;                                                   //flip active buffer to front buffer
             VRAM = BackBuffer;                                                     //point drawing buffer to the back buffer
@@ -36,7 +52,7 @@ void hrt_FlipBGBuffer(void)
 
 u32 hrt_GetOffset(u8 no)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         switch (no) {
             case 0:
                 return __hrt_system.hrt_offsetOAMData;
@@ -60,7 +76,7 @@ u32 hrt_GetOffset(u8 no)
 
 void hrt_SetOffset(u8 no, u32 amount)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         switch (no) {
             case 0:
                 __hrt_system.hrt_offsetOAMData = amount;
@@ -81,29 +97,21 @@ void hrt_SetOffset(u8 no, u32 amount)
     }
 }
 
-void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode)
-{
-    if (__hrt_system.hrt_start == 1) {
-            REG_DMAxSAD(channel) = (u32)source;
-            REG_DMAxDAD(channel) = (u32)dest;
-			REG_DMAxCNT(channel) = WordCount | mode;
-    }
-}
-
 void hrt_LoadBGPal(u16* data, u16 length)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         register int i;
         for (i = 0; i < length; i++) {
             BGPaletteMem[i+__hrt_system.hrt_offsetBGPal] = data[i];
         }
+		
         __hrt_system.hrt_offsetBGPal += length;
     }
 }
 
 void hrt_DrawPixel(int Mode, int x, int y, unsigned short color)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
 		register u16 pal;
 		switch(Mode)
 		{
@@ -130,14 +138,14 @@ void hrt_DrawPixel(int Mode, int x, int y, unsigned short color)
 
 u16 hrt_GetPixelInMode3(int x, int y)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         return VRAM[y * 240 + x]; //returns the pixel color at the position given
     }
     return 0;
 }
 u8 hrt_GetPixelInMode4(int x, int y)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         register u16 pal;
         pal = VRAM[y * 120 + x]; //returns the pixel color at the position given
         if(hrt_IsNumberOdd(pal)) {
@@ -152,7 +160,7 @@ u8 hrt_GetPixelInMode4(int x, int y)
 
 void hrt_CyclePalette(int start, int amount, int pal)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
 		register int i;
 		switch(pal)
 		{
@@ -174,7 +182,7 @@ void hrt_CyclePalette(int start, int amount, int pal)
 
 void hrt_InvertPalette(int start, int amount, int pal)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         if (pal == 0) {
             register int i;
             for (i = 0; i < amount; i++) {
@@ -201,7 +209,7 @@ void hrt_InvertPalette(int start, int amount, int pal)
 
 void hrt_DrawRectangle(int r, int c, int width, int height, u16 color, int mode)   //draws rectangle
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         register int i, j;
         for (i = 0; i < height; i++) {
             for (j = 0; j < width; j++) {
@@ -213,14 +221,14 @@ void hrt_DrawRectangle(int r, int c, int width, int height, u16 color, int mode)
 
 void hrt_DrawHollowRectangle(int r, int c, int width, int height, u16 color, int mode)   //draws rectangle
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
 		//Draw Hollow rect
     }
 }
 
 void hrt_FillScreen(u16 color)   //fills screen with a solid color in mode 3
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         register int i;
         for (i = 0; i < 38400; i++) {
             VRAM[i] = color;
@@ -230,7 +238,7 @@ void hrt_FillScreen(u16 color)   //fills screen with a solid color in mode 3
 
 void hrt_DrawLine(int x1, int y1, int x2, int y2, unsigned short color, int mode)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         int i, deltax, deltay, numpixels;
         int d, dinc1, dinc2;
         int x, xinc1, xinc2;
@@ -291,7 +299,7 @@ void hrt_DrawLine(int x1, int y1, int x2, int y2, unsigned short color, int mode
 
 void hrt_DrawCircle(int xCenter, int yCenter, int radius, u16 color, int mode)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         register int x = 0;
         register int y = radius;
         register int p = 3 - 2 * radius;
@@ -316,7 +324,7 @@ void hrt_DrawCircle(int xCenter, int yCenter, int radius, u16 color, int mode)
 
 void hrt_ScanLines(u16 color, int time, int mode)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         register int x, y;
         for (x = 0; x < 240; x += 2) {
             for (y = 0; y < 160; y += 2) {
@@ -332,7 +340,7 @@ void hrt_ScanLines(u16 color, int time, int mode)
 
 void hrt_LeftWipe(u16 color, int time, int mode)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         register int x1, y1;
         for (x1 = 0; x1 < 240; x1++) {
             for (y1 = 0; y1 < 160; y1++) {
@@ -345,7 +353,7 @@ void hrt_LeftWipe(u16 color, int time, int mode)
 
 void hrt_RightWipe(u16 color,int time, int mode)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         register int x1, y1;
         for (x1 = 240; x1 > 0; x1--) {
             for (y1 = 0; y1 < 160; y1++) {
@@ -358,7 +366,7 @@ void hrt_RightWipe(u16 color,int time, int mode)
 
 void hrt_TopWipe(u16 color, int time, int mode)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         register int x1, y1;
         for (y1 = 0; y1 < 160; y1++) {
             for (x1 = 240; x1 != -1; x1--) {
@@ -371,7 +379,7 @@ void hrt_TopWipe(u16 color, int time, int mode)
 
 void hrt_BottomWipe(u16 color, int time, int mode)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         register int x1, y1;
         for (y1 = 160; y1 > 0; y1--) {
             for (x1 = 240; x1 > 0; x1--) {
@@ -384,7 +392,7 @@ void hrt_BottomWipe(u16 color, int time, int mode)
 
 void hrt_CircleWipe(u16 color, int time, int mode)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         register int r;
         for (r = 0; r < 120; r++) {
             hrt_DrawCircle(120, 80, r, color, mode);
@@ -395,7 +403,7 @@ void hrt_CircleWipe(u16 color, int time, int mode)
 
 void hrt_CoolScanLines(u16 color, int time, int mode)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         register int i;
         for (i = 1; i < 160; i += 2) {
             hrt_DrawLine(0, i, 240, i, color, mode);
@@ -410,7 +418,7 @@ void hrt_CoolScanLines(u16 color, int time, int mode)
 
 u16 hrt_GetBGPalEntry(int slot)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         return BGPaletteMem[slot];
     }
     return 0;
@@ -418,7 +426,7 @@ u16 hrt_GetBGPalEntry(int slot)
 
 u16 hrt_GetOBJPalEntry(int slot)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         return OBJPaletteMem[slot];
     }
     return 0;
@@ -426,21 +434,21 @@ u16 hrt_GetOBJPalEntry(int slot)
 
 void hrt_SetBGPalEntry(int slot, u16 color)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         BGPaletteMem[slot] = color;
     }
 }
 
 void hrt_SetOBJPalEntry(int slot, u16 color)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         OBJPaletteMem[slot] = color;
     }
 }
 
 void hrt_LoadBGTiles(u16* data, int length)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         register int i;
         for (i = 0; i < length; i++) {
             BGTileMem[i+__hrt_system.hrt_offsetBGTile] = data[i];
@@ -451,7 +459,7 @@ void hrt_LoadBGTiles(u16* data, int length)
 
 void hrt_LoadBGMap(u16* data, int length)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         register int i;
         for (i = 0; i < length; i++) {
             VRAM[i+__hrt_system.hrt_offsetBGMap] = data[i];
@@ -462,7 +470,7 @@ void hrt_LoadBGMap(u16* data, int length)
 
 void hrt_FillPalette(int paltype, u16 color)   //fills a palette of the selection with the same color for each slot
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
 		switch(paltype)
 		{
 			case 0: //BGPaletteMem
@@ -477,21 +485,21 @@ void hrt_FillPalette(int paltype, u16 color)   //fills a palette of the selectio
 
 void hrt_SetDSPMode(u8 mode, u8 CGB, u8 framesel, u8 unlockedhblank, u8 objmap, u8 forceblank, u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 win0, u8 win1, u8 objwin)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         REG_DISPCNT = 0x1 * mode | 0x8 * CGB | 0x10 * framesel | 0x20 * unlockedhblank | 0x40 * objmap | 0x80 * forceblank | 0x100 * bg0 | 0x200 * bg1 | 0x400 * bg2 | 0x800 * bg3 | 0x1000 * obj | 0x2000 * win0 | 0x4000 * win1 | 0x8000 * objwin;
     }
 }
 
 void hrt_ConfigBG(u8 bg, u8 priority, u8 tilebase, u8 mosaic, u8 color256, u8 tilemapbase, u8 wraparound, u8 dimensions)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
 		REG_BGxCNT(bg) = 0x01 * priority | 0x04 * tilebase | 0x40 * mosaic | 0x80 * color256 | 0x100 * tilemapbase | 0x2000 * wraparound | 0x4000 * dimensions;
 	}
 }
 
 void hrt_LineWipe(u16 color, int time, u8 mode)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         register int x, y;
         for (y = 0; y < 160; y++) {
             hrt_DrawLine(240, 0, 0, y, color, mode);
@@ -506,7 +514,7 @@ void hrt_LineWipe(u16 color, int time, u8 mode)
 
 void hrt_LoadOBJPal(unsigned int * pal, u16 size)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         register int 	x;
         for (x = 0; x < size; x++) {
             OBJPaletteMem[x + __hrt_system.hrt_offsetOAMPal] = ((unsigned short*)pal)[x];
@@ -517,7 +525,7 @@ void hrt_LoadOBJPal(unsigned int * pal, u16 size)
 
 void hrt_LoadOBJGFX(unsigned int * gfx, int size)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         register int 	x;
         for (x = 0; x < size; x++) {
             OAMData[(8192 + __hrt_system.hrt_offsetOAMData) + x] = ((unsigned short*)gfx)[x];
@@ -528,14 +536,14 @@ void hrt_LoadOBJGFX(unsigned int * gfx, int size)
 
 void hrt_SetTile(u8 x, u8 y, int tileno)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         VRAM[y * 256 + x] = tileno;
     }
 }
 
 int hrt_ConfigDMA(u8 dstoff, u8 srcoff, u8 repeat, u8 b32, u8 starttiming, u8 irq, u8 enable)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         return 0x20 * dstoff | 0x80 * srcoff | 0x200 * repeat | 0x400 * b32 | 0x1000 * starttiming | 0x4000 * irq | 0x8000 * enable;
     }
     return 0;
@@ -543,7 +551,7 @@ int hrt_ConfigDMA(u8 dstoff, u8 srcoff, u8 repeat, u8 b32, u8 starttiming, u8 ir
 
 u16 hrt_GenerateColorFromRGB(u32 red, u32 green, u32 blue)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         return red | (green << 5) | (blue << 10);
     }
     return 0;
@@ -551,7 +559,7 @@ u16 hrt_GenerateColorFromRGB(u32 red, u32 green, u32 blue)
 
 u16 hrt_GetRedValueFromBGR(u16 bgr)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         return ((bgr & 0x001f) << 3);
     }
     return 0;
@@ -559,7 +567,7 @@ u16 hrt_GetRedValueFromBGR(u16 bgr)
 
 u16 hrt_GetGreenValueFromBGR(u16 bgr)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         return (((bgr >> 5) & 0x001f) << 3);
     }
     return 0;
@@ -567,7 +575,7 @@ u16 hrt_GetGreenValueFromBGR(u16 bgr)
 
 u16 hrt_GetBlueValueFromBGR(u16 bgr)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         return (((bgr >> 10) & 0x001f) << 3);
     }
     return 0;
@@ -575,7 +583,7 @@ u16 hrt_GetBlueValueFromBGR(u16 bgr)
 
 void hrt_DSPSetBGMode(u8 mode)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         REG_DISPCNT &= 0xFFF8;
         REG_DISPCNT |= mode;
     }
@@ -583,21 +591,21 @@ void hrt_DSPSetBGMode(u8 mode)
 
 void hrt_DSPEnableForceBlank(void)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         REG_DISPCNT |= 0x0080;
     }
 }
 
 void hrt_DSPDisableForceBlank(void)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         REG_DISPCNT &= 0xFF7F;
     }
 }
 
 void hrt_DSPEnableBG(u8 layer)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		REG_DISPCNT |= 1UL << (8+layer);
 	}
@@ -605,7 +613,7 @@ void hrt_DSPEnableBG(u8 layer)
 
 void hrt_DSPDisableBG(u8 layer)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		REG_DISPCNT &= ~(1UL << (8 + layer));
 	}
@@ -613,35 +621,35 @@ void hrt_DSPDisableBG(u8 layer)
 
 void hrt_DSPEnableOBJ(void)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         REG_DISPCNT |= 0x1000;
     }
 }
 
 void hrt_DSPDisableOBJ(void)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         REG_DISPCNT &= 0xEFFF;
     }
 }
 
 void hrt_DSPEnableWIN(u8 win)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         REG_DISPCNT |= (1UL << (13+win));
     }
 }
 
 void hrt_DSPDisableWIN(u8 win)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         REG_DISPCNT &= ~(1UL << (13+win));
     }
 }
 
 void hrt_DSPEnableLinearOBJ(void)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		REG_DISPCNT |= BIT06;
 	}
@@ -657,7 +665,7 @@ void hrt_DSPDisableLinearOBJ(void)
 
 u8 hrt_DSPGetBGMode(void)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         return REG_DISPCNT & 0x7;
     }
     return 0;
@@ -665,35 +673,35 @@ u8 hrt_DSPGetBGMode(void)
 
 void hrt_BGSet16Color(u8 layer)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         REG_BGxCNT(layer) &= 0xFF7F;
     }
 }
 
 void hrt_BGSet256Color(u8 layer)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
 		REG_BGxCNT(layer) |= 0x0080;
     }
 }
 
 void hrt_BGEnableMosaic(u8 layer)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
 		REG_BGxCNT(layer) |= 0x0040;
     }
 }
 
 void hrt_BGDisableMosaic(u8 layer)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
 		REG_BGxCNT(layer) &= 0xFFBF;
     }
 }
 
 void hrt_BGSetSize(u8 layer, u8 size)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
 		REG_BGxCNT(layer) &= 0x3FFF;
 		REG_BGxCNT(layer) |= (size << 14);
     }
@@ -701,7 +709,7 @@ void hrt_BGSetSize(u8 layer, u8 size)
 
 void hrt_BGSetMapBase(u8 layer, u8 no)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
 		REG_BGxCNT(layer) &= 0xE0FF;
 		REG_BGxCNT(layer) |= (no << 8);
     }
@@ -709,7 +717,7 @@ void hrt_BGSetMapBase(u8 layer, u8 no)
 
 void hrt_BGSetTileBase(u8 layer, u8 no)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
 		REG_BGxCNT(layer) &= 0xFFF3;
 		REG_BGxCNT(layer) |= (no << 2);
     }
@@ -717,7 +725,7 @@ void hrt_BGSetTileBase(u8 layer, u8 no)
 
 void hrt_BGSetPriority(u8 layer, u8 no)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
 		REG_BGxCNT(layer) &= 0xFFFD;
 		REG_BGxCNT(layer) |= no;
     }
@@ -726,7 +734,7 @@ void hrt_BGSetPriority(u8 layer, u8 no)
 
 void hrt_SetBGXY(u8 bg, s16 x, s16 y)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		REG_BGxHOFS(bg) = x;
 		REG_BGxVOFS(bg) = y;
@@ -735,7 +743,7 @@ void hrt_SetBGXY(u8 bg, s16 x, s16 y)
 
 void hrt_SetBGX(u8 bg, s16 x)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		REG_BGxHOFS(bg) = x;
 	}
@@ -743,7 +751,7 @@ void hrt_SetBGX(u8 bg, s16 x)
 
 void hrt_SetBGY(u8 bg, s16 y)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		REG_BGxVOFS(bg) = y;
 	}
@@ -751,7 +759,7 @@ void hrt_SetBGY(u8 bg, s16 y)
 
 s16 hrt_GetBGX(u8 bg)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		return REG_BGxHOFS(bg);
 	}
@@ -760,7 +768,7 @@ s16 hrt_GetBGX(u8 bg)
 
 s16 hrt_GetBGY(u8 bg)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		return REG_BGxVOFS(bg);
 	}
@@ -769,7 +777,7 @@ s16 hrt_GetBGY(u8 bg)
 
 u8 hrt_GetBGPriority(u8 bg)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		return REG_BGxCNT(bg) & 0;
 	}
@@ -778,7 +786,7 @@ u8 hrt_GetBGPriority(u8 bg)
 
 u8 hrt_GetBGTileBase(u8 bg)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		return REG_BGxCNT(bg) & 2;
 	}
@@ -787,7 +795,7 @@ u8 hrt_GetBGTileBase(u8 bg)
 
 u8 hrt_GetBGMapBase(u8 bg)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		return REG_BGxCNT(bg) & 8;
 	}
@@ -796,7 +804,7 @@ u8 hrt_GetBGMapBase(u8 bg)
 
 u8 hrt_GetBGScreenSize(u8 bg)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		return REG_BGxCNT(bg) & 14;
 	}
@@ -805,7 +813,7 @@ u8 hrt_GetBGScreenSize(u8 bg)
 
 u8 hrt_IsBGWraparound(u8 bg)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		return REG_BGxCNT(bg) & 13;
 	}
@@ -814,7 +822,7 @@ u8 hrt_IsBGWraparound(u8 bg)
 
 u8 hrt_IsBGMosaic(u8 bg)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		return REG_BGxCNT(bg) & 6;
 	}
@@ -823,7 +831,7 @@ u8 hrt_IsBGMosaic(u8 bg)
 
 u8 hrt_DSPIsBGEnabled(u8 bgno)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		return REG_BGxCNT(bgno) & (8+bgno);
 	}
@@ -832,7 +840,7 @@ u8 hrt_DSPIsBGEnabled(u8 bgno)
 
 u8 hrt_DSPIsHBlankUnlocked()
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		return REG_DISPCNT & 5;
 	}
@@ -841,7 +849,7 @@ u8 hrt_DSPIsHBlankUnlocked()
 
 u8 hrt_DSPIsFrameSelect()
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		return REG_DISPCNT & 4;
 	}
@@ -850,7 +858,7 @@ u8 hrt_DSPIsFrameSelect()
 
 u8 hrt_DSPIsWinEnabled(u8 window)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		return REG_DISPCNT & (0xD+window);
 	}
@@ -859,7 +867,7 @@ u8 hrt_DSPIsWinEnabled(u8 window)
 
 u8 hrt_DSPIsLinearOBJEnabled()
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		return REG_DISPCNT &6;
 	}
@@ -868,7 +876,7 @@ u8 hrt_DSPIsLinearOBJEnabled()
 
 void hrt_EnableGreenSwap()
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		REG_UNKNOWN0 = 1;
 	}
@@ -876,7 +884,7 @@ void hrt_EnableGreenSwap()
 
 void hrt_DisableGreenSwap()
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		REG_UNKNOWN0 = 0;
 	}
@@ -884,7 +892,7 @@ void hrt_DisableGreenSwap()
 
 void hrt_DSPEnableBGWraparound(u8 layer)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		REG_BGxCNT(layer) |= 1UL << (0xD);
 	}
@@ -892,7 +900,7 @@ void hrt_DSPEnableBGWraparound(u8 layer)
 
 void hrt_DSPDisableBGWraparound(u8 layer)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		REG_BGxCNT(layer) &= 0xDFFF;
 	}
@@ -902,30 +910,30 @@ void hrt_AffineBG(u8 layer, s32 angle, u32 zoom, u32 cx, u32 cy)
 {
 	register u32 center_y;
 	register u32 center_x;
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
-		if(layer == 2)
+		switch(layer)
 		{
-			center_y = (cy * zoom) >> 8;
-			center_x = (cx * zoom) >> 8;
-			REG_BG2X = (REG_BG2HOFS - center_y * SIN[angle] - center_x * COS[angle]);
-			REG_BG2Y = (REG_BG2VOFS - center_y * COS[angle] + center_x * SIN[angle]);
-			REG_BG2PA = (COS[angle] * zoom) >> 8;
-			REG_BG2PB = (SIN[angle] * zoom) >> 8;
-			REG_BG2PC = (-SIN[angle] * zoom) >> 8;
-			REG_BG2PD = (COS[angle] * zoom) >> 8;
-
-		}
-		else if(layer == 3)
-		{
-			center_y = (cy * zoom) >> 8;
-			center_x = (cx * zoom) >> 8;
-			REG_BG3X = (REG_BG3HOFS - center_y * SIN[angle] - center_x * COS[angle]);
-			REG_BG3Y = (REG_BG3VOFS - center_y * COS[angle] + center_x * SIN[angle]);
-			REG_BG3PA = (COS[angle] * zoom) >> 8;
-			REG_BG3PB = (SIN[angle] * zoom) >> 8;
-			REG_BG3PC = (-SIN[angle] * zoom) >> 8;
-			REG_BG3PD = (COS[angle] * zoom) >> 8;		
+			case 2:
+				center_y = (cy * zoom) >> 8;
+				center_x = (cx * zoom) >> 8;
+				REG_BG2X = (REG_BG2HOFS - center_y * SIN[angle] - center_x * COS[angle]);
+				REG_BG2Y = (REG_BG2VOFS - center_y * COS[angle] + center_x * SIN[angle]);
+				REG_BG2PA = (COS[angle] * zoom) >> 8;
+				REG_BG2PB = (SIN[angle] * zoom) >> 8;
+				REG_BG2PC = (-SIN[angle] * zoom) >> 8;
+				REG_BG2PD = (COS[angle] * zoom) >> 8;
+				break;
+			case 3:
+				center_y = (cy * zoom) >> 8;
+				center_x = (cx * zoom) >> 8;
+				REG_BG3X = (REG_BG3HOFS - center_y * SIN[angle] - center_x * COS[angle]);
+				REG_BG3Y = (REG_BG3VOFS - center_y * COS[angle] + center_x * SIN[angle]);
+				REG_BG3PA = (COS[angle] * zoom) >> 8;
+				REG_BG3PB = (SIN[angle] * zoom) >> 8;
+				REG_BG3PC = (-SIN[angle] * zoom) >> 8;
+				REG_BG3PD = (COS[angle] * zoom) >> 8;		
+				break;
 		}
 	}
 }
@@ -933,7 +941,7 @@ void hrt_AffineBG(u8 layer, s32 angle, u32 zoom, u32 cx, u32 cy)
 		
 void hrt_DrawBitmapSector(u16* pbg,u16 x, u16 y, u16 w, u16 h)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		register u16 *p;
 		register u16 yi,ww,hh;
@@ -948,7 +956,7 @@ void hrt_DrawBitmapSector(u16* pbg,u16 x, u16 y, u16 w, u16 h)
 
 void hrt_DSPToggleBG(u8 bgno)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		REG_DISPCNT ^= 1UL << (8+bgno);
 	}
@@ -956,21 +964,21 @@ void hrt_DSPToggleBG(u8 bgno)
 
 void hrt_DSPToggleOBJ(void)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         REG_DISPCNT ^= 0x1000;
     }
 }
 
 void hrt_DSPToggleForceBlank(void)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         REG_DISPCNT ^= 0x0080;
     }
 }
 
 void hrt_DSPToggleLinearOBJ(void)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         REG_DISPCNT ^= 0x0040;
     }
 }
@@ -978,21 +986,21 @@ void hrt_DSPToggleLinearOBJ(void)
 
 void hrt_DSPToggleFrameSelect(void)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         REG_DISPCNT ^= 0x0010;
     }
 }
 
 void hrt_DSPToggleWin(u8 win)
 {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
        REG_DISPCNT ^= (1UL << (13+win));
     }
 }
 
 void hrt_ToggleBGMosaic(u8 bg)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		REG_BGxCNT(bg) ^= 0x40;
 	}
@@ -1000,8 +1008,21 @@ void hrt_ToggleBGMosaic(u8 bg)
 
 void hrt_DestroyBG(u8 bg)
 {
-	if(__hrt_system.hrt_start == 1)
+	if(__hrt_system.hrt_start)
 	{
 		REG_BGxCNT(bg) = 0;
+	}
+}
+
+void hrt_SetMapTileAttributes(u32 ptr, u16 tilenumber, u8 hflip, u8 vflip, u8 palettenum)
+{
+	if(__hrt_system.hrt_start)
+	{
+		register u16 map = 0;
+		map |= tilenumber % 1024;
+		map |= hflip << 10;
+		map |= vflip << 11;
+		map |= (palettenum % 16) << 12;
+		VRAM[ptr] = map;
 	}
 }

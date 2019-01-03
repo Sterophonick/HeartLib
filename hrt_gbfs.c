@@ -1,3 +1,19 @@
+/*****************************************************\
+*    								8       8                                            8     8            8  8                                          *
+*    								8       8                                            8     8                8                                          *
+*    								88888    888       888    8  88    888  8            8  8  88                                   *
+*    								8       8  8       8           8  88    8    8     8            8  88    8                                 *
+*    								8       8  88888    8888  8             8     8            8  8      8                                 *
+*    								8       8  8           8       8  8             8     8            8  8      8                                 *
+*    								8       8    8888    8888  8               8    88888  8  8888                                  *
+*    																		HeartLib                                                                   *
+*    A comprehensive game/app engine for the Nintendo® Game Boy Advance™        *
+*    												Licensed under the GNU GPL v3.0                                             *
+*                                               View the LICENSE file for details                                         *
+*    														2017-2019 Sterophonick                                                    *
+*    																	For Tubooboo                                                               *
+\*****************************************************/
+//View the GBFS-LICENSE file for details
 /* This code assumes a LITTLE ENDIAN target.  It'll need a boatload
    of itohs and itohl calls if converted to run on Sega Genesis.  It
    also assumes that the target uses 16-bit short and 32-bit longs.
@@ -11,7 +27,7 @@ extern gba_system __hrt_system;
 
 const GBFS_FILE *find_first_gbfs_file(const void *start)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		const u32 *here = (const u32 *)
 			((unsigned long)start & (-GBFS_ALIGNMENT));
@@ -31,7 +47,7 @@ const GBFS_FILE *find_first_gbfs_file(const void *start)
 }
 const void *skip_gbfs_file(const GBFS_FILE *file)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		return ((char *)file + file->total_len);
 	}
@@ -39,15 +55,11 @@ const void *skip_gbfs_file(const GBFS_FILE *file)
 }
 static int namecmp(const void *a, const void *b)
 {
-	if (__hrt_system.hrt_start == 1)
-	{
-		return memcmp(a, b, 24);
-	}
-	return 0;
+	return memcmp(a, b, 24);
 }
 const void *gbfs_get_obj(const GBFS_FILE *file,	const char *name,	u32 *len)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		char key[24] = { 0 };
 		GBFS_ENTRY *dirbase = (GBFS_ENTRY *)((char *)file + file->dir_off);
@@ -68,7 +80,7 @@ const void *gbfs_get_obj(const GBFS_FILE *file,	const char *name,	u32 *len)
 }
 void *gbfs_copy_obj(void *dst,	const GBFS_FILE *file, 	const char *name)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		u32 len;
 		const void *src = gbfs_get_obj(file, name, &len);
@@ -76,6 +88,40 @@ void *gbfs_copy_obj(void *dst,	const GBFS_FILE *file, 	const char *name)
 			return NULL;
 		memcpy(dst, src, len);
 		return dst;
+	}
+	return 0;
+}
+
+const void *gbfs_get_nth_obj(const GBFS_FILE *file, size_t n, char *name, u32 *len)
+{
+	if (__hrt_system.hrt_start)
+	{
+		const GBFS_ENTRY *dirbase = (const GBFS_ENTRY *)((const char *)file + file->dir_off);
+		size_t n_entries = file->dir_nmemb;
+		const GBFS_ENTRY *here = dirbase + n;
+
+		if(n >= n_entries)
+			return NULL;
+
+		if(name)
+		{
+			strncpy(name, here->name, 24);
+			name[24] = 0;
+		}
+
+		if(len)
+			*len = here->len;
+
+		return (char *)file + here->data_offset;
+	}
+	return 0;
+}
+
+size_t gbfs_count_objs(const GBFS_FILE *file)
+{
+	if (__hrt_system.hrt_start)
+	{
+		return file ? file->dir_nmemb : 0;
 	}
 	return 0;
 }

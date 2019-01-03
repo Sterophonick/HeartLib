@@ -1,3 +1,18 @@
+/*****************************************************\
+*    								8       8                                            8     8            8  8                                          *
+*    								8       8                                            8     8                8                                          *
+*    								88888    888       888    8  88    888  8            8  8  88                                   *
+*    								8       8  8       8           8  88    8    8     8            8  88    8                                 *
+*    								8       8  88888    8888  8             8     8            8  8      8                                 *
+*    								8       8  8           8       8  8             8     8            8  8      8                                 *
+*    								8       8    8888    8888  8               8    88888  8  8888                                  *
+*    																		HeartLib                                                                   *
+*    A comprehensive game/app engine for the Nintendo® Game Boy Advance™        *
+*    												Licensed under the GNU GPL v3.0                                             *
+*                                               View the LICENSE file for details                                         *
+*    														2017-2019 Sterophonick                                                    *
+*    																	For Tubooboo                                                               *
+\*****************************************************/
 #include "libheart.h"
 extern gba_system __hrt_system;
 extern unsigned char font_matrixBitmap[6080];
@@ -11,7 +26,7 @@ u16 _____colors[3] = {
 void hrt_SetPaletteOfTiledText(u8 pal)
 {
 	register int i;
-	if(__hrt_system.hrt_start == 1) {
+	if(__hrt_system.hrt_start) {
 		__hrt_system.__hrt_tiledtext_palno = pal;
 		for(i=0; i < 1024; i++)
 		{
@@ -22,14 +37,14 @@ void hrt_SetPaletteOfTiledText(u8 pal)
 
 void hrt_SetBitmapTextColors(u16 outside, u16 inside)
 {
-	if(__hrt_system.hrt_start == 1) {
+	if(__hrt_system.hrt_start) {
 		_____colors[1] = outside;
 		_____colors[2] = inside;
 	}
 }
 
 void hrt_DrawChar(int mode, int left, int top, char letter) {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
         register int x, y;
 		register u8 temp;
         for (y = 0; y < 8; y++)
@@ -44,7 +59,7 @@ void hrt_DrawChar(int mode, int left, int top, char letter) {
 }
 
 void hrt_PrintOnBitmap(int left, int top, char *str, ...) {
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
 		va_list args;
 		char *string = __outstr2;
 		va_start(args, str);
@@ -61,7 +76,7 @@ void hrt_PrintOnBitmap(int left, int top, char *str, ...) {
 void hrt_InitTiledText(u8 bg)
 {
 	BUP temp;
-    if (__hrt_system.hrt_start == 1) {
+    if (__hrt_system.hrt_start) {
 		temp.SrcNum = 6080;
 		temp.SrcBitNum = 8;
 		temp.DestBitNum = 4;
@@ -78,7 +93,7 @@ void hrt_InitTiledText(u8 bg)
 
 void hrt_PrintOnTilemap(u8 tx, u8 ty, char* str, ...)
 {
-	if (__hrt_system.hrt_start == 1) {
+	if (__hrt_system.hrt_start) {
 		va_list args;
 		char *string = __outstr2;
 		va_start(args, str);
@@ -97,7 +112,7 @@ void hrt_PrintOnTilemap(u8 tx, u8 ty, char* str, ...)
 void hrt_ClearTiledText(void)
 {
 	register u16 i;
-	if(__hrt_system.hrt_start == 1) {
+	if(__hrt_system.hrt_start) {
 		for(i=0; i<1024; i++)
 		{
 			VRAM[i] = 64;

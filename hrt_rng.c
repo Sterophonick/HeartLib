@@ -1,3 +1,18 @@
+/*****************************************************\
+*    								8       8                                            8     8            8  8                                          *
+*    								8       8                                            8     8                8                                          *
+*    								88888    888       888    8  88    888  8            8  8  88                                   *
+*    								8       8  8       8           8  88    8    8     8            8  88    8                                 *
+*    								8       8  88888    8888  8             8     8            8  8      8                                 *
+*    								8       8  8           8       8  8             8     8            8  8      8                                 *
+*    								8       8    8888    8888  8               8    88888  8  8888                                  *
+*    																		HeartLib                                                                   *
+*    A comprehensive game/app engine for the Nintendo® Game Boy Advance™        *
+*    												Licensed under the GNU GPL v3.0                                             *
+*                                               View the LICENSE file for details                                         *
+*    														2017-2019 Sterophonick                                                    *
+*    																	For Tubooboo                                                               *
+\*****************************************************/
 #include "libheart.h"
 
 extern gba_system __hrt_system;
@@ -14,7 +29,7 @@ static u32   *next;
 static int      left = -1; 
 void hrt_SeedRNG(u32 seed)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		register u32 x = (seed | 1U) & 0xFFFFFFFFU, *s = state;
 		register int    j;
@@ -24,7 +39,7 @@ void hrt_SeedRNG(u32 seed)
 }
 u32 hrt_ReloadRNG(void)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		register u32 *p0 = state, *p2 = state + 2, *pM = state + M, s0, s1;
 		register int    j;
@@ -45,7 +60,7 @@ u32 hrt_ReloadRNG(void)
 }
 u32 hrt_CreateRNG(void)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		register u32 y;
 		if (--left < 0)
@@ -60,7 +75,7 @@ u32 hrt_CreateRNG(void)
 }
 u32 hrt_RNGRange(u32 low, u32 high)
 {
-	if (__hrt_system.hrt_start == 1)
+	if (__hrt_system.hrt_start)
 	{
 		return (hrt_CreateRNG() % high) + low;
 	}

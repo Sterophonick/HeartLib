@@ -1,3 +1,19 @@
+/*****************************************************\
+*    								8       8                                            8     8            8  8                                          *
+*    								8       8                                            8     8                8                                          *
+*    								88888    888       888    8  88    888  8            8  8  88                                   *
+*    								8       8  8       8           8  88    8    8     8            8  88    8                                 *
+*    								8       8  88888    8888  8             8     8            8  8      8                                 *
+*    								8       8  8           8       8  8             8     8            8  8      8                                 *
+*    								8       8    8888    8888  8               8    88888  8  8888                                  *
+*    																		HeartLib                                                                   *
+*    A comprehensive game/app engine for the Nintendo® Game Boy Advance™        *
+*    												Licensed under the GNU GPL v3.0                                             *
+*                                               View the LICENSE file for details                                         *
+*    														2017-2019 Sterophonick                                                    *
+*    																	For Tubooboo                                                               *
+\*****************************************************/
+//Some code was borrowed from HAMLib
  .align 4
  .pool
  .text
@@ -26,30 +42,30 @@
 .global sprites
 .global VRAM
 .global ham_FadePal
+.global ham_HexToChar
 .arm
 
 hrt_JumpExecutionToAddress:
   ldr r3, hrt_start
   ldrb r3, [r3]
-  cmp r3, #1
-  bxne lr
+  cmp r3, #0
+  bxeq lr
   bx r0
 
 hrt_Crash:
   ldr r3, hrt_start
   ldrb r3, [r3]
-  cmp r3, #1
-  bxne lr
+  cmp r3, #0
+  bxeq lr
   mov r0,#0x40000000
-  mov r14,pc
   bx r0
   bx lr
   
 hrt_Sqrt:
   ldr r3, hrt_start 
   ldrb r3, [r3]
-  cmp r3, #1
-  bne sqrtexit
+  cmp r3, #0
+  beq sqrtexit
   swi 8 << 16
   
 sqrtexit:
@@ -59,16 +75,16 @@ hrt_RegisterRamReset:
   ldr r8, .L2
   ldr r3, hrt_start
   ldrb r3, [r3]
-  cmp r3, #1
-  bxne lr
+  cmp r3, #0
+  bxeq lr
   swi 1 << 16
   bx lr
 
 hrt_ArcTan:
   ldr r3, hrt_start 
   ldrb r3, [r3]
-  cmp r3, #1
-  bne arctexit
+  cmp r3, #0
+  beq arctexit
   swi 9 << 16
   
 arctexit:
@@ -77,8 +93,8 @@ arctexit:
 hrt_ArcTan2:
   ldr r3, hrt_start 
   ldrb r3, [r3]
-  cmp r3, #1
-  bne arct2exit
+  cmp r3, #0
+  beq arct2exit
   swi 10 << 16
   
 arct2exit:
@@ -87,8 +103,8 @@ arct2exit:
 hrt_DivMod:
   ldr r3, hrt_start 
   ldrb r3, [r3]
-  cmp r3, #1
-  bne divmodexit
+  cmp r3, #0
+  beq divmodexit
   swi 6 << 16
   mov r0, r1
   
@@ -98,8 +114,8 @@ divmodexit:
 hrt_DivAbs:
   ldr r3, hrt_start 
   ldrb r3, [r3]
-  cmp r3, #1
-  bne divabsexit
+  cmp r3, #0
+  beq divabsexit
   swi 6 << 16
   mov	r0, r3
 
@@ -109,8 +125,8 @@ divabsexit:
 hrt_Div:	
   ldr r3, hrt_start 
   ldrb r3, [r3]
-  cmp r3, #1
-  bne divexit
+  cmp r3, #0
+  beq divexit
   swi	6 << 16
 	
 divexit:
@@ -119,8 +135,8 @@ divexit:
 hrt_DivArm:
   ldr r3, hrt_start 
   ldrb r3, [r3]
-  cmp r3, #1
-  bne divarmexit
+  cmp r3, #0
+  beq divarmexit
   swi	7 << 16
 	
 divarmexit:
@@ -129,8 +145,8 @@ divarmexit:
 hrt_DivArmMod:
   ldr r3, hrt_start 
   ldrb r3, [r3]
-  cmp r3, #1
-  bne divarmmodexit
+  cmp r3, #0
+  beq divarmmodexit
   swi	7 << 16
   mov	r0, r1
  
@@ -141,8 +157,8 @@ divarmmodexit:
 hrt_DivArmAbs:
   ldr r3, hrt_start 
   ldrb r3, [r3]
-  cmp r3, #1
-  bne divarmmodexit
+  cmp r3, #0
+  beq divarmmodexit
   swi	7 << 16
 	mov	r0, r3
 	
@@ -152,24 +168,24 @@ divarmmodeexit:
 hrt_SoundDriverMode:
   ldr r3, hrt_start
   ldrb r3, [r3]
-  cmp r3, #1
-  bxne lr
+  cmp r3, #0
+  bxeq lr
   swi		27 << 16
   bx		lr
   
 hrt_SoundDriverInit:
   ldr r3, hrt_start
   ldrb r3, [r3]
-  cmp r3, #1
-  bxne lr
+  cmp r3, #0
+  bxeq lr
   swi		26 << 16
   bx		lr
   
 hrt_MidiKey2Freq:
   ldr r3, hrt_start 
   ldrb r3, [r3]
-  cmp r3, #1
-  bne mk2fexit
+  cmp r3, #0
+  beq mk2fexit
   swi 31<< 16
   
 mk2fexit:
@@ -178,8 +194,8 @@ mk2fexit:
 hrt_SoundGetJumpList:
   ldr r3, hrt_start
   ldrb r3, [r3]
-  cmp r3, #1
-  bxne lr
+  cmp r3, #0
+  bxeq lr
   swi		42 << 16
   bx		lr
   
@@ -229,7 +245,36 @@ ham_FadePal:
 		bls .Loop
 		pop {r4-r8,lr}
 		bx lr
-
+		
+ham_HexToChar:
+	push {r4, lr}
+	ldr r4,[pc,#92]
+	mov lr, #0
+	strb lr,[r4,#8]
+	strb lr,[r4,#9]
+	mov ip,#7
+	mov r1,#0xF0000000
+	.Loop2:
+		lsl r2, ip, #2
+		and r3,r0,r1
+		lsr r3,r3,r2
+		and r3,r3,#15
+		cmp r3,#9
+		add r2,r3,#55
+		lsr r1,r1,#4
+		add r3,r3,#48
+		strhib	r2, [r4, lr]
+		strlsb r3,[r4,lr]
+		add r2,lr,#1
+		sub r3,ip,#1
+		cmp r1,#0
+		and ip,r3,#0xFF
+		and lr,r2,#0xFF
+		bne .Loop2
+		ldr r0,[pc,#4]
+		pop {r4,lr}
+		bx lr
+		andeq r0,r0,r0
 
 hrt_start:
   .word __hrt_system

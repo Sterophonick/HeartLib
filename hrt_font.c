@@ -1,18 +1,18 @@
-
-//{{BLOCK(font_matrix)
-
-//======================================================================
-//
-//	font_matrix, 8x760@16, 
-//	+ bitmap not compressed
-//	Total size: 12160 = 12160
-//
-//	Time-stamp: 2018-07-26, 20:47:54
-//	Exported by Cearn's GBA Image Transmogrifier, v0.8.3
-//	( http://www.coranac.com/projects/#grit )
-//
-//======================================================================
-
+/*****************************************************\
+*    								8       8                                            8     8            8  8                                          *
+*    								8       8                                            8     8                8                                          *
+*    								88888    888       888    8  88    888  8            8  8  88                                   *
+*    								8       8  8       8           8  88    8    8     8            8  88    8                                 *
+*    								8       8  88888    8888  8             8     8            8  8      8                                 *
+*    								8       8  8           8       8  8             8     8            8  8      8                                 *
+*    								8       8    8888    8888  8               8    88888  8  8888                                  *
+*    																		HeartLib                                                                   *
+*    A comprehensive game/app engine for the Nintendo® Game Boy Advance™        *
+*    												Licensed under the GNU GPL v3.0                                             *
+*                                               View the LICENSE file for details                                         *
+*    														2017-2019 Sterophonick                                                    *
+*    																	For Tubooboo                                                               *
+\*****************************************************/
 const unsigned char font_matrixBitmap[6080] __attribute__((aligned(4)))=
 {
 	0,0,0,0,0,0,0,0,

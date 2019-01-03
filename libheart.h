@@ -1,5 +1,5 @@
 //File: libheart.h - The NEW Definitive GBA Header File
-//Date: December 2018
+//Date: December 2019
 //Author: Sterophonick
 //Derived from gba.h by eloist and agb_lib.h by me, Inspired by Hamlib's mygba.h, who da heck remembers that library amirite?
 //This library is designed to make GBA Programming easy to do, and for everyone to be able to do it, not unlike HAMLib (rip ngine.de 2001-2011 =( may god rest ur soul)
@@ -51,44 +51,68 @@ GBA Specs:
 	Screen Wipes (Mode 3 at the moment)
 	Sprites
 	Affine Transformation - BG and OBJ
-	Sound (Shoutouts to libgba)
+	Sound
 	DMA
 	Palettes
 	Scrolling
 	Compression
 	SRAM
-	Text (Mode 3 only at the moment)
+	Text
 	Interrupts
-	Blending (Shoutouts to headspin)
+	Blending
 	BIOS Calls
-	AGBPrint (Shoutouts to LibGBA)
-	GBFS (kudos to Damian Yerrick)
-	Access To Undocumented Functions and Registers (Special Greetz to GBATek)
-	Color Conversions (Shoutouts to Tubooboo)
+	AGBPrint
+	GBFS
+	Access To Undocumented Functions and Registers
+	Color Conversions
 	Timers
 	Bitmaps
-	Keys (Shoutouts to 3DSage)
+	Keys
 	Screen Drawing
-	PCX Decoding (Shoutouts to libGBA)
+	PCX Decoding
 	Random Number Generation (Uses Merssene Twister method)
-	MaxMod (Kudos to LibGBA)
-	MBV2Lib (Greetz to LibGBA)
+	MaxMod
+	MBV2Lib
 	Typedefs
 	Defines for making those larger functions easier to understand.
-	Real-Time Clock Stuff (Shoutouts to Dwedit)
-	Exit to EZ4/EZ-OMEGA (Shoutouts to Dwedit and GodBolt)
+	Real-Time Clock Stuff
+	Exit to EZ4/EZ-OMEGA
 	aPlib
 	Scrolling Map Edge Drawing
-	JPEG Decoding for Serious image compression (but its slow af)
+	JPEG Decoding for Serious image compression (but its slow)
 	Some Nintendo DS BIOS functions
 
 TODO:
 		Exit to flashcart for other cards
-		Finish Easy Build System
+		Automated Build System (that actually works)
 		Heavily optimize the code so that it runs as fast as possible
-		
-		Rumble?
 */
+
+/*
+	Special Greetz to:
+		Emanuel Scheussinger (Tubooboo)
+		Peter Schraut
+		WinterMute
+		Stevendog98
+		EZ-Flash2 (GBATemp)
+		Dwedit
+		FluBBa
+		Loopy
+		3DSage
+		Headspin
+		IllegalLeft
+		mic-
+		btuduri
+		Kuwanger
+		Coranac
+		Loirak
+		TRiNiTY
+		jeffman
+		GodBolt
+		Mark Holloway
+		CowGod
+*/
+
 #ifdef HRT_WITH_LIBHEART
 
 #pragma once
@@ -98,7 +122,7 @@ TODO:
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 9
 #define HRT_VERSION_PATCH 5
-#define HRT_BUILD_DATE "020012282018"
+#define HRT_BUILD_DATE "051701022019"
 
 #define HEART_API extern
 
@@ -951,7 +975,13 @@ HEART_API mm_word	mp_writepos;
 (panning), \
 }
 
-#define mmReconfigEffect(name, id, rate, handle, volume, panning) 
+#define mmConfigDynamicEffect(name, id, rate, handle, volume, panning)\
+	(name).id = (id);\
+    (name).rate = (rate);\
+    (name).handle = (handle);\
+	(name).volume = (volume);\
+    (name).panning = (panning)
+
 
 //
 
@@ -1245,7 +1275,7 @@ HEART_API s32 hrt_Slope(int x1, int y1, int x2, int y2); //Returns slope between
 HEART_API void hrt_SetTile(u8 x, u8 y, int tileno); //Sets a specific tile to a given value.
 HEART_API void hrt_SetFXAlphaLevel(u8 src, u8 dst); //Sets REG_BLDALPHA
 HEART_API void hrt_FillPalette(int paltype, u16 color); //Fills BG or OBJ palette witha specified color.
-HEART_API void hrt_AGBPrint(const char *msg); //hrt_AGBPrint is interesting. Using this will make the ROM put a message into the output log if AGBPrint is enabled on VisualBoyAdvance. I found a technique that doesn't crash on hardware or other emulators.
+HEART_API void hrt_AGBPrint(const char *str, ...); //hrt_AGBPrint is interesting. Using this will make the ROM put a message into the output log if AGBPrint is enabled on VisualBoyAdvance. I found a technique that doesn't crash on hardware or other emulators.
 HEART_API void hrt_VblankIntrWait(void); //Waits for Vblank Interrupt.
 HEART_API void hrt_Suspend(void); //Suspends the console. Unfinished.
 HEART_API void hrt_EZ4Exit(void); //Exits to Ez-Flash IV Menu.
@@ -1521,6 +1551,10 @@ HEART_API bool hrt_DetectPogoshell(void); //Detects if the ROM is a Pogoshell RO
 HEART_API u8  ham_FadePal(u8 palno,s8 delta_per_call); //test
 HEART_API void hrt_ClearIRQTable(void); //Clears the IRQ Table
 HEART_API void hrt_DestroyBG(u8 bg); //Clears a Background
+HEART_API void hrt_SetMapTileAttributes(u32 ptr, u16 tilenumber, u8 hflip, u8 vflip, u8 palettenum); //Set the attributes of a tile on a map
+HEART_API size_t gbfs_count_objs(const GBFS_FILE *file); //Counts the amount of files in GBFS
+HEART_API const void *gbfs_get_nth_obj(const GBFS_FILE *file, size_t n, char *name, u32 *len); //Gets the value of file from a name
+HEART_API char* ham_HexToChar(u32 hexval); //Converts a hex to a character (test)
 
 #ifdef __cplusplus
 }
