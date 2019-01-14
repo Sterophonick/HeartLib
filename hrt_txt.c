@@ -25,13 +25,9 @@ u16 _____colors[3] = {
 
 void hrt_SetPaletteOfTiledText(u8 pal)
 {
-	register int i;
 	if(__hrt_system.hrt_start) {
 		__hrt_system.__hrt_tiledtext_palno = pal;
-		for(i=0; i < 1024; i++)
-		{
-			VRAM[i] |= (pal << 12);
-		}
+		hrt_SetPaletteOfBGMap(0, 1024, pal);
 	}
 }
 
@@ -45,10 +41,9 @@ void hrt_SetBitmapTextColors(u16 outside, u16 inside)
 
 void hrt_DrawChar(int mode, int left, int top, char letter) {
     if (__hrt_system.hrt_start) {
-        register int x, y;
 		register u8 temp;
-        for (y = 0; y < 8; y++)
-            for (x = 0; x < 8; x++) {
+        for (register int y = 0; y < 8; y++)
+            for (register int x = 0; x < 8; x++) {
 				temp = font_matrixBitmap[(letter - 32) * 64 + y * 8 + x];
 				if (!(temp == 0))
 				{
@@ -111,9 +106,8 @@ void hrt_PrintOnTilemap(u8 tx, u8 ty, char* str, ...)
 
 void hrt_ClearTiledText(void)
 {
-	register u16 i;
 	if(__hrt_system.hrt_start) {
-		for(i=0; i<1024; i++)
+		for(register u16 i=0; i<1024; i++)
 		{
 			VRAM[i] = 64;
 		}

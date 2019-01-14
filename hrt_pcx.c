@@ -39,7 +39,7 @@ void hrt_DecodePCX(const u8 *PCXBuffer, u16 * ScreenAddr, u16* Palette)
 		register int c, l, r, g, b;
 		register int i;
 		register u16 *Scrn = ScreenAddr;
-		pcx_header *header = (pcx_header *)PCXBuffer;
+		register pcx_header *header = (pcx_header *)PCXBuffer;
 		register u8 *Data = (u8*)PCXBuffer + sizeof(pcx_header);
 		register int Width = (header->x2 - header->x1) + 1;
 		register int Height = (header->y2 - header->y1) + 1;

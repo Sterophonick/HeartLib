@@ -1,5 +1,5 @@
 //File: libheart.h - The NEW Definitive GBA Header File
-//Date: December 2019
+//Date: December 2018
 //Author: Sterophonick
 //Derived from gba.h by eloist and agb_lib.h by me, Inspired by Hamlib's mygba.h, who da heck remembers that library amirite?
 //This library is designed to make GBA Programming easy to do, and for everyone to be able to do it, not unlike HAMLib (rip ngine.de 2001-2011 =( may god rest ur soul)
@@ -86,6 +86,8 @@ TODO:
 		Exit to flashcart for other cards
 		Automated Build System (that actually works)
 		Heavily optimize the code so that it runs as fast as possible
+		Fix all of the bugs in this monster of a library
+		Functions to configure all registers
 */
 
 /*
@@ -122,7 +124,7 @@ TODO:
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 9
 #define HRT_VERSION_PATCH 5
-#define HRT_BUILD_DATE "051701022019"
+#define HRT_BUILD_DATE "024001142019"
 
 #define HEART_API extern
 
@@ -136,6 +138,7 @@ HEART_API  "C" {
 #include <string.h>
 #include <stdarg.h>
 #include <stdbool.h>
+#include <math.h>
 
 /*HeartLib Typedefs
 These are used as shortened types.*/
@@ -700,13 +703,17 @@ typedef struct {
 #define REG_POGOFILEPTR *(u8**)0x0203FBFC //Pogoshell File Pointer
 
 #define REG_BGxCNT(x)                 (ACCESS_16(0x04000008+(x*2))) //Macro for a BG
-#define REG_BGxHOFS(x)                    (ACCESS_16(0x0400000A+(x*4))) //macro for a bg
-#define REG_BGxVOFS(x)                    (ACCESS_16(0x0400000B+(x*4))) //macro for a bg
+#define REG_BGxHOFS(x)                    (ACCESS_16(0x04000010+(x*4))) //macro for a bg
+#define REG_BGxVOFS(x)                    (ACCESS_16(0x04000012+(x*4))) //macro for a bg
 #define REG_DMAxSAD(x)                    (ACCESS_32(0x040000B0+(x*0x0C))) //Macro for a DMA Source
 #define REG_DMAxDAD(x)                    (ACCESS_32(0x040000B4+(x*0x0C))) //Macro for a DMA Destination
 #define REG_DMAxCNT(x)					(ACCESS_32(0x040000B8+(x*0x0C))) //Macro for a DMA Control
 #define REG_TMxCNT_L(x)                 (ACCESS_16(0x04000100+(x*4)))
 #define REG_TMxCNT_H(x)                 (ACCESS_16(0x04000102+(x*4)))
+
+//Macros
+#define hrt_IsAssigned(v) (NULL != (p))
+
 
 //keys
 #define KEY_A 1
@@ -1057,6 +1064,10 @@ HEART_API mm_word	mp_writepos;
 #endif
 //eof
 
+#define FILE_IN_EWRAM asm(".section .ewram, \"ax\", %progbits");
+#define FILE_IN_IWRAM asm(".section .iwram, \"ax\", %progbits");
+#define FILE_IN_ROM asm(".text");
+
 /*Function helpers
 These are for the functions with a lot of
  arguments, and serve really good as a way
@@ -1356,7 +1367,7 @@ HEART_API int hrt_GetRTCSecond_H(void); //Gets the Second of the RTC (WIP)
 HEART_API int hrt_GetRTCSecond_L(void); //Gets the Second of the RTC (WIP)
 HEART_API u8 hrt_GetPixelInMode4(int x, int y); //Gives Mode 4 Pixel
 HEART_API u16 hrt_GetPixelInMode3(int x, int y); //Gives Mode 3 Pixel
-HEART_API u8 hrt_GetOBJX(u8 sprite); //Returns OBJ X position
+HEART_API u16 hrt_GetOBJX(u8 sprite); //Returns OBJ X position
 HEART_API u8 hrt_GetOBJY(u8 sprite); //Returns OBJ Y position
 HEART_API void hrt_DisableRTC(void); //Disables RTC
 HEART_API u16 hrt_PointOBJTowardsPosition(u8 sprite, int x, int y); //Rotates a sprite toward a set direction
@@ -1493,8 +1504,8 @@ HEART_API u8 hrt_IsOBJDoubleSize(u8 objno); //Detects whether or not a sprite is
 HEART_API u8 hrt_IsOBJMosaic(u8 objno); //Detects whether or not a sprite is set to mosaic
 HEART_API u8 hrt_GetOBJColorMode(u8 objno); //Returns the color mode of a sprite (0=16 colors, 1=256 colors)
 HEART_API u8 hrt_DSPIsBGEnabled(u8 bgno); //Detects whether or not a specified BG is enabled
-HEART_API u8 hrt_IsOBJHFlip(u8 objno); //Detects whether or not a sprite is horizontally flipped
-HEART_API u8 hrt_IsOBJVFlip(u8 objno); //Detects whehter or not a sprite is vertically flipped
+HEART_API bool hrt_IsOBJHFlip(u8 objno); //Detects whether or not a sprite is horizontally flipped
+HEART_API bool hrt_IsOBJVFlip(u8 objno); //Detects whehter or not a sprite is vertically flipped
 HEART_API u8 hrt_GetOBJSize(u8 objno); //Returns the size of a sprite
 HEART_API u8 hrt_GetOBJMode(u8 objno); //Returns the mode of a sprite
 HEART_API void hrt_SetSaveMode(u8 mode); //Sets the save mode to either SRAM or EEPROM
@@ -1555,6 +1566,16 @@ HEART_API void hrt_SetMapTileAttributes(u32 ptr, u16 tilenumber, u8 hflip, u8 vf
 HEART_API size_t gbfs_count_objs(const GBFS_FILE *file); //Counts the amount of files in GBFS
 HEART_API const void *gbfs_get_nth_obj(const GBFS_FILE *file, size_t n, char *name, u32 *len); //Gets the value of file from a name
 HEART_API char* ham_HexToChar(u32 hexval); //Converts a hex to a character (test)
+HEART_API void mmClearVBlankHandler(void); //Clears the MaxMod Vblank handler
+HEART_API IntFn *hrt_SetInterrupt(irqMASK mask, IntFn function); //Sets an interrupt (uses the enum)
+HEART_API void hrt_EnableInterrupt(irqMASK mask); //Enables interrupt (enum)
+HEART_API void hrt_DisableInterrupt(irqMASK mask); //Disables interrupt (enum)
+HEART_API void hrt_ToggleInterrupt(irqMASK mask); //Toggles interrupt (enum)
+HEART_API u32 hrt_EnableBitInVar(u32 var, u8 bit); //Enables a Bit in a variable
+HEART_API u32 hrt_DisableBitInVar(u32 var, u8 bit); //Disables a Bit in a variable
+HEART_API u32 hrt_ToggleBitInVar(u32 var, u8 bit); //Toggles a Bit in a variable
+HEART_API void ham_PutLine(s16 x1, s16 y1, s16 x2, s16 y2, u16 col_value); //test
+HEART_API void hrt_PalFade(u8 start, u8 count, u8 steps, u8 mode); //Test
 
 #ifdef __cplusplus
 }

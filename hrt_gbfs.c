@@ -14,6 +14,7 @@
 *    																	For Tubooboo                                                               *
 \*****************************************************/
 //View the GBFS-LICENSE file for details
+
 /* This code assumes a LITTLE ENDIAN target.  It'll need a boatload
    of itohs and itohl calls if converted to run on Sega Genesis.  It
    also assumes that the target uses 16-bit short and 32-bit longs.

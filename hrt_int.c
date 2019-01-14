@@ -97,6 +97,12 @@ void hrt_DisableInterrupt(irqMASK mask) {
 	}
 }
 
+void hrt_ToggleInterrupt(irqMASK mask) {
+	if (__hrt_system.hrt_start) {
+		hrt_irqToggle(mask);
+	}
+}
+
 void hrt_irqDisable(int mask) {
 	if (__hrt_system.hrt_start) {
 		REG_IME = 0;

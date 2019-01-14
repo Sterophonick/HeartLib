@@ -26,8 +26,6 @@ void hrt_Init(void)
 		hrt_irqEnable(IRQ_KEYPAD);
 		REG_IME = 1;
 		hrt_SeedRNG(0xDEADDEAD);
-		hrt_FillScreen(0x0000);
-		hrt_FillPalette(0, 0);
-		hrt_FillPalette(1, 0);
+		
 	}
 }

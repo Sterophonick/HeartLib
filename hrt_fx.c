@@ -103,7 +103,7 @@ void hrt_FXSetBlendMode(u8 mode)
 {
 	if (__hrt_system.hrt_start)
 	{
-		REG_BLDCNT &= NOT_BIT06;
+		REG_BLDCNT &= ~(0x00C0);
 		REG_BLDCNT |= (mode << 6);
 	}
 }
@@ -166,7 +166,9 @@ u8 hrt_FXGetBlendMode(void)
 {
 	if(__hrt_system.hrt_start)
 	{
-		return (REG_BLDCNT & 0x6) + (REG_BLDCNT & 0x7);
+		register u16 temp = REG_BLDCNT;
+		temp &= 0x00C0;
+		return temp >> 6;
 	}
 	return 0;
 }

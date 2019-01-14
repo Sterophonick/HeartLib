@@ -43,169 +43,139 @@
 .global VRAM
 .global ham_FadePal
 .global ham_HexToChar
+.global mm_vblank_function
+.global mmClearVBlankHandler
+.global hrt_ToggleBitInVar
+.global hrt_EnableBitInVar
+.global hrt_DisableBitInVar
+.global __hrt_system
+.global ham_PutLine
 .arm
 
 hrt_JumpExecutionToAddress:
-  ldr r3, hrt_start
+  ldr r3,=__hrt_system
   ldrb r3, [r3]
   cmp r3, #0
-  bxeq lr
   bx r0
 
 hrt_Crash:
-  ldr r3, hrt_start
+  ldr r3,=__hrt_system
   ldrb r3, [r3]
   cmp r3, #0
-  bxeq lr
-  mov r0,#0x40000000
-  bx r0
+  movne r0,#0x40000000
+  bxne r0
   bx lr
   
 hrt_Sqrt:
-  ldr r3, hrt_start 
+  ldr r3,=__hrt_system
   ldrb r3, [r3]
   cmp r3, #0
-  beq sqrtexit
-  swi 8 << 16
-  
-sqrtexit:
-  bx lr 
+  swine 8 << 16
+  bx lr
 
 hrt_RegisterRamReset:
-  ldr r8, .L2
-  ldr r3, hrt_start
+  ldr r3,=__hrt_system
   ldrb r3, [r3]
   cmp r3, #0
-  bxeq lr
-  swi 1 << 16
+  swine 1 << 16
   bx lr
 
 hrt_ArcTan:
-  ldr r3, hrt_start 
+  ldr r3,=__hrt_system
   ldrb r3, [r3]
   cmp r3, #0
-  beq arctexit
-  swi 9 << 16
-  
-arctexit:
+  swine 9 << 16
   bx lr 
 
 hrt_ArcTan2:
-  ldr r3, hrt_start 
+  ldr r3,=__hrt_system
   ldrb r3, [r3]
   cmp r3, #0
-  beq arct2exit
-  swi 10 << 16
-  
-arct2exit:
+  swine 10 << 16
   bx lr 
 
 hrt_DivMod:
-  ldr r3, hrt_start 
+  ldr r3,=__hrt_system
   ldrb r3, [r3]
   cmp r3, #0
-  beq divmodexit
-  swi 6 << 16
-  mov r0, r1
-  
-divmodexit:
+  swine 6 << 16
+  movne r0, r1
   bx lr 
 
 hrt_DivAbs:
-  ldr r3, hrt_start 
+  ldr r3,=__hrt_system
   ldrb r3, [r3]
   cmp r3, #0
-  beq divabsexit
-  swi 6 << 16
-  mov	r0, r3
-
-divabsexit:
+  swine 6 << 16
+  movne	r0, r3
   bx lr 
 
 hrt_Div:	
-  ldr r3, hrt_start 
+  ldr r3,=__hrt_system
   ldrb r3, [r3]
   cmp r3, #0
-  beq divexit
-  swi	6 << 16
-	
-divexit:
+  swine	6 << 16
   bx lr 
   
 hrt_DivArm:
-  ldr r3, hrt_start 
+  ldr r3,=__hrt_system
   ldrb r3, [r3]
   cmp r3, #0
-  beq divarmexit
-  swi	7 << 16
-	
-divarmexit:
+  swine	7 << 16
   bx lr 
 
 hrt_DivArmMod:
-  ldr r3, hrt_start 
+  ldr r3,=__hrt_system
   ldrb r3, [r3]
   cmp r3, #0
-  beq divarmmodexit
-  swi	7 << 16
-  mov	r0, r1
- 
-divarmmodexit:
+  swine	7 << 16
+  movne	r0, r1
   bx lr 
 
 
 hrt_DivArmAbs:
-  ldr r3, hrt_start 
+  ldr r3,=__hrt_system
   ldrb r3, [r3]
   cmp r3, #0
-  beq divarmmodexit
-  swi	7 << 16
-	mov	r0, r3
-	
-divarmmodeexit:
+  swine	7 << 16
+  movne	r0, r3
   bx	lr
   
 hrt_SoundDriverMode:
-  ldr r3, hrt_start
+  ldr r3,=__hrt_system
   ldrb r3, [r3]
   cmp r3, #0
-  bxeq lr
-  swi		27 << 16
+  swine		27 << 16
   bx		lr
   
 hrt_SoundDriverInit:
-  ldr r3, hrt_start
+  ldr r3,=__hrt_system
   ldrb r3, [r3]
   cmp r3, #0
-  bxeq lr
-  swi		26 << 16
+  swine		26 << 16
   bx		lr
   
 hrt_MidiKey2Freq:
-  ldr r3, hrt_start 
+  ldr r3,=__hrt_system
   ldrb r3, [r3]
   cmp r3, #0
-  beq mk2fexit
-  swi 31<< 16
-  
-mk2fexit:
-	bx lr
+  swine 31<< 16
+  bx lr
 	
 hrt_SoundGetJumpList:
-  ldr r3, hrt_start
+  ldr r3,=__hrt_system
   ldrb r3, [r3]
   cmp r3, #0
-  bxeq lr
-  swi		42 << 16
+  swine		42 << 16
   bx		lr
   
 hrt_CustomHalt:
-  ldr r3, hrt_start
+  ldr r3,=__hrt_system
   ldrb r3, [r3]
   cmp r3, #1
-  bxne lr
-  swi		39 << 16
-  bx		lr
+  swieq		39 << 16
+  bx lr
+ 
 _exit:
   b _start
   
@@ -275,11 +245,230 @@ ham_HexToChar:
 		pop {r4,lr}
 		bx lr
 		andeq r0,r0,r0
-
-hrt_start:
-  .word __hrt_system
+		
+mmClearVBlankHandler:
+	push {r0-r1}
+	ldr r1,=mm_vblank_function
+	mov r0,#0
+	str r0,[r1]
+	pop {r0-r1}
+	bx lr
+	
+hrt_ToggleBitInVar:
+  ldr r3,=__hrt_system
+  ldrb r3, [r3]
+  cmp r3, #0
+  movne r3, #1
+  eorne r0, r0, r3, lsl r1
+  bx lr
   
- .LC0:
-        .ascii  "This ROM was created using HeartLib.\000"
+hrt_EnableBitInVar:
+  ldr r3,=__hrt_system
+  ldrb r3, [r3]
+  cmp r3, #0
+  movne r3, #1
+  orrne r0, r0, r3, lsl r1
+  bx lr
+  
+hrt_DisableBitInVar:
+  ldr r3,=__hrt_system
+  ldrb r3, [r3]
+  cmp r3, #0
+  movne r3, #1
+  bicne r0, r0, r3, lsl r1
+  bx lr
+  
+ham_PutPixel:
+	push {lr}
+	mov ip,#0x4000000
+	ldrh r3,[ip]
+	and r3,r3,#7
+	cmp r3,#4
+	mov lr,r2
+	beq .L1
+	bgt .L2
+	cmp r3,#3
+	beq .L3
+.L4:
+	pop {lr}
+	bx lr
+.L3:
+	lsl r3,r1,#4
+	rsb r3,r3,r1,lsl #8
+	add r3,r3,r0
+.L5:
+	ldr r2,[pc,#160]
+	ldr r1,[r2]
+	lsl r3,r3,#1
+	strh lr,[r3,r1]
+	b .L4
 .L2:
-        .word   .LC0
+	cmp r3,#5
+	bne .L4
+	ldrh r3,[ip]
+	tst r3,#16
+	addne r3,r1,r1,lsl #2
+	addne r3,r0,r3,lsl #5
+	bne .L5
+	add r3,r1,r1,lsl #2
+	ldr r1,[pc,#108]
+	ldr r2,[r1]
+	add r3,r0,r3,lsl #5
+	add r2,r2,r3,lsl #1
+	add r2,r2,#0x14000
+	strh lr,[r2]
+	b .L4
+.L1:
+	ldrh r3,[ip]
+	tst r3,#16
+	lsleq r3,r1,#4
+	lslne r3,r1,#4
+	rsbeq r3,r3,r1,lsl #8
+	ldrne ip,[pc,#60]
+	ldreq ip,[pc,#56]
+	rsbne r3,r3,r1,lsl #8
+	addeq r3,r3,r0
+	addne r3,r3,r0
+	addeq r3,r3,#40960
+	ldr r2,[ip]
+	bic r1,r3,#1
+	ldrh r2,[r1,r2]
+	tst r0,#1
+	andne r3,r2,#255
+	andeq r3,r2,#0xFF00
+	orrne r2,r3,lr,lsl #8
+	orreq r2,r3,lr
+	ldr r3,[ip]
+	strh r2,[r1,r3]
+	b .L4
+	andeq r0,r0,r0
+  
+ham_PutLine:
+	mov ip,sp
+	push	{r4, r5, r6, r7, r8, r9, sl, fp, ip, lr, pc}
+	lsl	r0, r0, #16
+	lsl	r2, r2, #16
+	lsl	r3, r3, #16
+	lsl	r1, r1, #16
+	sub	fp, ip, #4
+	asr	r5, r2, #16
+	asr	ip, r0, #16
+	asr	r7, r3, #16
+	asr	lr, r1, #16
+	rsb	r3, ip, r5
+	rsb	r2, lr, r7
+	cmp	r3, #0
+	rsblt r3,r3,#0
+	cmp r2,#0
+	rsblt r2,r2,#0
+	lsl r3,r3,#16
+	lsl r2,r2,#16
+	sub sp,sp,#20
+	asr r4,r3,#16
+	asr r0,r2,#16
+	cmp r4,r0
+	ldrsh sl,[fp,#4]
+	blt .L6
+	rsb r1,r4,r0
+	rsb r2,r4,r0,lsl #1
+	add r3,r4,#1
+	lsl r0,r0,#17
+	asr r0,r0,#16
+	lsl r3,r3,#16
+	lsl r2,r2,#16
+	lsl r1,r1,#17
+	mov r4,#1
+	str r0,[fp,#-44]
+	asr r8,r3,#16
+	mov r0,#0
+	asr r6,r2,#16
+	asr r9,r1,#16
+	str r4,[fp,#-52]
+	str r4,[fp,#-48]
+	str r0,[fp,#-56]
+	str r4,[fp,#-60]
+.L12:
+	cmp ip,r5
+	ble .L7
+	ldr r4,[fp,#-48]
+	rsb r3,r4,#0
+	lsl r3,r3,#16
+	asr r3,r3,#16
+	mvn r5,#0
+	str r3,[fp,#-48]
+	str r5,[fp,#-52]
+.L7: //2Dc
+	cmp lr,r7
+	ble .L8
+	ldr r0,[fp,#-56]
+	rsb r3,r0,#0
+	lsl r3,r3,#16
+	asr r3,r3,#16
+	mvn r1,#0
+	str r3,[fp,#-56]
+	str r1,[fp,#-60]
+.L8: //300
+	mov r7,#1
+	cmp r7,r8
+	mov r5,ip
+	mov r4,lr
+	bge .L9
+	lsl sl,sl,#16
+.L11:
+	mov r0,r5
+	mov r1,r4
+	lsr r2,sl,#16
+	bl ham_PutPixel
+	ldr r1,[fp,#-56]
+	ldr r3,[fp,#-48]
+	add lr,r4,r1
+	ldr r2,[fp,#-44]
+	ldr r1,[fp,#-52]
+	add ip,r5,r3
+	add r3,r6,r9
+	cmp r6,#0
+	add r0,r6,r2
+	lsl r3,r3,#16
+	add r2,r5,r1
+	ldr r5,[fp,#-60]
+	asrge r6,r3,#16
+	add r3,r7,#1
+	add r1,r4,r5
+	lsl r3,r3,#16
+	lsl r4,r0,#16
+	lsl ip,ip,#16
+	lsl lr,lr,#16
+	lsl r0,r2,#16
+	lsl r1,r1,#16
+	asr r7,r3,#16
+	asrlt r6,r4,#16
+	asrlt r5,ip,#16
+	asrlt r4,lr,#16
+	asrge r5,r0,#16
+	asrge r4,r1,#16
+	cmp r7,r8
+	blt .L11
+.L9:
+	ldmdb	fp, {r4, r5, r6, r7, r8, r9, sl, fp, sp, lr}
+	bx lr	
+.L6: //3a4
+	rsb r1,r0,r4
+	add r3,r0,#1
+	rsb r2,r0,r4,lsl #1
+	mov r0,#1
+	lsl r2,r2,#16
+	lsl r1,r1,#17
+	str r0,[fp,#-52]
+	lsl r0,r4,#17
+	asr r6,r2,#16
+	asr r0,r0,#16
+	mov r1,#1
+	asr r9,r1,#16
+	mov r1,#0
+	lsl r3,r3,#16
+	str r0,[fp,#-44]
+	str r1,[fp,#-48]
+	str r2,[fp,#-56]
+	str r2,[fp,#-60]
+	asr r8,r3,#16
+	b .L12

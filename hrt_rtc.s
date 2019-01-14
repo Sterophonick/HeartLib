@@ -57,7 +57,6 @@ RTCLoop2:
    orr r2,r2,r1,lsl#30 
    subs addy,addy,#1 
    bne RTCLoop2 
-
    mov r0,#0 
    mov addy,#24 
 RTCLoop3: 

@@ -30,7 +30,7 @@ void hrt_SetPaletteOfBGMap(u16 mapdata, u16 size, u8 pal)
 		register u16 i;
 		for(i=0; i < size; i++)
 		{
-			VRAM[(mapdata*2048)+i] &= 0xF000;
+			VRAM[(mapdata*2048)+i] &= ~(0xF000);
 			VRAM[(mapdata*2048)+i] |= (pal << 12);
 		}
 	}
@@ -666,7 +666,9 @@ void hrt_DSPDisableLinearOBJ(void)
 u8 hrt_DSPGetBGMode(void)
 {
     if (__hrt_system.hrt_start) {
-        return REG_DISPCNT & 0x7;
+		register u8 temp = REG_DISPCNT;
+		temp &= 0x0007;
+        return temp;
     }
     return 0;
 }
@@ -779,7 +781,9 @@ u8 hrt_GetBGPriority(u8 bg)
 {
 	if(__hrt_system.hrt_start)
 	{
-		return REG_BGxCNT(bg) & 0;
+		register u16 temp = REG_BGxCNT(bg);
+		temp &= 0x3;
+		return temp;
 	}
 	return 0;
 }
@@ -788,7 +792,9 @@ u8 hrt_GetBGTileBase(u8 bg)
 {
 	if(__hrt_system.hrt_start)
 	{
-		return REG_BGxCNT(bg) & 2;
+		register u16 temp = REG_BGxCNT(bg);
+		temp &= 0xC;
+		return temp >> 2;
 	}
 	return 0;
 }
@@ -797,7 +803,9 @@ u8 hrt_GetBGMapBase(u8 bg)
 {
 	if(__hrt_system.hrt_start)
 	{
-		return REG_BGxCNT(bg) & 8;
+		register u16 temp = REG_BGxCNT(bg);
+		temp &= 0x1E00;
+		return temp >> 8;
 	}
 	return 0;
 }
@@ -806,7 +814,9 @@ u8 hrt_GetBGScreenSize(u8 bg)
 {
 	if(__hrt_system.hrt_start)
 	{
-		return REG_BGxCNT(bg) & 14;
+		register u16 temp = REG_BGxCNT(bg);
+		temp &= 0xC000;
+		return temp >> 14;
 	}
 	return 0;
 }
@@ -902,7 +912,7 @@ void hrt_DSPDisableBGWraparound(u8 layer)
 {
 	if (__hrt_system.hrt_start)
 	{
-		REG_BGxCNT(layer) &= 0xDFFF;
+		REG_BGxCNT(layer) &= ~(0xDFFF);
 	}
 }
 
@@ -1011,6 +1021,9 @@ void hrt_DestroyBG(u8 bg)
 	if(__hrt_system.hrt_start)
 	{
 		REG_BGxCNT(bg) = 0;
+		REG_BGxVOFS(bg) = 0;
+		REG_BGxHOFS(bg) = 0;
+		hrt_DSPDisableBG(bg);
 	}
 }
 
@@ -1026,3 +1039,30 @@ void hrt_SetMapTileAttributes(u32 ptr, u16 tilenumber, u8 hflip, u8 vflip, u8 pa
 		VRAM[ptr] = map;
 	}
 }
+void hrt_PalFade(u8 start, u8 count, u8 steps, u8 mode)
+{
+		register u8 i;
+		register u8 r,g,b;
+		register u8 i2;
+		register u16 color;
+		for(i=0;i<count;i++)
+		{
+			r = hrt_GetRedValueFromBGR(BGPaletteMem[i+start]);
+			g = hrt_GetGreenValueFromBGR(BGPaletteMem[i+start]);
+			b = hrt_GetBlueValueFromBGR(BGPaletteMem[i+start]);
+			for(i2=0;i2<steps;i2++)
+			{
+				if(mode == 0)//darken
+				{
+					if((r > 0)) r--;
+					if((g > 0)) g--;
+					if((b > 0)) b--;
+				}else{ //brighten
+					if((r < 31)) r++;
+					if((g < 31)) g++;
+					if((b < 31)) b++;			
+				}
+			}		
+			BGPaletteMem[i+start] = hrt_GenerateColorFromRGB(r, g, b);
+		}
+	}

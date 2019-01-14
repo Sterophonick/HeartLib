@@ -153,46 +153,51 @@ void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale, s32 y_scale)
 void hrt_SetOBJX(u8 spr, s16 x)
 {
 	if (__hrt_system.hrt_start) {
-		sprites[spr].attribute1 &= 0xFE00;
-		sprites[spr].attribute1 |= x % 511;
+		sprites[spr].attribute1 &= ~(0x1FF);
+		sprites[spr].attribute1 |= x & 511;
 	}
 }
 
 void hrt_SetOBJY(u8 spr, s16 y)
 {
 	if (__hrt_system.hrt_start) {
-		sprites[spr].attribute0 &= 0xFF00;
-		sprites[spr].attribute0 |= y % 255;
+		sprites[spr].attribute0 &= ~(0xFF);
+		sprites[spr].attribute0 |= y & 255;
 	}
 }
 
 void hrt_SetOBJXY(u8 spr, s16 x, s16 y)
 {
-	if (__hrt_system.hrt_start) {
-		hrt_SetOBJX(spr, x);
-		hrt_SetOBJY(spr, y);
-	}
+	hrt_SetOBJX(spr, x);
+	hrt_SetOBJY(spr, y);
 }
 
 void hrt_CloneOBJ(int ospr, int nspr) //duplicates a Sprite
 {
 	if (__hrt_system.hrt_start) {
-		// set sprite offscreen, and set it up (size,etc)
 		sprites[nspr].attribute0 = sprites[ospr].attribute0;
 		sprites[nspr].attribute1 = sprites[ospr].attribute1;
-		sprites[nspr].attribute2 = sprites[ospr].attribute2; // NOTE: mode4 doesn't support the first tiles, so offset of 512 is requirerd
+		sprites[nspr].attribute2 = sprites[ospr].attribute2;
+		rotData[nspr].pa = rotData[ospr].pa;
+		rotData[nspr].pb = rotData[ospr].pb;
+		rotData[nspr].pc = rotData[ospr].pc;
+		rotData[nspr].pd = rotData[ospr].pd;
 	}
 }
 
+#define degreesToRadians(angleDegrees) (angleDegrees * M_PI / 180.0)
 
 void hrt_MoveSpriteInDirection(u8 sprite, u16 direction, int steps)
 {
 	register int x = hrt_GetOBJX(sprite);
-	register int y = hrt_GetOBJY(sprite);
+	register int y = hrt_GetOBJY(sprite);	
+	register int mx,my;
 	if (__hrt_system.hrt_start)
 	{
-		x += steps * SIN[direction];
-		y += steps * COS[direction];
+		mx = cos(direction) * steps;
+		my = sin(direction) * steps;
+		x+=mx;
+		y+=my;
 		hrt_SetOBJXY(sprite, x, y);
 	}
 }
@@ -248,17 +253,20 @@ u16 hrt_PointOBJTowardsPosition(u8 sprite, int x, int y)
 		register int dy;
 		dx = x - hrt_GetOBJX(sprite);
 		dy = y - hrt_GetOBJY(sprite);
-		temp = hrt_ArcTan2(x, y) % 360;
-		return temp;
+		temp = hrt_ArcTan2(dx, dy);
+		return temp % 360;
 	}
 	return 0;
 }
 
-u8 hrt_GetOBJX(u8 sprite)
+u16 hrt_GetOBJX(u8 sprite)
 {
 	if (__hrt_system.hrt_start)
 	{
-		return (((s16)(sprites[sprite].attribute0 << 8)) >> 8) + (4 << (sprites[sprite].attribute1 >> 14));
+		register u16 temp;
+		temp = sprites[sprite].attribute1;
+		temp &= 0x1FF;
+		return temp;
 	}
 	return 0;
 }
@@ -267,7 +275,10 @@ u8 hrt_GetOBJY(u8 sprite)
 {
 	if (__hrt_system.hrt_start)
 	{
-		return (((s16)(sprites[sprite].attribute0 << 8)) >> 8) + (4 << (sprites[sprite].attribute1 >> 14));
+		register u8 temp;
+		temp = sprites[sprite].attribute0;
+		temp &= 0xFF;
+		return temp;
 	}
 	return 0;
 }
@@ -398,7 +409,9 @@ u8 hrt_GetOBJPalette(u8 objno)
 {
 	if (__hrt_system.hrt_start)
 	{
-		return sprites[objno].attribute2 & 12;
+		register u16 temp = sprites[objno].attribute2;
+		temp &= 0xF000;
+		return temp >> 12;
 	}
 	return 0;
 }
@@ -407,7 +420,9 @@ u8 hrt_GetOBJPriority(u8 objno)
 {
 	if (__hrt_system.hrt_start)
 	{
-		return sprites[objno].attribute2 & 10;
+		register u16 temp = sprites[objno].attribute2;
+		temp &= 0x0C00;
+		return temp >> 10;
 	}
 	return 0;
 }
@@ -416,7 +431,9 @@ u16 hrt_GetOBJOffset(u8 objno)
 {
 	if (__hrt_system.hrt_start)
 	{
-		return sprites[objno].attribute2 & 0;
+		register u16 temp = sprites[objno].attribute2;
+		temp &= 0x03FF;
+		return temp;
 	}
 	return 0;
 }
@@ -425,7 +442,9 @@ u8 hrt_GetOBJSize(u8 objno)
 {
 	if (__hrt_system.hrt_start)
 	{
-		return sprites[objno].attribute1 & 14;
+		register u16 temp = sprites[objno].attribute1;
+		temp &= 0xC000;
+		return temp >> 14;
 	}
 	return 0;
 }
@@ -477,12 +496,12 @@ u8 hrt_GetOBJColorMode(u8 objno)
 {
 	if (__hrt_system.hrt_start)
 	{
-		return sprites[objno].attribute0 & 12;
+		return sprites[objno].attribute0 & 13;
 	}
 	return 0;
 }
 
-u8 hrt_IsOBJHFlip(u8 objno)
+bool hrt_IsOBJHFlip(u8 objno)
 {
 	if (__hrt_system.hrt_start)
 	{
@@ -491,7 +510,7 @@ u8 hrt_IsOBJHFlip(u8 objno)
 	return 0;
 }
 
-u8 hrt_IsOBJVFlip(u8 objno)
+bool hrt_IsOBJVFlip(u8 objno)
 {
 	if (__hrt_system.hrt_start)
 	{
@@ -504,7 +523,9 @@ u8 hrt_GetOBJShape(u8 objno)
 {
 	if (__hrt_system.hrt_start)
 	{
-		return sprites[objno].attribute0 & 14;
+		register u16 temp = sprites[objno].attribute0;
+		temp &= 0xC000;
+		return temp >> 14;
 	}
 	return 0;
 }
@@ -513,7 +534,9 @@ u8 hrt_GetOBJMode(u8 objno)
 {
 	if (__hrt_system.hrt_start)
 	{
-		return sprites[objno].attribute0 & 10;
+		register u16 temp = sprites[objno].attribute0;
+		temp &= 0x0C00;
+		return temp >> 10;
 	}
 	return 0;
 }
@@ -558,4 +581,3 @@ void hrt_ToggleOBJDoubleSize(u8 objno)
 		sprites[objno].attribute0 ^= 9;
 	}
 }
-
