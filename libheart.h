@@ -1,5 +1,5 @@
 //File: libheart.h - The NEW Definitive GBA Header File
-//Date: December 2018
+//Date: October 2019
 //Author: Sterophonick
 //Derived from gba.h by eloist and agb_lib.h by me, Inspired by Hamlib's mygba.h, who da heck remembers that library amirite?
 //This library is designed to make GBA Programming easy to do, and for everyone to be able to do it, not unlike HAMLib (rip ngine.de 2001-2011 =( may god rest ur soul)
@@ -124,7 +124,7 @@ TODO:
 #define HRT_VERSION_MAJOR 0
 #define HRT_VERSION_MINOR 9
 #define HRT_VERSION_PATCH 5
-#define HRT_BUILD_DATE "024001142019"
+#define HRT_BUILD_DATE "120210282019"
 
 #define HEART_API extern
 
@@ -1574,8 +1574,6 @@ HEART_API void hrt_ToggleInterrupt(irqMASK mask); //Toggles interrupt (enum)
 HEART_API u32 hrt_EnableBitInVar(u32 var, u8 bit); //Enables a Bit in a variable
 HEART_API u32 hrt_DisableBitInVar(u32 var, u8 bit); //Disables a Bit in a variable
 HEART_API u32 hrt_ToggleBitInVar(u32 var, u8 bit); //Toggles a Bit in a variable
-HEART_API void ham_PutLine(s16 x1, s16 y1, s16 x2, s16 y2, u16 col_value); //test
-HEART_API void hrt_PalFade(u8 start, u8 count, u8 steps, u8 mode); //Test
 
 #ifdef __cplusplus
 }
