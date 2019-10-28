@@ -13,6 +13,8 @@
 *    														2017-2019 Sterophonick                                                    *
 *    																	For Tubooboo                                                               *
 \*****************************************************/
+//Shoutouts to Dwedit for this code
+
 .section .iwram, "ax", %progbits 
  .align 
  .pool 

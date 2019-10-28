@@ -1039,6 +1039,7 @@ void hrt_SetMapTileAttributes(u32 ptr, u16 tilenumber, u8 hflip, u8 vflip, u8 pa
 		VRAM[ptr] = map;
 	}
 }
+
 void hrt_PalFade(u8 start, u8 count, u8 steps, u8 mode)
 {
 		register u8 i;

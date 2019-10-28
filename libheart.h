@@ -1559,7 +1559,6 @@ HEART_API void hrt_DSPToggleFrameSelect(void); //Toggles frame select in the dis
 HEART_API void hrt_DSPToggleWin(u8 win); //Toggles a window
 HEART_API void hrt_ToggleBGMosaic(u8 bg); //Toggles the mosaic bit in a bg
 HEART_API bool hrt_DetectPogoshell(void); //Detects if the ROM is a Pogoshell ROM
-HEART_API u8  ham_FadePal(u8 palno,s8 delta_per_call); //test
 HEART_API void hrt_ClearIRQTable(void); //Clears the IRQ Table
 HEART_API void hrt_DestroyBG(u8 bg); //Clears a Background
 HEART_API void hrt_SetMapTileAttributes(u32 ptr, u16 tilenumber, u8 hflip, u8 vflip, u8 palettenum); //Set the attributes of a tile on a map
@@ -1574,6 +1573,10 @@ HEART_API void hrt_ToggleInterrupt(irqMASK mask); //Toggles interrupt (enum)
 HEART_API u32 hrt_EnableBitInVar(u32 var, u8 bit); //Enables a Bit in a variable
 HEART_API u32 hrt_DisableBitInVar(u32 var, u8 bit); //Disables a Bit in a variable
 HEART_API u32 hrt_ToggleBitInVar(u32 var, u8 bit); //Toggles a Bit in a variable
+HEART_API void hrt_StartTimer(u8 channel); //Enables a timer
+HEART_API void hrt_StopTimer(u8 channel); //Stops a timer
+HEART_API void hrt_ToggleTimer(u8 channel); //Toggles a timer
+HEART_API void hrt_PalFade(u8 start, u8 count, u8 steps, u8 mode); //test
 
 #ifdef __cplusplus
 }
