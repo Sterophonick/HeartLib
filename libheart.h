@@ -1064,9 +1064,9 @@ HEART_API mm_word	mp_writepos;
 #endif
 //eof
 
-#define FILE_IN_EWRAM asm(".section .ewram, \"ax\", %progbits");
-#define FILE_IN_IWRAM asm(".section .iwram, \"ax\", %progbits");
-#define FILE_IN_ROM asm(".text");
+#define SOURCE_IN_EWRAM asm(".section .ewram, \"ax\", %progbits");
+#define SOURCE_IN_IWRAM asm(".section .iwram, \"ax\", %progbits");
+#define SOURCE_IN_ROM asm(".text");
 #define INCBIN(sym, file) __asm__ (".global "#sym"\n"#sym":\n .incbin \"" file "\"")
 
 /*Function helpers
@@ -1531,7 +1531,7 @@ HEART_API void hrt_SetPaletteOfBGMap(u16 mapdata, u16 size, u8 pal); //Sets the 
 HEART_API void hrt_EnableGreenSwap(void); //Enables Green Swap
 HEART_API void hrt_DisableGreenSwap(void); //Disables Green Swap
 HEART_API void hrt_EnableBGWraparound(void); //Enables BG Wraparound (BG 2 and 3 only) (also how did I miss this one!??!)
-HEART_API void hrt_DisableBGWraparound(void); //Disbles BG Wraparound (BG 2 and 3 only) (also how did I miss this one!??!)
+HEART_API void hrt_DisableBGWraparound(void); //Disables BG Wraparound (BG 2 and 3 only) (also how did I miss this one!??!)
 HEART_API void hrt_AffineBG(u8 layer, s32 angle, u32 zoom, u32 cx, u32 cy); //Rotates and scales a background
 HEART_API void hrt_AddByteToMemGroup8(u8* offset, int value, u32 wordcount); //Adds a value to each byte in a group of memory
 HEART_API void hrt_AddByteToMemGroup16(u16* offset, int value, u32 wordcount); //Adds a value to each byte in a group of memory
