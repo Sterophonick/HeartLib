@@ -464,17 +464,17 @@ typedef struct {
 #define COLOR_SKYBLUE      0x7B34
 #define COLOR_CREAM        0x7BFF
 #define COLOR_MEDGRAY      0x5294
-#define COLOR_ORANGE 0x029F
-#define COLOR_CYAN 0x7FE0
-#define COLOR_ECRU 0x42D8
-#define COLOR_MAUVE 0x5216
-#define COLOR_PUCE 0x4E39
-#define COLOR_CRIMSON 0x1C5B
-#define COLOR_AZURE 0x7DE0
-#define COLOR_CHARTREUSE 0x03EF
-#define COLOR_TAWNY 0x0159
-#define COLOR_BUFF 0x437E
-#define COLOR_CINEREOUS 0x3E13
+#define COLOR_ORANGE	   0x029F
+#define COLOR_CYAN		   0x7FE0
+#define COLOR_ECRU         0x42D8
+#define COLOR_MAUVE        0x5216
+#define COLOR_PUCE         0x4E39
+#define COLOR_CRIMSON      0x1C5B
+#define COLOR_AZURE        0x7DE0
+#define COLOR_CHARTREUSE   0x03EF
+#define COLOR_TAWNY        0x0159
+#define COLOR_BUFF         0x437E
+#define COLOR_CINEREOUS    0x3E13
 
 //bios calls
 #define SoftReset 0x00
