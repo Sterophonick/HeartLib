@@ -253,16 +253,16 @@ HEART_API u16* OAMData;
 HEART_API u16* BGPaletteMem;
 HEART_API u16* OBJPaletteMem;
 HEART_API u16* BGTileMem;
-HEART_API u8* SRAM;
+HEART_API u8*  SRAM;
 HEART_API u16* OAM;
-HEART_API u8* EWRAM;
-HEART_API  u8* BIOS;
-HEART_API u8* IWRAM;
-HEART_API u8* MMIO;
-HEART_API u8* ROM0;
-HEART_API u8* ROM1;
-HEART_API u8* ROM2;
-HEART_API u8* EEPROM;
+HEART_API u8*  EWRAM;
+HEART_API u8*  BIOS;
+HEART_API u8*  IWRAM;
+HEART_API u8*  MMIO;
+HEART_API u8*  ROM0;
+HEART_API u8*  ROM1;
+HEART_API u8*  ROM2;
+HEART_API u8*  EEPROM;
 
 typedef struct t_BGAffineSource {
      s32 x;				/*!< Original data's center X coordinate (8bit fractional portion)			*/
