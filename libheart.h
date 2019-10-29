@@ -70,7 +70,7 @@ GBA Specs:
 	Keys
 	Screen Drawing
 	PCX Decoding
-	Random Number Generation (Uses Merssene Twister method)
+	Random Number Generation (Uses Mersenne Twister method)
 	MaxMod
 	MBV2Lib
 	Typedefs
