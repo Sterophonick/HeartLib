@@ -10,12 +10,7 @@ int _getpid(void)
 	_start();
 	return 1;
 }
-int gettimeofday(struct timeval *__restrict __p,
-	void *__restrict __tz)
-{
-	_start();
-	return 0;
-}
+
 int kill(pid_t i, int i2)
 {
 	_start();
