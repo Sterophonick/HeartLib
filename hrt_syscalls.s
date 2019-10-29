@@ -178,74 +178,7 @@ hrt_CustomHalt:
  
 _exit:
   b _start
-  
- //Comes Directly from an assembly dump of the HAMLib.
-ham_FadePal:
-	and r0,r0,#255
-	lsl r0,r0,#9
-	lsl r1,r1,#24
-	push {r4-r8, lr}
-	add r8,r0,#0x5000000
-	mov r4,#0
-	asr r0,r1,#24
-	.Loop:
-		lsl r6,r4,#1
-		ldrh r3,[r6,r8]
-		and lr,r3,#31
-		and r2,r3,#0x7C00
-		and r3,r3,#0x3E0
-		rsb r1,r0,lr
-		lsr r3,r3,#5
-		lsl ip,r3,#16
-		cmp lr,r0
-		lsl r5,r1,#16
-		rsb r3,r0,r3
-		lsl r1,r2,#16
-		asrgt lr,r5,#16
-		cmp r0,ip,lsr #16
-		lsllt ip,r3,#16
-		rsb r7,r0,r2
-		cmp r0,r1,lsr #16
-		lsllt r1,r7,#16
-		add r4,r4,#1
-		orr r2,lr,ip,lsr #1
-		orr r3,r2,r1,lsr #6
-		cmp r4,#255
-		strh r3,[r6,r8]
-		bls .Loop
-		pop {r4-r8,lr}
-		bx lr
-		
-ham_HexToChar:
-	push {r4, lr}
-	ldr r4,[pc,#92]
-	mov lr, #0
-	strb lr,[r4,#8]
-	strb lr,[r4,#9]
-	mov ip,#7
-	mov r1,#0xF0000000
-	.Loop2:
-		lsl r2, ip, #2
-		and r3,r0,r1
-		lsr r3,r3,r2
-		and r3,r3,#15
-		cmp r3,#9
-		add r2,r3,#55
-		lsr r1,r1,#4
-		add r3,r3,#48
-		strhib	r2, [r4, lr]
-		strlsb r3,[r4,lr]
-		add r2,lr,#1
-		sub r3,ip,#1
-		cmp r1,#0
-		and ip,r3,#0xFF
-		and lr,r2,#0xFF
-		bne .Loop2
-		ldr r0,[pc,#4]
-		pop {r4,lr}
-		bx lr
-		andeq r0,r0,r0
-		
+
 mmClearVBlankHandler:
 	push {r0-r1}
 	ldr r1,=mm_vblank_function
@@ -277,3 +210,34 @@ hrt_DisableBitInVar:
   movne r3, #1
   bicne r0, r0, r3, lsl r1
   bx lr
+  
+ //Comes Directly from an assembly dump of the HAMLib.
+ham_HexToChar:
+	push {r4, lr}
+	ldr r4,[pc,#92]
+	mov lr, #0
+	strb lr,[r4,#8]
+	strb lr,[r4,#9]
+	mov ip,#7
+	mov r1,#0xF0000000
+	.Loop2:
+		lsl r2, ip, #2
+		and r3,r0,r1
+		lsr r3,r3,r2
+		and r3,r3,#15
+		cmp r3,#9
+		add r2,r3,#55
+		lsr r1,r1,#4
+		add r3,r3,#48
+		strhib	r2, [r4, lr]
+		strlsb r3,[r4,lr]
+		add r2,lr,#1
+		sub r3,ip,#1
+		cmp r1,#0
+		and ip,r3,#0xFF
+		and lr,r2,#0xFF
+		bne .Loop2
+		ldr r0,[pc,#4]
+		pop {r4,lr}
+		bx lr
+.pool

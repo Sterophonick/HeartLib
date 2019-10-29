@@ -13,6 +13,7 @@
 *    														2017-2019 Sterophonick                                                    *
 *    																	For Tubooboo                                                               *
 \*****************************************************/
+
 const unsigned char font_matrixBitmap[6080] __attribute__((aligned(4)))=
 {
 	0,0,0,0,0,0,0,0,
@@ -870,5 +871,3 @@ const unsigned char font_matrixBitmap[6080] __attribute__((aligned(4)))=
 	0,0,0,0,0,0,0,0,
 	0,0,0,0,0,0,0,0,
 };
-
-//}}BLOCK(font_matrix)
