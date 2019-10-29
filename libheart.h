@@ -1067,6 +1067,7 @@ HEART_API mm_word	mp_writepos;
 #define FILE_IN_EWRAM asm(".section .ewram, \"ax\", %progbits");
 #define FILE_IN_IWRAM asm(".section .iwram, \"ax\", %progbits");
 #define FILE_IN_ROM asm(".text");
+#define INCBIN(sym, file) __asm__ (".global "#sym"\n"#sym":\n .incbin \"" file "\"")
 
 /*Function helpers
 These are for the functions with a lot of
