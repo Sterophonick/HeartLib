@@ -245,8 +245,6 @@ HEART_API  gba_system __hrt_system;
 HEART_API  const s16 SIN[360];
 HEART_API  const s16 COS[360];
 HEART_API  const unsigned char font_matrixBitmap[6080];
-HEART_API  const unsigned short font_milkbottleTiles[3072];
-HEART_API  const unsigned short font_milkbottlePal[16];
 #endif
 
 /*System Pointers*/
