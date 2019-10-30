@@ -15,9 +15,8 @@
 \*******************************************************************/
 #include "libheart.h"
 
-const char hrt_lang_crash_msg[]="HeartLib has crashed!";
-const char hrt_lang_crash_func[]="Function: ";
-const char hrt_lang_crash_arg[]="Arg: ";
-const char hrt_lang_crash_reset[]="Please reset the console.";
-
-const char hrt_lang_crash_err_invarg[]="Invalid argument.";
+const char hrt_lang_assert[]="Assertion failed!";
+const char hrt_lang_assert_file[]="File: ";
+const char hrt_lang_assert_line[]="Line: ";
+const char hrt_lang_assert_key[]="Press any key to ignore,";
+const char hrt_lang_assert_vram[]="but be aware that VRAM recovery is unlikely.";

@@ -377,3 +377,16 @@ void hrt_PrintRTCTimeIntoString(char* ptr)
 		}
 	}
 }
+
+extern char hrt_lang_assert[];
+extern char hrt_lang_assert_file[];
+extern char hrt_lang_assert_line[];
+extern char hrt_lang_assert_key[];
+extern char hrt_lang_assert_vram[];
+void hrt_Assert(int expression, char* file, u32 line)
+{
+	if(!expression)
+	{
+		hrt_DSPSetBGMode(3);
+	}
+}
