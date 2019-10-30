@@ -76,6 +76,7 @@ void hrt_NDS_CustomPost(u32 value)
 		hrt_SystemCall(0x1F);
 	}
 }
+
 void hrt_NDS_GetBootProcs(void)
 {
 	if(__hrt_system.hrt_start)

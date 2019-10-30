@@ -121,6 +121,7 @@ void hrt_CopyOAM(void)
 		memcpy(OAM, temp, 128*4);
 	}
 }
+
 void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset)
 {
 	if (__hrt_system.hrt_start) {
@@ -150,6 +151,7 @@ void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale, s32 y_scale)
 		rotData[rotDataIndex].pd = (s32)(((y_scale) * (s32)COS[angle % 360]) >> 8);
 	}
 }
+
 void hrt_SetOBJX(u8 spr, s16 x)
 {
 	if (__hrt_system.hrt_start) {

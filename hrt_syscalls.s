@@ -13,10 +13,12 @@
 *                      2017-2019 Sterophonick
 *                          For Tubooboo
 \*******************************************************************/
-//Some code was borrowed from HAMLib
- .align 4
- .pool
- .text
+//Various functions that perform various system calls and other miscellaneous assembly functions
+
+
+.align 4
+.pool
+.text
 .global hrt_Crash
 .global hrt_Assert
 .global	hrt_Sqrt
@@ -41,15 +43,12 @@
 .global hrt_CopyOAM
 .global sprites
 .global VRAM
-.global ham_FadePal
-.global ham_HexToChar
 .global mm_vblank_function
 .global mmClearVBlankHandler
 .global hrt_ToggleBitInVar
 .global hrt_EnableBitInVar
 .global hrt_DisableBitInVar
 .global __hrt_system
-.global ham_PutLine
 .arm
 
 hrt_JumpExecutionToAddress:
@@ -210,34 +209,3 @@ hrt_DisableBitInVar:
   movne r3, #1
   bicne r0, r0, r3, lsl r1
   bx lr
-  
- //Comes Directly from an assembly dump of the HAMLib.
-ham_HexToChar:
-	push {r4, lr}
-	ldr r4,[pc,#92]
-	mov lr, #0
-	strb lr,[r4,#8]
-	strb lr,[r4,#9]
-	mov ip,#7
-	mov r1,#0xF0000000
-	.Loop2:
-		lsl r2, ip, #2
-		and r3,r0,r1
-		lsr r3,r3,r2
-		and r3,r3,#15
-		cmp r3,#9
-		add r2,r3,#55
-		lsr r1,r1,#4
-		add r3,r3,#48
-		strhib	r2, [r4, lr]
-		strlsb r3,[r4,lr]
-		add r2,lr,#1
-		sub r3,ip,#1
-		cmp r1,#0
-		and ip,r3,#0xFF
-		and lr,r2,#0xFF
-		bne .Loop2
-		ldr r0,[pc,#4]
-		pop {r4,lr}
-		bx lr
-.pool

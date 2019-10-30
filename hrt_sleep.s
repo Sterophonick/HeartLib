@@ -17,13 +17,13 @@
 .align
 .pool
 .text
-REG_BASE      = 0x4000000 
-REG_DISPCNT      = 0x00 
+REG_BASE       = 0x4000000 
+REG_DISPCNT    = 0x00 
 REG_P1CNT      = 0x132 
 REG_DM0CNT_H   = 0xBA 
 REG_DM1CNT_H   = 0xC6 
 REG_DM3CNT_H   = 0xDE
-REG_SGCNT_L      = 0x80 
+REG_SGCNT_L    = 0x80 
 .arm
 sleep12:
 	mov r3,#REG_BASE
