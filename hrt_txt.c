@@ -12,7 +12,7 @@
 *                 View the LICENSE file for details
 *                      2017-2019 Sterophonick
 *                          For Tubooboo
-/*******************************************************************/
+\*******************************************************************/
 
 #include "libheart.h"
 extern gba_system __hrt_system;

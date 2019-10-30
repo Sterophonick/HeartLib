@@ -12,7 +12,7 @@
 *                 View the LICENSE file for details
 *                      2017-2019 Sterophonick
 *                          For Tubooboo
-/*******************************************************************/
+\*******************************************************************/
 //This code comes mostly from DekuTree64 so shoutouts to him
 #include "libheart.h"
 extern gba_system __hrt_system;
