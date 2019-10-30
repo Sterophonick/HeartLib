@@ -203,12 +203,10 @@ typedef s16 (*s16FPtr)(void);
 typedef s32 (*s32FPtr)(void);
 typedef s64 (*s64FPtr)(void);
 
-
 typedef     s16     sfp16;  //1:7:8 fixed point
 typedef     s32     sfp32;  //1:19:8 fixed point
 typedef     u16     ufp16;  //8:8 fixed point
 typedef     u32     ufp32;  //24:8 fixed point
-typedef s32 FIXED;
 
 typedef float f16;
 typedef double f32;
@@ -289,6 +287,7 @@ typedef struct t_BGAffineSource {
      s16 sY;			/*!< Scaling ratio in Y direction (8bit fractional portion)							*/
      u16 theta;		/*!< Angle of rotation (8bit fractional portion) Effective Range 0-FFFF	*/
 } BGAffineSource;
+
 typedef struct t_BGAffineDest {
      s16 pa;		/*!< Difference in X coordinate along same line	*/
      s16 pb;		/*!< Difference in X coordinate along next line	*/
@@ -297,11 +296,13 @@ typedef struct t_BGAffineDest {
      s32 x;			/*!< Start X coordinate													*/
      s32 y;			/*!< Start Y coordinate													*/
 } BGAffineDest;
+
 typedef struct t_ObjAffineSource {
      s16 sX;			/*!< Scaling ratio in X direction (8bit fractional portion)							*/
      s16 sY;			/*!< Scaling ratio in Y direction (8bit fractional portion)							*/
      u16 theta;		/*!< Angle of rotation (8bit fractional portion) Effective Range 0-FFFF	*/
 } ObjAffineSource;
+
 typedef struct t_ObjAffineDest {
      s16 pa;		/*!< Difference in X coordinate along same line */
      s16 pb;		/*!< Difference in X coordinate along next line */
@@ -317,6 +318,7 @@ enum LCDC_IRQ {
     LCDC_HBL = (1 << 4),
     LCDC_VCNT = (1 << 5)
 };
+
 typedef struct GBFS_FILE {
     char magic[16];    /* "PinEightGBFS\r\n\032\n" */
     u32  total_len;    /* total length of archive */
@@ -324,11 +326,13 @@ typedef struct GBFS_FILE {
     u16  dir_nmemb;    /* number of files */
     char reserved[8];  /* for future use */
 } GBFS_FILE;
+
 typedef struct GBFS_ENTRY {
     char name[24];     /* filename, nul-padded */
     u32  len;          /* length of object in bytes */
     u32  data_offset;  /* in bytes from beginning of file */
 } GBFS_ENTRY;
+
 typedef enum irqMASKS {
     IRQ_VBLANK = (1 << 0),		/*!< vertical blank interrupt mask */
     IRQ_HBLANK = (1 << 1),		/*!< horizontal blank interrupt mask */
@@ -345,11 +349,14 @@ typedef enum irqMASKS {
     IRQ_KEYPAD = (1 << 12),	/*!< Keypad interrupt mask */
     IRQ_GAMEPAK = (1 << 13)		/*!< horizontal blank interrupt mask */
 } irqMASK;
+
 struct IntTable {
     IntFn handler;
     u32 mask;
 };
+
 HEART_API struct IntTable IntrTable[];
+
 typedef struct tagOAMEntry {
 
     u16 attribute0;
@@ -358,6 +365,7 @@ typedef struct tagOAMEntry {
     u16 attribute3;
 
 } OAMEntry, *pOAMEntry;
+
 typedef struct tagRotData {
 
     u16 filler1[3];
@@ -370,6 +378,7 @@ typedef struct tagRotData {
     u16 pd;
 
 } RotData, *pRotData;
+
 OAMEntry sprites[128];
 
 typedef struct _s16xy { s16 x, y; } s16xy;
@@ -804,6 +813,7 @@ typedef struct {
 #define ATTR_COMMON                 __attribute__ ((common))
 #define ATTR_NOCOMMON               __attribute__ ((nocommon))
 #define ATTR_NOINSTRUMENT			__attribute__ ((no_instrument_function))
+#define ATTR_COLD					__attribute__ ((cold))
 
 #define MAX_INTS	15
 #define INT_VECTOR	*(IntFn *)(0x03007ffc)		// BIOS Interrupt vector
@@ -972,6 +982,7 @@ enum {
     MMVF_SOURCE = 16,
     MMVF_STOP = 32
 };
+
 #define MM_MIXLEN_8KHZ		544
 #define MM_MIXLEN_10KHZ		704
 #define MM_MIXLEN_13KHZ		896
@@ -1579,7 +1590,6 @@ HEART_API void hrt_DestroyBG(u8 bg); //Clears a Background
 HEART_API void hrt_SetMapTileAttributes(u32 ptr, u16 tilenumber, u8 hflip, u8 vflip, u8 palettenum); //Set the attributes of a tile on a map
 HEART_API size_t gbfs_count_objs(const GBFS_FILE *file); //Counts the amount of files in GBFS
 HEART_API const void *gbfs_get_nth_obj(const GBFS_FILE *file, size_t n, char *name, u32 *len); //Gets the value of file from a name
-HEART_API char* ham_HexToChar(u32 hexval); //Converts a hex to a character (test)
 HEART_API void mmClearVBlankHandler(void); //Clears the MaxMod Vblank handler
 HEART_API IntFn *hrt_SetInterrupt(irqMASK mask, IntFn function); //Sets an interrupt (uses the enum)
 HEART_API void hrt_EnableInterrupt(irqMASK mask); //Enables interrupt (enum)

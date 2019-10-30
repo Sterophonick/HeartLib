@@ -21,6 +21,7 @@ void _abort(void)
 {
 	_start();
 }
+
 int _getpid(void)
 {	
 	_start();
@@ -32,6 +33,7 @@ int kill(pid_t i, int i2)
 	_start();
 	return 0;
 }
+
 int system(const char *__string)
 {
 	_start();

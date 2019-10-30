@@ -383,10 +383,24 @@ extern char hrt_lang_assert_file[];
 extern char hrt_lang_assert_line[];
 extern char hrt_lang_assert_key[];
 extern char hrt_lang_assert_vram[];
+extern char hrt_lang_assert_vram2[];
 void hrt_Assert(int expression, char* file, u32 line)
 {
-	if(!expression)
+	if (__hrt_system.hrt_start)
 	{
-		hrt_DSPSetBGMode(3);
+		if(!expression)
+		{
+			hrt_DSPSetBGMode(3);
+			hrt_PrintOnBitmap(0, 0, hrt_lang_assert);
+			hrt_PrintOnBitmap(0, 8, hrt_lang_assert_file, file);
+			hrt_PrintOnBitmap(0, 16, hrt_lang_assert_line, line);
+			hrt_PrintOnBitmap(0, 24, hrt_lang_assert_key);
+			hrt_PrintOnBitmap(0, 32, hrt_lang_assert_vram);
+			hrt_PrintOnBitmap(0, 40, hrt_lang_assert_vram2);
+			while(!KEY_ANY_PRESSED)
+			{
+				hrt_VblankIntrWait();
+			}
+		}
 	}
 }

@@ -14,7 +14,6 @@
 *                          For Tubooboo
 \*******************************************************************/
 #include "libheart.h"
-
 extern gba_system __hrt_system;
 
 #define N              (624)
@@ -27,6 +26,7 @@ extern gba_system __hrt_system;
 static u32   state[N+1];
 static u32   *next;
 static int      left = -1; 
+
 void hrt_SeedRNG(u32 seed)
 {
 	if (__hrt_system.hrt_start)
@@ -37,6 +37,7 @@ void hrt_SeedRNG(u32 seed)
 			*s++ = (x *= 69069U) & 0xFFFFFFFFU);
 	}
 }
+
 u32 hrt_ReloadRNG(void)
 {
 	if (__hrt_system.hrt_start)
@@ -58,6 +59,7 @@ u32 hrt_ReloadRNG(void)
 	}
     return 0;
 }
+
 u32 hrt_CreateRNG(void)
 {
 	if (__hrt_system.hrt_start)
@@ -73,6 +75,7 @@ u32 hrt_CreateRNG(void)
 	}
     return 0;
 }
+
 u32 hrt_RNGRange(u32 low, u32 high)
 {
 	if (__hrt_system.hrt_start)
