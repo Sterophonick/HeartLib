@@ -322,3 +322,58 @@ void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode)
 			REG_DMAxCNT(channel) = WordCount | mode;
     }
 }
+
+void hrt_DMAClear(u8 channel, void* source, void* dest, u32 WordCount)
+{
+    if (__hrt_system.hrt_start) {
+            REG_DMAxSAD(channel) = (u32)source;
+            REG_DMAxDAD(channel) = (u32)dest;
+			REG_DMAxCNT(channel) = WordCount | 0x81600000;
+    }
+}
+
+void hrt_GetPad(PAD* pad)
+{
+    if (__hrt_system.hrt_start) {
+		pad->A = keyDown(KEY_A);
+		pad->B = (keyDown(KEY_B)) ? 1 : 0;
+		pad->UP = keyDown(KEY_UP) ? 1 : 0;
+		pad->DOWN = keyDown(KEY_DOWN) ? 1 : 0;
+		pad->LEFT = keyDown(KEY_LEFT) ? 1 : 0;
+		pad->RIGHT = keyDown(KEY_RIGHT) ? 1 : 0;
+		pad->L = keyDown(KEY_L) ? 1 : 0;
+		pad->R = keyDown(KEY_R) ? 1 : 0;
+		pad->SELECT = keyDown(KEY_SELECT) ? 1 : 0;
+		pad->START = keyDown(KEY_START) ? 1 : 0;
+	}	
+}
+
+void hrt_PrintRTCTimeIntoString(char* ptr)
+{
+	if (__hrt_system.hrt_start)
+	{
+		if (__hrt_system.__hrt_rtc == 1)
+		{
+			char str[9];
+			register char *s=str;
+			register int timer,mod;
+			strcpy(str,"00:00:00");
+			timer=hrt_GetRTCTime();
+			mod=(timer>>4)&3;				//Hours.
+			*(s++)=(mod+'0');
+			mod=(timer&15);
+			*(s++)=(mod+'0');
+			s++;
+			mod=(timer>>12)&15;				//Minutes.
+			*(s++)=(mod+'0');
+			mod=(timer>>8)&15;
+			*(s++)=(mod+'0');
+			s++;
+			mod=(timer>>20)&15;				//Seconds.
+			*(s++)=(mod+'0');
+			mod=(timer>>16)&15;
+			*(s++)=(mod+'0');
+			strcpy(ptr,str);
+		}
+	}
+}

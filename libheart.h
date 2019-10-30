@@ -256,7 +256,7 @@ HEART_API u16* BGTileMem;
 HEART_API u8*  SRAM;
 HEART_API u16* OAM;
 HEART_API u8*  EWRAM;
-HEART_API u8*  BIOS;
+HEART_API u8*  BIOS; 
 HEART_API u8*  IWRAM;
 HEART_API u8*  MMIO;
 HEART_API u8*  ROM0;
@@ -1592,6 +1592,9 @@ HEART_API void hrt_StartTimer(u8 channel); //Enables a timer
 HEART_API void hrt_StopTimer(u8 channel); //Stops a timer
 HEART_API void hrt_ToggleTimer(u8 channel); //Toggles a timer
 HEART_API void hrt_PalFade(u8 start, u8 count, u8 steps, u8 mode); //test
+HEART_API void hrt_DMAClear(u8 channel, void* source, void* dest, u32 WordCount); //Clears with the DMA
+HEART_API void hrt_PrintRTCTimeIntoString(char* ptr); //Prints the RTC Time Status into a string
+HEART_API void hrt_GetPad(PAD* pad); //Gets the keypad values, and places them into an array
 
 #ifdef __cplusplus
 }
