@@ -208,7 +208,6 @@ typedef     s16     sfp16;  //1:7:8 fixed point
 typedef     s32     sfp32;  //1:19:8 fixed point
 typedef     u16     ufp16;  //8:8 fixed point
 typedef     u32     ufp32;  //24:8 fixed point
-typedef s32 FIXED;
 
 typedef float f16;
 typedef double f32;
