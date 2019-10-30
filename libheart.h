@@ -803,6 +803,7 @@ typedef struct {
 #define ATTR_COMMON                 __attribute__ ((common))
 #define ATTR_NOCOMMON               __attribute__ ((nocommon))
 #define ATTR_NOINSTRUMENT			__attribute__ ((no_instrument_function))
+#define ATTR_COLD					__attribute__ ((cold))
 
 #define MAX_INTS	15
 #define INT_VECTOR	*(IntFn *)(0x03007ffc)		// BIOS Interrupt vector
