@@ -264,6 +264,22 @@ HEART_API u8*  ROM1;
 HEART_API u8*  ROM2;
 HEART_API u8*  EEPROM;
 
+typedef struct hrt_Pad {
+	u8 A;
+	u8 B;
+	u8 L;
+	u8 R;
+	u8 UP;
+	u8 DOWN;
+	u8 LEFT;
+	u8 RIGHT;
+	u8 SELECT;
+	u8 START;
+} PAD;
+struct hrt_Pad *ptr_pad;
+#define hrt_SetKeyStructPointer(struct) ptr_pad = &struct;
+#define hrt_IsKeyPressed(key) (*ptr_pad).key
+
 typedef struct t_BGAffineSource {
      s32 x;				/*!< Original data's center X coordinate (8bit fractional portion)			*/
      s32 y;				/*!< Original data's center Y coordinate (8bit fractional portion)			*/
