@@ -13,6 +13,8 @@
 *                      2017-2019 Sterophonick
 *                          For Tubooboo
 \*******************************************************************/
+//This code is a function to swap ROM pages for the EZ-Flash line of flashcarts
+
  .section .iwram, "ax", %progbits 
  .align
  .pool

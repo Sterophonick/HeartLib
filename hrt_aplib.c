@@ -13,7 +13,9 @@
 *                      2017-2019 Sterophonick
 *                          For Tubooboo
 \*******************************************************************/
-//aPlib compression
+//This is for aPlib compression
+
+
 #include "libheart.h"
 extern gba_system __hrt_system;
 
