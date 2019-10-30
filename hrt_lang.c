@@ -16,7 +16,8 @@
 #include "libheart.h"
 
 const char hrt_lang_assert[]="Assertion failed!";
-const char hrt_lang_assert_file[]="File: ";
-const char hrt_lang_assert_line[]="Line: ";
+const char hrt_lang_assert_file[]="File: %s";
+const char hrt_lang_assert_line[]="Line: %d";
 const char hrt_lang_assert_key[]="Press any key to ignore,";
-const char hrt_lang_assert_vram[]="but be aware that VRAM recovery is unlikely.";
+const char hrt_lang_assert_vram[]="but be aware that VRAM recovery";
+const char hrt_lang_assert_vram2[]="is unlikely.";
