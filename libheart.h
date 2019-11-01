@@ -1246,10 +1246,10 @@ enum
 
 #define AgbMain main //allow devkitadv style of int main
 
-///////////////////////////FUNCTIONS////////////////////////////
-// These functions will allow the user control over objects, sound,   //
-//// registers, memory, bitmaps, palettes, and many other things.   ////
-///////////////////////////////////////////////////////////////
+///////////////////////////FUNCTIONS//////////////////////////////////
+// These functions will allow the user control over objects, sound, //
+//// registers, memory, bitmaps, palettes, and many other things. ////
+//////////////////////////////////////////////////////////////////////
 HEART_API u32 hrt_GetBiosChecksum(void);//Returns BIOS Checksum. Return value differs if you are playing on a Prototype GBA, Release GBA, or a Nintendo DS.
 HEART_API void hrt_irqInit(void); //Initialize Interrupts
 HEART_API IntFn *hrt_irqSet(irqMASK mask, IntFn function); //Set Interrupt Function
