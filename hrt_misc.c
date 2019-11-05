@@ -26,12 +26,6 @@ extern void sleep12();
 extern void __hrt_exittoez4();
 extern gba_system __hrt_system;
 
-extern char* hrt_lang_crash_msg;
-extern char* hrt_lang_crash_func;
-extern char* hrt_lang_crash_arg;
-extern char* hrt_lang_crash_reset;
-
-
 s32 hrt_Distance(int x1, int y1, int x2, int y2)
 {
 	if (__hrt_system.hrt_start) {
