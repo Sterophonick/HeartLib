@@ -92,11 +92,11 @@ TODO:
 
 /*
 	Special Greetz to:
-		Emanuel Scheussinger (Tubooboo)
+		Emanuel Scheussinger
 		Peter Schraut
 		WinterMute
 		Stevendog98
-		EZ-Flash2 (GBATemp)
+		EZ-Flash
 		Dwedit
 		FluBBa
 		Loopy
@@ -109,7 +109,7 @@ TODO:
 		Coranac
 		Loirak
 		TRiNiTY
-		jeffman
+		jeffman_19
 		GodBolt
 		Mark Holloway
 		CowGod
