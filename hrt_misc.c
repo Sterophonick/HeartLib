@@ -378,7 +378,7 @@ extern char hrt_lang_assert_line[];
 extern char hrt_lang_assert_key[];
 extern char hrt_lang_assert_vram[];
 extern char hrt_lang_assert_vram2[];
-void hassert(int expression, char* file, u32 line)
+void AssertImplementation(bool expression, char* error, char* file, u32 line)
 {
 	if (__hrt_system.hrt_start)
 	{
@@ -391,6 +391,7 @@ void hassert(int expression, char* file, u32 line)
 			hrt_PrintOnBitmap(0, 24, hrt_lang_assert_key);
 			hrt_PrintOnBitmap(0, 32, hrt_lang_assert_vram);
 			hrt_PrintOnBitmap(0, 40, hrt_lang_assert_vram2);
+			hrt_PrintOnBitmap(0, 48, error);
 			while(!KEY_ANY_PRESSED)
 			{
 				hrt_VblankIntrWait();
