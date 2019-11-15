@@ -793,11 +793,11 @@ typedef struct {
 ////
 //
 
-#define EWRAM_DATA __attribute__((section(".ewram")))
-#define IWRAM_DATA __attribute__((section(".iwram")))
-#define EWRAM_BSS __attribute__((section(".sbss")))
-#define EWRAM_CODE __attribute__((section(".ewram"), long_call))
-#define IWRAM_CODE __attribute__((section(".iwram"), long_call))
+#define EWRAM_DATA					__attribute__((section(".ewram")))
+#define IWRAM_DATA					__attribute__((section(".iwram")))
+#define EWRAM_BSS					__attribute__((section(".sbss")))
+#define EWRAM_CODE					__attribute__((section(".ewram"), long_call))
+#define IWRAM_CODE					__attribute__((section(".iwram"), long_call))
 
 #define ATTR_ALIGNED(n)             __attribute__ ((aligned(n)))
 #define ATTR_PACKED                 __attribute__ ((packed))
