@@ -226,11 +226,6 @@ DON'T TOUCH THESE*/
 typedef struct
 {
 	u8 hrt_start;
-	u32	hrt_offsetOAMData;
-	u32 hrt_offsetOAMPal;
-	u32 hrt_offsetBGMap;
-	u32 hrt_offsetBGTile;
-	u32 hrt_offsetBGPal;
 	u8  __hrt_reset;
 	u8 __hrt_rtc;
 	u8 __hrt_tiledtext;
@@ -1266,12 +1261,9 @@ HEART_API void hrt_LZ77UnCompVRAM(u32 source, u32 dest); //LZ77 Decompresses to 
 HEART_API void hrt_RLUnCompVram(u32 source, u32 dest); //RLE Uncompresses
 HEART_API void hrt_CopyOAM(void); //Copies OBJ Attributes to OAM
 HEART_API void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset); //Creates a sprite
-HEART_API void hrt_LoadOBJPal(unsigned int * pal, u16 size); //Loads OBJ Palette
-HEART_API void hrt_LoadOBJGFX(unsigned int * gfx,int size); //loads OBJ GFX
+HEART_API void hrt_LoadOBJPal(unsigned int * pal, u16 size, u8 offset); //Loads OBJ Palette
 HEART_API void hrt_AffineOBJ(int rotDataIndex, s32 angle, s32 x_scale,s32 y_scale); //Scales and Rotates an object with the affine flag set to 1.
 HEART_API void hrt_SetOBJXY(u8 spr, s16 x, s16 y); // Sets Position of a Sprite
-HEART_API void hrt_SetOffset(u8 no, u32 amount); //Sets offset for bg or obj gfx, tile, or pal data
-HEART_API u32 hrt_GetOffset(u8 no); //Returns the offset of bg or obj gfx data.
 HEART_API void hrt_CloneOBJ(int ospr, int nspr); //Creates clone of sprite
 HEART_API void hrt_DrawChar(int mode, int left, int top, char letter); //Draws text on Bitmap
 HEART_API void hrt_PrintOnBitmap(int left, int top, char *str, ...); //Draws text on Bitmap
@@ -1279,8 +1271,7 @@ HEART_API void hrt_SleepF(u32 frames); //sleeps for set amount of frames
 HEART_API void hrt_DrawPixel(int Mode, int x, int y, unsigned short color); //Draws pixel on screen
 HEART_API u16 hrt_GetPixel(u8 mode, int x, int y); //Gets pixel Color of screen
 HEART_API void hrt_CyclePalette(int start, int amount, int pal); //Cycles BG Palette
-HEART_API void hrt_LoadBGMap(u16* data, int length); //Loads BG Map
-HEART_API void hrt_LoadBGPal(u16* data, u16 length); //Loads BG Palette
+HEART_API void hrt_LoadBGPal(u16* data, u8 length, u8 offset); //Loads BG Palette
 HEART_API void hrt_InvertPalette(int start, int amount, int pal); //Inverts Palette
 HEART_API void hrt_DrawRectangle(int r, int c, int width, int height, u16 color, int mode); //Draws rectangle
 HEART_API void hrt_FillScreen(u16 color); // fills screen with specified color
@@ -1298,11 +1289,10 @@ HEART_API u16 hrt_GetBGPalEntry(int slot); //Returns Color of BG Palette Entry
 HEART_API u16 hrt_GetOBJPalEntry(int slot); //Returns Color of OBJ Palette Entry
 HEART_API void hrt_SetBGPalEntry(int slot, u16 color); //Sets color of BG Palette Entry
 HEART_API void hrt_SetOBJPalEntry(int slot, u16 color); //Sets color of OBJ Palette Entry
-HEART_API void hrt_LoadBGTiles(u16* data, int length); //Loads BG Tiles into VRAM, at Tile slot 1.
 HEART_API void hrt_ColdReset(void); //Restarts the console -- Undocumented BIOS Call
 HEART_API void hrt_SoftReset(void); //Restarts from ROM.
 HEART_API void hrt_Init(void); //MUST BE EXECUTED BEFORE USING THIS LIBRARY.
-HEART_API void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode); //Copies from DMA
+HEART_API void hrt_DMACopy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode); //Copies from DMA
 HEART_API void hrt_SetFXLevel(u8 level); //Sets BLDY level
 HEART_API void hrt_SetFXMode(u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 backdrop, u8 mode, u8 bg0_2, u8 bg1_2, u8 bg2_2, u8 bg3_2, u8 obj_2, u8 backdrop_2); //Sets BLDCNT Mode
 HEART_API void hrt_SetDSPMode(u8 mode, u8 CGB, u8 framesel, u8 unlockedhblank, u8 objmap, u8 forceblank, u8 bg0, u8 bg1, u8 bg2, u8 bg3, u8 obj, u8 win0, u8 win1, u8 objwin); //Sets REG_DISPCNT, but it is a lot clearer what you have to do.
@@ -1608,6 +1598,8 @@ HEART_API void hrt_DMAClear(u8 channel, void* source, void* dest, u32 WordCount)
 HEART_API void hrt_PrintRTCTimeIntoString(char* ptr); //Prints the RTC Time Status into a string
 HEART_API void hrt_GetPad(PAD* pad); //Gets the keypad values, and places them into an array
 HEART_API void AssertImplementation(bool expression, char* error, char* file, u32 line); //Assertion, designed for debugging.
+HEART_API void hrt_LoadDataIntoVRAM(u16* data, int length, int offset); //Loads data into VRAM
+HEART_API void hrt_memcpy16(void *dst, const void *src, u32 hwn);
 
 #ifdef __cplusplus
 }

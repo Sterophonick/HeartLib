@@ -50,62 +50,13 @@ void hrt_FlipBGBuffer(void)
     }
 }
 
-u32 hrt_GetOffset(u8 no)
-{
-    if (__hrt_system.hrt_start) {
-        switch (no) {
-            case 0:
-                return __hrt_system.hrt_offsetOAMData;
-                break;
-            case 1:
-                return __hrt_system.hrt_offsetOAMPal;
-                break;
-            case 2:
-                return __hrt_system.hrt_offsetBGMap;
-                break;
-            case 3:
-                return __hrt_system.hrt_offsetBGPal;
-                break;
-            case 4:
-                return __hrt_system.hrt_offsetBGTile;
-                break;
-        }
-    }
-    return 0;
-}
-
-void hrt_SetOffset(u8 no, u32 amount)
-{
-    if (__hrt_system.hrt_start) {
-        switch (no) {
-            case 0:
-                __hrt_system.hrt_offsetOAMData = amount;
-                break;
-            case 1:
-                __hrt_system.hrt_offsetOAMPal = amount;
-                break;
-            case 2:
-                __hrt_system.hrt_offsetBGMap = amount;
-                break;
-            case 3:
-                __hrt_system.hrt_offsetBGPal = amount;
-                break;
-            case 4:
-                __hrt_system.hrt_offsetBGTile = amount;
-                break;
-        }
-    }
-}
-
-void hrt_LoadBGPal(u16* data, u16 length)
+void hrt_LoadBGPal(u16* data, u8 length, u8 offset)
 {
     if (__hrt_system.hrt_start) {
         register int i;
         for (i = 0; i < length; i++) {
-            BGPaletteMem[i+__hrt_system.hrt_offsetBGPal] = data[i];
+            BGPaletteMem[i+offset] = data[i];
         }
-		
-        __hrt_system.hrt_offsetBGPal += length;
     }
 }
 
@@ -446,25 +397,14 @@ void hrt_SetOBJPalEntry(int slot, u16 color)
     }
 }
 
-void hrt_LoadBGTiles(u16* data, int length)
-{
-    if (__hrt_system.hrt_start) {
-        register int i;
-        for (i = 0; i < length; i++) {
-            BGTileMem[i+__hrt_system.hrt_offsetBGTile] = data[i];
-        }
-        __hrt_system.hrt_offsetBGTile += length;
-    }
-}
 
-void hrt_LoadBGMap(u16* data, int length)
+void hrt_LoadDataIntoVRAM(u16* data, int length, int offset)
 {
     if (__hrt_system.hrt_start) {
         register int i;
         for (i = 0; i < length; i++) {
-            VRAM[i+__hrt_system.hrt_offsetBGMap] = data[i];
+            VRAM[i+offset] = data[i];
         }
-        __hrt_system.hrt_offsetBGMap += length;
     }
 }
 
@@ -512,32 +452,13 @@ void hrt_LineWipe(u16 color, int time, u8 mode)
     }
 }
 
-void hrt_LoadOBJPal(unsigned int * pal, u16 size)
+void hrt_LoadOBJPal(unsigned int * pal, u16 size, u8 offset)
 {
     if (__hrt_system.hrt_start) {
         register int 	x;
         for (x = 0; x < size; x++) {
-            OBJPaletteMem[x + __hrt_system.hrt_offsetOAMPal] = ((unsigned short*)pal)[x];
+            OBJPaletteMem[x + offset] = ((unsigned short*)pal)[x];
         }
-        __hrt_system.hrt_offsetOAMPal += size;
-    }
-}
-
-void hrt_LoadOBJGFX(unsigned int * gfx, int size)
-{
-    if (__hrt_system.hrt_start) {
-        register int 	x;
-        for (x = 0; x < size; x++) {
-            OAMData[(8192 + __hrt_system.hrt_offsetOAMData) + x] = ((unsigned short*)gfx)[x];
-        }
-        __hrt_system.hrt_offsetOAMData += size;
-    }
-}
-
-void hrt_SetTile(u8 x, u8 y, int tileno)
-{
-    if (__hrt_system.hrt_start) {
-        VRAM[y * 256 + x] = tileno;
     }
 }
 
@@ -959,7 +880,7 @@ void hrt_DrawBitmapSector(u16* pbg,u16 x, u16 y, u16 w, u16 h)
 		hh = (y+h>160)?160:(y+h);
 		ww  = (x+w>240)?(240-x):w;
 		for(yi=y; yi < hh; yi++) {
-			hrt_DMA_Copy(3, pbg+yi*240+x, p+yi*240+x,ww*2>>1,0x80000000);
+			hrt_DMACopy(3, pbg+yi*240+x, p+yi*240+x,ww*2>>1,0x80000000);
 		}
 	}
 }

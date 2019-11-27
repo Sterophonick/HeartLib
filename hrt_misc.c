@@ -308,7 +308,7 @@ bool hrt_DetectPogoshell(void)
 	return 0;
 }
 
-void hrt_DMA_Copy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode)
+void hrt_DMACopy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode)
 {
     if (__hrt_system.hrt_start) {
             REG_DMAxSAD(channel) = (u32)source;
