@@ -800,7 +800,7 @@ u8 hrt_DSPIsLinearOBJEnabled()
 {
 	if(__hrt_system.hrt_start)
 	{
-		return REG_DISPCNT &6;
+		return REG_DISPCNT & 6;
 	}
 	return 0;
 }
