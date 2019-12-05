@@ -17,7 +17,6 @@
 
 
 #include "libheart.h"
-extern gba_system __hrt_system;
 
 struct APDSTATE {
 	const unsigned char *source;
@@ -58,8 +57,6 @@ static unsigned int aP_getgamma(struct APDSTATE *ud)
 
 u32 hrt_aPlibUnpack(u8 *source, u8 *destination)
 {
-	if(__hrt_system.hrt_start)
-	{
 	struct APDSTATE ud;
 	unsigned int offs, len, R0, LWM;
 	int done;
@@ -172,6 +169,4 @@ u32 hrt_aPlibUnpack(u8 *source, u8 *destination)
 	}
 
 	return (unsigned int) (ud.destination - (unsigned char *) destination);
-}
-	return 0;
 }
