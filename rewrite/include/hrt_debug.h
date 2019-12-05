@@ -1,0 +1,2 @@
+#define hrt_Assert(expr, error) AssertImplementation(expr, error, __FILE__, __LINE__)
+HEART_API void AssertImplementation(bool expression, char* error, char* file, u32 line); //Assertion, designed for debugging.
