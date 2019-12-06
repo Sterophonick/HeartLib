@@ -14,7 +14,7 @@ void hrt_SetOBJY(OBJ_ATTR* obj, int y)
 	obj->attr0 = obj->attr0 | y;
 }
  
-OBJ_ATTR *hrt_CreateOBJ(OBJ_ATTR *obj, u16 a0, u16 a1, u16 a2)
+OBJ_ATTR *hrt_SetOBJAttributes(OBJ_ATTR *obj, u16 a0, u16 a1, u16 a2)
 {
 	obj->attr0 = a0;
 	obj->attr1 = a1;

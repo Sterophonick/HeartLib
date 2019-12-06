@@ -1,2 +1,2 @@
 main.o: \
- C:/Users/Stero/Documents/GitHub/HeartLib/rewrite/Examples/sprite/src/main.c
+ C:/Users/nickm/Documents/GitHub/HeartLib/rewrite/Examples/sprite/src/main.c

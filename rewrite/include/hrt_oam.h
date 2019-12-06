@@ -75,10 +75,12 @@ HEART_API OBJ_AFFINE *OAMAffineBuffer;
 #define OBJ_WIDE		OBJ_SHAPE(1)
 #define OBJ_TALL		OBJ_SHAPE(2)
 
+#define hrt_CreateOBJ(name, id) OBJ_ATTR *(name) = &OAMBuffer[(id)]
+
 //Sprite Movement Related Functions
 HEART_API void hrt_SetOBJX(OBJ_ATTR *obj, int x);
 HEART_API void hrt_SetOBJY(OBJ_ATTR *obj, int y);
-HEART_API OBJ_ATTR *hrt_CreateOBJ(OBJ_ATTR *obj, u16 a0, u16 a1, u16 a2);
+HEART_API OBJ_ATTR *hrt_SetOBJAttributes(OBJ_ATTR *obj, u16 a0, u16 a1, u16 a2);
 ivoid hrt_SetOBJXY(OBJ_ATTR *obj, int x, int y);
 ivoid hrt_CopyOBJToOAM();
 

@@ -50,7 +50,7 @@ hrt_Memcpy16:
 .Lmain_cpy16:
 	lsl		r4, r2, #31
 	lsr		r2, r2, #1
-	ldr		r3, =memcpy32
+	ldr		r3, =hrt_Memcpy32
 	bl		.Llong_bl
 	@ NOTE: r0,r1 are altered by memcpy32, but in exactly the right 
 	@ way, so we can use them as is.

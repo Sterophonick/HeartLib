@@ -1,5 +1,5 @@
 HEADERS = 
-OBJECTS = build/oam.o build/memcpy.o build/fx.o build/font.o
+OBJECTS = build/oam.o build/memcpy.o build/fx.o build/font.o build/gbfs.o
 CPPFILES =
 SOURCES = src/oam.c data/font.c 
 LIBS= libheart.a

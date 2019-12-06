@@ -20,39 +20,32 @@
    also assumes that the target uses 16-bit short and 32-bit longs.
 */
 
-#include "libheart.h"
+#include <stddef.h>
+#include <string.h>
+#include <stdlib.h>
+#include "hrt_misc.h"
 #define GBFS_SEARCH_LIMIT ((const u32 *)0x0a000000)
 #define GBFS_ALIGNMENT  256
 
-extern gba_system __hrt_system;
-
 const GBFS_FILE *find_first_gbfs_file(const void *start)
 {
-	if (__hrt_system.hrt_start)
+	const u32 *here = (const u32 *)
+		((unsigned long)start & (-GBFS_ALIGNMENT));
+	const char rest_of_magic[] = "ightGBFS\r\n\032\n";
+	while (here < GBFS_SEARCH_LIMIT)
 	{
-		const u32 *here = (const u32 *)
-			((unsigned long)start & (-GBFS_ALIGNMENT));
-		const char rest_of_magic[] = "ightGBFS\r\n\032\n";
-		while (here < GBFS_SEARCH_LIMIT)
+		if (*here == 0x456e6950)
 		{
-			if (*here == 0x456e6950)
-			{
-				if (!memcmp(here + 1, rest_of_magic, 12))
-					return (const GBFS_FILE *)here;
-			}
-			here += GBFS_ALIGNMENT / sizeof(*here);
+			if (!memcmp(here + 1, rest_of_magic, 12))
+				return (const GBFS_FILE *)here;
 		}
-		return 0;
+		here += GBFS_ALIGNMENT / sizeof(*here);
 	}
 	return 0;
 }
 const void *skip_gbfs_file(const GBFS_FILE *file)
 {
-	if (__hrt_system.hrt_start)
-	{
-		return ((char *)file + file->total_len);
-	}
-	return 0;
+	return ((char *)file + file->total_len);
 }
 static int namecmp(const void *a, const void *b)
 {
@@ -60,69 +53,53 @@ static int namecmp(const void *a, const void *b)
 }
 const void *gbfs_get_obj(const GBFS_FILE *file,	const char *name,	u32 *len)
 {
-	if (__hrt_system.hrt_start)
-	{
-		char key[24] = { 0 };
-		GBFS_ENTRY *dirbase = (GBFS_ENTRY *)((char *)file + file->dir_off);
-		size_t n_entries = file->dir_nmemb;
-		GBFS_ENTRY *here;
-		#pragma GCC diagnostic ignored "-Wstringop-truncation"
-		strncpy(key, name, 24);
-		here = bsearch(key, dirbase,
-			n_entries, sizeof(GBFS_ENTRY),
-			namecmp);
-		if (!here)
-			return NULL;
-		if (len)
-			*len = here->len;
-		return (char *)file + here->data_offset;
-	}
-	return 0;
+	char key[24] = { 0 };
+	GBFS_ENTRY *dirbase = (GBFS_ENTRY *)((char *)file + file->dir_off);
+	size_t n_entries = file->dir_nmemb;
+	GBFS_ENTRY *here;
+	#pragma GCC diagnostic ignored "-Wstringop-truncation"
+	strncpy(key, name, 24);
+	here = bsearch(key, dirbase,
+		n_entries, sizeof(GBFS_ENTRY),
+		namecmp);
+	if (!here)
+		return NULL;
+	if (len)
+		*len = here->len;
+	return (char *)file + here->data_offset;
 }
 void *gbfs_copy_obj(void *dst,	const GBFS_FILE *file, 	const char *name)
 {
-	if (__hrt_system.hrt_start)
-	{
-		u32 len;
-		const void *src = gbfs_get_obj(file, name, &len);
-		if (!src)
-			return NULL;
-		memcpy(dst, src, len);
-		return dst;
-	}
-	return 0;
+	u32 len;
+	const void *src = gbfs_get_obj(file, name, &len);
+	if (!src)
+		return NULL;
+	memcpy(dst, src, len);
+	return dst;
 }
 
 const void *gbfs_get_nth_obj(const GBFS_FILE *file, size_t n, char *name, u32 *len)
 {
-	if (__hrt_system.hrt_start)
+	const GBFS_ENTRY *dirbase = (const GBFS_ENTRY *)((const char *)file + file->dir_off);
+	size_t n_entries = file->dir_nmemb;
+	const GBFS_ENTRY *here = dirbase + n;
+
+	if(n >= n_entries)
+		return NULL;
+
+	if(name)
 	{
-		const GBFS_ENTRY *dirbase = (const GBFS_ENTRY *)((const char *)file + file->dir_off);
-		size_t n_entries = file->dir_nmemb;
-		const GBFS_ENTRY *here = dirbase + n;
-
-		if(n >= n_entries)
-			return NULL;
-
-		if(name)
-		{
-			strncpy(name, here->name, 24);
-			name[24] = 0;
-		}
-
-		if(len)
-			*len = here->len;
-
-		return (char *)file + here->data_offset;
+		strncpy(name, here->name, 24);
+		name[24] = 0;
 	}
-	return 0;
+
+	if(len)
+		*len = here->len;
+
+	return (char *)file + here->data_offset;
 }
 
 size_t gbfs_count_objs(const GBFS_FILE *file)
 {
-	if (__hrt_system.hrt_start)
-	{
-		return file ? file->dir_nmemb : 0;
-	}
-	return 0;
+	return file ? file->dir_nmemb : 0;
 }
