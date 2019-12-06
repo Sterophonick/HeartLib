@@ -10,6 +10,7 @@
 //Macros
 
 //Functions
+ivoid hrt_LoadDataIntoVRAM(u16* data, int length, int offset)
 
 //Inlines
 
