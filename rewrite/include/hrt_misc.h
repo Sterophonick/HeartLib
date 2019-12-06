@@ -1,6 +1,7 @@
 #ifndef HRT_MISC
 #define HRT_MISC
 
+#include <stddef.h>
 #include "hrt_types.h"
 #include "hrt_memmap.h"
 
@@ -28,6 +29,12 @@ HEART_API const void *gbfs_get_obj(const GBFS_FILE *file, const char *name, u32 
 HEART_API void *gbfs_copy_obj(void *dst, const GBFS_FILE *file, const char *name); //GBFS Stuff
 HEART_API size_t gbfs_count_objs(const GBFS_FILE *file); //Counts the amount of files in GBFS
 HEART_API const void *gbfs_get_nth_obj(const GBFS_FILE *file, size_t n, char *name, u32 *len); //Gets the value of file from a name
+HEART_API u32 hrt_aPlibUnpack(u8 *source, u8 *destination); //aPlib Unpack.
+HEART_API u32 hrt_RNGRange(u32 low, u32 high); // Creates a Random number between a range.
+HEART_API u32 hrt_ReloadRNG(void); //Reloads RNG.
+HEART_API u32 hrt_CreateRNG(void); //Creates RNG Value. You can change the type of return value in your main.c
+HEART_API int hrt_DecodeJPEG(const unsigned char *data, volatile unsigned short *out, int outWidth, int outHeight); //Decodes a JPEG image to VRAM in Mode 3.
+HEART_API void hrt_PrintRTCTimeIntoString(char* ptr); //Prints the Time of the RTC into a string
 
 //Inlines
 

@@ -16,7 +16,7 @@
 //This is for aPlib compression
 
 
-#include "libheart.h"
+#include "hrt_misc.h"
 
 struct APDSTATE {
 	const unsigned char *source;
