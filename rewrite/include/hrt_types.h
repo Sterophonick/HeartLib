@@ -1,3 +1,6 @@
+#ifndef HRT_TYPES
+#define HRT_TYPES
+
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned long u32;
@@ -49,7 +52,6 @@ typedef signed int sint;
 typedef void (*FuncPtr)(void);
 
 typedef float f16;
-typedef long float lf16;
 typedef double f32;
 typedef long double lf32;
 
@@ -61,3 +63,29 @@ typedef char byte;
 #define sivoid static inline void
 #define svoid static void
 #define ivoid inline void
+
+#define EWRAM_DATA					__attribute__((section(".ewram")))
+#define IWRAM_DATA					__attribute__((section(".iwram")))
+#define EWRAM_BSS					__attribute__((section(".sbss")))
+#define EWRAM_CODE					__attribute__((section(".ewram"), long_call))
+#define IWRAM_CODE					__attribute__((section(".iwram"), long_call))
+
+#define ATTR_ALIGNED(n)             __attribute__ ((aligned(n)))
+#define ATTR_PACKED                 __attribute__ ((packed))
+#define ATTR_SECTION(name)          __attribute__ ((section(name)))
+#define ATTR_DEPRECATED             __attribute__ ((deprecated))
+#define ATTR_NOINLINE               __attribute__ ((noinline))
+#define ATTR_FORCEINLINE            __attribute__ ((always_inline))
+#define ATTR_USED                   __attribute__ ((used))
+#define ATTR_WEAK                   __attribute__ ((weak))
+#define ATTR_NORETURN               __attribute__ ((noreturn))
+#define ATTR_PURE                   __attribute__ ((pure))
+#define ATTR_UNUSED                 __attribute__ ((unused))
+#define ATTR_COMMON                 __attribute__ ((common))
+#define ATTR_NOCOMMON               __attribute__ ((nocommon))
+#define ATTR_NOINSTRUMENT			__attribute__ ((no_instrument_function))
+#define ATTR_COLD					__attribute__ ((cold))
+
+#define HEART_API extern
+
+#endif

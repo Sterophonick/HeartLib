@@ -1,3 +1,8 @@
+#ifndef HRT_MEMMAP
+#define HRT_MEMMAP
+
+#include "hrt_types.h"
+
 //All GBA Registers - Copied from GBATek
 #define REG_DISPCNT		*(u16*)0x04000000 //Display Control
 #define REG_UNKNOWN0	*(u16*)0x04000002 //Undocumented - Green Swap?
@@ -96,7 +101,7 @@
 #define REG_DMA3CNT     *(u32*)0x40000DC	//DMA3 Control (Amount)
 #define REG_DMA3CNT_L   *(u16*)0x40000DC	//DMA3 Control Low Value
 #define REG_DMA3CNT_H   *(u16*)0x40000DE	//DMA3 Control High Value
-#define REG_UNKNOWN11	*(u16*)0x040000E0 // Not Used
+#define REG_UNKNOWN11	*(u16*)0x040000E0 //Not Used
 #define REG_TM0CNT_L	*(u16*)0x04000100 //Timer 0 Counter/Reload
 #define REG_TM0CNT_H	*(u16*)0x04000102 //Timer 0 Control
 #define REG_TM1CNT_L	*(u16*)0x04000104 //Timer 1 Counter/Reload
@@ -105,8 +110,8 @@
 #define REG_TM2CNT_H	*(u16*)0x0400010A //Timer 2 Control
 #define REG_TM3CNT_L	*(u16*)0x0400010C //Timer 3 Counter/Reload
 #define REG_TM3CNT_H	*(u16*)0x0400010E //Timer 3 Control
-#define REG_UNKNOWN12	*(u16*)0x04000110 // Not Used
-#define REG_SIODATA32	*(u32*)0x04000120
+#define REG_UNKNOWN12	*(u16*)0x04000110 //Not Used
+#define REG_SIODATA32	*(u32*)0x04000120 //???
 #define REG_SIOMULTI0	*(u16*)0x04000120 //Data 0
 #define REG_SIOMULTI1	*(u16*)0x04000122 //Data 1
 #define REG_SIOMULTI2	*(u16*)0x04000124 //Data 2
@@ -141,3 +146,39 @@
 #define REG_UNKNOWN23	*(u16*)0x04000804 //Not Used
 #define REG_POGOFILEPTR *(u8**)0x0203FBFC //Pogoshell File Pointer
 
+#define EWRAM	0x02000000 //External Work RAM (256kb)
+#define IWRAM	0x03000000 //Internal Work RAM (32kb)
+#define MMIO	0x04000000 //Memory-Mapped I/O Registers
+#define PALETTE ((u16*)0x05000000) //Palette
+#define VRAM	((u16*)0x06000000) //Video RAM (No 8-bit Write!!)
+#define OAM		((OBJ_ATTR*)0x07000000) //Object Attribute Memory-Mapped
+#define OAMAff	((OBJ_AFFINE*)0x07000000) //Object Attribute Memory-Mapped
+#define ROM		0x08000000 //ROM. Read-Only.
+#define SRAM	(u8*)0x0E000000 //Static RAM. Only 8-bit
+
+#define ACCESS_8(location)		*(volatile u8 *)  (location)
+#define ACCESS_16(location)		*(volatile u16 *) (location)
+#define ACCESS_32(location)		*(volatile u32 *) (location)
+#define MEM_PAL_COL_PTR(x)		 (u16*) (0x05000000+(x<<1))	// Palette color pointer
+#define MEM_PAL_OBJ_PTR(x)		 (u16*) (0x05000200+(x<<1))	// Palette color pointer
+#define SIZEOF_8BIT(x)          (sizeof(x))
+#define SIZEOF_16BIT(x)         (sizeof(x)/2)
+#define SIZEOF_32BIT(x)         (sizeof(x)/4)
+
+#define REG_BGxCNT(x)                 (ACCESS_16(0x04000008+(x*2))) //Macro for a BG
+#define REG_BGxHOFS(x)                    (ACCESS_16(0x04000010+(x*4))) //macro for a bg
+#define REG_BGxVOFS(x)                    (ACCESS_16(0x04000012+(x*4))) //macro for a bg
+#define REG_DMAxSAD(x)                    (ACCESS_32(0x040000B0+(x*0x0C))) //Macro for a DMA Source
+#define REG_DMAxDAD(x)                    (ACCESS_32(0x040000B4+(x*0x0C))) //Macro for a DMA Destination
+#define REG_DMAxCNT(x)					(ACCESS_32(0x040000B8+(x*0x0C))) //Macro for a DMA Control
+#define REG_TMxCNT_L(x)                 (ACCESS_16(0x04000100+(x*4)))
+#define REG_TMxCNT_H(x)                 (ACCESS_16(0x04000102+(x*4)))
+
+#define BIOSChecksum_UNKNOWN 0x00000000
+#define BIOSChecksum_GBA 0xBAAE187f
+#define BIOSChecksum_NDS 0xBAAE1880
+
+HEART_API IWRAM_CODE void hrt_Memcpy32(void *dst, const void* src, uint wcount);
+HEART_API void hrt_Memcpy16(void *dst, const void* src, uint hwcount);
+
+#endif

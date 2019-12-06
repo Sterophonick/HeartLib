@@ -1,5 +1,17 @@
-#ifndef HRT_ASMINC_H
-#define HRT_ASMINC_H
+//
+//  tonc_asminc.h : header file with goodies for assembly.
+//
+//! \file tonc_asminc.h
+//! \author J Vijn
+//! \date 20081019 - 20120519
+//
+/* === NOTES ===
+  * Cleaned up the macros so that they work with comma-directives as well.
+  * For use in assembly only!
+*/
+
+#ifndef TONC_ASMINC_H
+#define TONC_ASMINC_H
 
 #if !__ASSEMBLER__
 	#error This header file is for use in assembly only!
@@ -115,4 +127,6 @@ _name:
 // INLINES 
 // --------------------------------------------------------------------
 
-#endif	// /HRT_ASMINC_H
+#endif	// /TONC_ASMINC_H
+
+// EOF
