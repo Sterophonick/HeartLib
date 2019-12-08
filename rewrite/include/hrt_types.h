@@ -49,7 +49,7 @@ typedef signed long s32;
 typedef signed long long s64;
 typedef signed int sint;
 
-typedef void (*FuncPtr)(void);
+typedef void ( * IntFn)(void);
 
 typedef float f16;
 typedef double f32;

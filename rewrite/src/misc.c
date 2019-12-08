@@ -1,6 +1,7 @@
 #include <string.h>
 #include "hrt_misc.h"
 extern int gettime(void);
+u16* VRAM 	=(u16*)0x6000000;
 
 void hrt_PrintRTCTimeIntoString(char* ptr)
 {
@@ -24,4 +25,11 @@ void hrt_PrintRTCTimeIntoString(char* ptr)
 	mod=(timer>>16)&15;
 	*(s++)=(mod+'0');
 	strcpy(ptr,str);
+}
+
+void hrt_DMACopy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode)
+{
+    REG_DMAxSAD(channel) = (u32)source;
+    REG_DMAxDAD(channel) = (u32)dest;
+	REG_DMAxCNT(channel) = WordCount | mode;
 }

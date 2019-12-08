@@ -22,6 +22,7 @@ typedef struct GBFS_ENTRY {
 
 //Macros
 
+
 //Functions
 HEART_API const GBFS_FILE *find_first_gbfs_file(const void *start);
 HEART_API const void *skip_gbfs_file(const GBFS_FILE *file); //GBFS Stuff
@@ -35,6 +36,7 @@ HEART_API u32 hrt_ReloadRNG(void); //Reloads RNG.
 HEART_API u32 hrt_CreateRNG(void); //Creates RNG Value. You can change the type of return value in your main.c
 HEART_API int hrt_DecodeJPEG(const unsigned char *data, volatile unsigned short *out, int outWidth, int outHeight); //Decodes a JPEG image to VRAM in Mode 3.
 HEART_API void hrt_PrintRTCTimeIntoString(char* ptr); //Prints the Time of the RTC into a string
+HEART_API void hrt_DMACopy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode);
 
 //Inlines
 

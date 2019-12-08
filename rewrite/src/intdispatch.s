@@ -1,26 +1,11 @@
-/*******************************************************************\
-*             8   8                    8  8     8 8
-*             8   8                    8  8       8
-*             8   8  888   888  8 888 888 8     8 8 88
-*             88888 8   8     8 88     8  8     8 88  8
-*             8   8 88888  8888 8      8  8     8 8   8
-*             8   8 8     8   8 8      8  8     8 8   8
-*             8   8  8888  8888 8       8 88888 8 8888
-*                             HeartLib
-*A comprehensive game/app engine for the Nintendo® Game Boy Advance™
-*                  Licensed under the GNU GPL v3.0
-*                 View the LICENSE file for details
-*                      2017-2019 Sterophonick
-*                          For Tubooboo
-\*******************************************************************/
-//This code comes from libgba so shoutouts to them
+//This code comes from libgba. Read the libgba license for details.
 	.section	.iwram,"ax",%progbits
 	.extern	IntrTable
 	.code 32
-	.global	hrt_IntrMain
-	.align
-	
-hrt_IntrMain:
+
+	.global	IntrMain
+
+IntrMain:
 	mov	r3, #0x4000000		@ REG_BASE
 	ldr	r2, [r3,#0x200]		@ Read	REG_IE
 	ldr	r1, [r3, #0x208]	@ r1 = IME
@@ -34,52 +19,48 @@ hrt_IntrMain:
 	ldr	r2,=IntrTable
 	add	r3,r3,#0x200
 
-hrt_findIRQ:
+findIRQ:
 	ldr	r0, [r2, #4]		@ Interrupt mask
 	cmp	r0,#0
-	beq	hrt_no_handler
+	beq	no_handler
 	ands	r0, r0, r1
-	bne	hrt_jump_intr
+	bne	jump_intr
 	add	r2, r2, #8
-	b	hrt_findIRQ
+	b	findIRQ
 
-hrt_no_handler:
+no_handler:
 	strh	r1, [r3, #0x02]		@ IF Clear
 	ldmfd	sp!, {r0-r1,r3,lr}	@ {spsr, IME, REG_BASE, lr_irq}
 	str	r1, [r3, #0x208]	@ restore REG_IME
 	mov	pc,lr
 
-hrt_jump_intr:
+jump_intr:
 	ldr	r2, [r2]		@ user IRQ handler address
 	cmp	r2, #0
-	beq	hrt_no_handler
+	beq	no_handler
 
-hrt_got_handler:
+got_handler:
 	mrs	r1, cpsr
 	bic	r1, r1, #0xdf		@ \__
 	orr	r1, r1, #0x1f		@ /  --> Enable IRQ & FIQ. Set CPU mode to System.
 	msr	cpsr,r1
-
 	strh	r0, [r3, #0x02]		@ IF Clear
-	
 	push	{lr}
-	adr	lr, hrt_IntrRet
+	adr	lr, IntrRet
 	bx	r2
 
-hrt_IntrRet:
+IntrRet:
 	pop	{lr}
 	mov	r3, #0x4000000		@ REG_BASE
 	str	r3, [r3, #0x208]	@ disable IME
-
 	mrs	r3, cpsr
 	bic	r3, r3, #0xdf		@ \__
 	orr	r3, r3, #0x92		@ /  --> Disable IRQ. Enable FIQ. Set CPU mode to IRQ.
 	msr	cpsr, r3
-
 	ldmfd   sp!, {r0-r1,r3,lr}	@ {spsr, IME, REG_BASE, lr_irq}
 	str	r1, [r3, #0x208]	@ restore REG_IME
 	msr	spsr, r0		@ restore spsr
 	mov	pc,lr
 
 	.pool
-	
+	.end

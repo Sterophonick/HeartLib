@@ -145,12 +145,13 @@
 #define REG_UNKNOWN22	*(u32*)0x04000800 //Undocumented - Internal Memory Control(R/W)
 #define REG_UNKNOWN23	*(u16*)0x04000804 //Not Used
 #define REG_POGOFILEPTR *(u8**)0x0203FBFC //Pogoshell File Pointer
+#define INT_VECTOR		*(IntFn *)(0x03007ffc)
 
 #define EWRAM	0x02000000 //External Work RAM (256kb)
 #define IWRAM	0x03000000 //Internal Work RAM (32kb)
 #define MMIO	0x04000000 //Memory-Mapped I/O Registers
 #define PALETTE ((u16*)0x05000000) //Palette
-#define VRAM	((u16*)0x06000000) //Video RAM (No 8-bit Write!!)
+HEART_API u16* VRAM;
 #define OAM		((OBJ_ATTR*)0x07000000) //Object Attribute Memory-Mapped
 #define OAMAff	((OBJ_AFFINE*)0x07000000) //Object Attribute Memory-Mapped
 #define ROM		0x08000000 //ROM. Read-Only.
