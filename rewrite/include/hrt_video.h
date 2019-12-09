@@ -19,11 +19,21 @@
 #define OBJWIN_ENABLE	0x8000
 #define OBJ_ENABLE		0x1000
 
+#define	CHAR_BASE(m)		((m) << 2)
+#define BG_TILE_BASE(m)		((m) << 2)
+#define CHAR_BASE_ADR(m)	((void *)(VRAM + ((m) << 14)))
+#define CHAR_BASE_BLOCK(m)	((void *)(VRAM + ((m) << 14)))
+#define MAP_BASE_ADR(m)		((void *)(VRAM + ((m) << 11)))
+#define SCREEN_BASE_BLOCK(m)((void *)(VRAM + ((m) << 11)))
+#define SCREEN_BASE(m)		((m) << 8)
+#define BG_MAP_BASE(m)		((m) << 8)
+
+#define hrt_SetPaletteEntry(entry, color) PALETTE[entry] = color
+
 //Functions
 ivoid hrt_LoadDataIntoVRAM(u16* data, int length, int offset);
 ivoid hrt_DSPSetMode(u16 mode);
 ivoid hrt_DSPConfigureBG(u8 bg, u16 mode);
-ivoid hrt_SetPaletteEntry(u16 entry, u16 color);
 
 //Inlines
 ivoid hrt_LoadDataIntoVRAM(u16* data, int length, int offset)
@@ -39,11 +49,6 @@ ivoid hrt_DSPSetMode(u16 mode)
 ivoid hrt_DSPConfigureBG(u8 bg, u16 mode)
 {
 	REG_BGxCNT(bg) = mode;	
-}
-
-ivoid hrt_SetPaletteEntry(u16 entry, u16 color)
-{
-	PALETTE[entry] = color;
 }
 
 #endif

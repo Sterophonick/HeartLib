@@ -1,5 +1,7 @@
 #include "hrt_debug.h"
 #include "hrt_bios.h"
+#include "hrt_video.h"
+#include "hrt_text.h"
 const char hrt_lang_assert[]="Assertion failed!";
 const char hrt_lang_assert_file[]="File: %s";
 const char hrt_lang_assert_line[]="Line: %d";

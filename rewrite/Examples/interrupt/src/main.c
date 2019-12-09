@@ -2,6 +2,7 @@
 #include "hrt_oam.h"
 #include "hrt_video.h"
 #include "hrt_interrupt.h"
+#include "hrt_bios.h"
 extern unsigned char suchBitmap[38400];
 extern unsigned short ballsTiles[576];
 extern unsigned short ballsMap[1024];
@@ -146,14 +147,12 @@ void hblank()
   //REG_BG2VOFS = Pos_Y + (SIN[Y] >> 5);
 }
 
-#define VRAM2	((u16*)0x06004000) //Video RAM (No 8-bit Write!!)
-
 int main()
 {
 	hrt_DSPSetMode(DSP_MODE(0) | ENABLE_BG(0));
-	memcpy(PALETTE, ballsPal, 16*2);
-	memcpy(VRAM, ballsMap, 1024*2);
-	memcpy(VRAM+0x4000, ballsTiles, 576*2);
+	hrt_DMACopy(3, ballsPal, PALETTE, 16, 0x80000000);
+	hrt_DMACopy(3, ballsTiles, CHAR_BASE_ADR(1), 567, 0x80000000);
+	hrt_DMACopy(3, ballsMap, VRAM, 1024, 0x80000000);
 	REG_BG0CNT = 0x0084;
 	hrt_irqInit();
 	hrt_irqEnable(IRQ_HBLANK);
@@ -162,6 +161,6 @@ int main()
 	while(1)
 	{
 		X++;
-		asm("swi 0x5"::);
+		hrt_VblankIntrWait();
 	}
 }

@@ -23,7 +23,7 @@ include $(DEVKITARM)/gba_rules
 TARGET		:= $(notdir $(CURDIR))
 BUILD		:= build
 SOURCES		:= src
-INCLUDES	:= include
+INCLUDES	:= .
 DATA		:= .
 MUSIC		:=
 
@@ -32,7 +32,7 @@ MUSIC		:=
 #---------------------------------------------------------------------------------
 ARCH	:=	-mthumb -mthumb-interwork
 
-CFLAGS	:=	-Wall -O3 -march=armv4t -Wno-switch -Wno-multichar -ffast-math -mcpu=arm7tdmi -mtune=arm7tdmi -faggressive-loop-optimizations -mlong-calls $(ARCH)
+CFLAGS	:=	-Wall -Ofast -march=armv4t -Wno-switch -Wno-multichar -ffast-math -mcpu=arm7tdmi -mtune=arm7tdmi -mlong-calls -Iinclude $(ARCH)
 
 CFLAGS	+=	$(INCLUDE)
 
