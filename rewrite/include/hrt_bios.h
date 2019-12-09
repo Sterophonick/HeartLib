@@ -123,18 +123,18 @@ HEART_API void hrt_Halt(void); //SWI 2
 HEART_API void hrt_Stop(void); //SWI 3
 HEART_API void hrt_IntrWait(u32 ReturnFlag, u32 IntFlag); //SWI 0x04
 HEART_API void hrt_VblankIntrWait(void);
-HEART_API s32 hrt_Div(s32 Number, s32 Divisor); //SWI 0x06
-HEART_API s32 hrt_DivMod(s32 Number, s32 Divisor); //SWI 0x06
-HEART_API u32 hrt_DivAbs(s32 Number, s32 Divisor); //SWI 0x06
-HEART_API s32 hrt_DivArm(s32 Divisor, s32 Number);  //SWI 0x07
-HEART_API s32 hrt_DivArmMod(s32 Divisor, s32 Number); //SWI 0x07
-HEART_API u32 hrt_DivArmAbs(s32 Divisor, s32 Number); //SWI 0x07
-HEART_API u16 hrt_Sqrt(u32 X); //BIOS call for Square Root
-HEART_API s16 hrt_ArcTan(s16 Tan); //SWI 0x09
-HEART_API u16 hrt_ArcTan2(s16 X, s16 Y); //SWI 0x0A
+HEART_API s32  hrt_Div(s32 Number, s32 Divisor); //SWI 0x06
+HEART_API s32  hrt_DivMod(s32 Number, s32 Divisor); //SWI 0x06
+HEART_API u32  hrt_DivAbs(s32 Number, s32 Divisor); //SWI 0x06
+HEART_API s32  hrt_DivArm(s32 Divisor, s32 Number);  //SWI 0x07
+HEART_API s32  hrt_DivArmMod(s32 Divisor, s32 Number); //SWI 0x07
+HEART_API u32  hrt_DivArmAbs(s32 Divisor, s32 Number); //SWI 0x07
+HEART_API u16  hrt_Sqrt(u32 X); //BIOS call for Square Root
+HEART_API s16  hrt_ArcTan(s16 Tan); //SWI 0x09
+HEART_API u16  hrt_ArcTan2(s16 X, s16 Y); //SWI 0x0A
 HEART_API void hrt_CpuSet(const void *source, void *dest, u32 mode); //Performs CpuSet systemcall
 HEART_API void hrt_CpuFastSet(const void *source, void *dest, u32 mode);
-HEART_API u32 hrt_GetBiosChecksum(void);
+HEART_API u32  hrt_GetBiosChecksum(void);
 HEART_API void hrt_BgAffineSet(BGAffineSource *source, BGAffineDest *dest, s32 num); //Creates a set of sprite affine data
 HEART_API void hrt_ObjAffineSet(ObjAffineSource *source, void *dest, s32 num, s32 offset); //Creates a set of sprite affine data
 HEART_API void hrt_BitUnPack(void* source, void* destination, BUP* data); //Bitunpack
@@ -157,7 +157,7 @@ HEART_API void hrt_SoundWhatever1(void); //Undocumented - Unknown
 HEART_API void hrt_SoundWhatever2(void); //Undocumented - Unknown
 HEART_API void hrt_SoundWhatever3(void); //Undocumented - Unknown
 HEART_API void hrt_SoundWhatever4(void); //Undocumented - Unknown
-HEART_API u32 hrt_MultiBoot(MultiBootParam *mp, u32 mode);
+HEART_API u32  hrt_MultiBoot(MultiBootParam *mp, u32 mode);
 HEART_API void hrt_HardReset(void); //Resets the Console with the GBA Startup Sequence
 HEART_API void hrt_CustomHalt(u8 reserved1, u8 reserved2, u8 param); //performs the customhalt SWI
 HEART_API void hrt_SoundDriverVSyncOff(void); //Used to stop sound DMA.
