@@ -2,6 +2,7 @@
 #define HRT_MEMMAP
 
 #include "hrt_types.h"
+#include "hrt_oam.h"
 
 //All GBA Registers - Copied from GBATek
 #define REG_DISPCNT		*(u16*)0x04000000 //Display Control
@@ -150,12 +151,10 @@
 #define EWRAM	0x02000000 //External Work RAM (256kb)
 #define IWRAM	0x03000000 //Internal Work RAM (32kb)
 #define MMIO	0x04000000 //Memory-Mapped I/O Registers
-#define PALETTE ((u16*)0x05000000) //Palette
+HEART_API u16* PALETTE;
 HEART_API u16* VRAM;
-#define OAM		((OBJ_ATTR*)0x07000000) //Object Attribute Memory-Mapped
-#define OAMAff	((OBJ_AFFINE*)0x07000000) //Object Attribute Memory-Mapped
+HEART_API u8* SRAM;
 #define ROM		0x08000000 //ROM. Read-Only.
-#define SRAM	(u8*)0x0E000000 //Static RAM. Only 8-bit
 
 #define ACCESS_8(location)		*(volatile u8 *)  (location)
 #define ACCESS_16(location)		*(volatile u16 *) (location)

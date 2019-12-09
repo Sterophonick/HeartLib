@@ -22,7 +22,6 @@ typedef struct GBFS_ENTRY {
 
 //Macros
 
-
 //Functions
 HEART_API const GBFS_FILE *find_first_gbfs_file(const void *start);
 HEART_API const void *skip_gbfs_file(const GBFS_FILE *file); //GBFS Stuff
@@ -37,6 +36,8 @@ HEART_API u32 hrt_CreateRNG(void); //Creates RNG Value. You can change the type 
 HEART_API int hrt_DecodeJPEG(const unsigned char *data, volatile unsigned short *out, int outWidth, int outHeight); //Decodes a JPEG image to VRAM in Mode 3.
 HEART_API void hrt_PrintRTCTimeIntoString(char* ptr); //Prints the Time of the RTC into a string
 HEART_API void hrt_DMACopy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode);
+HEART_API void hrt_EZFSetRompage(u16 page); //Sets the ROM Page of EZ-Flash Omega
+HEART_API void hrt_ExitToEZFlash(); //Exits to EZ-Flash Omega
 
 //Inlines
 

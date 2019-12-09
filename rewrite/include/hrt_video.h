@@ -23,11 +23,12 @@
 ivoid hrt_LoadDataIntoVRAM(u16* data, int length, int offset);
 ivoid hrt_DSPSetMode(u16 mode);
 ivoid hrt_DSPConfigureBG(u8 bg, u16 mode);
+ivoid hrt_SetPaletteEntry(u16 entry, u16 color);
 
 //Inlines
 ivoid hrt_LoadDataIntoVRAM(u16* data, int length, int offset)
 {
-	hrt_Memcpy16(VRAM[offset], data, length);
+	hrt_Memcpy16(&VRAM[offset], data, length);
 }
 
 ivoid hrt_DSPSetMode(u16 mode)
@@ -38,6 +39,11 @@ ivoid hrt_DSPSetMode(u16 mode)
 ivoid hrt_DSPConfigureBG(u8 bg, u16 mode)
 {
 	REG_BGxCNT(bg) = mode;	
+}
+
+ivoid hrt_SetPaletteEntry(u16 entry, u16 color)
+{
+	PALETTE[entry] = color;
 }
 
 #endif
