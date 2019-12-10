@@ -83,14 +83,17 @@ const s16 COS[360] = {  256,  255,  255,  255,  255,  255,  254,  254,  253,  25
  240,  242,  243,  244,  246,  247,  248,  249,  250,  251,
  252,  252,  253,  254,  254,  255,  255,  255,  255,  255 };
 
-u16  X, Y;
+u16  X, Y, Pos_X, Pos_Y;
 
 void hblank()
 {
 	u16 Flags;
 	REG_IME = 0;
 	Flags = REG_IF;
-		REG_BG0HOFS = ++X;
+	if (++Y >= 360) Y = 0;
+		REG_BG0HOFS = Pos_X + (COS[Y] >> 5);
+		REG_BG0VOFS = Pos_Y + (SIN[Y] >> 5);
+
   REG_IF = Flags;
   REG_IME = 1;
 }
@@ -109,6 +112,12 @@ int main()
 	hrt_irqEnable(IRQ_VBLANK);
 	for(;;)
 	{
+      if (++X >= 360) X = 0;
+      Y = X;
+      if ((REG_KEYINPUT & 0x0010) == 0x00) Pos_X++; 
+      if ((REG_KEYINPUT & 0x0020) == 0x00) Pos_X--; 
+      if ((REG_KEYINPUT & 0x0040) == 0x00) Pos_Y--; 
+      if ((REG_KEYINPUT & 0x0080) == 0x00) Pos_Y++; 
 	  hrt_VblankIntrWait();
 	}
 }
