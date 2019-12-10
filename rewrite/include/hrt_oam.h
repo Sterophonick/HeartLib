@@ -78,19 +78,18 @@ HEART_API OBJ_AFFINE* OAMAff;
 #define OBJ_WIDE		OBJ_SHAPE(1)
 #define OBJ_TALL		OBJ_SHAPE(2)
 
-#define hrt_CreateOBJ(name, id) OBJ_ATTR *(name) = &OAMBuffer[(id)]
 #define hrt_CopyOBJToOAM() hrt_Memcpy32(OAM, OAMBuffer, 128*2);
 
 //Sprite Movement Related Functions
-HEART_API void hrt_SetOBJX(OBJ_ATTR *obj, int x);
-HEART_API void hrt_SetOBJY(OBJ_ATTR *obj, int y);
-HEART_API OBJ_ATTR *hrt_SetOBJAttributes(OBJ_ATTR *obj, u16 a0, u16 a1, u16 a2);
-ivoid hrt_SetOBJXY(OBJ_ATTR *obj, int x, int y);
+HEART_API void hrt_SetOBJX(u8 obj, int x);
+HEART_API void hrt_SetOBJY(u8 obj, int y);
+HEART_API void hrt_CreateOBJ(u8 obj, u16 a0, u16 a1, u16 a2);
+ivoid hrt_SetOBJXY(u8 obj, int x, int y);
 
 //Miscellaneous Functions
 
 //Inline function definitions
-ivoid hrt_SetOBJXY(OBJ_ATTR *obj, int x, int y)
+ivoid hrt_SetOBJXY(u8 obj, int x, int y)
 {
 	hrt_SetOBJX(obj, x);
 	hrt_SetOBJY(obj, y);

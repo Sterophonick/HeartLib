@@ -2,22 +2,21 @@
 OBJ_ATTR OAMBuffer[128];
 OBJ_AFFINE *OAMAffineBuffer = (OBJ_AFFINE*)OAMBuffer;
 
-void hrt_SetOBJX(OBJ_ATTR* obj, int x)
+void hrt_SetOBJX(u8 obj, int x)
 {
-	obj->attr1 = obj->attr1 & 0xFE00;  //clear the old x value
-	obj->attr1 = obj->attr1 | x;
+	OAMBuffer[obj].attr1 = OAMBuffer[obj].attr1 & 0xFE00;  //clear the old x value
+	OAMBuffer[obj].attr1 = OAMBuffer[obj].attr1 | x;
 }
 
-void hrt_SetOBJY(OBJ_ATTR* obj, int y)
+void hrt_SetOBJY(u8 obj, int y)
 {
-	obj->attr0 = obj->attr0 & 0xFF00;  //clear the old y value
-	obj->attr0 = obj->attr0 | y;
+	OAMBuffer[obj].attr0 = OAMBuffer[obj].attr0 & 0xFF00;  //clear the old y value
+	OAMBuffer[obj].attr0 = OAMBuffer[obj].attr0 | y;
 }
  
-OBJ_ATTR *hrt_SetOBJAttributes(OBJ_ATTR *obj, u16 a0, u16 a1, u16 a2)
+void hrt_CreateOBJ(u8 obj, u16 a0, u16 a1, u16 a2)
 {
-	obj->attr0 = a0;
-	obj->attr1 = a1;
-	obj->attr2 = a2;
-	return obj;
+	OAMBuffer[obj].attr0 = a0;
+	OAMBuffer[obj].attr1 = a1;
+	OAMBuffer[obj].attr2 = a2;
 }
