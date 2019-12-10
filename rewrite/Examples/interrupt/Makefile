@@ -32,7 +32,7 @@ MUSIC		:=
 #---------------------------------------------------------------------------------
 ARCH	:=	-mthumb -mthumb-interwork
 
-CFLAGS	:=	-Wall -Ofast -march=armv4t -Wno-switch -Wno-multichar -ffast-math -mcpu=arm7tdmi -mtune=arm7tdmi -mlong-calls -Iinclude $(ARCH)
+CFLAGS	:=	-Wall -O3 -march=armv4t -Wno-switch -Wno-multichar -ffast-math -mcpu=arm7tdmi -mtune=arm7tdmi -mlong-calls -Iinclude $(ARCH)
 
 CFLAGS	+=	$(INCLUDE)
 
@@ -44,7 +44,7 @@ LDFLAGS	=	-g $(ARCH) -Wl,-Map,$(notdir $*.map)
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS	:= -lmm -lheart
+LIBS	:= -lmm -lheart -lm
  
  
 #---------------------------------------------------------------------------------

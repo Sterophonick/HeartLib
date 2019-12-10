@@ -1,2 +1,2 @@
 balls.o: \
- C:/Users/nickm/Documents/GitHub/HeartLib/rewrite/Examples/interrupt/src/balls.c
+ C:/Users/Stero/Documents/GitHub/HeartLib/rewrite/Examples/interrupt/src/balls.c

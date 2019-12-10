@@ -1,2 +1,2 @@
 such.o: \
- C:/Users/nickm/Documents/GitHub/HeartLib/rewrite/Examples/interrupt/src/such.c
+ C:/Users/Stero/Documents/GitHub/HeartLib/rewrite/Examples/interrupt/src/such.c
