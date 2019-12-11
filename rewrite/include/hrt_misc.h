@@ -30,6 +30,7 @@ HEART_API void *gbfs_copy_obj(void *dst, const GBFS_FILE *file, const char *name
 HEART_API size_t gbfs_count_objs(const GBFS_FILE *file); //Counts the amount of files in GBFS
 HEART_API const void *gbfs_get_nth_obj(const GBFS_FILE *file, size_t n, char *name, u32 *len); //Gets the value of file from a name
 HEART_API unsigned int aP_depack(const void *source, void *destination); //aPlib unpack
+HEART_API void UnpackPUC(u8 *srcadr, u8 *dstadr); //PuCrunch
 HEART_API u32 hrt_RNGRange(u32 low, u32 high); // Creates a Random number between a range.
 HEART_API u32 hrt_ReloadRNG(void); //Reloads RNG.
 HEART_API u32 hrt_CreateRNG(void); //Creates RNG Value. You can change the type of return value in your main.c
