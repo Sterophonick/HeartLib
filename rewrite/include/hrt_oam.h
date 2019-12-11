@@ -27,6 +27,9 @@ HEART_API OBJ_AFFINE *OAMAffineBuffer;
 HEART_API OBJ_ATTR* OAM;
 HEART_API OBJ_AFFINE* OAMAff;
 
+HEART_API const s16 SIN[360];
+HEART_API const s16 COS[360];
+
 //Macros
 #define hrt_ClearOAM()
 
@@ -80,13 +83,15 @@ HEART_API OBJ_AFFINE* OAMAff;
 
 #define hrt_CopyOBJToOAM() hrt_Memcpy32(OAM, OAMBuffer, 128*2);
 
-//Sprite Movement Related Functions
+
+
+//Functions
 HEART_API void hrt_SetOBJX(u8 obj, int x);
 HEART_API void hrt_SetOBJY(u8 obj, int y);
-HEART_API void hrt_CreateOBJ(u8 obj, u16 a0, u16 a1, u16 a2);
+HEART_API void hrt_SetOBJAttributes(u8 obj, u16 a0, u16 a1, u16 a2);
+HEART_API void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset); //Creates a sprite
+HEART_API void hrt_AffineOBJ(u8 spr, s32 angle, s32 x_scale, s32 y_scale);
 ivoid hrt_SetOBJXY(u8 obj, int x, int y);
-
-//Miscellaneous Functions
 
 //Inline function definitions
 ivoid hrt_SetOBJXY(u8 obj, int x, int y)
