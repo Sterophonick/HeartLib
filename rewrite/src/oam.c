@@ -113,3 +113,14 @@ void hrt_AffineOBJ(u8 spr, s32 angle, s32 x_scale, s32 y_scale)
 	OAMAffineBuffer[spr].pc = (s32)(((x_scale) * (s32)-SIN[temp]) >> 8);
 	OAMAffineBuffer[spr].pd = (s32)(((y_scale) * (s32)COS[temp]) >> 8);
 }
+
+void hrt_CloneOBJ(u8 ospr, u8 nspr)
+{
+	OAMBuffer[nspr].attr0 = OAMBuffer[ospr].attr0;
+	OAMBuffer[nspr].attr1 = OAMBuffer[ospr].attr1;
+	OAMBuffer[nspr].attr2 = OAMBuffer[ospr].attr2;
+	OAMAffineBuffer[nspr].pa = OAMAffineBuffer[ospr].pa;
+	OAMAffineBuffer[nspr].pb = OAMAffineBuffer[ospr].pb;
+	OAMAffineBuffer[nspr].pc = OAMAffineBuffer[ospr].pc;
+	OAMAffineBuffer[nspr].pd = OAMAffineBuffer[ospr].pd;
+}

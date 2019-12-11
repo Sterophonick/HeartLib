@@ -57,7 +57,7 @@ void hrt_DMACopy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode)
 
 void hrt_DMAClear(u8 channel)
 {
-    REG_DMAxSAD(channel) = (u32)0x00000000
+    REG_DMAxSAD(channel) = (u32)0x00000000;
     REG_DMAxDAD(channel) = (u32)0x00000000;
 	REG_DMAxCNT(channel) = 0x81600000;
 }
