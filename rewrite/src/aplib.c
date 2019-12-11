@@ -55,7 +55,7 @@ static unsigned int aP_getgamma(struct APDSTATE *ud)
 	return result;
 }
 
-u32 hrt_aPlibUnpack(u8 *source, u8 *destination)
+unsigned int aP_depack(const void *source, void *destination)
 {
 	struct APDSTATE ud;
 	unsigned int offs, len, R0, LWM;
