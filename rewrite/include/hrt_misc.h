@@ -21,6 +21,29 @@ typedef struct GBFS_ENTRY {
 } GBFS_ENTRY;
 
 //Macros
+#define DMA_DST_INC		(0<<21)
+#define DMA_DST_DEC		(1<<21)
+#define DMA_DST_FIXED	(2<<21)
+#define DMA_DST_RELOAD	(3<<21)
+
+#define DMA_SRC_INC		(0<<23)
+#define DMA_SRC_DEC		(1<<23)
+#define DMA_SRC_FIXED	(2<<23)
+
+#define DMA_REPEAT		(1<<25)
+
+#define DMA16			(0<<26)
+#define DMA32			(1<<26)
+
+#define	GAMEPAK_DRQ		(1<<27)
+
+#define DMA_IMMEDIATE	(0<<28)
+#define DMA_VBLANK		(1<<28)
+#define DMA_HBLANK		(2<<28)
+#define DMA_SPECIAL		(3<<28)
+
+#define DMA_IRQ			(1<<30)
+#define DMA_ENABLE		(1<<31)
 
 //Functions
 HEART_API const GBFS_FILE *find_first_gbfs_file(const void *start);
