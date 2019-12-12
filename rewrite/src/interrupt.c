@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <stdbool.h>
 #include "hrt_interrupt.h"
 #include "hrt_memmap.h"
 
@@ -50,6 +51,11 @@ void hrt_irqEnable ( int mask ) {
 	if (mask & IRQ_VCOUNT) REG_DISPSTAT |= LCDC_VCNT;
 	REG_IE |= mask;
 	REG_IME	= 1;
+}
+
+bool hrt_IsIRQEnabled(int mask)
+{
+	return REG_IE & mask;
 }
 
 void DisableInterrupt(irqMASK mask) {

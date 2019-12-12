@@ -46,5 +46,6 @@ void EnableInterrupt(irqMASK mask) __attribute__ ((deprecated));
 void hrt_irqEnable(int mask);
 void DisableInterrupt(irqMASK mask) __attribute__ ((deprecated));
 void hrt_irqDisable(int mask);
+bool hrt_IsIRQEnabled(int mask);
 
 #endif //HRT_INTERRUPT

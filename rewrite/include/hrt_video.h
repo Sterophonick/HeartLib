@@ -31,6 +31,8 @@
 #define hrt_SetPaletteEntry(entry, color) PALETTE[entry] = color
 
 //Functions
+HEART_API void hrt_PlotPixelInMode4(u32 x, u32 y, u32 color);
+
 ivoid hrt_LoadDataIntoVRAM(u16* data, int length, int offset);
 ivoid hrt_DSPSetMode(u16 mode);
 ivoid hrt_DSPConfigureBG(u8 bg, u16 mode);
