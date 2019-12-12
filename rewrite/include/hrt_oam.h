@@ -92,7 +92,8 @@ HEART_API const s16 COS[360];
 #define OBJ_TALL		OBJ_SHAPE(2)
 
 #define hrt_CopyOBJToOAM() hrt_Memcpy32(OAM, OAMBuffer, 128*2);
-#define hrt_CreatePointerToOAMBuffer(name, objno) OBJ_ATTR *(name)= &OAMBuffer[(objno)];
+#define hrt_CreateSpritePointerToOAMBuffer(name, objno) OBJ_ATTR *(name) = &OAMBuffer[(objno)];
+#define hrt_CreateSpriteArrayPointerToOAMBuffer(name, count, objno) OBJ_ATTR *(name)[(count)] = &OAMBuffer[(objno)];
 
 //Functions
 HEART_API void hrt_SetOBJX(OBJ_ATTR* obj, int x);
