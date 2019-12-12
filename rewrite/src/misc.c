@@ -4,7 +4,7 @@ extern int gettime(void);
 u16* VRAM 	=(u16*)0x6000000;
 u16* PALETTE = (u16*)0x5000000;
 OBJ_ATTR* OAM = (OBJ_ATTR*)0x7000000;
-OBJ_AFFINE* OAMAff = (OBJ_AFFINE*)0x7000000;
+//OBJ_AFFINE* OAMAff = (OBJ_AFFINE*)0x7000000;
 u8* SRAM = (u8*)0xE000000;
 
 void hrt_PrintRTCTimeIntoString(char* ptr)

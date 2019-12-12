@@ -8,11 +8,20 @@
 //Structs
 typedef struct {
 	u16 attr0;
+	u8 fill0;
+	s16 pa;
 	u16 attr1;
+	u8 fill1;
+	s16 pb;
 	u16 attr2;
-	s16 fill;
+	u8 fill2;
+	s16 pc;
+	s16 attr3;
+	u8 fill3;
+	s16 pd;
 }ATTR_ALIGNED(4) OBJ_ATTR;
 
+/*
 typedef struct OBJ_AFFINE
 {
 	u16 fill0[3];	s16 pa;
@@ -20,12 +29,13 @@ typedef struct OBJ_AFFINE
 	u16 fill2[3];	s16 pc;
 	u16 fill3[3];	s16 pd;
 }ATTR_ALIGNED(4) OBJ_AFFINE;
+*/
 
 HEART_API OBJ_ATTR OAMBuffer[128];
-HEART_API OBJ_AFFINE *OAMAffineBuffer;
+//HEART_API OBJ_AFFINE *OAMAffineBuffer;
 
 HEART_API OBJ_ATTR* OAM;
-HEART_API OBJ_AFFINE* OAMAff;
+//HEART_API OBJ_AFFINE* OAMAff;
 
 HEART_API const s16 SIN[360];
 HEART_API const s16 COS[360];
@@ -82,20 +92,19 @@ HEART_API const s16 COS[360];
 #define OBJ_TALL		OBJ_SHAPE(2)
 
 #define hrt_CopyOBJToOAM() hrt_Memcpy32(OAM, OAMBuffer, 128*2);
-
-
+#define hrt_CreatePointerToOAMBuffer(name, objno) OBJ_ATTR *(name)= &OAMBuffer[(objno)];
 
 //Functions
-HEART_API void hrt_SetOBJX(u8 obj, int x);
-HEART_API void hrt_SetOBJY(u8 obj, int y);
-HEART_API void hrt_SetOBJAttributes(u8 obj, u16 a0, u16 a1, u16 a2);
-HEART_API void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset); //Creates a sprite
-HEART_API void hrt_AffineOBJ(u8 spr, s32 angle, s32 x_scale, s32 y_scale);
-HEART_API void hrt_CloneOBJ(u8 ospr, u8 nspr); //Clones a sprite
-ivoid hrt_SetOBJXY(u8 obj, int x, int y);
+HEART_API void hrt_SetOBJX(OBJ_ATTR* obj, int x);
+HEART_API void hrt_SetOBJY(OBJ_ATTR* obj, int y);
+HEART_API void hrt_SetOBJAttributes(OBJ_ATTR* obj, u16 a0, u16 a1, u16 a2);
+HEART_API void hrt_CreateOBJ(OBJ_ATTR* spr, u8 stx, u8 sty, u8 size, u8 affine, u8 rotdata, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset); //Creates a sprite
+HEART_API void hrt_AffineOBJ(OBJ_ATTR* spr, s32 angle, s32 x_scale, s32 y_scale); //Rotates and scales a sprite
+HEART_API void hrt_CloneOBJ(OBJ_ATTR* ospr, OBJ_ATTR* nspr); //Clones a sprite
+ivoid hrt_SetOBJXY(OBJ_ATTR* obj, int x, int y);
 
 //Inline function definitions
-ivoid hrt_SetOBJXY(u8 obj, int x, int y)
+ivoid hrt_SetOBJXY(OBJ_ATTR* obj, int x, int y)
 {
 	hrt_SetOBJX(obj, x);
 	hrt_SetOBJY(obj, y);
