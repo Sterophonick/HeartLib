@@ -40,6 +40,7 @@ HEART_API void hrt_DMACopy(u8 channel, void* source, void* dest, u32 WordCount, 
 HEART_API void hrt_DMAClear(u8 channel); //Clears a DMA Channel
 HEART_API void hrt_EZFSetRompage(u16 page); //Sets the ROM Page of EZ-Flash Omega
 HEART_API void hrt_ExitToEZFlash(); //Exits to EZ-Flash Omega
+HEART_API void hrt_SleepMode(); //Activates the sleep mode present in some commercial games
 
 //Inlines
 
