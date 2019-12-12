@@ -35,8 +35,6 @@ typedef enum irqMASKS {
 
 extern struct IntTable IntrTable[];
 
-//Macros
-
 //Functions
 void hrt_InitIRQ();
 IntFn *hrt_SetIRQ(irqMASK mask, IntFn function);
