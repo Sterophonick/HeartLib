@@ -38,14 +38,10 @@ extern struct IntTable IntrTable[];
 //Macros
 
 //Functions
-void InitInterrupt(void) __attribute__ ((deprecated));
-void hrt_irqInit();
-IntFn *SetInterrupt(irqMASK mask, IntFn function) __attribute__ ((deprecated));
-IntFn *hrt_irqSet(irqMASK mask, IntFn function);
-void EnableInterrupt(irqMASK mask) __attribute__ ((deprecated));
-void hrt_irqEnable(int mask);
-void DisableInterrupt(irqMASK mask) __attribute__ ((deprecated));
-void hrt_irqDisable(int mask);
+void hrt_InitIRQ();
+IntFn *hrt_SetIRQ(irqMASK mask, IntFn function);
+void hrt_EnableIRQ(int mask);
+void hrt_DisableIRQ(int mask);
 bool hrt_IsIRQEnabled(int mask);
 
 #endif //HRT_INTERRUPT

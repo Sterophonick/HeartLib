@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdbool.h>
 #include "hrt_misc.h"
 extern int gettime(void);
 u16* VRAM 	=(u16*)0x6000000;
@@ -60,4 +61,10 @@ void hrt_DMAClear(u8 channel)
     REG_DMAxSAD(channel) = (u32)0x00000000;
     REG_DMAxDAD(channel) = (u32)0x00000000;
 	REG_DMAxCNT(channel) = 0x81600000;
+}
+
+bool hrt_DetectPogoshell(void)
+{
+	register u32 pogotemp=(u32)(*(u8**)0x0203FBFC);
+	return ((pogotemp & 0xFE000000) == 0x08000000)?1:0;
 }
