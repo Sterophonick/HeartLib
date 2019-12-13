@@ -91,9 +91,12 @@ HEART_API const s16 COS[360];
 #define OBJ_WIDE		OBJ_SHAPE(1)
 #define OBJ_TALL		OBJ_SHAPE(2)
 
-#define hrt_CopyOBJToOAM() hrt_Memcpy32(OAM, OAMBuffer, 128*2);
-#define hrt_CreateSpritePointerToOAMBuffer(name, objno) OBJ_ATTR *(name) = &OAMBuffer[(objno)];
-#define hrt_CreateSpriteArrayPointerToOAMBuffer(name, count, objno) OBJ_ATTR *(name)[(count)] = &OAMBuffer[(objno)];
+#define hrt_CopyOBJToOAM() hrt_Memcpy32(OAM, OAMBuffer, 128*2)
+#define hrt_DeclareSprite(name, objno) OBJ_ATTR*(name) = &OAMBuffer[(objno)]
+#define hrt_DeclareSpriteArray(name, count, objno) OBJ_ATTR*(name)[(count)] = &OAMBuffer[(objno)]
+#define hrt_EnableOBJDoubleSize(spr) hrt_HideOBJ(OBJ_ATTR* spr)
+#define hrt_DisableOBJDoubleSize(spr) hrt_ShowOBJ(OBJ_ATTR* spr)
+
 
 //Functions
 HEART_API void hrt_SetOBJX(OBJ_ATTR* obj, int x);
@@ -102,6 +105,8 @@ HEART_API void hrt_SetOBJAttributes(OBJ_ATTR* obj, u16 a0, u16 a1, u16 a2);
 HEART_API void hrt_CreateOBJ(OBJ_ATTR* spr, u8 stx, u8 sty, u8 size, u8 affine, u8 rotdata, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset); //Creates a sprite
 HEART_API void hrt_AffineOBJ(OBJ_ATTR* spr, s32 angle, s32 x_scale, s32 y_scale); //Rotates and scales a sprite
 HEART_API void hrt_CloneOBJ(OBJ_ATTR* ospr, OBJ_ATTR* nspr); //Clones a sprite
+HEART_API void hrt_HideOBJ(OBJ_ATTR* spr);
+HEART_API void hrt_ShowOBJ(OBJ_ATTR* spr);
 ivoid hrt_SetOBJXY(OBJ_ATTR* obj, int x, int y);
 
 //Inline function definitions

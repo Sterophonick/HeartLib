@@ -1,4 +1,5 @@
 #include "hrt_oam.h"
+#include "hrt_bios.h"
 OBJ_ATTR OAMBuffer[128];
 //OBJ_AFFINE *OAMAffineBuffer = (OBJ_AFFINE*)OAMBuffer;
 
@@ -107,7 +108,7 @@ void hrt_CreateOBJ(OBJ_ATTR* spr, u8 stx, u8 sty, u8 size, u8 affine, u8 rotdata
 void hrt_AffineOBJ(OBJ_ATTR* spr, s32 angle, s32 x_scale, s32 y_scale)
 {
 	u16 temp;
-	if(angle > 360) temp = angle-360;
+	angle = hrt_DivMod(angle, 360);
 	spr->pa = (s32)(((x_scale) * (s32)COS[temp]) >> 8);
 	spr->pb = (s32)(((y_scale) * (s32)SIN[temp]) >> 8);
 	spr->pc = (s32)(((x_scale) * (s32)-SIN[temp]) >> 8);
@@ -123,4 +124,14 @@ void hrt_CloneOBJ(OBJ_ATTR* ospr, OBJ_ATTR* nspr)
 	nspr->pb = ospr->pb;
 	nspr->pc = ospr->pc;
 	nspr->pd = ospr->pd;
+}
+
+void hrt_HideOBJ(OBJ_ATTR* spr)
+{
+	spr->attr0 |= 1 << 9;
+}
+
+void hrt_ShowOBJ(OBJ_ATTR* spr)
+{
+	spr->attr0 &= ~(1 << 9);
 }

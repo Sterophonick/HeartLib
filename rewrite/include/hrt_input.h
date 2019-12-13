@@ -33,12 +33,13 @@ struct hrt_Pad *ptr_pad;
 #define KEY_L 512
 #define KEY_ANY 0x03FF
 
+#define hrt_DeclareKeyPadStruct(name) PAD (name)
 #define hrt_SetKeyStructPointer(struct) ptr_pad = &struct;
 #define hrt_IsKeyPressed(key) (*ptr_pad).key
 
 #define keyDown(k)  (~REG_KEYCNT & k)
 
 //Functions
-HEART_API void hrt_GetPad(PAD* pad); //Gets the keypad values, and places them into an array
+HEART_API void hrt_GetPad(PAD* pad); //Gets the keypad values, and places them into an array.
 
 #endif
