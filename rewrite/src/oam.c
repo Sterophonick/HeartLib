@@ -89,13 +89,6 @@ void hrt_SetOBJY(OBJ_ATTR* obj, int y)
 	obj->attr0 = obj->attr0 & 0xFF00;  //clear the old y value
 	obj->attr0 = obj->attr0 | y;
 }
- 
-void hrt_SetOBJAttributes(OBJ_ATTR* obj, u16 a0, u16 a1, u16 a2)
-{
-	obj->attr0 = a0;
-	obj->attr1 = a1;
-	obj->attr2 = a2;
-}
 
 void hrt_CreateOBJ(OBJ_ATTR* spr, u8 stx, u8 sty, u8 size, u8 affine, u8 rotdata, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset)
 {

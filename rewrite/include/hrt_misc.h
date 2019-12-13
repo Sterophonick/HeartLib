@@ -2,6 +2,7 @@
 #define HRT_MISC
 
 #include <stddef.h>
+#include <stdbool.h>
 #include "hrt_types.h"
 #include "hrt_memmap.h"
 

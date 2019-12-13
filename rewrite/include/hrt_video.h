@@ -32,25 +32,14 @@
 
 //Functions
 HEART_API void hrt_PlotPixelInMode4(u32 x, u32 y, u32 color);
-
-ivoid hrt_LoadDataIntoVRAM(u16* data, int length, int offset);
-ivoid hrt_DSPSetMode(u16 mode);
-ivoid hrt_DSPConfigureBG(u8 bg, u16 mode);
+HEART_API void hrt_LoadDataIntoVRAM(u16* data, int length, int offset);
+HEART_API void hrt_DSPSetBGMode(u8 mode);
+HEART_API void hrt_DSPConfigureBG(u8 bg, u16 mode);
+HEART_API u16 hrt_GenerateColorFromRGB(u8 red, u8 green, u8 blue);
+HEART_API void hrt_DSPEnableBG(u8 bg);
+HEART_API void hrt_DSPDisableBG(u8 bg);
 
 //Inlines
-ivoid hrt_LoadDataIntoVRAM(u16* data, int length, int offset)
-{
-	hrt_Memcpy16(&VRAM[offset], data, length);
-}
 
-ivoid hrt_DSPSetMode(u16 mode)
-{
-	REG_DISPCNT = mode;
-}
-
-ivoid hrt_DSPConfigureBG(u8 bg, u16 mode)
-{
-	REG_BGxCNT(bg) = mode;	
-}
 
 #endif
