@@ -68,3 +68,8 @@ bool hrt_DetectPogoshell(void)
 	register u32 pogotemp=(u32)(*(u8**)0x0203FBFC);
 	return ((pogotemp & 0xFE000000) == 0x08000000)?1:0;
 }
+
+u32 hrt_GetHeartLibVersion(void)
+{
+	return 100;
+}
