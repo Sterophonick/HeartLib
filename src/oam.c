@@ -158,3 +158,8 @@ void hrt_ToggleOBJVFlip(OBJ_ATTR* spr)
 {
 	spr->attr1 ^= 13;
 }
+
+void hrt_MoveOBJTowardsDirection(OBJ_ATTR* spr, u16 direction, u8 steps)
+{
+	
+}
