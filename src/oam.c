@@ -161,7 +161,8 @@ void hrt_ToggleOBJVFlip(OBJ_ATTR* spr)
 
 void hrt_MoveOBJTowardsDirection(OBJ_ATTR* spr, u16 direction, u8 steps)
 {
-	
+	int x2 = hrt_GetOBJX(spr);
+	int y2 = hrt_GetOBJY(spr);
 }
 
 int hrt_GetOBJX(OBJ_ATTR* spr)
