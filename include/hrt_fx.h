@@ -5,13 +5,13 @@
 #include "hrt_memmap.h"
 
 //Functions
-ivoid hrt_SetFXMode(u16 mode);
-ivoid hrt_SetFXLevel(u8 level);
-ivoid hrt_FXSetBlendMode(u8 mode);
-ivoid hrt_SetFXAlphaLevel(u8 src, u8 dst);
-ivoid hrt_FXToggleBackdrop(u8 target);
-ivoid hrt_FXToggleOBJ(u8 target);
-ivoid hrt_FXToggleBG(u8 layer, u8 target);
+HEART_API void hrt_SetFXMode(u16 mode);
+HEART_API void hrt_SetFXLevel(u8 level);
+HEART_API void hrt_FXSetBlendMode(u8 mode);
+HEART_API void hrt_SetFXAlphaLevel(u8 src, u8 dst);
+HEART_API void hrt_FXToggleBackdrop(u8 target);
+HEART_API void hrt_FXToggleOBJ(u8 target);
+HEART_API void hrt_FXToggleBG(u8 layer, u8 target);
 
 //Macros
 #define FX_LAYER_BG(bg, target) 	1UL << (bg + (target*8))
@@ -19,41 +19,5 @@ ivoid hrt_FXToggleBG(u8 layer, u8 target);
 #define FX_LAYER_BACKDROP(target) 	1UL << (5 + (target*8))
 
 //Inline function definitions
-ivoid hrt_SetFXMode(u16 mode)
-{
-	REG_BLDCNT = mode;
-}
-
-ivoid hrt_SetFXLevel(u8 level)
-{
-	REG_BLDY = level;
-}
-
-ivoid hrt_FXSetBlendMode(u8 mode)
-{
-	REG_BLDCNT &= ~(0x00C0);
-	REG_BLDCNT |= (mode << 6);
-}
-
-ivoid hrt_SetFXAlphaLevel(u8 src, u8 dst)
-{
-    REG_BLDALPHA_L = src;
-    REG_BLDALPHA_H = dst;
-}
-
-ivoid hrt_FXToggleBackdrop(u8 target)
-{
-	REG_BLDCNT ^= 1UL << (5 + (target*8));
-}
-
-ivoid hrt_FXToggleOBJ(u8 target)
-{
-	REG_BLDCNT ^= 1UL << (4 + (target*8));
-}
-
-ivoid hrt_FXToggleBG(u8 layer, u8 target)
-{
-	REG_BLDCNT ^= 1UL << (layer + (target*8));
-}
 
 #endif
