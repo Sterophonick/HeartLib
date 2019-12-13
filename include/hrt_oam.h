@@ -113,6 +113,9 @@ HEART_API void hrt_DisableOBJVFlip(OBJ_ATTR* spr);
 HEART_API void hrt_ToggleOBJHFlip(OBJ_ATTR* spr);
 HEART_API void hrt_ToggleOBJVFlip(OBJ_ATTR* spr);
 HEART_API void hrt_MoveOBJTowardsDirection(OBJ_ATTR* spr, u16 direction, u8 steps);
+HEART_API int hrt_GetOBJX(OBJ_ATTR* spr);
+HEART_API int hrt_GetOBJY(OBJ_ATTR* spr);
+HEART_API void hrt_PointSpriteTowardsPostition(OBJ_ATTR* spr, int x, int y);
 ivoid hrt_SetOBJXY(OBJ_ATTR* obj, int x, int y);
 
 //Inline function definitions

@@ -163,3 +163,24 @@ void hrt_MoveOBJTowardsDirection(OBJ_ATTR* spr, u16 direction, u8 steps)
 {
 	
 }
+
+int hrt_GetOBJX(OBJ_ATTR* spr)
+{
+	register u16 temp;
+	temp = spr->attr1;
+	temp &= 0x1FF;
+	return temp;
+}
+
+int hrt_GetOBJY(OBJ_ATTR* spr)
+{
+	register u8 temp;
+	temp = spr->attr0;
+	temp &= 0xFF;
+	return temp;
+}
+
+void hrt_PointSpriteTowardsPostition(OBJ_ATTR* spr, int x, int y)
+{
+	
+}
