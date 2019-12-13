@@ -38,6 +38,8 @@ HEART_API void hrt_DSPConfigureBG(u8 bg, u16 mode);
 HEART_API u16 hrt_GenerateColorFromRGB(u8 red, u8 green, u8 blue);
 HEART_API void hrt_DSPEnableBG(u8 bg);
 HEART_API void hrt_DSPDisableBG(u8 bg);
+HEART_API void hrt_DSPEnableOBJ(void);
+HEART_API void hrt_DSPDisableOBJ(void);
 
 //Inlines
 

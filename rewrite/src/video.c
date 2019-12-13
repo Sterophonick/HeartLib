@@ -29,3 +29,13 @@ void hrt_DSPDisableBG(u8 bg)
 {
 	REG_DISPCNT &= ~(1UL << (8 + bg));
 }
+
+void hrt_DSPEnableOBJ(void)
+{
+    REG_DISPCNT |= 0x1000;
+}
+
+void hrt_DSPDisableOBJ(void)
+{
+    REG_DISPCNT &= 0xEFFF;
+}
