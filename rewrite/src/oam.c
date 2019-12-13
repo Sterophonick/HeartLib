@@ -135,3 +135,33 @@ void hrt_ShowOBJ(OBJ_ATTR* spr)
 {
 	spr->attr0 &= ~(1 << 9);
 }
+
+void hrt_EnableOBJHFlip(OBJ_ATTR* spr)
+{
+	spr->attr1 |= (1 << 12);
+}
+
+void hrt_DisableOBJHFlip(OBJ_ATTR* spr)
+{
+	spr->attr1 &= ~(1 << 12);
+}
+
+void hrt_EnableOBJVFlip(OBJ_ATTR* spr)
+{
+	spr->attr1 |= (1 << 13);
+}
+
+void hrt_DisableOBJVFlip(OBJ_ATTR* spr)
+{
+	spr->attr1 &= ~(1 << 13);
+}
+
+void hrt_ToggleOBJHFlip(OBJ_ATTR* spr)
+{
+	spr->attr1 ^= 12;
+}
+
+void hrt_ToggleOBJVFlip(OBJ_ATTR* spr)
+{
+	spr->attr1 ^= 13;
+}
