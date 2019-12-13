@@ -22,10 +22,10 @@ u16 hrt_GenerateColorFromRGB(u8 red, u8 green, u8 blue)
 
 void hrt_DSPEnableBG(u8 bg)
 {
-	REG_DISPCNT |= 1UL << (8+layer);
+	REG_DISPCNT |= 1UL << (8+bg);
 }
 
 void hrt_DSPDisableBG(u8 bg)
 {
-	REG_DISPCNT &= ~(1UL << (8 + layer));
+	REG_DISPCNT &= ~(1UL << (8 + bg));
 }
