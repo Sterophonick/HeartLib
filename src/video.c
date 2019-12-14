@@ -1,8 +1,9 @@
 #include "hrt_video.h"
+#include "hrt_misc.h"
 
-void hrt_LoadDataIntoVRAM(u16* data, int length, int offset)
+void hrt_LoadDataIntoVRAM(u16* data, u32 offset, u32 length)
 {
-	hrt_Memcpy16(&VRAM[offset], data, length);
+	hrt_DMACopy(3, (void*)data, &VRAM+offset, length, 0x80000000);
 }
 
 void hrt_DSPSetBGMode(u8 mode)
@@ -38,4 +39,33 @@ void hrt_DSPEnableOBJ(void)
 void hrt_DSPDisableOBJ(void)
 {
     REG_DISPCNT &= 0xEFFF;
+}
+
+void hrt_DSPConfigBG(u8 bg, u8 priority, u8 tilebase, u8 mosaic, u8 color, u8 mapbase, u8 wraparound, u8 dimensions)
+{
+	REG_BGxCNT(bg) = 0x01 * priority | 0x04 * tilebase | 0x40 * mosaic | 0x80 * color | 0x100 * mapbase | 0x2000 * wraparound | 0x4000 * dimensions;
+}
+
+void hrt_SetBGXY(u8 bg, int x, int y)
+{
+	REG_BGxHOFS(bg) = x;
+	REG_BGxVOFS(bg) = y;
+}
+
+void hrt_SetBGX(u8 bg, int x)
+{
+	REG_BGxHOFS(bg) = x;
+}
+
+void hrt_SetBGY(u8 bg, int y)
+{
+	REG_BGxVOFS(bg) = y;
+}
+
+void hrt_InvertPalette(u16 start, u16 amount)
+{
+    register int i;
+    for (i = 0; i < amount; i++) {
+		PALETTE[start+i] = PALETTE[start+i] ^ 1;
+    }
 }

@@ -161,24 +161,23 @@ void hrt_ToggleOBJVFlip(OBJ_ATTR* spr)
 
 void hrt_MoveOBJTowardsDirection(OBJ_ATTR* spr, u16 direction, u8 steps)
 {
+	int x = COS[direction * steps];
+	int y = SIN[direction * steps];
 	int x2 = hrt_GetOBJX(spr);
 	int y2 = hrt_GetOBJY(spr);
+	y2+=y;
+	x2+=x;
+	hrt_SetOBJXY(spr, x2, y2);
 }
 
-int hrt_GetOBJX(OBJ_ATTR* spr)
+s16 hrt_GetOBJX(OBJ_ATTR* spr)
 {
-	register u16 temp;
-	temp = spr->attr1;
-	temp &= 0x1FF;
-	return temp;
+	return ((s16)(spr->attr1 << 7)) >> 7;
 }
 
-int hrt_GetOBJY(OBJ_ATTR* spr)
+s16 hrt_GetOBJY(OBJ_ATTR* spr)
 {
-	register u8 temp;
-	temp = spr->attr0;
-	temp &= 0xFF;
-	return temp;
+	return ((s16)(spr->attr0 << 8)) >> 8;
 }
 
 void hrt_PointSpriteTowardsPostition(OBJ_ATTR* spr, int x, int y)

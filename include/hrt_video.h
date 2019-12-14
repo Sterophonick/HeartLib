@@ -32,7 +32,7 @@
 
 //Functions
 HEART_API void hrt_PlotPixelInMode4(u32 x, u32 y, u32 color);
-HEART_API void hrt_LoadDataIntoVRAM(u16* data, int length, int offset);
+HEART_API void hrt_LoadDataIntoVRAM(u16* data, u32 offset, u32 length);
 HEART_API void hrt_DSPSetBGMode(u8 mode);
 HEART_API void hrt_DSPConfigureBG(u8 bg, u16 mode);
 HEART_API u16 hrt_GenerateColorFromRGB(u8 red, u8 green, u8 blue);
@@ -40,6 +40,11 @@ HEART_API void hrt_DSPEnableBG(u8 bg);
 HEART_API void hrt_DSPDisableBG(u8 bg);
 HEART_API void hrt_DSPEnableOBJ(void);
 HEART_API void hrt_DSPDisableOBJ(void);
+HEART_API void hrt_DSPConfigBG(u8 bg, u8 priority, u8 tilebase, u8 mosaic, u8 color, u8 mapbase, u8 wraparound, u8 dimensions);
+HEART_API void hrt_SetBGXY(u8 bg, int x, int y);
+HEART_API void hrt_SetBGX(u8 bg, int x);
+HEART_API void hrt_SetBGY(u8 bg, int y);
+HEART_API void hrt_InvertPalette(u16 start, u16 amount);
 
 //Inlines
 
