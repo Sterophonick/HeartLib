@@ -45,6 +45,10 @@ HEART_API void hrt_SetBGXY(u8 bg, int x, int y);
 HEART_API void hrt_SetBGX(u8 bg, int x);
 HEART_API void hrt_SetBGY(u8 bg, int y);
 HEART_API void hrt_InvertPalette(u16 start, u16 amount);
+HEART_API void hrt_PlotPixelInMode3(u8 x, u8 y, u16 color);
+HEART_API void hrt_DrawLine3(int x1, int y1, int x2, int y2, unsigned short color);
+HEART_API void hrt_DSPEnableForceBlank(void);
+HEART_API void hrt_DSPDisableForceBlank(void);
 
 //Inlines
 

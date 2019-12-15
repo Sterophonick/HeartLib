@@ -69,3 +69,77 @@ void hrt_InvertPalette(u16 start, u16 amount)
 		PALETTE[start+i] = PALETTE[start+i] ^ 1;
     }
 }
+
+void hrt_PlotPixelInMode3(u8 x, u8 y, u16 color)
+{
+	VRAM[y*240+x] = color;
+}
+
+void hrt_DrawLine3(int x1, int y1, int x2, int y2, unsigned short color)
+{
+        int i, deltax, deltay, numpixels;
+        int d, dinc1, dinc2;
+        int x, xinc1, xinc2;
+        int y, yinc1, yinc2;
+        //calculate deltaX and deltaY
+        deltax = abs(x2 - x1);
+        deltay = abs(y2 - y1);
+        //initialize
+        if (deltax >= deltay) {
+            //If x is independent variable
+            numpixels = deltax + 1;
+            d = (2 * deltay) - deltax;
+            dinc1 = deltay << 1;
+            dinc2 = (deltay - deltax) << 1;
+            xinc1 = 1;
+            xinc2 = 1;
+            yinc1 = 0;
+            yinc2 = 1;
+        }
+        else {
+            //if y is independent variable
+            numpixels = deltay + 1;
+            d = (2 * deltax) - deltay;
+            dinc1 = deltax << 1;
+            dinc2 = (deltax - deltay) << 1;
+            xinc1 = 0;
+            xinc2 = 1;
+            yinc1 = 1;
+            yinc2 = 1;
+        }
+        //move the right direction
+        if (x1 > x2) {
+            xinc1 = -xinc1;
+            xinc2 = -xinc2;
+        }
+        if (y1 > y2) {
+            yinc1 = -yinc1;
+            yinc2 = -yinc2;
+        }
+        x = x1;
+        y = y1;
+        //draw the pixels
+        for (i = 1; i < numpixels; i++) {
+            hrt_PlotPixelInMode3(x, y, color);
+            if (d < 0) {
+                d = d + dinc1;
+                x = x + xinc1;
+                y = y + yinc1;
+            }
+            else {
+                d = d + dinc2;
+                x = x + xinc2;
+                y = y + yinc2;
+            }
+        }
+}
+
+void hrt_DSPEnableForceBlank(void)
+{
+    REG_DISPCNT |= 0x0080;
+}
+
+void hrt_DSPDisableForceBlank(void)
+{
+    REG_DISPCNT &= 0xFF7F;
+}
