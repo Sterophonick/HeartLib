@@ -8,6 +8,14 @@ u16 _____colors[3] = {
 	0x0000, 0x0421, 0x7FFF
 };
 
+void hrt_ClearText()
+{
+	for(register u16 i=0; i<1024; i++)
+	{
+		VRAM[i] = 64;
+	}
+}
+
 void hrt_InitTextEngine(u8 bg)
 {
 	BUP temp;
@@ -21,6 +29,7 @@ void hrt_InitTextEngine(u8 bg)
 	hrt_SetPaletteEntry(1, 0x0421);
 	hrt_SetPaletteEntry(2, 0x7FFF);
 	REG_BGxCNT(bg) = 0x0000;
+	hrt_ClearText();
 }
 char __outstr2[32];
 
