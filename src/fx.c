@@ -36,3 +36,33 @@ void hrt_FXToggleBG(u8 layer, u8 target)
 {
 	REG_BLDCNT ^= 1UL << (layer + (target*8));
 }
+
+void hrt_FXEnableBackdrop(u8 target)
+{
+	REG_BLDCNT |= (1UL << (5 + (target*8)));
+}
+
+void hrt_FXDisableBackdrop(u8 target)
+{
+	REG_BLDCNT &= ~(1UL << (5 + (target*8)));
+}
+
+void hrt_FXEnableBG(u8 layer, u8 target)
+{
+	REG_BLDCNT |= 1UL << (layer + (target*8));
+}
+
+void hrt_FXDisableBG(u8 layer, u8 target)
+{
+	REG_BLDCNT &= ~(1UL << (layer + (target*8)));
+}
+
+void hrt_FXEnableOBJ(u8 target)
+{
+	REG_BLDCNT |= (1UL << (4 + (target*8)));
+}
+
+void hrt_FXDisableOBJ(u8 target)
+{
+	REG_BLDCNT &= ~(1UL << (4 + (target*8)));
+}
