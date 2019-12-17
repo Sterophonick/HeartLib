@@ -6,6 +6,12 @@ u16 _____colors[3] = {
 	0x0000, 0x0421, 0x7FFF
 };
 
+void hrt_SetTextColors(u16 out, u16 in)
+{
+	hrt_SetPaletteEntry(1, out);
+	hrt_SetPaletteEntry(2, in);
+}
+
 void hrt_ClearText()
 {
 	for(register u16 i=0; i<1024; i++)

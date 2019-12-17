@@ -6,6 +6,11 @@ void hrt_LoadDataIntoVRAM(u16* data, u32 offset, u32 length)
 	hrt_DMACopy(3, (void*)data, &VRAM+offset, length, 0x80000000);
 }
 
+void hrt_LoadDataIntoPalette(u16* data, u32 offset, u32 length)
+{
+	hrt_DMACopy(3, (void*)data, &PALETTE+offset, length, 0x80000000);
+}
+
 void hrt_DSPSetBGMode(u8 mode)
 {
     REG_DISPCNT &= 0xFFF8;

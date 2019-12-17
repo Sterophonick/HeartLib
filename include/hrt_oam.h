@@ -92,8 +92,8 @@ HEART_API const s16 COS[360];
 #define OBJ_TALL		OBJ_SHAPE(2)
 
 #define hrt_CopyOBJToOAM() hrt_Memcpy32(OAM, OAMBuffer, 128*2)
-#define hrt_DeclareSprite(name, objno) OBJ_ATTR*(name) = &OAMBuffer[(objno)]
-#define hrt_DeclareSpriteArray(name, count, objno) OBJ_ATTR*(name)[(count)] = &OAMBuffer[(objno)]
+#define hrt_DeclareSprite(name, objno) OBJ_ATTR* (name) = &OAMBuffer[(objno)]
+#define hrt_DeclareSpriteArray(name, count, objno) OBJ_ATTR* (name)[(count)] = &OAMBuffer[(objno)]
 #define hrt_EnableOBJDoubleSize(spr) hrt_HideOBJ(OBJ_ATTR* spr)
 #define hrt_DisableOBJDoubleSize(spr) hrt_ShowOBJ(OBJ_ATTR* spr)
 
@@ -116,13 +116,8 @@ HEART_API void hrt_MoveOBJTowardsDirection(OBJ_ATTR* spr, u16 direction, u8 step
 HEART_API s16 hrt_GetOBJX(OBJ_ATTR* spr);
 HEART_API s16 hrt_GetOBJY(OBJ_ATTR* spr);
 HEART_API void hrt_PointSpriteTowardsPostition(OBJ_ATTR* spr, int x, int y);
-ivoid hrt_SetOBJXY(OBJ_ATTR* obj, int x, int y);
+HEART_API void hrt_SetOBJXY(OBJ_ATTR* obj, int x, int y);
 
 //Inline function definitions
-ivoid hrt_SetOBJXY(OBJ_ATTR* obj, int x, int y)
-{
-	hrt_SetOBJX(obj, x);
-	hrt_SetOBJY(obj, y);
-}
 
 #endif

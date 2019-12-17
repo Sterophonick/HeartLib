@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include "hrt_types.h"
 #include "hrt_memmap.h"
+#include "hrt_interrupt.h"
 
 //Structs
 typedef struct GBFS_FILE {
@@ -45,6 +46,12 @@ typedef struct GBFS_ENTRY {
 
 #define DMA_IRQ			(1<<30)
 #define DMA_ENABLE		(1<<31)
+
+#define hrt_GetCPUUsage() REG_VCOUNT * 0.88
+#define hrt_Init() \
+	hrt_InitIRQ(); \
+	hrt_EnableIRQ(IRQ_VBLANK); \
+	hrt_EnableIRQ(IRQ_KEYPAD)
 
 //Functions
 HEART_API const GBFS_FILE *find_first_gbfs_file(const void *start);

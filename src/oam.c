@@ -185,3 +185,9 @@ void hrt_PointSpriteTowardsPostition(OBJ_ATTR* spr, int x, int y)
 	int x2 = hrt_GetOBJX(spr);
 	int y2 = hrt_GetOBJY(spr);
 }
+
+void hrt_SetOBJXY(OBJ_ATTR* obj, int x, int y)
+{
+	hrt_SetOBJX(obj, x);
+	hrt_SetOBJY(obj, y);
+}

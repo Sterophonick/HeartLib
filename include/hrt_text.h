@@ -10,5 +10,6 @@
 HEART_API void hrt_ClearText();
 HEART_API void hrt_InitTextEngine(u8 bg);
 HEART_API void hrt_Print(u8 tx, u8 ty, char* str, ...);
+HEART_API void hrt_SetTextColors(u16 out, u16 in);
 
 #endif
