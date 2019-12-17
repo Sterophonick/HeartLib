@@ -1,5 +1,3 @@
-#include <stdarg.h>
-#include <stdio.h>
 #include "hrt_video.h"
 #include "hrt_text.h"
 #include "hrt_bios.h"
