@@ -1,2 +1,2 @@
 block.o: \
- C:/Users/nickm/Documents/GitHub/HeartLib/Examples/stress/source/block.c
+ C:/Users/Stero/Documents/GitHub/HeartLib/Examples/stress/source/block.c

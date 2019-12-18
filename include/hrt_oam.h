@@ -91,32 +91,28 @@ HEART_API const s16 COS[360];
 #define OBJ_WIDE		OBJ_SHAPE(1)
 #define OBJ_TALL		OBJ_SHAPE(2)
 
-#define hrt_CopyOBJToOAM() hrt_Memcpy32(OAM, OAMBuffer, 128*2)
-#define hrt_DeclareSprite(name, objno) OBJ_ATTR* (name) = &OAMBuffer[(objno)]
-#define hrt_DeclareSpriteArray(name, count, objno) OBJ_ATTR* (name)[(count)] = &OAMBuffer[(objno)]
-#define hrt_EnableOBJDoubleSize(spr) hrt_HideOBJ(OBJ_ATTR* spr)
-#define hrt_DisableOBJDoubleSize(spr) hrt_ShowOBJ(OBJ_ATTR* spr)
+#define hrt_CopyOBJToOAM() memcpy(OAM, OAMBuffer, 128*2)
 
 
 //Functions
-HEART_API void hrt_SetOBJX(OBJ_ATTR* obj, int x);
-HEART_API void hrt_SetOBJY(OBJ_ATTR* obj, int y);
-HEART_API void hrt_CreateOBJ(OBJ_ATTR* spr, u8 stx, u8 sty, u8 size, u8 affine, u8 rotdata, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset); //Creates a sprite
-HEART_API void hrt_AffineOBJ(OBJ_ATTR* spr, s32 angle, s32 x_scale, s32 y_scale); //Rotates and scales a sprite
-HEART_API void hrt_CloneOBJ(OBJ_ATTR* ospr, OBJ_ATTR* nspr); //Clones a sprite
-HEART_API void hrt_HideOBJ(OBJ_ATTR* spr);
-HEART_API void hrt_ShowOBJ(OBJ_ATTR* spr); 
-HEART_API void hrt_EnableOBJHFlip(OBJ_ATTR* spr); 
-HEART_API void hrt_DisableOBJHFlip(OBJ_ATTR* spr);
-HEART_API void hrt_EnableOBJVFlip(OBJ_ATTR* spr);
-HEART_API void hrt_DisableOBJVFlip(OBJ_ATTR* spr);
-HEART_API void hrt_ToggleOBJHFlip(OBJ_ATTR* spr);
-HEART_API void hrt_ToggleOBJVFlip(OBJ_ATTR* spr);
-HEART_API void hrt_MoveOBJTowardsDirection(OBJ_ATTR* spr, u16 direction, u8 steps);
-HEART_API s16 hrt_GetOBJX(OBJ_ATTR* spr);
-HEART_API s16 hrt_GetOBJY(OBJ_ATTR* spr);
-HEART_API void hrt_PointSpriteTowardsPostition(OBJ_ATTR* spr, int x, int y);
-HEART_API void hrt_SetOBJXY(OBJ_ATTR* obj, int x, int y);
+HEART_API void hrt_SetOBJX(u8 obj, int x);
+HEART_API void hrt_SetOBJY(u8 obj, int y);
+HEART_API void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 rotdata, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset); //Creates a sprite
+HEART_API void hrt_AffineOBJ(u8 spr, s32 angle, s32 x_scale, s32 y_scale); //Rotates and scales a sprite
+HEART_API void hrt_CloneOBJ(u8 ospr, u8 nspr); //Clones a sprite
+HEART_API void hrt_HideOBJ(u8 spr);
+HEART_API void hrt_ShowOBJ(u8 spr); 
+HEART_API void hrt_EnableOBJHFlip(u8 spr); 
+HEART_API void hrt_DisableOBJHFlip(u8 spr);
+HEART_API void hrt_EnableOBJVFlip(u8 spr);
+HEART_API void hrt_DisableOBJVFlip(u8 spr);
+HEART_API void hrt_ToggleOBJHFlip(u8 spr);
+HEART_API void hrt_ToggleOBJVFlip(u8 spr);
+HEART_API void hrt_MoveOBJTowardsDirection(u8 spr, u16 direction, u8 steps);
+HEART_API s16 hrt_GetOBJX(u8 spr);
+HEART_API s16 hrt_GetOBJY(u8 spr);
+HEART_API void hrt_PointSpriteTowardsPostition(u8 spr, int x, int y);
+HEART_API void hrt_SetOBJXY(u8 obj, int x, int y);
 
 //Inline function definitions
 

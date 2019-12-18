@@ -14,7 +14,8 @@ void AssertImplementation(bool expression, char* error, char* file, u32 line)
 	if(!expression)
 	{
 		hrt_InitTextEngine(0);
-		hrt_DSPSetMode(DSP_MODE(0) | ENABLE_BG(0));
+		hrt_DSPSetBGMode(0);
+		hrt_DSPEnableBG(0);
 		//hrt_PrintOnBitmap(0, 0, hrt_lang_assert);
 		//hrt_PrintOnBitmap(0, 8, hrt_lang_assert_file, file);
 		//hrt_PrintOnBitmap(0, 16, hrt_lang_assert_line, line);

@@ -13,7 +13,8 @@ extern unsigned short blockPal[256];
 extern u8 wobble[256];
 extern u8 wobble2[256];
 
-OBJ_ATTR* block = &OAMBuffer[0];
+#define block 0
+
 u8 CPUUsage;
 u8 spritecnt;
 u8 frames;
@@ -25,7 +26,7 @@ void vblFunc(void)
 	{
 		hrt_SetOBJY(block,wobble[(spritecnt+frames)%256]);
 	}
-	hrt_CopyOBJToOAM();
+	//hrt_CopyOBJToOAM();
 }
 
 int main()
@@ -40,7 +41,7 @@ int main()
 	hrt_Print(0,0,"HeartLib CPU Stress Demo"); //Text
 	hrt_DMACopy(3, blockTiles, 0x06010000, 512, 0x80000000);
 	hrt_DMACopy(3, blockPal, &PALETTE[256], 256, 0x80000000);
-	hrt_CreateOBJ(block, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0);
+	//hrt_CreateOBJ(block, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0);
 	//hrt_LoadDataIntoVRAM(blockTiles, 0x10000, 512);
 	//hrt_LoadDataIntoPalette(blockPal, 257, 256);
 	for(;;)

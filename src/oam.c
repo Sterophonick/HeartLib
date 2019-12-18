@@ -78,88 +78,88 @@ const s16 COS[360] = {  256,  255,  255,  255,  255,  255,  254,  254,  253,  25
  252,  252,  253,  254,  254,  255,  255,  255,  255,  255 };
  
 
-void hrt_SetOBJX(OBJ_ATTR* obj, int x)
+void hrt_SetOBJX(u8 obj, int x)
 {
-	obj->attr1 = obj->attr1 & 0xFE00;  //clear the old x value
-	obj->attr1 = obj->attr1 | x;
+	OAMBuffer[obj].attr1 = OAMBuffer[obj].attr1 & 0xFE00;  //clear the old x value
+	OAMBuffer[obj].attr1 = OAMBuffer[obj].attr1 | x;
 }
 
-void hrt_SetOBJY(OBJ_ATTR* obj, int y)
+void hrt_SetOBJY(u8 obj, int y)
 {
-	obj->attr0 = obj->attr0 & 0xFF00;  //clear the old y value
-	obj->attr0 = obj->attr0 | y;
+	OAMBuffer[obj].attr0 = OAMBuffer[obj].attr0 & 0xFF00;  //clear the old y value
+	OAMBuffer[obj].attr0 = OAMBuffer[obj].attr0 | y;
 }
 
-void hrt_CreateOBJ(OBJ_ATTR* spr, u8 stx, u8 sty, u8 size, u8 affine, u8 rotdata, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset)
+void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 rotdata, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset)
 {
-	spr->attr0 = (color * 8192) | (shape * 0x4000) | (mode * 0x400) | (mosaic * 0x1000) | affine*(0x100) | (dblsize * 0x200) | sty;;
-	spr->attr1 = (size * 16384) | (((rotdata) << 9)*affine) | (hflip * 4096) | (vflip * 8192) | stx;
-	spr->attr2 = (512 + offset) | ((priority) << 10) | ((pal) << 12);
+	OAMBuffer[spr].attr0 = (color * 8192) | (shape * 0x4000) | (mode * 0x400) | (mosaic * 0x1000) | affine*(0x100) | (dblsize * 0x200) | sty;;
+	OAMBuffer[spr].attr1 = (size * 16384) | (((rotdata) << 9)*affine) | (hflip * 4096) | (vflip * 8192) | stx;
+	OAMBuffer[spr].attr2 = (512 + offset) | ((priority) << 10) | ((pal) << 12);
 	if(affine) hrt_AffineOBJ(spr, 0, 256, 256);
 }
 
-void hrt_AffineOBJ(OBJ_ATTR* spr, s32 angle, s32 x_scale, s32 y_scale)
+void hrt_AffineOBJ(u8 spr, s32 angle, s32 x_scale, s32 y_scale)
 {
 	u16 temp;
 	angle = hrt_DivMod(angle, 360);
-	spr->pa = (s32)(((x_scale) * (s32)COS[temp]) >> 8);
-	spr->pb = (s32)(((y_scale) * (s32)SIN[temp]) >> 8);
-	spr->pc = (s32)(((x_scale) * (s32)-SIN[temp]) >> 8);
-	spr->pd = (s32)(((y_scale) * (s32)COS[temp]) >> 8);
+	OAMBuffer[spr].pa = (s32)(((x_scale) * (s32)COS[temp]) >> 8);
+	OAMBuffer[spr].pb = (s32)(((y_scale) * (s32)SIN[temp]) >> 8);
+	OAMBuffer[spr].pc = (s32)(((x_scale) * (s32)-SIN[temp]) >> 8);
+	OAMBuffer[spr].pd = (s32)(((y_scale) * (s32)COS[temp]) >> 8);
 }
 
-void hrt_CloneOBJ(OBJ_ATTR* ospr, OBJ_ATTR* nspr)
+void hrt_CloneOBJ(u8 ospr, u8 nspr)
 {
-	nspr->attr0 = ospr->attr0;
-	nspr->attr1 = ospr->attr1;
-	nspr->attr2 = ospr->attr2;
-	nspr->pa = ospr->pa;
-	nspr->pb = ospr->pb;
-	nspr->pc = ospr->pc;
-	nspr->pd = ospr->pd;
+	OAMBuffer[nspr].attr0 = OAMBuffer[ospr].attr0;
+	OAMBuffer[nspr].attr1 = OAMBuffer[ospr].attr1;
+	OAMBuffer[nspr].attr2 = OAMBuffer[ospr].attr2;
+	OAMBuffer[nspr].pa = OAMBuffer[ospr].pa;
+	OAMBuffer[nspr].pb = OAMBuffer[ospr].pb;
+	OAMBuffer[nspr].pc = OAMBuffer[ospr].pc;
+	OAMBuffer[nspr].pd = OAMBuffer[ospr].pd;
 }
 
-void hrt_HideOBJ(OBJ_ATTR* spr)
+void hrt_HideOBJ(u8 spr)
 {
-	spr->attr0 |= 1 << 9;
+	OAMBuffer[spr].attr0 |= 1 << 9;
 }
 
-void hrt_ShowOBJ(OBJ_ATTR* spr)
+void hrt_ShowOBJ(u8 spr)
 {
-	spr->attr0 &= ~(1 << 9);
+	OAMBuffer[spr].attr0 &= ~(1 << 9);
 }
 
-void hrt_EnableOBJHFlip(OBJ_ATTR* spr)
+void hrt_EnableOBJHFlip(u8 spr)
 {
-	spr->attr1 |= (1 << 12);
+	OAMBuffer[spr].attr1 |= (1 << 12);
 }
 
-void hrt_DisableOBJHFlip(OBJ_ATTR* spr)
+void hrt_DisableOBJHFlip(u8 spr)
 {
-	spr->attr1 &= ~(1 << 12);
+	OAMBuffer[spr].attr1 &= ~(1 << 12);
 }
 
-void hrt_EnableOBJVFlip(OBJ_ATTR* spr)
+void hrt_EnableOBJVFlip(u8 spr)
 {
-	spr->attr1 |= (1 << 13);
+	OAMBuffer[spr].attr1 |= (1 << 13);
 }
 
-void hrt_DisableOBJVFlip(OBJ_ATTR* spr)
+void hrt_DisableOBJVFlip(u8 spr)
 {
-	spr->attr1 &= ~(1 << 13);
+	OAMBuffer[spr].attr1 &= ~(1 << 13);
 }
 
-void hrt_ToggleOBJHFlip(OBJ_ATTR* spr)
+void hrt_ToggleOBJHFlip(u8 spr)
 {
-	spr->attr1 ^= 12;
+	OAMBuffer[spr].attr1 ^= 12;
 }
 
-void hrt_ToggleOBJVFlip(OBJ_ATTR* spr)
+void hrt_ToggleOBJVFlip(u8 spr)
 {
-	spr->attr1 ^= 13;
+	OAMBuffer[spr].attr1 ^= 13;
 }
 
-void hrt_MoveOBJTowardsDirection(OBJ_ATTR* spr, u16 direction, u8 steps)
+void hrt_MoveOBJTowardsDirection(u8 spr, u16 direction, u8 steps)
 {
 	int x = COS[direction * steps];
 	int y = SIN[direction * steps];
@@ -170,23 +170,23 @@ void hrt_MoveOBJTowardsDirection(OBJ_ATTR* spr, u16 direction, u8 steps)
 	hrt_SetOBJXY(spr, x2, y2);
 }
 
-s16 hrt_GetOBJX(OBJ_ATTR* spr)
+s16 hrt_GetOBJX(u8 spr)
 {
-	return ((s16)(spr->attr1 << 7)) >> 7;
+	return ((s16)(OAMBuffer[spr].attr1 << 7)) >> 7;
 }
 
-s16 hrt_GetOBJY(OBJ_ATTR* spr)
+s16 hrt_GetOBJY(u8 spr)
 {
-	return ((s16)(spr->attr0 << 8)) >> 8;
+	return ((s16)(OAMBuffer[spr].attr0 << 8)) >> 8;
 }
 
-void hrt_PointSpriteTowardsPostition(OBJ_ATTR* spr, int x, int y)
+void hrt_PointSpriteTowardsPostition(u8 spr, int x, int y)
 {
 	int x2 = hrt_GetOBJX(spr);
 	int y2 = hrt_GetOBJY(spr);
 }
 
-void hrt_SetOBJXY(OBJ_ATTR* obj, int x, int y)
+void hrt_SetOBJXY(u8 obj, int x, int y)
 {
 	hrt_SetOBJX(obj, x);
 	hrt_SetOBJY(obj, y);
