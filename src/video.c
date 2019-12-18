@@ -80,6 +80,11 @@ void hrt_PlotPixelInMode3(u8 x, u8 y, u16 color)
 	VRAM[y*240+x] = color;
 }
 
+void hrt_PlotPixelInMode5(u8 x, u8 y, u16 color)
+{
+	VRAM[y*160+x] = color;
+}
+
 void hrt_DrawLine3(int x1, int y1, int x2, int y2, unsigned short color)
 {
         int i, deltax, deltay, numpixels;
