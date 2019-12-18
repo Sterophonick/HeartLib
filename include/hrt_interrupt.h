@@ -36,10 +36,11 @@ typedef enum irqMASKS {
 extern struct IntTable IntrTable[];
 
 //Functions
-void hrt_InitIRQ();
-IntFn *hrt_SetIRQ(irqMASK mask, IntFn function);
-void hrt_EnableIRQ(int mask);
-void hrt_DisableIRQ(int mask);
-bool hrt_IsIRQEnabled(int mask);
+HEART_API void hrt_InitIRQ();
+HEART_API IntFn *hrt_SetIRQ(irqMASK mask, IntFn function);
+HEART_API void hrt_EnableIRQ(int mask);
+HEART_API void hrt_DisableIRQ(int mask);
+HEART_API u8 hrt_IsIRQEnabled(int mask);
+HEART_API void hrt_ToggleIRQ(int mask);
 
 #endif //HRT_INTERRUPT

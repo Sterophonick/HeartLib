@@ -1,5 +1,3 @@
-#include <stddef.h>
-#include <stdbool.h>
 #include "hrt_interrupt.h"
 #include "hrt_memmap.h"
 
@@ -25,7 +23,7 @@ IntFn* hrt_SetIRQ(irqMASK mask, IntFn function) {
 	for	(i=0;;i++) {
 		if	(!IntrTable[i].mask || IntrTable[i].mask == mask) break;
 	}
-	if ( i >= MAX_INTS) return NULL;
+	if ( i >= MAX_INTS) return 0;
 	IntrTable[i].handler	= function;
 	IntrTable[i].mask		= mask;
 	return &IntrTable[i].handler;
@@ -41,11 +39,19 @@ void hrt_EnableIRQ( int mask ) {
 	REG_IME	= 1;
 }
 
-bool hrt_IsIRQEnabled(int mask)
+void hrt_ToggleIRQ(int mask) {
+	REG_IME = 0;
+	if (mask & IRQ_VBLANK) REG_DISPSTAT ^= LCDC_VBL;
+	if (mask & IRQ_HBLANK) REG_DISPSTAT ^= LCDC_HBL;
+	if (mask & IRQ_VCOUNT) REG_DISPSTAT ^= LCDC_VCNT;
+	REG_IE ^= mask;
+	REG_IME = 1;
+}
+
+u8 hrt_IsIRQEnabled(int mask)
 {
 	return REG_IE & mask;
 }
-
 
 void hrt_DisableIRQ(int mask) {
 	REG_IME	= 0;
