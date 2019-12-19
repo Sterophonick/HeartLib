@@ -1,3 +1,5 @@
+#include <math.h>
+#include <string.h>
 #include "hrt_oam.h"
 #include "hrt_bios.h"
 OBJ_ATTR OAMBuffer[128];
@@ -90,10 +92,10 @@ void hrt_SetOBJY(u8 obj, int y)
 	OAMBuffer[obj].attr0 = OAMBuffer[obj].attr0 | y;
 }
 
-void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 rotdata, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset)
+void hrt_CreateOBJ(u8 spr, u8 stx, u8 sty, u8 size, u8 affine, u8 hflip, u8 vflip, u8 shape, u8 dblsize, u8 mosaic, u8 pal, u8 color, u8 mode, u8 priority, u32 offset)
 {
-	OAMBuffer[spr].attr0 = (color * 8192) | (shape * 0x4000) | (mode * 0x400) | (mosaic * 0x1000) | affine*(0x100) | (dblsize * 0x200) | sty;;
-	OAMBuffer[spr].attr1 = (size * 16384) | (((rotdata) << 9)*affine) | (hflip * 4096) | (vflip * 8192) | stx;
+	OAMBuffer[spr].attr0 = (color * 8192) | (shape * 0x4000) | (mode * 0x400) | (mosaic * 0x1000) | affine*(0x100) | (dblsize * 0x200) | sty;
+	OAMBuffer[spr].attr1 = (size * 16384) | (((spr) << 9)*affine) | (hflip * 4096) | (vflip * 8192) | stx;
 	OAMBuffer[spr].attr2 = (512 + offset) | ((priority) << 10) | ((pal) << 12);
 	if(affine) hrt_AffineOBJ(spr, 0, 256, 256);
 }
@@ -190,4 +192,11 @@ void hrt_SetOBJXY(u8 obj, int x, int y)
 {
 	hrt_SetOBJX(obj, x);
 	hrt_SetOBJY(obj, y);
+}
+
+void hrt_CopyOBJToOAM(void)
+{
+	register u16* temp;
+	temp = (u16*)OAMBuffer;
+	memcpy(OAM, temp, 128*4);
 }
