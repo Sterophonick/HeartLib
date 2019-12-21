@@ -60,5 +60,4 @@ void hrt_DisableIRQ(int mask) {
 	if (mask & IRQ_VCOUNT) REG_DISPSTAT &= ~LCDC_VCNT;
 	REG_IE &= ~mask;
 	REG_IME	= 1;
-
 }

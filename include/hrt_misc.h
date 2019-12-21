@@ -53,6 +53,14 @@ typedef struct GBFS_ENTRY {
 	hrt_EnableIRQ(IRQ_VBLANK); \
 	hrt_EnableIRQ(IRQ_KEYPAD)
 
+#define NOT  !
+#define AND  &&
+#define NOR  !|
+#define OR   |
+#define NAND !&
+#define XOR  ^
+#define XNOR !^
+
 //Functions
 HEART_API const GBFS_FILE *find_first_gbfs_file(const void *start);
 HEART_API const void *skip_gbfs_file(const GBFS_FILE *file); //GBFS Stuff

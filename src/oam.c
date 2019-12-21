@@ -3,7 +3,7 @@
 #include "hrt_oam.h"
 #include "hrt_bios.h"
 OBJ_ATTR OAMBuffer[128];
-//OBJ_AFFINE *OAMAffineBuffer = (OBJ_AFFINE*)OAMBuffer;
+OBJ_AFFINE *OAMAffineBuffer = (OBJ_AFFINE*)OAMBuffer;
 
 const s16 SIN[360] = {    0,    4,    8,   13,   17,   22,   26,   31,   35,   40,
   44,   48,   53,   57,   61,   66,   70,   74,   79,   83,
@@ -108,10 +108,10 @@ void hrt_AffineOBJ(u8 spr, s32 angle, s32 x_scale, s32 y_scale)
 	if(spr > 127) return;
 	u16 temp;
 	angle = hrt_DivMod(angle, 360);
-	OAMBuffer[spr].pa = (s32)(((x_scale) * (s32)COS[temp]) >> 8);
-	OAMBuffer[spr].pb = (s32)(((y_scale) * (s32)SIN[temp]) >> 8);
-	OAMBuffer[spr].pc = (s32)(((x_scale) * (s32)-SIN[temp]) >> 8);
-	OAMBuffer[spr].pd = (s32)(((y_scale) * (s32)COS[temp]) >> 8);
+	OAMAffineBuffer[spr].pa = (s32)(((x_scale) * (s32)COS[temp]) >> 8);
+	OAMAffineBuffer[spr].pb = (s32)(((y_scale) * (s32)SIN[temp]) >> 8);
+	OAMAffineBuffer[spr].pc = (s32)(((x_scale) * (s32)-SIN[temp]) >> 8);
+	OAMAffineBuffer[spr].pd = (s32)(((y_scale) * (s32)COS[temp]) >> 8);
 }
 
 void hrt_CloneOBJ(u8 ospr, u8 nspr)
@@ -121,10 +121,10 @@ void hrt_CloneOBJ(u8 ospr, u8 nspr)
 	OAMBuffer[nspr].attr0 = OAMBuffer[ospr].attr0;
 	OAMBuffer[nspr].attr1 = OAMBuffer[ospr].attr1;
 	OAMBuffer[nspr].attr2 = OAMBuffer[ospr].attr2;
-	OAMBuffer[nspr].pa = OAMBuffer[ospr].pa;
-	OAMBuffer[nspr].pb = OAMBuffer[ospr].pb;
-	OAMBuffer[nspr].pc = OAMBuffer[ospr].pc;
-	OAMBuffer[nspr].pd = OAMBuffer[ospr].pd;
+	OAMAffineBuffer[nspr].pa = OAMAffineBuffer[ospr].pa;
+	OAMAffineBuffer[nspr].pb = OAMAffineBuffer[ospr].pb;
+	OAMAffineBuffer[nspr].pc = OAMAffineBuffer[ospr].pc;
+	OAMAffineBuffer[nspr].pd = OAMAffineBuffer[ospr].pd;
 }
 
 void hrt_HideOBJ(u8 spr)
