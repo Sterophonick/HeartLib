@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef HRT_OAM
 #define HRT_OAM
 
@@ -7,10 +11,10 @@
 
 //Structs
 typedef struct {
-    u16 attribute0;
-    u16 attribute1;
-    u16 attribute2;
-    u16 attribute3;
+    u16 attr0;
+    u16 attr1;
+    u16 attr2;
+    u16 filler;
 }ATTR_ALIGNED(4) OBJ_ATTR;
 
 typedef struct OBJ_AFFINE
@@ -101,8 +105,13 @@ HEART_API s16  hrt_GetOBJY(u8 spr);
 HEART_API void hrt_PointSpriteTowardsPostition(u8 spr, int x, int y);
 HEART_API void hrt_SetOBJXY(u8 obj, int x, int y);
 HEART_API void hrt_CopyOBJToOAM();
+HEART_API void hrt_SetOBJOffset(u8 spr, u16 data);
 
 
 //Inline function definitions
 
+#endif
+
+#ifdef __cplusplus
+}
 #endif

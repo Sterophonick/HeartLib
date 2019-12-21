@@ -89,7 +89,7 @@ void hrt_SetOBJX(u8 obj, int x)
 
 void hrt_SetOBJY(u8 obj, int y)
 {
-	if(spr > 127) return;
+	if(obj > 127) return;
 	OAMBuffer[obj].attr0 = OAMBuffer[obj].attr0 & 0xFF00;  //clear the old y value
 	OAMBuffer[obj].attr0 = OAMBuffer[obj].attr0 | y;
 }
@@ -218,4 +218,11 @@ void hrt_CopyOBJToOAM(void)
 	register u16* temp;
 	temp = (u16*)OAMBuffer;
 	memcpy(OAM, temp, 128*4);
+}
+
+void hrt_SetOBJOffset(u8 spr, u16 data)
+{
+	if(spr > 127) return;
+	OAMBuffer[spr].attr2 &= ~(0x1FF);
+	OAMBuffer[spr].attr2 |= (data << 0);
 }

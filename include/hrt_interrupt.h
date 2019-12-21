@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef HRT_INTERRUPT
 #define HRT_INTERRUPT
 
@@ -44,3 +48,7 @@ HEART_API u8 hrt_IsIRQEnabled(int mask);
 HEART_API void hrt_ToggleIRQ(int mask);
 
 #endif //HRT_INTERRUPT
+
+#ifdef __cplusplus
+}
+#endif

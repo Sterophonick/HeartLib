@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef HRT_MISC
 #define HRT_MISC
 
@@ -86,4 +90,8 @@ HEART_API void hrt_DecodePCX(const u8 *PCXBuffer, u16 * ScreenAddr, u16* Palette
 
 //Inlines
 
+#endif
+
+#ifdef __cplusplus
+}
 #endif

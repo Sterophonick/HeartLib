@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef HRT_BIOS
 #define HRT_BIOS
 
@@ -164,4 +168,8 @@ HEART_API void hrt_SoundDriverVSyncOff(void); //Used to stop sound DMA.
 HEART_API void hrt_SoundDriverVSyncOn(void); //Restarts the sound DMA.
 HEART_API void hrt_SoundGetJumpList(void* dest); //Undocumented - receives pointers to 36 additional sound-related  BIOS functions
 
+#endif
+
+#ifdef __cplusplus
+}
 #endif
