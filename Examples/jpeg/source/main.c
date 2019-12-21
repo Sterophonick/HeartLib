@@ -14,6 +14,7 @@ int main()
 	hrt_DSPEnableBG(2); //Enables BG 2
 	hrt_DSPDisableForceBlank(); //Disables Force Blank
 	hrt_DecodeJPEG(such2_jpg, VRAM, 240, 160); //Decodes the JPEG
+	hrt_EnableGreenSwap();
 	for(;;)
 	{
 		hrt_VblankIntrWait(); //Stops CPU until frame is done

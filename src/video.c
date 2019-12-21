@@ -153,3 +153,13 @@ void hrt_DSPDisableForceBlank(void)
 {
     REG_DISPCNT &= 0xFF7F;
 }
+
+void hrt_EnableGreenSwap(void)
+{
+	REG_UNKNOWN0 = 1;
+}
+
+void hrt_DisableGreenSwap(void)
+{
+	REG_UNKNOWN0 = 0;
+}

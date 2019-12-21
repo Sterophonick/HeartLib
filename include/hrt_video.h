@@ -51,6 +51,8 @@ HEART_API void hrt_DSPEnableForceBlank(void);
 HEART_API void hrt_DSPDisableForceBlank(void);
 HEART_API void hrt_LoadDataIntoPalette(u16* data, u32 offset, u32 length);
 HEART_API void hrt_PlotPixelInMode5(u8 x, u8 y, u16 color);
+HEART_API void hrt_EnableGreenSwap(void); //This makes the screen look fuzzy, only works on hardware.
+HEART_API void hrt_DisableGreenSwap(void); //This makes the screen look fuzzy, only works on hardware.
 
 //Inlines
 
