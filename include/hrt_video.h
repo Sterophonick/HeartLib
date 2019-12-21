@@ -35,7 +35,7 @@ HEART_API void hrt_PlotPixelInMode4(u32 x, u32 y, u32 color);
 HEART_API void hrt_LoadDataIntoVRAM(u16* data, u32 offset, u32 length);
 HEART_API void hrt_DSPSetBGMode(u8 mode);
 HEART_API void hrt_DSPConfigureBG(u8 bg, u16 mode);
-HEART_API u16 hrt_GenerateColorFromRGB(u8 red, u8 green, u8 blue);
+HEART_API u16  hrt_GenerateColorFromRGB(u8 red, u8 green, u8 blue);
 HEART_API void hrt_DSPEnableBG(u8 bg);
 HEART_API void hrt_DSPDisableBG(u8 bg);
 HEART_API void hrt_DSPEnableOBJ(void);

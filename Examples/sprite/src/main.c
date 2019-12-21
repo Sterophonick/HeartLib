@@ -6,12 +6,17 @@ extern unsigned short blockPal[256];
 
 int main()
 {
-	hrt_CreateOBJ(square, 0);
-	//hrt_LoadDataIntoVRAM(blockTiles, 512, 0x1000);
-	memcpy((void*)PALETTE[257], blockPal, 256);
-	hrt_DSPSetMode(DSP_MODE(4) | ENABLE_BG(2) | OBJ_MAP_1D | ENABLE_BG(3) | ENABLE_BG(0) | 0x1000);
-	hrt_SetOBJAttributes(square, OBJ_SQUARE, ATTR1_SIZE_64, 0);
-	hrt_SetOBJXY(square, 0, 0);
+	hrt_Init(); //Does some recommended initializations
+	hrt_DSPSetBGMode(0); //Sets the BG Mode to 4-Tile layers
+	hrt_DSPEnableBG(0); //Enables BG 0
+	hrt_DSPEnableOBJ(); //Enables the OBJ Layer
+	hrt_DSPDisableForceBlank(); //Unblanks the screen
+	hrt_InitTextEngine(0); //Initializes the text engine on BG 0
+	hrt_SetIRQ(IRQ_VBLANK, vblFunc);
+	hrt_Print(0,0,"HeartLib CPU Stress Demo"); //Text
+	hrt_DMACopy(3, blockTiles, 0x06010000, 512, 0x80000000);
+	hrt_DMACopy(3, blockPal, &PALETTE[256], 256, 0x80000000);
+	hrt_CreateOBJ(0, 120, 80, 2, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
 	hrt_CopyOBJToOAM();
 	while(1);
 }

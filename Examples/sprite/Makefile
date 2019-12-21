@@ -22,9 +22,9 @@ include $(DEVKITARM)/gba_rules
 #---------------------------------------------------------------------------------
 TARGET		:= $(notdir $(CURDIR))
 BUILD		:= build
-SOURCES		:= src
-INCLUDES	:= .
-DATA		:= .
+SOURCES		:= source
+INCLUDES	:= include
+DATA		:=
 MUSIC		:=
 
 #---------------------------------------------------------------------------------
@@ -32,7 +32,11 @@ MUSIC		:=
 #---------------------------------------------------------------------------------
 ARCH	:=	-mthumb -mthumb-interwork
 
-CFLAGS	:=	-Wall -O3 -march=armv4t -Wno-switch -Wno-multichar -ffast-math -mcpu=arm7tdmi -mtune=arm7tdmi -marm -faggressive-loop-optimizations -mlong-calls -Iinclude $(ARCH)
+CFLAGS	:=	-Wall -O3 -Wno-switch -Wno-multichar\
+		-mcpu=arm7tdmi -mtune=arm7tdmi\
+ 		-fomit-frame-pointer\
+		-ffast-math -mlong-calls\
+		$(ARCH)
 
 CFLAGS	+=	$(INCLUDE)
 
@@ -44,7 +48,7 @@ LDFLAGS	=	-g $(ARCH) -Wl,-Map,$(notdir $*.map)
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS	:= -lmm -lgba -lheart
+LIBS	:= -lmm -lheart
  
  
 #---------------------------------------------------------------------------------
@@ -59,7 +63,7 @@ LIBDIRS	:=	$(LIBGBA)
 #---------------------------------------------------------------------------------
 
 
-ifneq ($(BUILD),$(notdir $(CURDIR)))
+ifneq ($(BUILDDIR), $(CURDIR))
 #---------------------------------------------------------------------------------
  
 export OUTPUT	:=	$(CURDIR)/$(TARGET)
@@ -113,14 +117,14 @@ export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib)
 #---------------------------------------------------------------------------------
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
-	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+	@$(MAKE) BUILDDIR=`cd $(BUILD) && pwd` --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
 	@rm -fr $(BUILD) $(TARGET).elf $(TARGET).gba 
-
-
+ 
+ 
 #---------------------------------------------------------------------------------
 else
  
@@ -147,15 +151,17 @@ soundbank.bin soundbank.h : $(AUDIOFILES)
 	@mmutil $^ -osoundbank.bin -hsoundbank.h
 
 #---------------------------------------------------------------------------------
-%.pcx.o	%_pcx.h :	%.pcx
+# This rule links in binary data with the .bin extension
+#---------------------------------------------------------------------------------
+%.bin.o	%_bin.h :	%.bin
 #---------------------------------------------------------------------------------
 	@echo $(notdir $<)
 	@$(bin2o)
 
 
-
+ 
 -include $(DEPSDIR)/*.d
-
+ 
 #---------------------------------------------------------------------------------------
 endif
 #---------------------------------------------------------------------------------------
