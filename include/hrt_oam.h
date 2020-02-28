@@ -106,7 +106,7 @@ HEART_API void hrt_PointSpriteTowardsPostition(u8 spr, int x, int y);
 HEART_API void hrt_SetOBJXY(u8 obj, int x, int y);
 HEART_API void hrt_CopyOBJToOAM();
 HEART_API void hrt_SetOBJOffset(u8 spr, u16 data);
-
+HEART_API u16 hrt_GetOBJOFfset(u8 spr);
 
 //Inline function definitions
 

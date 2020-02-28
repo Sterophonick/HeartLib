@@ -226,3 +226,9 @@ void hrt_SetOBJOffset(u8 spr, u16 data)
 	OAMBuffer[spr].attr2 &= ~(0x1FF);
 	OAMBuffer[spr].attr2 |= (data << 0);
 }
+
+u16 hrt_GetOBJOffset(u8 spr)
+{
+	if(spr > 127) return;
+	return OAMBuffer[spr].attr2 & 0x1FF;
+}
