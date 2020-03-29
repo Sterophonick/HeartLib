@@ -1,4 +1,3 @@
-#include "hrt_asminc.h"
 #include "hrt_bios.h"
 #include "hrt_debug.h"
 #include "hrt_drawer.h"
