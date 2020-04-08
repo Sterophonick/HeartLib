@@ -43,3 +43,4 @@ At the moment, it its only compatible with C. It will not work with C++.
  - jeffman_19 (Mother 1+2 Fan Translation team leader)
  - GodBolt (Compiler Explorer)
  - Mark Holloway (Mushroom GBA lib)
+ - Jason Wilkins (DevKit Advance)
