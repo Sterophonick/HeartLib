@@ -44,3 +44,4 @@ At the moment, it its only compatible with C. It will not work with C++.
  - GodBolt (Compiler Explorer)
  - Mark Holloway (Mushroom GBA lib)
  - Jason Wilkins (DevKit Advance)
+ - krom (some of his source code)
