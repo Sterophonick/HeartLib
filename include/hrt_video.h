@@ -21,7 +21,7 @@
 
 #define	CHAR_BASE(m)		((m) << 2)
 #define BG_TILE_BASE(m)		((m) << 2)
-#define CHAR_BASE_ADR(m)	((void *)(VRAM + ((m) << 14)))
+#define CHAR_BASE_ADR(m)	((m) << 14)
 #define CHAR_BASE_BLOCK(m)	((void *)(VRAM + ((m) << 14)))
 #define MAP_BASE_ADR(m)		((void *)(VRAM + ((m) << 11)))
 #define SCREEN_BASE_BLOCK(m)((void *)(VRAM + ((m) << 11)))
@@ -52,7 +52,21 @@ HEART_API void hrt_DSPDisableForceBlank(void);
 HEART_API void hrt_LoadDataIntoPalette(u16* data, u32 offset, u32 length);
 HEART_API void hrt_PlotPixelInMode5(u8 x, u8 y, u16 color);
 HEART_API void hrt_EnableGreenSwap(void); //This makes the screen look fuzzy, only works on hardware.
-HEART_API void hrt_DisableGreenSwap(void); //This makes the screen look fuzzy, only works on hardware.
+HEART_API void hrt_DisableGreenSwap(void);
+HEART_API u16  hrt_GetPixelInMode3(int x, int y);
+HEART_API void hrt_DestroyBG(u8 bg);
+HEART_API void hrt_DSPEnableLinearOBJ(void);
+HEART_API void hrt_DSPDisableLinearOBJ(void);
+HEART_API void hrt_DSPEnableLinearOBJ(void);
+HEART_API void hrt_DSPDisableLinearOBJ(void);
+HEART_API void hrt_BGSet16Color(u8 layer);
+HEART_API void hrt_BGSet256Color(u8 layer);
+HEART_API void hrt_BGEnableMosaic(u8 layer);
+HEART_API void hrt_BGDisableMosaic(u8 layer);
+HEART_API void hrt_BGSetSize(u8 layer, u8 size);
+HEART_API void hrt_BGSetMapBase(u8 layer, u8 no);
+HEART_API void hrt_BGSetTileBase(u8 layer, u8 no);
+HEART_API void hrt_BGSetPriority(u8 layer, u8 no);
 
 //Inlines
 

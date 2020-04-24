@@ -1,2 +1,2 @@
 main.o: \
- C:/Users/Stero/Documents/GitHub/HeartLib/rewrite/Examples/interrupt/src/main.c
+ C:/Users/stero/Documents/GitHub/HeartLib/Examples/interrupt/src/main.c

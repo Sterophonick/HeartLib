@@ -23,18 +23,29 @@ void hblank()
   REG_IME = 1;
 }
 
-
+//Entry Point
 int main()
 {
-	hrt_DSPSetMode(DSP_MODE(0) | ENABLE_BG(0));
-	hrt_DMACopy(3, ballsPal, PALETTE, 16, 0x80000000);
-	hrt_DMACopy(3, ballsTiles, CHAR_BASE_ADR(1), 567, 0x80000000);
-	hrt_DMACopy(3, ballsMap, VRAM, 1024, 0x80000000);
+	//Sets up background(s)
+	hrt_DSPSetBGMode(0); //Sets the video mode to 0
+	hrt_DSPEnableBG(0);  //Enabled background 0
+	hrt_DSPDisableForceBlank(); //Makes the screen whiten't
+	
+	//Loads the screen data
+	hrt_LoadDataIntoPalette(ballsPal, 0, 16); //Loads the palette data 
+	hrt_LoadDataIntoVRAM(ballsTiles, CHAR_BASE_ADR(1), 567); //Loads the Tile Data
+	hrt_LoadDataIntoVRAM(ballsMap, 0, 1024); //Loads the Map data
+	
+	//Configures BG0
 	REG_BG0CNT = 0x0088;
-	hrt_irqInit();
-	hrt_irqEnable(IRQ_HBLANK);
-	hrt_irqSet(IRQ_HBLANK, hblank);
-	hrt_irqEnable(IRQ_VBLANK);
+	
+	//Configures Interrupts
+	hrt_InitIRQ(); //Initializes IRQs
+	hrt_EnableIRQ(IRQ_HBLANK); //Enables HBlank IRQ
+	hrt_SetIRQ(IRQ_HBLANK, hblank); //Sets hblank() as the HBlank IRQ handler
+	hrt_EnableIRQ(IRQ_VBLANK); //Enables VBlank IRQ
+	
+	//Forever
 	for(;;)
 	{
       if (++X >= 360) X = 0;
@@ -43,6 +54,6 @@ int main()
       if ((REG_KEYINPUT & 0x0020) == 0x00) Pos_X--; 
       if ((REG_KEYINPUT & 0x0040) == 0x00) Pos_Y--; 
       if ((REG_KEYINPUT & 0x0080) == 0x00) Pos_Y++; 
-	  hrt_VblankIntrWait();
+	  hrt_VblankIntrWait(); //Waits for the frame to finish drawing
 	}
 }
