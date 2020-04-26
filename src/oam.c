@@ -232,3 +232,13 @@ u16 hrt_GetOBJOffset(u8 spr)
 	if(spr > 127) return;
 	return OAMBuffer[spr].attr2 & 0x1FF;
 }
+
+void hrt_MoveOBJInDirection(u8 spr, u16 direction)
+{
+	if (spr > 127) return;
+}
+
+void hrt_PointOBJTowardsPixel(u8 spr, u16 x, u16 y)
+{
+	if (spr > 127) return;
+}
