@@ -1,15 +1,67 @@
 #include "hrt_input.h"
 
-void hrt_GetPad(PAD* pad)
+typedef struct {
+	u16 Up,
+		Down,
+		Held,
+		Last,
+		DownRepeat;
+}__attribute__((packed)) KeyInput;
+static KeyInput __hrt_Keys = { 0,0,0,0,0 };
+static u8 __hrt_delay = 60, __hrt_repeat = 30, __hrt_count = 60;
+
+void hrt_SetInputRepeat(int SetDelay, int SetRepeat)
 {
-	pad->A = keyDown(KEY_A);
-	pad->B = (keyDown(KEY_B)) ? 1 : 0;
-	pad->UP = keyDown(KEY_UP) ? 1 : 0;
-	pad->DOWN = keyDown(KEY_DOWN) ? 1 : 0;
-	pad->LEFT = keyDown(KEY_LEFT) ? 1 : 0;
-	pad->RIGHT = keyDown(KEY_RIGHT) ? 1 : 0;
-	pad->L = keyDown(KEY_L) ? 1 : 0;
-	pad->R = keyDown(KEY_R) ? 1 : 0;
-	pad->SELECT = keyDown(KEY_SELECT) ? 1 : 0;
-	pad->START = keyDown(KEY_START) ? 1 : 0;	
+	__hrt_delay = SetDelay;
+	__hrt_repeat = SetRepeat;
+}
+
+void hrt_ScanKeys(void)
+{
+	__hrt_Keys.Last = __hrt_Keys.Held;
+	__hrt_Keys.Held = (REG_KEYINPUT & 0x03ff) ^ 0x03ff; // upper 6 bits clear on hw not emulated
+	u16 pressed = __hrt_Keys.Held & (__hrt_Keys.Last ^ 0x03ff);
+	__hrt_Keys.DownRepeat |= pressed;
+	__hrt_Keys.Down |= pressed;
+	u16 released = ((__hrt_Keys.Held ^ 0x03ff) & __hrt_Keys.Last);
+	__hrt_Keys.Up |= released;
+	__hrt_Keys.Down &= ~released;
+	__hrt_Keys.DownRepeat &= ~released;
+	__hrt_Keys.Up &= ~pressed;
+	if (__hrt_Keys.Last != __hrt_Keys.Held) __hrt_count = __hrt_delay;
+	if (__hrt_delay != 0)
+	{
+		__hrt_count--;
+		if (__hrt_count == 0)
+		{
+			__hrt_count = __hrt_repeat;
+			__hrt_Keys.DownRepeat |= __hrt_Keys.Held;
+		}
+	}
+}
+
+u16 hrt_KeysDownRepeat(void)
+{
+	u16 tmp = __hrt_Keys.DownRepeat;
+	__hrt_Keys.DownRepeat = 0;
+	return tmp;
+}
+
+u16 hrt_KeysDown(void)
+{
+	u16 tmp = __hrt_Keys.Down;
+	__hrt_Keys.Down = 0;
+	return tmp;
+}
+
+u16 hrt_KeysUp(void)
+{
+	u16 tmp = __hrt_Keys.Up;
+	__hrt_Keys.Up = 0;
+	return tmp;
+}
+
+u16 hrt_KeysHeld(void)
+{
+	return __hrt_Keys.Held;
 }

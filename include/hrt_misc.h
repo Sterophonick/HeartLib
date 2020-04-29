@@ -65,6 +65,43 @@ typedef struct GBFS_ENTRY {
 #define XOR  ^
 #define XNOR !^
 
+//Bits
+#define BIT00  0x0001
+#define BIT01  0x0002
+#define BIT02  0x0004
+#define BIT03  0x0008
+#define BIT04  0x0010
+#define BIT05  0x0020
+#define BIT06  0x0040
+#define BIT07  0x0080
+#define BIT08  0x0100
+#define BIT09  0x0200
+#define BIT10 0x0400
+#define BIT11 0x0800
+#define BIT12 0x1000
+#define BIT13 0x2000
+#define BIT14 0x4000
+#define BIT15 0x8000
+#define BIT_SET(value,bit) ((value) & (bit))
+#define NOT_BIT00  0xFFFE
+#define NOT_BIT01  0xFFFD
+#define NOT_BIT02  0xFFFB
+#define NOT_BIT03  0xFFF7
+#define NOT_BIT04  0xFFEF
+#define NOT_BIT05  0xFFDF
+#define NOT_BIT06  0xFFBF
+#define NOT_BIT07  0xFF7F
+#define NOT_BIT08  0xFEFF
+#define NOT_BIT09  0xFDFF
+#define NOT_BIT10 0xFBFF
+#define NOT_BIT11 0xF7FF
+#define NOT_BIT12 0xEFFF
+#define NOT_BIT13 0xDFFF
+#define NOT_BIT14 0xBFFF
+#define NOT_BIT15 0x7FFF
+#define NOT_BIT_SET(value,bit) (!((value) & (bit)))
+//
+
 //Functions
 HEART_API const GBFS_FILE *find_first_gbfs_file(const void *start);
 HEART_API const void *skip_gbfs_file(const GBFS_FILE *file); //GBFS Stuff

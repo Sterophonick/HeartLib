@@ -23,6 +23,8 @@ void hblank()
   REG_IME = 1;
 }
 
+u16 keys;
+
 //Entry Point
 int main()
 {
@@ -48,12 +50,13 @@ int main()
 	//Forever
 	for(;;)
 	{
-      if (++X >= 360) X = 0;
-      Y = X;
-      if ((REG_KEYINPUT & 0x0010) == 0x00) Pos_X++; 
-      if ((REG_KEYINPUT & 0x0020) == 0x00) Pos_X--; 
-      if ((REG_KEYINPUT & 0x0040) == 0x00) Pos_Y--; 
-      if ((REG_KEYINPUT & 0x0080) == 0x00) Pos_Y++; 
-	  hrt_VblankIntrWait(); //Waits for the frame to finish drawing
+ 		if (++X >= 360) X = 0;
+	 	Y = X;
+		hrt_ScanKeys();
+		keys = hrt_KeysDown();
+		if(keys & KEY_UP) REG_BG0VOFS+=1;
+
+
+		hrt_VblankIntrWait(); //Waits for the frame to finish drawing
 	}
 }

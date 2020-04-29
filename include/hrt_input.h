@@ -6,40 +6,29 @@
 #include "hrt_memmap.h"
 
 //Structs
-typedef struct hrt_Pad {
-	u8 A;
-	u8 B;
-	u8 L;
-	u8 R;
-	u8 UP;
-	u8 DOWN;
-	u8 LEFT;
-	u8 RIGHT;
-	u8 SELECT;
-	u8 START;
-} PAD;
-struct hrt_Pad *ptr_pad;
+typedef enum KEYPAD_BITS {
+	KEY_A = (1 << 0),	/*!< keypad A button */
+	KEY_B = (1 << 1),	/*!< keypad B button */
+	KEY_SELECT = (1 << 2),	/*!< keypad SELECT button */
+	KEY_START = (1 << 3),	/*!< keypad START button */
+	KEY_RIGHT = (1 << 4),	/*!< dpad RIGHT */
+	KEY_LEFT = (1 << 5),	/*!< dpad LEFT */
+	KEY_UP = (1 << 6),	/*!< dpad UP */
+	KEY_DOWN = (1 << 7),	/*!< dpad DOWN */
+	KEY_R = (1 << 8),	/*!< Right shoulder button */
+	KEY_L = (1 << 9),	/*!< Left shoulder button */
+	DPAD = (KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT) /*!< mask all dpad buttons */
+} KEYPAD_BITS;
 
 //Macros
-#define KEY_A 1
-#define KEY_B 2
-#define KEY_SELECT 4
-#define KEY_START 8
-#define KEY_RIGHT 16
-#define KEY_LEFT 32
-#define KEY_UP 64
-#define KEY_DOWN 128
-#define KEY_R 256
-#define KEY_L 512
-#define KEY_ANY 0x03FF
-
-#define hrt_DeclareKeyPadStruct(name) PAD (name)
-#define hrt_SetKeyStructPointer(struct) ptr_pad = &struct;
-#define hrt_IsKeyPressed(key) (*ptr_pad).key
-
-#define keyDown(k)  (~REG_KEYCNT & k)
+#define 
 
 //Functions
-HEART_API void hrt_GetPad(PAD* pad); //Gets the keypad values, and places them into an array.
+HEART_API void hrt_SetInputRepeat(int SetDelay, int SetRepeat);
+HEART_API void hrt_ScanKeys(void);
+HEART_API u16  hrt_KeysDownRepeat(void);
+HEART_API u16  hrt_KeysDown(void);
+HEART_API u16  hrt_KeysUp(void);
+HEART_API u16  hrt_KeysHeld(void);
 
 #endif

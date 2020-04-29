@@ -2,6 +2,7 @@
 #include <string.h>
 #include "hrt_oam.h"
 #include "hrt_bios.h"
+#include "hrt_misc.h"
 OBJ_ATTR OAMBuffer[128];
 OBJ_AFFINE *OAMAffineBuffer = (OBJ_AFFINE*)OAMBuffer;
 
@@ -215,9 +216,7 @@ void hrt_SetOBJXY(u8 obj, int x, int y)
 
 void hrt_CopyOBJToOAM(void)
 {
-	register u16* temp;
-	temp = (u16*)OAMBuffer;
-	memcpy(OAM, temp, 128*4);
+	hrt_DMACopy(3, (void*)OAMBuffer, (void*)OAM, 128*4, 0x80000000);
 }
 
 void hrt_SetOBJOffset(u8 spr, u16 data)
