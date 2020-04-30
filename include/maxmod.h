@@ -178,3 +178,23 @@ HEART_API mm_word	mp_writepos;
     (name).handle = (handle);\
 	(name).volume = (volume);\
     (name).panning = (panning)
+	
+HEART_API void mmInitDefault(mm_addr soundbank, mm_word number_of_channels); //Initializes Defualt soundbank in MaxMod
+HEART_API void mmInit(mm_gba_system* setup); //Initializes Maxmod
+HEART_API void mmVBlank(void); //MaxMod Vblank
+HEART_API void mmSetVBlankHandler(void* function); //Sets Vblank function handler for MaxMod
+HEART_API void mmSetEventHandler(mm_callback handler); //Sets event handler for MaxMod
+HEART_API void mmFrame(void) __attribute((long_call)); //MaxMod frame
+HEART_API void mmStart(mm_word id, mm_pmode mode); //Starts Maxmod
+HEART_API void mmPause(void); //Pauses all sound from MaxMod
+HEART_API void mmResume(void); //Resumes MaxMod Sound
+HEART_API void mmStop(void); //Stops all sound from MaxMod
+HEART_API void mmPosition(mm_word position); //Sets position of sound in MaxMod?
+HEART_API int  mmActive(void); //Returns active statues for MaxMod
+HEART_API void mmJingle(mm_word module_ID); //???
+HEART_API int  mmActiveSub(void); //???
+HEART_API void mmSetModuleVolume(mm_word volume); //Sets modplayer volume
+HEART_API void mmSetJingleVolume(mm_word volume); //Sets jingle volume?
+HEART_API void mmSetModuleTempo(mm_word tempo); //Sets Tempo of Module
+HEART_API void mmSetModulePitch(mm_word pitch); //Sets Pitch of Module
+HEART_API void mmPlayModule(mm_word address, mm_word mode, mm_word layer); //Plays Module

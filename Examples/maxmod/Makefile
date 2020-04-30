@@ -24,8 +24,8 @@ TARGET		:= $(notdir $(CURDIR))
 BUILD		:= build
 SOURCES		:= source
 INCLUDES	:= include
-DATA		:= data
-MUSIC		:=
+DATA		:= 
+MUSIC		:= maxmod_data
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -151,7 +151,7 @@ soundbank.bin soundbank.h : $(AUDIOFILES)
 	@mmutil $^ -osoundbank.bin -hsoundbank.h
 
 #---------------------------------------------------------------------------------
-%.jpg.o	%_jpg.h :	%.jpg
+%.bin.o	%_bin.h :	%.bin
 #---------------------------------------------------------------------------------
 	@echo $(notdir $<)
 	@$(bin2o)

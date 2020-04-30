@@ -20,9 +20,6 @@ typedef enum KEYPAD_BITS {
 	DPAD = (KEY_UP | KEY_DOWN | KEY_LEFT | KEY_RIGHT) /*!< mask all dpad buttons */
 } KEYPAD_BITS;
 
-//Macros
-#define 
-
 //Functions
 HEART_API void hrt_SetInputRepeat(int SetDelay, int SetRepeat);
 HEART_API void hrt_ScanKeys(void);

@@ -22,11 +22,9 @@
 #define	CHAR_BASE(m)		((m) << 2)
 #define BG_TILE_BASE(m)		((m) << 2)
 #define CHAR_BASE_ADR(m)	((m) << 14)
-#define CHAR_BASE_BLOCK(m)	((void *)(VRAM + ((m) << 14)))
-#define MAP_BASE_ADR(m)		((void *)(VRAM + ((m) << 11)))
-#define SCREEN_BASE_BLOCK(m)((void *)(VRAM + ((m) << 11)))
-#define SCREEN_BASE(m)		((m) << 8)
+#define MAP_BASE_ADR(m)		((m) << 11)
 #define BG_MAP_BASE(m)		((m) << 8)
+#define OBJ_TILE_BASE(m)	(((m)*0x20)+0x10000)
 
 #define hrt_SetPaletteEntry(entry, color) PALETTE[entry] = color
 
@@ -67,6 +65,7 @@ HEART_API void hrt_BGSetSize(u8 layer, u8 size);
 HEART_API void hrt_BGSetMapBase(u8 layer, u8 no);
 HEART_API void hrt_BGSetTileBase(u8 layer, u8 no);
 HEART_API void hrt_BGSetPriority(u8 layer, u8 no);
+HEART_API void hrt_FlipBGBuffer(void);
 
 //Inlines
 

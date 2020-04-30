@@ -1,6 +1,9 @@
 #include "hrt_video.h"
 #include "hrt_misc.h"
 
+u16* BackBuffer = (u16*)0x600A000;
+u16* FrontBuffer = (u16*)0x6000000;
+
 void hrt_LoadDataIntoVRAM(u16* data, u32 offset, u32 length)
 {
 	hrt_DMACopy(3, (void*)data, ((void*)(VRAM + (offset))), length, 0x80000000);
@@ -229,4 +232,16 @@ void hrt_BGSetPriority(u8 layer, u8 no)
 {
 	REG_BGxCNT(layer) &= 0xFFFD;
 	REG_BGxCNT(layer) |= no;
+}
+
+void hrt_FlipBGBuffer(void)
+{
+	if (REG_DISPCNT & 0x10) {                                                 //back buffer is current buffer, switch to font buffer
+		REG_DISPCNT &= ~0x10;                                                   //flip active buffer to front buffer
+		VRAM = BackBuffer;                                                     //point drawing buffer to the back buffer
+	}
+	else {                                                                         //front buffer is active so switch it to backbuffer
+		REG_DISPCNT |= 0x10;                                                    //flip active buffer to back buffer by setting back buffer bit
+		VRAM = FrontBuffer;                                                    //now we point our drawing buffer to the front buffer
+	}
 }

@@ -151,7 +151,7 @@ soundbank.bin soundbank.h : $(AUDIOFILES)
 	@mmutil $^ -osoundbank.bin -hsoundbank.h
 
 #---------------------------------------------------------------------------------
-%.jpg.o	%_jpg.h :	%.jpg
+%.pcx.o	%_pcx.h :	%.pcx
 #---------------------------------------------------------------------------------
 	@echo $(notdir $<)
 	@$(bin2o)
