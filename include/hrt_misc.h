@@ -111,10 +111,10 @@ HEART_API size_t gbfs_count_objs(const GBFS_FILE *file); //Counts the amount of 
 HEART_API const void *gbfs_get_nth_obj(const GBFS_FILE *file, size_t n, char *name, u32 *len); //Gets the value of file from a name
 HEART_API unsigned int aP_depack(const void *source, void *destination); //aPlib unpack
 HEART_API void UnpackPUC(u8 *srcadr, u8 *dstadr); //PuCrunch
-HEART_API u32 hrt_RNGRange(u32 low, u32 high); // Creates a Random number between a range.
-HEART_API u32 hrt_ReloadRNG(void); //Reloads RNG.
-HEART_API u32 hrt_CreateRNG(void); //Creates RNG Value. You can change the type of return value in your main.c
-HEART_API int hrt_DecodeJPEG(const unsigned char *data, volatile unsigned short *out, int outWidth, int outHeight); //Decodes a JPEG image to VRAM in Mode 3.
+HEART_API u32  hrt_RNGRange(u32 low, u32 high); // Creates a Random number between a range.
+HEART_API u32  hrt_ReloadRNG(void); //Reloads RNG.
+HEART_API u32  hrt_CreateRNG(void); //Creates RNG Value. You can change the type of return value in your main.c
+HEART_API int  hrt_DecodeJPEG(const unsigned char *data, volatile unsigned short *out, int outWidth, int outHeight); //Decodes a JPEG image to VRAM in Mode 3.
 HEART_API void hrt_PrintRTCTimeIntoString(char* ptr); //Prints the Time of the RTC into a string
 HEART_API void hrt_DMACopy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode); //DMA Copy
 HEART_API void hrt_DMAClear(u8 channel); //Clears a DMA Channel
@@ -122,7 +122,7 @@ HEART_API void hrt_EZFSetRompage(u16 page); //Sets the ROM Page of EZ-Flash Omeg
 HEART_API void hrt_ExitToEZFlash(); //Exits to EZ-Flash Omega
 HEART_API void hrt_SleepMode(); //Activates the sleep mode present in some commercial games
 HEART_API bool hrt_DetectPogoshell(void); //Detects Pogoshell
-HEART_API u32 hrt_GetHeartLibVersion(void); //Retuns the HeartLib version
+HEART_API u32  hrt_GetHeartLibVersion(void); //Retuns the HeartLib version
 HEART_API void hrt_DecodePCX(const u8 *PCXBuffer, u16 * ScreenAddr, u16* Palette);
 
 //Inlines

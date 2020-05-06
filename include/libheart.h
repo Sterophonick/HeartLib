@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "hrt_bios.h"
 #include "hrt_debug.h"
 #include "hrt_drawer.h"

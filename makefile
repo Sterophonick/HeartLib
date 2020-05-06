@@ -3,7 +3,7 @@ OBJECTS = build/oam.o build/memcpy.o build/fx.o build/font.o build/gbfs.o build/
 CPPFILES =
 SOURCES = src/oam.c data/font.c 
 LIBS= libheart.a
-CFLAGS = -Wall -Os -march=armv4t -Wno-switch -Wno-multichar -ffast-math -mcpu=arm7tdmi -mtune=arm7tdmi -marm -faggressive-loop-optimizations -mlong-calls -Iinclude
+CFLAGS = -Wall -O3 -march=armv4t -Wno-switch -Wno-multichar -ffast-math -mcpu=arm7tdmi -mtune=arm7tdmi -marm -faggressive-loop-optimizations -mlong-calls -Iinclude
 ARCH = -mthumb-interwork
 PREFIX = arm-none-eabi-
 default: libheart.a

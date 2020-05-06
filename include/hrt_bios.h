@@ -1,11 +1,11 @@
-#include <hrt_types.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #ifndef HRT_BIOS
 #define HRT_BIOS
+
+#include <hrt_types.h>
 
 //Structs
 typedef struct t_BGAffineSource {

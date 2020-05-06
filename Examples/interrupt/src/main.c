@@ -8,19 +8,20 @@ extern unsigned char suchBitmap[38400];
 extern unsigned short ballsTiles[576];
 extern unsigned short ballsMap[1024];
 extern unsigned short ballsPal[16];
-u16  X, Y, Pos_X, Pos_Y;
+u16 i;
+
 
 void hblank()
 {
-	u16 Flags;
+	u16 temp;
 	REG_IME = 0;
-	Flags = REG_IF;
-	if (++Y >= 360) Y = 0;
-		REG_BG0HOFS = Pos_X + (COS[Y] >> 5);
-		REG_BG0VOFS = Pos_Y + (SIN[Y] >> 5);
-
-  REG_IF = Flags;
-  REG_IME = 1;
+	temp = REG_IF;
+	if(!(REG_VCOUNT % 60))
+		i++;
+	if (++i >= 360) i = 0;
+	hrt_SetBGY(0, SIN[i] >> 6);
+	REG_IF = temp;
+	REG_IME = 1;
 }
 
 u16 keys;
@@ -50,13 +51,6 @@ int main()
 	//Forever
 	for(;;)
 	{
- 		if (++X >= 360) X = 0;
-	 	Y = X;
-		hrt_ScanKeys();
-		keys = hrt_KeysDown();
-		if(keys & KEY_UP) REG_BG0VOFS+=1;
-
-
-		hrt_VblankIntrWait(); //Waits for the frame to finish drawing
+		hrt_VblankIntrWait();
 	}
 }

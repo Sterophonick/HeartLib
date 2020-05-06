@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef HRT_FX
 #define HRT_FX
 
@@ -32,4 +36,8 @@ HEART_API void hrt_FXDisableOBJ(u8 target);
 
 //Inlines
 
+#endif
+
+#ifdef __cplusplus
+}
 #endif

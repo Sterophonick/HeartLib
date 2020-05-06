@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef HRT_INPUT
 #define HRT_INPUT
 
@@ -28,4 +32,8 @@ HEART_API u16  hrt_KeysDown(void);
 HEART_API u16  hrt_KeysUp(void);
 HEART_API u16  hrt_KeysHeld(void);
 
+#endif
+
+#ifdef __cplusplus
+}
 #endif

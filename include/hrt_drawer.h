@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef HRT_DRAWER
 #define HRT_DRAWER
 
@@ -34,6 +38,8 @@ HEART_API s32 hrt_GetDrawerMapX(u8 i);
 HEART_API s32 hrt_GetDrawerMapY(u8 i);
 HEART_API u8 hrt_GetDrawerLayers();
 
+#endif
 
-
+#ifdef __cplusplus
+}
 #endif

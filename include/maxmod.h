@@ -1,3 +1,10 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#ifndef HRT_MAXMOD
+#define HRT_MAXMOD
+
 typedef unsigned int	mm_word;
 typedef unsigned short	mm_hword;
 typedef unsigned char	mm_byte;
@@ -172,6 +179,8 @@ HEART_API mm_word	mp_writepos;
 (panning), \
 }
 
+#define mmCreateDynamicEffect(name) mm_sound_effect (name)
+
 #define mmConfigDynamicEffect(name, id, rate, handle, volume, panning)\
 	(name).id = (id);\
     (name).rate = (rate);\
@@ -198,3 +207,9 @@ HEART_API void mmSetJingleVolume(mm_word volume); //Sets jingle volume?
 HEART_API void mmSetModuleTempo(mm_word tempo); //Sets Tempo of Module
 HEART_API void mmSetModulePitch(mm_word pitch); //Sets Pitch of Module
 HEART_API void mmPlayModule(mm_word address, mm_word mode, mm_word layer); //Plays Module
+
+#endif
+
+#ifdef __cplusplus
+}
+#endif

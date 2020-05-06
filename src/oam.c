@@ -144,54 +144,6 @@ void hrt_CloneOBJ(u8 ospr, u8 nspr)
 	OAMAffineBuffer[nspr].pd = OAMAffineBuffer[ospr].pd;
 }
 
-void hrt_HideOBJ(u8 spr)
-{
-	if(spr > 127) return;
-	OAMBuffer[spr].attr0 |= 1 << 9;
-}
-
-void hrt_ShowOBJ(u8 spr)
-{
-	if(spr > 127) return;
-	OAMBuffer[spr].attr0 &= ~(1 << 9);
-}
-
-void hrt_EnableOBJHFlip(u8 spr)
-{
-	if(spr > 127) return;
-	OAMBuffer[spr].attr1 |= (1 << 12);
-}
-
-void hrt_DisableOBJHFlip(u8 spr)
-{
-	if(spr > 127) return;
-	OAMBuffer[spr].attr1 &= ~(1 << 12);
-}
-
-void hrt_EnableOBJVFlip(u8 spr)
-{
-	if(spr > 127) return;
-	OAMBuffer[spr].attr1 |= (1 << 13);
-}
-
-void hrt_DisableOBJVFlip(u8 spr)
-{
-	if(spr > 127) return;
-	OAMBuffer[spr].attr1 &= ~(1 << 13);
-}
-
-void hrt_ToggleOBJHFlip(u8 spr)
-{
-	if(spr > 127) return;
-	OAMBuffer[spr].attr1 ^= 12;
-}
-
-void hrt_ToggleOBJVFlip(u8 spr)
-{
-	if(spr > 127) return;
-	OAMBuffer[spr].attr1 ^= 13;
-}
-
 void hrt_MoveOBJTowardsDirection(u8 spr, u16 direction, u8 steps)
 {
 	if(spr > 127) return;
@@ -204,17 +156,6 @@ void hrt_MoveOBJTowardsDirection(u8 spr, u16 direction, u8 steps)
 	hrt_SetOBJXY(spr, x2, y2);
 }
 
-s16 hrt_GetOBJX(u8 spr)
-{
-	if(spr > 127) return;
-	return ((s16)(OAMBuffer[spr].attr1 << 7)) >> 7;
-}
-
-s16 hrt_GetOBJY(u8 spr)
-{
-	if(spr > 127) return;
-	return ((s16)(OAMBuffer[spr].attr0 << 8)) >> 8;
-}
 
 void hrt_PointSpriteTowardsPostition(u8 spr, int x, int y)
 {
@@ -240,12 +181,6 @@ void hrt_SetOBJOffset(u8 spr, u16 data)
 	if(spr > 127) return;
 	OAMBuffer[spr].attr2 &= ~(0x1FF);
 	OAMBuffer[spr].attr2 |= (data << 0);
-}
-
-u16 hrt_GetOBJOffset(u8 spr)
-{
-	if(spr > 127) return;
-	return OAMBuffer[spr].attr2 & 0x1FF;
 }
 
 void hrt_MoveOBJInDirection(u8 spr, u16 direction)

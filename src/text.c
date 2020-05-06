@@ -13,7 +13,7 @@
 *                      2017-2019 Sterophonick
 *                          For Tubooboo
 \*******************************************************************/
-
+#include <stdarg.h>
 #include "hrt_video.h"
 #include "hrt_text.h"
 #include "hrt_bios.h"
@@ -51,12 +51,12 @@ void hrt_InitTextEngine(u8 bg)
 	REG_BGxCNT(bg) = 0x0000;
 	hrt_ClearText();
 }
-char __outstr2[32];
+char __outstr2[40];
 
 void hrt_Print(u8 tx, u8 ty, char* str, ...)
 {
-	va_list args;
 	char *string = __outstr2;
+	va_list args;
 	va_start(args, str);
 	vsprintf(__outstr2, str, args);
 	va_end(args);

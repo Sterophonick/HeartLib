@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef HRT_TYPES
 #define HRT_TYPES
 
@@ -88,4 +92,8 @@ typedef char byte;
 
 #define HEART_API extern
 
+#endif
+
+#ifdef __cplusplus
+}
 #endif

@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef HRT_MEMMAP
 #define HRT_MEMMAP
 
@@ -181,4 +185,8 @@ HEART_API u8* SRAM;
 HEART_API IWRAM_CODE void hrt_Memcpy32(void *dst, const void* src, uint wcount);
 HEART_API void hrt_Memcpy16(void *dst, const void* src, uint hwcount);
 
+#endif
+
+#ifdef __cplusplus
+}
 #endif
