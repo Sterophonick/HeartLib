@@ -150,6 +150,7 @@ extern "C" {
 #define REG_UNKNOWN22	*(u32*)0x04000800 //Undocumented - Internal Memory Control(R/W)
 #define REG_UNKNOWN23	*(u16*)0x04000804 //Not Used
 #define REG_POGOFILEPTR *(u8**)0x0203FBFC //Pogoshell File Pointer
+#define REG_POGOFILESIZ *(u32*)0x0203FBF8 //Pogoshell File Size
 #define INT_VECTOR		*(IntFn *)(0x03007ffc)
 
 #define EWRAM	0x02000000 //External Work RAM (256kb)
@@ -163,8 +164,6 @@ HEART_API u8* SRAM;
 #define ACCESS_8(location)		*(volatile u8 *)  (location)
 #define ACCESS_16(location)		*(volatile u16 *) (location)
 #define ACCESS_32(location)		*(volatile u32 *) (location)
-#define MEM_PAL_COL_PTR(x)		 (u16*) (0x05000000+(x<<1))	// Palette color pointer
-#define MEM_PAL_OBJ_PTR(x)		 (u16*) (0x05000200+(x<<1))	// Palette color pointer
 #define SIZEOF_8BIT(x)          (sizeof(x))
 #define SIZEOF_16BIT(x)         (sizeof(x)/2)
 #define SIZEOF_32BIT(x)         (sizeof(x)/4)
