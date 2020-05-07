@@ -46,8 +46,8 @@ extern "C" {
 #define REG_MOSAIC		*(u16*)0x0400004C //Mosaic Size
 #define REG_UNKNOWN1	*(u16*)0x0400004E //Not Used
 #define REG_BLDCNT		*(u16*)0x04000050 //Color Special Effects Selection
-#define REG_BLDALPHA_H	*(u8*)0x04000052 //Alpha Blending Coefficient High
-#define REG_BLDALPHA_L	*(u8*)0x04000053 //Alpha Blending Coefficient Low
+#define REG_BLDALPHA_H	*(u8*)0x04000052  //Alpha Blending Coefficient High
+#define REG_BLDALPHA_L	*(u8*)0x04000053  //Alpha Blending Coefficient Low
 #define REG_BLDY		*(u16*)0x04000054 //Brightness Coefficient
 #define REG_UNKNOWN2	*(u16*)0x04000056 //Not Used
 #define REG_SOUND1CNT_L *(u16*)0x04000060 //Channel 1 Sweep Register
