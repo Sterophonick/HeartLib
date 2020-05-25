@@ -149,6 +149,8 @@ extern "C" {
 #define REG_UNKNOWN21	*(u16*)0x04000411 //Not Used
 #define REG_UNKNOWN22	*(u32*)0x04000800 //Undocumented - Internal Memory Control(R/W)
 #define REG_UNKNOWN23	*(u16*)0x04000804 //Not Used
+
+//Miscellaneous Registers
 #define REG_POGOFILEPTR *(u8**)0x0203FBFC //Pogoshell File Pointer
 #define REG_POGOFILESIZ *(u32*)0x0203FBF8 //Pogoshell File Size
 #define INT_VECTOR		*(IntFn *)(0x03007ffc)

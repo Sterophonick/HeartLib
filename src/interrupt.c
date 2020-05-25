@@ -45,7 +45,6 @@ IntFn* hrt_SetIRQ(irqMASK mask, IntFn function) {
 	return &IntrTable[i].handler;
 }
 
-
 void hrt_EnableIRQ( int mask ) {
 	REG_IME	= 0;
 	if (mask & IRQ_VBLANK) REG_DISPSTAT |= LCDC_VBL;

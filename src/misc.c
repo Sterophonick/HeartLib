@@ -67,6 +67,7 @@ void IWRAM_CODE hrt_ExitToEZFlash()
 
 void hrt_DMACopy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode)
 {
+	REG_DMAxCNT(channel) = 0; //Shut off any previous transfer
     REG_DMAxSAD(channel) = (u32)source;
     REG_DMAxDAD(channel) = (u32)dest;
 	REG_DMAxCNT(channel) = WordCount | mode;
@@ -77,12 +78,6 @@ void hrt_DMAClear(u8 channel)
     REG_DMAxSAD(channel) = (u32)0x00000000;
     REG_DMAxDAD(channel) = (u32)0x00000000;
 	REG_DMAxCNT(channel) = 0x81600000;
-}
-
-bool hrt_DetectPogoshell(void)
-{
-	register u32 pogotemp=(u32)(*(u8**)0x0203FBFC);
-	return ((pogotemp & 0xFE000000) == 0x08000000)?1:0;
 }
 
 u32 hrt_GetHeartLibVersion(void)

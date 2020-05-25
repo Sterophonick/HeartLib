@@ -30,7 +30,7 @@ void hrt_InvertPalette(u16 start, u16 amount)
 {
 	register int i;
 	for (i = 0; i < amount; i++) {
-		PALETTE[start + i] ^= 1;
+		PALETTE[start + i] = PALETTE[start + i] ^ 1;
 	}
 }
 
