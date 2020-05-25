@@ -126,6 +126,24 @@ HEART_API void hrt_DecodePCX(const u8 *PCXBuffer, u16 * ScreenAddr, u16* Palette
 
 //Inlines
 
+//Misc. MaxMod Stuff
+#define mmCreateStaticEffect(name, id, rate, handle, volume, panning)       mm_sound_effect (name) = { \
+{ (id)} ,	\
+(rate), \
+(handle),		\
+(volume),	\
+(panning), \
+}
+
+#define mmCreateDynamicEffect(name) mm_sound_effect (name)
+
+#define mmConfigDynamicEffect(sName, sID, sRate, sHandle, sVolume, sPanning)\
+	(sName).id = (sID);\
+    (sName).rate = (sRate);\
+    (sName).handle = (sHandle);\
+	(sName).volume = (sVolume);\
+    (sName).panning = (sPanning)
+
 #endif
 
 #ifdef __cplusplus
