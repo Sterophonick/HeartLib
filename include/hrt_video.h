@@ -29,7 +29,7 @@ extern "C" {
 #define CHAR_BASE_ADR(m)	((m) << 14)
 #define MAP_BASE_ADR(m)		((m) << 11)
 #define BG_MAP_BASE(m)		((m) << 8)
-#define OBJ_TILE_BASE(m)	(((m)*0x20)+0x10000)
+#define OBJ_TILE_BASE(m)	((m+2048) << 4)
 
 #define hrt_SetPaletteEntry(entry, color) PALETTE[entry] = color
 
