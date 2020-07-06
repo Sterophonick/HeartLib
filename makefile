@@ -5,18 +5,18 @@ SOURCES = src/oam.c data/font.c
 LIBS= libheart.a
 CFLAGS = -Wall -O3 -march=armv4t -Wno-switch -Wno-multichar -ffast-math -mcpu=arm7tdmi -mtune=arm7tdmi -marm -faggressive-loop-optimizations -mlong-calls -Iinclude
 ARCH = -mthumb-interwork
-PREFIX = arm-none-eabi-
+PREFIX = /devkitarm/bin/arm-none-eabi-
 default: libheart.a
 build/%.o: src/%.c $(HEADERS)
-	$(PREFIX)gcc $(CFLAGS) $(ARCH) -c $< -o $@
+	$(DEVKITPRO)$(PREFIX)gcc $(CFLAGS) $(ARCH) -c $< -o $@
 build/%.o: src/%.s $(HEADERS)
-	$(PREFIX)gcc $(CFLAGS) $(ARCH) -c $< -o $@
+	$(DEVKITPRO)$(PREFIX)gcc $(CFLAGS) $(ARCH) -c $< -o $@
 build/%.o: data/%.c $(HEADERS)
-	$(PREFIX)gcc $(CFLAGS) $(ARCH) -c $< -o $@
+	$(DEVKITPRO)$(PREFIX)gcc $(CFLAGS) $(ARCH) -c $< -o $@
 libheart.a: $(OBJECTS)
-	$(PREFIX)ar -r libheart.a $(OBJECTS)
-	cp libheart.a C:\devkitPro\devkitARM\arm-none-eabi\lib
-	cp include/*.h C:/devkitPro/devkitARM/arm-none-eabi/include
+	$(DEVKITPRO)$(PREFIX)ar -r libheart.a $(OBJECTS)
+	cp libheart.a $(DEVKITPRO)/devkitARM/arm-none-eabi/lib
+	cp include/*.h $(DEVKITPRO)/devkitARM/arm-none-eabi/include
 
 clean:
 	-rm build/*.o build/*.out
