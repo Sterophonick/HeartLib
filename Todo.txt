@@ -1,10 +1,6 @@
 - Complete Documentation for all source files.
 
-- Finish Automated Build System
-
 - Working functions for sprites moving in a specific direction, or for sprites pointing toward a specific direction
-
-- Functions for detecting whether or not a bg is enabled, a sprite attribute is enabled, an fx layer is enabled, etc.
 
 - Test mbv2lib
 
