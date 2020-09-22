@@ -11,13 +11,11 @@ build/%.o: src/%.c $(HEADERS)
 	$(DEVKITPRO)$(PREFIX)gcc $(CFLAGS) $(ARCH) -c $< -o $@
 build/%.o: src/%.s $(HEADERS)
 	$(DEVKITPRO)$(PREFIX)gcc $(CFLAGS) $(ARCH) -c $< -o $@
-build/%.o: data/%.c $(HEADERS)
-	$(DEVKITPRO)$(PREFIX)gcc $(CFLAGS) $(ARCH) -c $< -o $@
 libheart.a: $(OBJECTS)
 	$(DEVKITPRO)$(PREFIX)ar -r libheart.a $(OBJECTS)
 	cp libheart.a $(DEVKITPRO)/devkitARM/arm-none-eabi/lib
 	cp include/*.h $(DEVKITPRO)/devkitARM/arm-none-eabi/include
 
 clean:
-	-rm build/*.o build/*.out
+	-rm build/*.o
 	-rm libheart.a
