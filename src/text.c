@@ -7,7 +7,7 @@
 *             8   8 8     8   8 8      8  8     8 8   8
 *             8   8  8888  8888 8       8 88888 8 8888
 *                             HeartLib
-*A comprehensive game/app engine for the Nintendo® Game Boy Advance™
+*A comprehensive game/app engine for the Nintendoï¿½ Game Boy Advanceï¿½
 *                  Licensed under the GNU GPL v3.0
 *                 View the LICENSE file for details
 *                      2017-2019 Sterophonick
@@ -30,6 +30,7 @@ void hrt_SetTextColors(u16 out, u16 in)
 
 void hrt_ClearText()
 {
+	//Clear the screen
 	for(register u16 i=0; i<1024; i++)
 	{
 		VRAM[i] = 64;
@@ -38,6 +39,7 @@ void hrt_ClearText()
 
 void hrt_InitTextEngine(u8 bg)
 {
+	//BitUnPack the font to the tilemap
 	BUP temp;
 	temp.SrcNum = 6080;
 	temp.SrcBitNum = 8;
@@ -45,22 +47,26 @@ void hrt_InitTextEngine(u8 bg)
 	temp.DestOffset = 0;
 	temp.DestOffset0_On = 0;
 	hrt_BitUnPack((void*)font_matrixBitmap, (u16*)0x06000800, &temp);
+	//Set up the display mode
 	hrt_SetPaletteEntry(0, 0x0000);
 	hrt_SetPaletteEntry(1, 0x0421);
 	hrt_SetPaletteEntry(2, 0x7FFF);
 	REG_BGxCNT(bg) = 0x0000;
+	//Clear the existing text
 	hrt_ClearText();
 }
 char __outstr2[40];
 
 void hrt_Print(u8 tx, u8 ty, char* str, ...)
 {
+	//set up a temporary string
 	char *string = __outstr2;
 	va_list args;
 	va_start(args, str);
 	vsprintf(__outstr2, str, args);
 	va_end(args);
-	register int pos = 0;
+	register u16 pos = 0;
+	//scroll through VRAM and write bytes to
     while (*string) {
         VRAM[(ty*32+tx+pos)%1024] = *string++;
 		VRAM[(ty*32+tx+pos)%1024] += 32;

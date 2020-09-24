@@ -1,0 +1,14 @@
+{
+    "files.exclude": {
+        ".vscode": true,
+        "*-LICENSE": true,
+        "*.a": true,
+        "*.md": true,
+        "*.txt": true,
+        "build": true,
+        "LICENSE": true,
+        "old": true,
+        "samples": true,
+        "tools": true
+    }
+}

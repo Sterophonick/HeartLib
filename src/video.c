@@ -7,7 +7,7 @@
 *             8   8 8     8   8 8      8  8     8 8   8
 *             8   8  8888  8888 8       8 88888 8 8888
 *                             HeartLib
-*A comprehensive game/app engine for the Nintendo® Game Boy Advance™
+*A comprehensive game/app engine for the Nintendoï¿½ Game Boy Advanceï¿½
 *                  Licensed under the GNU GPL v3.0
 *                 View the LICENSE file for details
 *                      2017-2019 Sterophonick
@@ -15,6 +15,7 @@
 \*******************************************************************/
 
 #include <math.h>
+#include <stdlib.h>
 #include "hrt_video.h"
 #include "hrt_misc.h"
 
@@ -91,15 +92,6 @@ void hrt_DrawLine3(int x1, int y1, int x2, int y2, unsigned short color)
 			y = y + yinc2;
 		}
 	}
-}
-
-
-void hrt_DestroyBG(u8 bg)
-{
-	REG_BGxCNT(bg) = 0;
-	REG_BGxVOFS(bg) = 0;
-	REG_BGxHOFS(bg) = 0;
-	hrt_DSPDisableBG(bg);
 }
 
 void hrt_FlipBGBuffer(void)

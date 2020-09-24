@@ -38,7 +38,6 @@ HEART_API void hrt_PlotPixelInMode4(u32 x, u32 y, u32 color);
 HEART_API void hrt_DSPConfigBG(u8 bg, u8 priority, u8 tilebase, u8 mosaic, u8 color, u8 mapbase, u8 wraparound, u8 dimensions);
 HEART_API void hrt_InvertPalette(u16 start, u16 amount);
 HEART_API void hrt_DrawLine3(int x1, int y1, int x2, int y2, unsigned short color);
-HEART_API void hrt_DestroyBG(u8 bg);
 HEART_API void hrt_FlipBGBuffer(void);
 HEART_API void hrt_CyclePalette(u16 start, u16 amount);
 
@@ -186,6 +185,14 @@ inline void hrt_BGSetTileBase(u8 layer, u8 no)
 inline void hrt_BGSetPriority(u8 layer, u8 no)
 {
 	REG_BGxCNT(layer) &= 0xFFFD; REG_BGxCNT(layer) |= no;
+}
+
+inline void hrt_DestroyBG(u8 bg)
+{
+	REG_BGxCNT(bg) = 0;
+	REG_BGxVOFS(bg) = 0;
+	REG_BGxHOFS(bg) = 0;
+	hrt_DSPDisableBG(bg);
 }
 
 #endif
