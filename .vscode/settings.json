@@ -10,5 +10,6 @@
         "old": true,
         "samples": true,
         "tools": true
-    }
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
 }
