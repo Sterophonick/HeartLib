@@ -14,4 +14,3 @@ extern "C" {
 #include "hrt_text.h"
 #include "hrt_types.h"
 #include "hrt_video.h"
-#include "maxmod.h"

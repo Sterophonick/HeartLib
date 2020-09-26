@@ -65,6 +65,17 @@ typedef struct GBFS_ENTRY {
 #define XOR  ^
 #define XNOR !^
 
+//Microsoft IntelliSense, for Visual Studio stuff
+#if __INTELLISENSE__
+#define __attribute__(q)
+#define __builtin_strcmp(a,b) 0
+#define __builtin_strlen(a) 0
+#define __builtin_memcpy(a,b) 0
+#define __builtin_va_list void*
+#define __builtin_va_start(a,b)
+#define __extension__
+#endif
+
 //Bits
 #define BIT00  0x0001
 #define BIT01  0x0002
