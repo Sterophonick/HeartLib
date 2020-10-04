@@ -9,6 +9,8 @@ extern "C" {
 #include "hrt_oam.h"
 
 //All GBA Registers - Copied from GBATek
+#define REG_BASE        0x4000000
+
 #define REG_DISPCNT		*(u16*)0x04000000 //Display Control
 #define REG_UNKNOWN0	*(u16*)0x04000002 //Undocumented - Green Swap?
 #define REG_DISPSTAT	*(u16*)0x04000004 //General LCD Status
@@ -150,6 +152,10 @@ extern "C" {
 #define REG_UNKNOWN22	*(u32*)0x04000800 //Undocumented - Internal Memory Control(R/W)
 #define REG_UNKNOWN23	*(u16*)0x04000804 //Not Used
 
+//Array Registers
+#define REG_DMA         ((volatile DMA_STRUCT*)(REG_BASE+0x00B0))
+#define REG_TM			((volatile TMR_REC*)(REG_BASE+0x0100))
+
 //Miscellaneous Registers
 #define REG_POGOFILEPTR *(u8**)0x0203FBFC //Pogoshell File Pointer
 #define REG_POGOFILESIZ *(u32*)0x0203FBF8 //Pogoshell File Size
@@ -173,9 +179,6 @@ HEART_API u8* SRAM;
 #define REG_BGxCNT(x)                 (ACCESS_16(0x04000008+(x*2))) //Macro for a BG
 #define REG_BGxHOFS(x)                    (ACCESS_16(0x04000010+(x*4))) //macro for a bg
 #define REG_BGxVOFS(x)                    (ACCESS_16(0x04000012+(x*4))) //macro for a bg
-#define REG_DMAxSAD(x)                    (ACCESS_32(0x040000B0+(x*0x0C))) //Macro for a DMA Source
-#define REG_DMAxDAD(x)                    (ACCESS_32(0x040000B4+(x*0x0C))) //Macro for a DMA Destination
-#define REG_DMAxCNT(x)					(ACCESS_32(0x040000B8+(x*0x0C))) //Macro for a DMA Control
 #define REG_TMxCNT_L(x)                 (ACCESS_16(0x04000100+(x*4)))
 #define REG_TMxCNT_H(x)                 (ACCESS_16(0x04000102+(x*4)))
 

@@ -7,7 +7,7 @@
 *             8   8 8     8   8 8      8  8     8 8   8
 *             8   8  8888  8888 8       8 88888 8 8888
 *                             HeartLib
-*A comprehensive game/app engine for the Nintendo® Game Boy Advance™
+*A comprehensive game/app engine for the Nintendoï¿½ Game Boy Advanceï¿½
 *                  Licensed under the GNU GPL v3.0
 *                 View the LICENSE file for details
 *                      2017-2019 Sterophonick
@@ -65,19 +65,21 @@ void IWRAM_CODE hrt_ExitToEZFlash()
 	asm("swi 0");
 }
 
-void hrt_DMACopy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode)
+void hrt_DMATransfer(u8 channel, void* source, void* dest, u32 WordCount, u32 mode)
 {
-	REG_DMAxCNT(channel) = 0; //Shut off any previous transfer
-    REG_DMAxSAD(channel) = (u32)source;
-    REG_DMAxDAD(channel) = (u32)dest;
-	REG_DMAxCNT(channel) = WordCount | mode;
+	REG_DMA[channel].cnt = 0; //Shut off any previous transfer
+    REG_DMA[channel].src = (u32)source;
+    REG_DMA[channel].dst = (u32)dest;
+	REG_DMA[channel].cnt = WordCount | mode;
 }
+
 
 void hrt_DMAClear(u8 channel)
 {
-    REG_DMAxSAD(channel) = (u32)0x00000000;
-    REG_DMAxDAD(channel) = (u32)0x00000000;
-	REG_DMAxCNT(channel) = 0x81600000;
+	REG_DMA[channel].cnt = 0; //Shut off any previous transfer
+    REG_DMA[channel].src = 0;
+    REG_DMA[channel].dst = 0;
+	REG_DMA[channel].cnt = 0x81600000;
 }
 
 u32 hrt_GetHeartLibVersion(void)

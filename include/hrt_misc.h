@@ -127,7 +127,7 @@ HEART_API u32  hrt_ReloadRNG(void); //Reloads RNG.
 HEART_API u32  hrt_CreateRNG(void); //Creates RNG Value. You can change the type of return value in your main.c
 HEART_API int  hrt_DecodeJPEG(const unsigned char *data, volatile unsigned short *out, int outWidth, int outHeight); //Decodes a JPEG image to VRAM in Mode 3.
 HEART_API void hrt_PrintRTCTimeIntoString(char* ptr); //Prints the Time of the RTC into a string
-HEART_API void hrt_DMACopy(u8 channel, void* source, void* dest, u32 WordCount, u32 mode); //DMA Copy
+HEART_API void hrt_DMATransfer(u8 channel, void* source, void* dest, u32 WordCount, u32 mode); //DMA Copy
 HEART_API void hrt_DMAClear(u8 channel); //Clears a DMA Channel
 HEART_API void hrt_EZFSetRompage(u16 page); //Sets the ROM Page of EZ-Flash Omega
 HEART_API void hrt_ExitToEZFlash(); //Exits to EZ-Flash Omega

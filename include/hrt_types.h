@@ -92,6 +92,34 @@ typedef char byte;
 
 #define HEART_API extern
 
+typedef struct DMA_STRUCT
+{
+	const void *src;
+	void *dst;
+	u32 cnt;
+} DMA_STRUCT;
+
+typedef struct TMR_STRUCT 
+{
+	union { u16 start, count; } PACKED;
+	u16 cnt;
+}ATTR_ALIGNED(4) TMR_STRUCT;
+
+typedef struct {
+	u16 attr0;
+	u16 attr1;
+	u16 attr2;
+	u16 filler;
+}ATTR_ALIGNED(4) OBJ_ATTR;
+
+typedef struct OBJ_AFFINE
+{
+	u16 fill0[3];	s16 pa;
+	u16 fill1[3];	s16 pb;
+	u16 fill2[3];	s16 pc;
+	u16 fill3[3];	s16 pd;
+}ATTR_ALIGNED(4) OBJ_AFFINE;
+
 #endif
 
 #ifdef __cplusplus

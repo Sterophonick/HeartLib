@@ -44,12 +44,12 @@ HEART_API void hrt_CyclePalette(u16 start, u16 amount);
 //Inlines
 inline void hrt_LoadDataIntoVRAM(u16* data, u32 offset, u32 length)
 {
-	hrt_DMACopy(3, (void*)data, ((void*)(VRAM + (offset))), length, 0x80000000);
+	hrt_DMATransfer(3, (void*)data, ((void*)(VRAM + (offset))), length, 0x80000000);
 }
 
 inline void hrt_LoadDataIntoPalette(u16* data, u32 offset, u32 length)
 {
-	hrt_DMACopy(3, (void*)data, ((void*)(PALETTE + (offset))), length, 0x80000000);
+	hrt_DMATransfer(3, (void*)data, ((void*)(PALETTE + (offset))), length, 0x80000000);
 }
 
 inline u16 hrt_GenerateColorFromRGB(u8 red, u8 green, u8 blue)
@@ -65,6 +65,11 @@ inline void hrt_DSPSetBGMode(u8 mode)
 inline void hrt_DSPConfigureBG(u8 bg, u16 mode)
 {
 	REG_BGxCNT(bg) = mode;
+}
+
+inline void hrt_DSPConfigMode(u16 mode)
+{
+	REG_DISPCNT = mode;
 }
 
 inline void hrt_DSPEnableBG(u8 bg)

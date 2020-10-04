@@ -10,21 +10,6 @@ extern "C" {
 #include "hrt_memmap.h"
 
 //Structs
-typedef struct {
-	u16 attr0;
-	u16 attr1;
-	u16 attr2;
-	u16 filler;
-}ATTR_ALIGNED(4) OBJ_ATTR;
-
-typedef struct OBJ_AFFINE
-{
-	u16 fill0[3];	s16 pa;
-	u16 fill1[3];	s16 pb;
-	u16 fill2[3];	s16 pc;
-	u16 fill3[3];	s16 pd;
-}ATTR_ALIGNED(4) OBJ_AFFINE;
-
 HEART_API OBJ_ATTR OAMBuffer[128];
 HEART_API OBJ_AFFINE* OAMAffineBuffer;
 
