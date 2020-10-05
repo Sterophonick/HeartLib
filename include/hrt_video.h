@@ -13,24 +13,6 @@ extern "C" {
 //Structs
 
 //Macros
-#define DSP_MODE(mode)	mode
-#define OBJ_MAP_1D		0x40
-#define OBJ_MAP_2D		0x0
-#define H_BLANK_OAM		0x20
-#define FORCE_BLANK		0x80
-#define	ENABLE_BG(bg)	1UL << (8+bg)
-#define WIN1_ENABLE		0x2000
-#define WIN2_ENABLE		0x4000
-#define OBJWIN_ENABLE	0x8000
-#define OBJ_ENABLE		0x1000
-
-#define	CHAR_BASE(m)		((m) << 2)
-#define BG_TILE_BASE(m)		((m) << 2)
-#define CHAR_BASE_ADR(m)	((m) << 14)
-#define MAP_BASE_ADR(m)		((m) << 11)
-#define BG_MAP_BASE(m)		((m) << 8)
-#define OBJ_TILE_BASE(m)	((m+2048) << 4)
-
 #define hrt_SetPaletteEntry(entry, color) PALETTE[entry] = color
 
 //Functions

@@ -7,14 +7,14 @@
 *             8   8 8     8   8 8      8  8     8 8   8
 *             8   8  8888  8888 8       8 88888 8 8888
 *                             HeartLib
-*A comprehensive game/app engine for the Nintendo® Game Boy Advance™
+*A comprehensive game/app engine for the Nintendoï¿½ Game Boy Advanceï¿½
 *                  Licensed under the GNU GPL v3.0
 *                 View the LICENSE file for details
 *                      2017-2019 Sterophonick
 *                          For Tubooboo
 \*******************************************************************/
 #include "hrt_misc.h"
-   typedef struct {
+typedef struct {
     char		manufacturer;
     char		version;
     char		encoding;

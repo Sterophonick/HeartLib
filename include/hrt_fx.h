@@ -11,13 +11,6 @@ extern "C" {
 //Structs
 
 //Macros
-#define FX_MODE_NONE 		0
-#define FX_MODE_ALPHA 		1
-#define FX_MODE_BRIGHTEN	2
-#define FX_MODE_DARKEN		3
-#define FX_LAYER_BG(bg, target) 	1UL << (bg + (target*8))
-#define FX_LAYER_OBJ(target)	 	1UL << (4 + (target*8))
-#define FX_LAYER_BACKDROP(target) 	1UL << (5 + (target*8))
 
 //Functions
 HEART_API void hrt_SetFXMode(u16 mode);
