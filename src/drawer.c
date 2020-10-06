@@ -14,7 +14,7 @@ void hrt_ConfigDrawer(u8 numLayers, u16 *tileset, s16 dimensionsx, s16 dimension
 
 void hrt_DrawFullDrawerScrollMap(void)
 {
-	register u32 j, i;
+	 u32 j, i;
 	for (i = 0; i < gGameMap.numLayers; i++)
 		for (j = 0; j < 32; j++)
 			hrt_DrawMapLayerStripH(i, fptochar(gGameMap.layer[i].scroll.y) + j);
@@ -32,32 +32,32 @@ void hrt_SetDrawerScrollMapY(s32 y, u8 i)
 
 void hrt_DrawMapLayerStripH(int layerIdx, int srcY)   // srcY is in 8x8 tiles (even though source map tiles are 16x16) 
 {
-	register int i;
-	register const MapLayer *layer = &gGameMap.layer[layerIdx];
-	register const u16 *src = layer->map + (srcY >> 1) * gGameMap.dimensions.x;
-	register u16 *dest = BG_SCRN_VRAM(28 + layerIdx) + (srcY & 31) * 32;
-	register const int scrollXChar = fptochar(layer->scroll.x);
-	register const int yOffset = ((srcY & 1) << 1);
+	int i = 0;
+	const MapLayer *layer = &gGameMap.layer[layerIdx];
+	const u16 *src = layer->map + (srcY >> 1) * gGameMap.dimensions.x;
+	u16 *dest = BG_SCRN_VRAM(28 + layerIdx) + (srcY & 31) * 32;
+	const int scrollXChar = fptochar(layer->scroll.x);
+	const int yOffset = ((srcY & 1) << 1);
 	for (i = 0; i < 32; i++)
 	{
-		register const int xOffset = ((scrollXChar + i) & 1);
-		register const u16 tile = src[(scrollXChar + i) >> 1];
+		const int xOffset = ((scrollXChar + i) & 1);
+		const u16 tile = src[(scrollXChar + i) >> 1];
 		dest[(scrollXChar + i) & 31] = gGameMap.tileset[(tile << 2) + xOffset + yOffset];
 	}
 }
 
 void hrt_DrawMapLayerStripV(int layerIdx, int srcX)
 {
-	register int i;
-	register const MapLayer *layer = &gGameMap.layer[layerIdx];
-	register const u16 *src = layer->map + (srcX >> 1);
-	register u16 *dest = BG_SCRN_VRAM(28 + layerIdx) + (srcX & 31);
-	register const int scrollYChar = fptochar(layer->scroll.y);
-	register const int xOffset = (srcX & 1);
+	 int i = 0;
+	 const MapLayer *layer = &gGameMap.layer[layerIdx];
+	 const u16 *src = layer->map + (srcX >> 1);
+	 u16 *dest = BG_SCRN_VRAM(28 + layerIdx) + (srcX & 31);
+	 const int scrollYChar = fptochar(layer->scroll.y);
+	 const int xOffset = (srcX & 1);
 	for (i = 0; i < 32; i++)
 	{
-		register const int yOffset = ((scrollYChar + i) & 1) << 1;
-		register const u16 tile = src[((scrollYChar + i) >> 1) * gGameMap.dimensions.x];
+		 const int yOffset = ((scrollYChar + i) & 1) << 1;
+		 const u16 tile = src[((scrollYChar + i) >> 1) * gGameMap.dimensions.x];
 		dest[((scrollYChar + i) & 31) * 32] = gGameMap.tileset[(tile << 2) + xOffset + yOffset];
 	}
 }

@@ -3,6 +3,8 @@
 #include "hrt_video.h"
 #include "hrt_text.h"
 
+extern void dummy();
+
 void AssertImplementation(bool expression, char* error, char* file, u32 line)
 {
 	if(!expression)
@@ -10,6 +12,9 @@ void AssertImplementation(bool expression, char* error, char* file, u32 line)
 		hrt_InitTextEngine(0);
 		hrt_DSPSetBGMode(0);
 		hrt_DSPEnableBG(0);
+		hrt_InitIRQ();
+		hrt_EnableIRQ(IRQ_VBLANK);
+		hrt_SetIRQ(IRQ_VBLANK, dummy);
 		hrt_DSPDisableForceBlank();
 		hrt_Print(0, 0, "Assertion failed!");
 		hrt_Print(0, 1, "File: %s", file); 
