@@ -1,7 +1,3 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef LIBHEART_H
 #define LIBHEART_H
 
@@ -19,8 +15,4 @@ extern "C" {
 #include "hrt_types.h"
 #include "hrt_video.h"
 
-#endif
-
-#ifdef __cplusplus
-#endif
 #endif
