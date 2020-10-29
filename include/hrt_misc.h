@@ -125,6 +125,7 @@ HEART_API void UnpackPUC(u8 *srcadr, u8 *dstadr); //PuCrunch
 HEART_API u32  hrt_RNGRange(u32 low, u32 high); // Creates a Random number between a range.
 HEART_API u32  hrt_ReloadRNG(void); //Reloads RNG.
 HEART_API u32  hrt_CreateRNG(void); //Creates RNG Value. You can change the type of return value in your main.c
+HEART_API void hrt_SeedRNG(u32 seed); //Seeds the RNG.
 HEART_API int  hrt_DecodeJPEG(const unsigned char *data, volatile unsigned short *out, int outWidth, int outHeight); //Decodes a JPEG image to VRAM in Mode 3.
 HEART_API void hrt_PrintRTCTimeIntoString(char* ptr); //Prints the Time of the RTC into a string
 HEART_API void hrt_DMATransfer(u8 channel, void* source, void* dest, u32 WordCount, u32 mode); //DMA Copy
