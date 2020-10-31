@@ -21,8 +21,8 @@ void AssertImplementation(bool expression, char* error, char* file, char* functi
 		hrt_Print(0, 2, "Line: %d", line);
 		hrt_Print(0, 3, "Function: %s", function);
 		hrt_Print(0, 5, "Press any key to ignore,");
-		hrt_Print(0, 7, "but be aware that VRAM");
-		hrt_Print(0, 8, "recovery is unlikely.");
+		hrt_Print(0, 6, "but be aware that VRAM");
+		hrt_Print(0, 7, "recovery is unlikely.");
 		hrt_Print(0, 10, error);
 
 		while(!(REG_KEYINPUT & 0x3FF))
