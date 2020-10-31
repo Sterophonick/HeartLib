@@ -5,7 +5,7 @@
 
 extern void dummy();
 
-void AssertImplementation(bool expression, char* error, char* file, u32 line)
+void AssertImplementation(bool expression, char* error, char* file, char* function, u32 line)
 {
 	if(!expression)
 	{
@@ -19,10 +19,11 @@ void AssertImplementation(bool expression, char* error, char* file, u32 line)
 		hrt_Print(0, 0, "Assertion failed!");
 		hrt_Print(0, 1, "File: %s", file); 
 		hrt_Print(0, 2, "Line: %d", line);
-		hrt_Print(0, 4, "Press any key to ignore,");
-		hrt_Print(0, 5, "but be aware that VRAM");
-		hrt_Print(0, 6, "recovery is unlikely.");
-		hrt_Print(0, 9, error);
+		hrt_Print(0, 3, "Function: %s", function);
+		hrt_Print(0, 5, "Press any key to ignore,");
+		hrt_Print(0, 7, "but be aware that VRAM");
+		hrt_Print(0, 8, "recovery is unlikely.");
+		hrt_Print(0, 10, error);
 
 		while(!(REG_KEYINPUT & 0x3FF))
 		{
