@@ -1,5 +1,5 @@
 HEADERS = 
-OBJECTS = build/oam.o build/memcpy.o build/fx.o build/font.o build/gbfs.o build/aplib.o build/jpg.o build/rng.o build/rtc.o build/misc.o build/intdispatch.o build/interrupt.o build/bios.o build/text.o build/video.o build/debug.o build/drawer.o build/pucrunch.o build/asm_misc.o build/input.o build/pcx.o
+OBJECTS = build/oam.o build/memcpy.o build/fx.o build/font.o build/gbfs.o build/aplib.o build/jpg.o build/rng.o build/rtc.o build/misc.o build/intdispatch.o build/interrupt.o build/bios.o build/text.o build/video.o build/debug.o build/drawer.o build/pucrunch.o build/asm_misc.o build/input.o build/pcx.o build/rumble.o
 CPPFILES =
 SOURCES = src/oam.c data/font.c 
 LIBS= libheart.a
