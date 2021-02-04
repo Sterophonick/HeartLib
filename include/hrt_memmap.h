@@ -152,6 +152,10 @@ extern "C" {
 #define REG_UNKNOWN22	*(u32*)0x04000800 //Undocumented - Internal Memory Control(R/W)
 #define REG_UNKNOWN23	*(u16*)0x04000804 //Not Used
 
+#define GPIO_PORT_DATA      (*(volatile unsigned short*)0x80000C4)
+#define GPIO_PORT_DIRECTION (*(volatile unsigned short*)0x80000C6)
+#define GPIO_PORT_CONTROL   (*(volatile unsigned short*)0x80000C8)
+
 //Array Registers
 #define REG_DMA         ((volatile DMA_STRUCT*)(REG_BASE+0x00B0))
 #define REG_TM			((volatile TMR_REC*)(REG_BASE+0x0100))

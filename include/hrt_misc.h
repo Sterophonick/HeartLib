@@ -135,7 +135,13 @@ HEART_API void hrt_ExitToEZFlash(); //Exits to EZ-Flash Omega
 HEART_API void hrt_SleepMode(); //Activates the sleep mode present in some commercial games
 HEART_API u32  hrt_GetHeartLibVersion(void); //Retuns the HeartLib version
 HEART_API void hrt_DecodePCX(const u8 *PCXBuffer, u16 * ScreenAddr, u16* Palette);
-HEART_API void hrt_EZFlashRumble(); //Rumble (EZ-Flash Omega Definitive Edition ONLY)
+HEART_API void hrt_RumbleInit();
+HEART_API bool hrt_IsRumbleActive();
+HEART_API void hrt_RumbleStart();
+HEART_API void hrt_RumbleStop();
+HEART_API void hrt_RumbleToggle();
+HEART_API void hrt_SetRumbleTimer(u16 frames);
+HEART_API void hrt_UpdateRumbleTimer();
 
 //Inlines
 

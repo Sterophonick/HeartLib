@@ -26,6 +26,7 @@ At the moment, it its only compatible with C. It will not work with C++.
    - Affine transformation
    - Random Number Generation
    - Memory
+   - Rumble
    
 # Greetz
  - Emanuel Scheussinger (HAMLib)
@@ -45,3 +46,4 @@ At the moment, it its only compatible with C. It will not work with C++.
  - Mark Holloway (Mushroom GBA lib)
  - Jason Wilkins (DevKit Advance)
  - krom (some of his source code)
+ - Jay van Hutten (Rumble code)
