@@ -173,7 +173,7 @@ void hrt_SetOBJXY(u8 obj, int x, int y)
 
 void hrt_CopyOBJToOAM(void)
 {
-	hrt_DMACopy(3, (void*)OAMBuffer, (void*)OAM, 128*4, 0x80000000);
+	hrt_DMATransfer(3, (void*)OAMBuffer, (void*)OAM, 128*4, 0x80000000);
 }
 
 void hrt_SetOBJOffset(u8 spr, u16 data)
