@@ -68,8 +68,8 @@ void IWRAM_CODE hrt_ExitToEZFlash()
 void hrt_DMATransfer(u8 channel, void* source, void* dest, u32 WordCount, u32 mode)
 {
 	REG_DMA[channel].cnt = 0; //Shut off any previous transfer
-    REG_DMA[channel].src = (u32)source;
-    REG_DMA[channel].dst = (u32)dest;
+    REG_DMA[channel].src = &source;
+    REG_DMA[channel].dst = &dest;
 	REG_DMA[channel].cnt = WordCount | mode;
 }
 

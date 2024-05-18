@@ -7,12 +7,6 @@ CFLAGS = -Wall -O3 -march=armv4t -Wno-switch -Wno-multichar -ffast-math -mcpu=ar
 ARCH = -mthumb -mthumb-interwork
 PREFIX = /bin/arm-none-eabi-
 
-ifeq ($(OS),Windows_NT)
-	SUDO = 
-else
-	SUDO = sudo
-endif
-
 default: libheart.a
 build/%.o: src/%.c $(HEADERS)
 	$(DEVKITARM)$(PREFIX)gcc $(CFLAGS) $(ARCH) -c $< -o $@
@@ -20,8 +14,6 @@ build/%.o: src/%.s $(HEADERS)
 	$(DEVKITARM)$(PREFIX)gcc $(CFLAGS) $(ARCH) -c $< -o $@
 libheart.a: $(OBJECTS)
 	$(DEVKITARM)$(PREFIX)ar -r libheart.a $(OBJECTS)
-	$(SUDO) cp libheart.a $(DEVKITPRO)/devkitARM/arm-none-eabi/lib
-	$(SUDO) cp include/*.h $(DEVKITPRO)/devkitARM/arm-none-eabi/include
 
 clean:
 	-rm build/*.o
