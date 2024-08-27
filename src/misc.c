@@ -25,7 +25,7 @@ OBJ_ATTR* OAM = (OBJ_ATTR*)0x7000000;
 u8* SRAM = (u8*)0xE000000;
 pogoFile* pogoHeader 	=(pogoFile*)0x203FBF8;
 
-void hrt_PrintRTCTimeIntoString(char* ptr)
+void hrt_PrintRTCTimeIntoString(char* ptr) //Constructs a string based on the RTC time
 {
 	char str[9];
 	register char *s=str;
@@ -49,7 +49,7 @@ void hrt_PrintRTCTimeIntoString(char* ptr)
 	strcpy(ptr,str);
 }
 
-void IWRAM_CODE hrt_EZFSetRompage(u16 page)
+void IWRAM_CODE hrt_EZFSetRompage(u16 page) //EZ-Flash Command - Set ROM Page. Set to 0 to go back to kernel.
 {
 	*(vu16 *)0x9fe0000 = 0xd200;
 	*(vu16 *)0x8000000 = 0x1500;
@@ -59,14 +59,14 @@ void IWRAM_CODE hrt_EZFSetRompage(u16 page)
 	*(vu16 *)0x9fc0000 = 0x1500;
 }
 
-void IWRAM_CODE hrt_ExitToEZFlash()
+void IWRAM_CODE hrt_ExitToEZFlash() //Exits to EZ-Flash kernel
 {
 	hrt_EZFSetRompage(0x8000);
 	asm("swi 1");
 	asm("swi 0");
 }
 
-void hrt_DMATransfer(u8 channel, void* source, void* dest, u32 WordCount, u32 mode)
+void hrt_DMATransfer(u8 channel, void* source, void* dest, u32 WordCount, u32 mode) //Perform DMA transfer
 {
 	REG_DMA[channel].cnt = 0; //Shut off any previous transfer
     REG_DMA[channel].src = &source;
@@ -75,7 +75,7 @@ void hrt_DMATransfer(u8 channel, void* source, void* dest, u32 WordCount, u32 mo
 }
 
 
-void hrt_DMAClear(u8 channel)
+void hrt_DMAClear(u8 channel) //Clear DMA transfer
 {
 	REG_DMA[channel].cnt = 0; //Shut off any previous transfer
     REG_DMA[channel].src = 0;

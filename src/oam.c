@@ -173,6 +173,7 @@ void hrt_SetOBJXY(u8 obj, int x, int y)
 
 void hrt_CopyOBJToOAM(void)
 {
+	//TODO: cpuset
 	hrt_DMATransfer(3, (void*)OAMBuffer, (void*)OAM, 128*4, 0x80000000);
 }
 
@@ -181,14 +182,4 @@ void hrt_SetOBJOffset(u8 spr, u16 data)
 	if(spr > 127) return;
 	OAMBuffer[spr].attr2 &= ~(0x1FF);
 	OAMBuffer[spr].attr2 |= (data << 0);
-}
-
-void hrt_MoveOBJInDirection(u8 spr, u16 direction)
-{
-	if (spr > 127) return;
-}
-
-void hrt_PointOBJTowardsPixel(u8 spr, u16 x, u16 y)
-{
-	if (spr > 127) return;
 }
