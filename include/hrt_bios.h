@@ -120,6 +120,9 @@ enum MULTIBOOT_MODES { MODE32_NORMAL, MODE16_MULTI, MODE32_2MHZ};
 #define	hrt_SystemCall(Number)	 __asm ("SWI	  "#Number"	<< 16\n" :::"r0", "r1", "r2", "r3")
 #endif
 
+#define BIOS_CHK_GBA 0xBAAE187F //GBA / GBA SP BIOS Checksum
+#define BIOS_CHK_NDS 0xBAAE1880 //3DS / NDS GBA BIOS Checksum
+// #define BIOS_CHK_PRO
 
 
 //Functions
@@ -127,33 +130,33 @@ HEART_API void hrt_SoftReset(u8 RestartFlag);
 HEART_API void hrt_RegisterRamReset(u8 ResetFlag);
 HEART_API void hrt_Halt(void); //SWI 2
 HEART_API void hrt_Stop(void); //SWI 3
-HEART_API void hrt_IntrWait(u32 ReturnFlag, u32 IntFlag); //SWI 0x04
-HEART_API void hrt_VblankIntrWait(void);
-HEART_API s32  hrt_Div(s32 Number, s32 Divisor); //SWI 0x06
-HEART_API s32  hrt_DivMod(s32 Number, s32 Divisor); //SWI 0x06
-HEART_API u32  hrt_DivAbs(s32 Number, s32 Divisor); //SWI 0x06
+HEART_API void hrt_IntrWait(u32 ReturnFlag, u32 IntFlag); //Waits for an Interrupt
+HEART_API void hrt_VblankIntrWait(void); //Turns off CPU until frame is finished drawing. Must have IRQ_VBLANK enabled.
+HEART_API s32  hrt_Div(s32 Number, s32 Divisor); //Performs signed integer division
+HEART_API s32  hrt_DivMod(s32 Number, s32 Divisor); //Performs signed integer division, returns modulus
+HEART_API u32  hrt_DivAbs(s32 Number, s32 Divisor); //Performs signed integer division, returns unsigned
 HEART_API s32  hrt_DivArm(s32 Divisor, s32 Number);  //SWI 0x07
 HEART_API s32  hrt_DivArmMod(s32 Divisor, s32 Number); //SWI 0x07
 HEART_API u32  hrt_DivArmAbs(s32 Divisor, s32 Number); //SWI 0x07
-HEART_API u16  hrt_Sqrt(u32 X); //BIOS call for Square Root
-HEART_API s16  hrt_ArcTan(s16 Tan); //SWI 0x09
-HEART_API u16  hrt_ArcTan2(s16 X, s16 Y); //SWI 0x0A
-HEART_API void hrt_CpuSet(const void *source, void *dest, u32 mode); //Performs CpuSet systemcall
-HEART_API void hrt_CpuFastSet(const void *source, void *dest, u32 mode);
-HEART_API u32  hrt_GetBiosChecksum(void);
+HEART_API u16  hrt_Sqrt(u32 X); //Calculates unsigned integer square root
+HEART_API s16  hrt_ArcTan(s16 Tan); //Calculates signed integer square root
+HEART_API u16  hrt_ArcTan2(s16 X, s16 Y); //Calculates unsigned square root, use this in most situations
+HEART_API void hrt_CpuSet(const void *source, void *dest, u32 mode); //memcpy in units of four or two bytes
+HEART_API void hrt_CpuFastSet(const void *source, void *dest, u32 mode); //memcpy in units of 32 bytes
+HEART_API u32  hrt_GetBiosChecksum(void); //returns BIOS checksum.
 HEART_API void hrt_BgAffineSet(BGAffineSource *source, BGAffineDest *dest, s32 num); //Creates a set of sprite affine data
 HEART_API void hrt_ObjAffineSet(ObjAffineSource *source, void *dest, s32 num, s32 offset); //Creates a set of sprite affine data
 HEART_API void hrt_BitUnPack(void* source, void* destination, BUP* data); //Bitunpack
-HEART_API void hrt_LZ77UnCompWRAM(const void *source, void *dest); //LZ77 Decompresses to EWRAM
-HEART_API void hrt_LZ77UnCompVRAM(const void *source, void *dest); //LZ77 Decompresses to VRAM
-HEART_API void hrt_HuffUnComp(const void *source, void *dest);
-HEART_API void hrt_RLUnCompWram(const void *source, void *dest);
-HEART_API void hrt_RLUnCompVram(const void *source, void *dest);
-HEART_API void hrt_Diff8bitUnFilterWram(const void *source, void *dest);
-HEART_API void hrt_Diff8bitUnFilterVram(const void *source, void *dest);
-HEART_API void hrt_Diff16bitUnFilter(const void *source, void *dest);
+HEART_API void hrt_LZ77UnCompWRAM(const void *source, void *dest); //8-bit LZ77 Decompress
+HEART_API void hrt_LZ77UnCompVRAM(const void *source, void *dest); //16-bit LZ77 Decompress
+HEART_API void hrt_HuffUnComp(const void *source, void *dest); //32-bit Huffman Table decoding
+HEART_API void hrt_RLUnCompWram(const void *source, void *dest); //8-bit RLE Decompress
+HEART_API void hrt_RLUnCompVram(const void *source, void *dest); //16-bit RLE Decompress
+HEART_API void hrt_Diff8bitUnFilterWram(const void *source, void *dest); //8-bit Differential filter decode
+HEART_API void hrt_Diff8bitUnFilterVram(const void *source, void *dest); //16-bit 8-bit Differential filter decode
+HEART_API void hrt_Diff16bitUnFilter(const void *source, void *dest); //16-bit decode of 16-bit differential filter
 HEART_API void hrt_SoundDriverInit(SoundArea *sa); //Initializes the BIOS sound driver
-HEART_API void hrt_SoundDriverMode(u32 mode); //SWI
+HEART_API void hrt_SoundDriverMode(u32 mode); //Set BIOS Sound driver operation mode
 HEART_API void hrt_SoundDriverMain(void); //Main of the BIOS sound driver
 HEART_API void hrt_SoundDriverVsync(void); //Resets the sound DMA, call this after every 1/60 of a second
 HEART_API void hrt_SoundChannelClear(void); //Stops sound and clears the FIFO registers
@@ -163,7 +166,7 @@ HEART_API void hrt_SoundWhatever1(void); //Undocumented - Unknown
 HEART_API void hrt_SoundWhatever2(void); //Undocumented - Unknown
 HEART_API void hrt_SoundWhatever3(void); //Undocumented - Unknown
 HEART_API void hrt_SoundWhatever4(void); //Undocumented - Unknown
-HEART_API u32  hrt_MultiBoot(MultiBootParam *mp, u32 mode);
+HEART_API u32  hrt_MultiBoot(MultiBootParam *mp, u32 mode); //Start uploading program code to slave GBA.
 HEART_API void hrt_HardReset(void); //Resets the Console with the GBA Startup Sequence
 HEART_API void hrt_CustomHalt(u8 reserved1, u8 reserved2, u8 param); //performs the customhalt SWI
 HEART_API void hrt_SoundDriverVSyncOff(void); //Used to stop sound DMA.
