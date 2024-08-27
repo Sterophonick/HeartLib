@@ -165,6 +165,16 @@ extern "C" {
 #define REG_POGOFILESIZ *(u32*)0x0203FBF8 //Pogoshell File Size
 #define INT_VECTOR		*(IntFn *)(0x03007ffc)
 
+typedef struct {
+    u32 fileSize;
+    u32* filePtr;
+    u32 magicNum; //0xFAB0BABE
+    u32 unknown0; //usually 0x00000002
+    char* filename[48]; //string
+}pogoFile;
+
+HEART_API pogoFile* pogoHeader;
+
 #define EWRAM	0x02000000 //External Work RAM (256kb)
 #define IWRAM	0x03000000 //Internal Work RAM (32kb)
 #define MMIO	0x04000000 //Memory-Mapped I/O Registers

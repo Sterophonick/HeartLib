@@ -22,11 +22,6 @@
 u16* BackBuffer = (u16*)0x600A000;
 u16* FrontBuffer = (u16*)0x6000000;
 
-void hrt_DSPConfigBG(u8 bg, u8 priority, u8 tilebase, u8 mosaic, u8 color, u8 mapbase, u8 wraparound, u8 dimensions)
-{
-	REG_BGxCNT(bg) = 0x01 * priority | 0x04 * tilebase | 0x40 * mosaic | 0x80 * color | 0x100 * mapbase | 0x2000 * wraparound | 0x4000 * dimensions;
-}
-
 void hrt_InvertPalette(u16 start, u16 amount)
 {
 	register int i;
