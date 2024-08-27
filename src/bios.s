@@ -133,14 +133,14 @@ hrt_BitUnPack:
 	bx lr
 
 .thumb_func	
-.global hrt_LZ77UnCompWram
-hrt_LZ77UnCompWram:
+.global hrt_LZ77UnCompWRAM
+hrt_LZ77UnCompWRAM:
 	swi 17
 	bx lr
 
 .thumb_func
-.global hrt_LZ77UnCompVram
-hrt_LZ77UnCompVram:
+.global hrt_LZ77UnCompVRAM
+hrt_LZ77UnCompVRAM:
 	swi 18
 	bx lr
 
@@ -151,26 +151,26 @@ hrt_HuffUnComp:
 	bx lr
 
 .thumb_func	
-.global hrt_RLUnCompWram
-hrt_RLUnCompWram:
+.global hrt_RLUnCompWRAM
+hrt_RLUnCompWRAM:
 	swi 20
 	bx lr
 
 .thumb_func	
-.global hrt_RLUnCompVram
-hrt_RLUnCompVram:
+.global hrt_RLUnCompVRAM
+hrt_RLUnCompVRAM:
 	swi 21
 	bx lr
 
 .thumb_func	
-.global hrt_Diff8bitUnFilterWram
-hrt_Diff8bitUnFilterWram:
+.global hrt_Diff8bitUnFilterWRAM
+hrt_Diff8bitUnFilterWRAM:
 	swi 22
 	bx lr
 	
 .thumb_func
-.global hrt_Diff8bitUnFilterVram
-hrt_Diff8bitUnFilterVram:
+.global hrt_Diff8bitUnFilterVRAM
+hrt_Diff8bitUnFilterVRAM:
 	swi 23
 	bx lr
 
