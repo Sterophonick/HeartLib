@@ -24,157 +24,157 @@ HEART_API void hrt_FlipBGBuffer(void);
 HEART_API void hrt_CyclePalette(u16 start, u16 amount);
 
 //Inlines
-inline void hrt_LoadDataIntoVRAM(u16* data, u32 offset, u32 length)
+static inline void hrt_LoadDataIntoVRAM(u16* data, u32 offset, u32 length)
 {
 	hrt_DMATransfer(3, (void*)data, ((void*)(VRAM + (offset))), length, 0x80000000);
 }
 
-inline void hrt_LoadDataIntoPalette(u16* data, u32 offset, u32 length)
+static inline void hrt_LoadDataIntoPalette(u16* data, u32 offset, u32 length)
 {
 	hrt_DMATransfer(3, (void*)data, ((void*)(PALETTE + (offset))), length, 0x80000000);
 }
 
-inline u16 hrt_GenerateColorFromRGB(u8 red, u8 green, u8 blue)
+static inline u16 hrt_GenerateColorFromRGB(u8 red, u8 green, u8 blue)
 {
 	return red | (green << 5) | (blue << 10);
 }
 
-inline void hrt_DSPSetBGMode(u8 mode)
+static inline void hrt_DSPSetBGMode(u8 mode)
 {
 	REG_DISPCNT &= 0xFFF8; REG_DISPCNT |= mode;
 }
 
-inline void hrt_DSPConfigureBG(u8 bg, u16 mode)
+static inline void hrt_DSPConfigureBG(u8 bg, u16 mode)
 {
 	REG_BGxCNT(bg) = mode;
 }
 
-inline void hrt_DSPConfigMode(u16 mode)
+static inline void hrt_DSPConfigMode(u16 mode)
 {
 	REG_DISPCNT = mode;
 }
 
-inline void hrt_DSPEnableBG(u8 bg)
+static inline void hrt_DSPEnableBG(u8 bg)
 {
 	REG_DISPCNT |= 1UL << (8 + bg);
 }
 
-inline void hrt_DSPDisableBG(u8 bg)
+static inline void hrt_DSPDisableBG(u8 bg)
 {
 	REG_DISPCNT &= ~(1UL << (8 + bg));
 }
 
-inline void hrt_DSPEnableOBJ(void)
+static inline void hrt_DSPEnableOBJ(void)
 {
 	REG_DISPCNT |= 0x1000;
 }
 
-inline void hrt_DSPDisableOBJ(void)
+static inline void hrt_DSPDisableOBJ(void)
 {
 	REG_DISPCNT &= 0xEFFF;
 }
 
-inline void hrt_SetBGX(u8 bg, int x)
+static inline void hrt_SetBGX(u8 bg, int x)
 {
 	REG_BGxHOFS(bg) = x;
 }
 
-inline void hrt_SetBGY(u8 bg, int y)
+static inline void hrt_SetBGY(u8 bg, int y)
 {
 	REG_BGxVOFS(bg) = y;
 }
 
-inline void hrt_SetBGXY(u8 bg, int x, int y)
+static inline void hrt_SetBGXY(u8 bg, int x, int y)
 {
 	hrt_SetBGX(bg, x); hrt_SetBGY(bg, y);
 }
 
-inline void hrt_PlotPixelInMode3(u8 x, u8 y, u16 color)
+static inline void hrt_PlotPixelInMode3(u8 x, u8 y, u16 color)
 {
 	VRAM[y * 240 + x] = color;
 }
 
-inline void hrt_PlotPixelInMode5(u8 x, u8 y, u16 color)
+static inline void hrt_PlotPixelInMode5(u8 x, u8 y, u16 color)
 {
 	VRAM[y * 160 + x] = color;
 }
 
-inline void hrt_DSPEnableForceBlank(void)
+static inline void hrt_DSPEnableForceBlank(void)
 {
 	REG_DISPCNT |= 0x0080;
 }
 
-inline void hrt_DSPDisableForceBlank(void)
+static inline void hrt_DSPDisableForceBlank(void)
 {
 	REG_DISPCNT &= 0xFF7F;
 }
 
-inline void hrt_EnableGreenSwap(void)
+static inline void hrt_EnableGreenSwap(void)
 {
 	REG_UNKNOWN0 = 1;
 }
 
-inline void hrt_DisableGreenSwap(void)
+static inline void hrt_DisableGreenSwap(void)
 {
 	REG_UNKNOWN0 = 0;
 }
 
-inline u16 hrt_GetPixelInMode3(int x, int y)
+static inline u16 hrt_GetPixelInMode3(int x, int y)
 {
 	return VRAM[y * 240 + x];
 } //returns the pixel color at the position given 
 
-inline void hrt_DSPEnableLinearOBJ(void)
+static inline void hrt_DSPEnableLinearOBJ(void)
 {
 	REG_DISPCNT |= BIT06;
 }
 
-inline void hrt_DSPDisableLinearOBJ(void)
+static inline void hrt_DSPDisableLinearOBJ(void)
 {
 	REG_DISPCNT &= NOT_BIT06;
 }
 
-inline void hrt_BGSet16Color(u8 layer)
+static inline void hrt_BGSet16Color(u8 layer)
 {
 	REG_BGxCNT(layer) &= 0xFF7F;
 }
 
-inline void hrt_BGSet256Color(u8 layer)
+static inline void hrt_BGSet256Color(u8 layer)
 {
 	REG_BGxCNT(layer) |= 0x0080;
 }
 
-inline void hrt_BGEnableMosaic(u8 layer)
+static inline void hrt_BGEnableMosaic(u8 layer)
 {
 	REG_BGxCNT(layer) |= 0x0040;
 }
 
-inline void hrt_BGDisableMosaic(u8 layer)
+static inline void hrt_BGDisableMosaic(u8 layer)
 {
 	REG_BGxCNT(layer) &= 0xFFBF;
 }
 
-inline void hrt_BGSetSize(u8 layer, u8 size)
+static inline void hrt_BGSetSize(u8 layer, u8 size)
 {
 	REG_BGxCNT(layer) &= 0x3FFF; REG_BGxCNT(layer) |= (size << 14);
 }
 
-inline void hrt_BGSetMapBase(u8 layer, u8 no)
+static inline void hrt_BGSetMapBase(u8 layer, u8 no)
 {
 	REG_BGxCNT(layer) &= 0xE0FF; REG_BGxCNT(layer) |= (no << 8);
 }
 
-inline void hrt_BGSetTileBase(u8 layer, u8 no)
+static inline void hrt_BGSetTileBase(u8 layer, u8 no)
 {
 	REG_BGxCNT(layer) &= 0xFFF3; REG_BGxCNT(layer) |= (no << 2);
 }
 
-inline void hrt_BGSetPriority(u8 layer, u8 no)
+static inline void hrt_BGSetPriority(u8 layer, u8 no)
 {
 	REG_BGxCNT(layer) &= 0xFFFD; REG_BGxCNT(layer) |= no;
 }
 
-inline void hrt_DestroyBG(u8 bg)
+static inline void hrt_DestroyBG(u8 bg)
 {
 	REG_BGxCNT(bg) = 0;
 	REG_BGxVOFS(bg) = 0;
