@@ -200,8 +200,8 @@ HEART_API u8* SRAM;
 #define GBABIOSChecksum  0xBAAE187f
 #define NDSBIOSChecksum  0xBAAE1880
 
-HEART_API IWRAM_CODE void hrt_Memcpy32(void *dst, const void* src, uint wcount);
-HEART_API void hrt_Memcpy16(void *dst, const void* src, uint hwcount);
+HEART_API IWRAM_CODE void hrt_Memcpy32(void *dst, const void* src, uint wcount); //32-bit memory copy
+HEART_API void hrt_Memcpy16(void *dst, const void* src, uint hwcount); //16-bit memory copy
 
 #endif
 

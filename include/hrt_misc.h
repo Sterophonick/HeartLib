@@ -114,10 +114,10 @@ typedef struct GBFS_ENTRY {
 //
 
 //Functions
-HEART_API const GBFS_FILE *find_first_gbfs_file(const void *start);
-HEART_API const void *skip_gbfs_file(const GBFS_FILE *file); //GBFS Stuff
-HEART_API const void *gbfs_get_obj(const GBFS_FILE *file, const char *name, u32 *len); //GBFS Stuff
-HEART_API void *gbfs_copy_obj(void *dst, const GBFS_FILE *file, const char *name); //GBFS Stuff
+HEART_API const GBFS_FILE *find_first_gbfs_file(const void *start); //Finds the first GBFS file appended at the end of the ROM
+HEART_API const void *skip_gbfs_file(const GBFS_FILE *file); //Skips to the next GBFS file
+HEART_API const void *gbfs_get_obj(const GBFS_FILE *file, const char *name, u32 *len); //Get a file name in the GBFS file
+HEART_API void *gbfs_copy_obj(void *dst, const GBFS_FILE *file, const char *name); //Copy file from GBFS archive.
 HEART_API size_t gbfs_count_objs(const GBFS_FILE *file); //Counts the amount of files in GBFS
 HEART_API const void *gbfs_get_nth_obj(const GBFS_FILE *file, size_t n, char *name, u32 *len); //Gets the value of file from a name
 HEART_API unsigned int aP_depack(const void *source, void *destination); //aPlib unpack
@@ -135,13 +135,13 @@ HEART_API void hrt_ExitToEZFlash(); //Exits to EZ-Flash Omega
 HEART_API void hrt_SleepMode(); //Activates the sleep mode present in some commercial games
 HEART_API u32  hrt_GetHeartLibVersion(void); //Retuns the HeartLib version
 HEART_API void hrt_DecodePCX(const u8 *PCXBuffer, u16 * ScreenAddr, u16* Palette);
-HEART_API void hrt_RumbleInit();
-HEART_API bool hrt_IsRumbleActive();
-HEART_API void hrt_RumbleStart();
-HEART_API void hrt_RumbleStop();
-HEART_API void hrt_RumbleToggle();
-HEART_API void hrt_SetRumbleTimer(u16 frames);
-HEART_API void hrt_UpdateRumbleTimer();
+HEART_API void hrt_RumbleInit(); //Initialize Rumble motor
+HEART_API bool hrt_IsRumbleActive(); //Checks if rumble is active
+HEART_API void hrt_RumbleStart(); //Enable Rumble
+HEART_API void hrt_RumbleStop(); //Disable Rumble
+HEART_API void hrt_RumbleToggle(); //Toggle Rumble
+HEART_API void hrt_SetRumbleTimer(u16 frames); //Set a timer for the Rumble motor
+HEART_API void hrt_UpdateRumbleTimer(); //Run once every frame, update the rumble timer. Disables the motor when it reaches zero
 
 //Inlines
 
