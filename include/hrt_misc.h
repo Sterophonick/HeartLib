@@ -142,6 +142,7 @@ HEART_API void hrt_RumbleStop(); //Disable Rumble
 HEART_API void hrt_RumbleToggle(); //Toggle Rumble
 HEART_API void hrt_SetRumbleTimer(u16 frames); //Set a timer for the Rumble motor
 HEART_API void hrt_UpdateRumbleTimer(); //Run once every frame, update the rumble timer. Disables the motor when it reaches zero
+HEART_API void hrt_ByteCopy(u8 *dst,u8 *src,int count); //Very fast 8-bit memory copy
 
 //Inlines
 

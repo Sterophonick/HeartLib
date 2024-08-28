@@ -69,3 +69,12 @@ hrt_SleepMode:
 	strh r0,[r3,#0x00]	@LCD on
 	strh r1,[r3,#0x80]	@sound on
 	bx lr
+
+.global hrt_ByteCopy
+.code 32
+hrt_ByteCopy:
+	ldrb r12,[r1],#1
+	strb r12,[r0],#1
+	subs r2,r2,#1
+	bgt bytecopy
+	bx lr
