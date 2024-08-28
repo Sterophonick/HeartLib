@@ -55,7 +55,7 @@ static inline void hrt_DSPConfigMode(u16 mode) // Fully set DSPCNT. Helpers foun
 	REG_DISPCNT = mode;
 }
 
-static inline void hrt_DSPEnableBG(u8 bg) //Enable a BG
+static inline void hrt_DSPEnableBG(u8 bg) //Enable a BG.
 {
 	REG_DISPCNT |= 1UL << (8 + bg);
 }
@@ -63,6 +63,11 @@ static inline void hrt_DSPEnableBG(u8 bg) //Enable a BG
 static inline void hrt_DSPDisableBG(u8 bg) //Disable a BG
 {
 	REG_DISPCNT &= ~(1UL << (8 + bg));
+}
+
+static inline void hrt_DSPToggleBG(u8 bg) //Toggles a BG.
+{
+	REG_DISPCNT ^= 1UL << (8 + bg);
 }
 
 static inline void hrt_DSPEnableOBJ(void) //Enable OBJ layer
@@ -73,6 +78,11 @@ static inline void hrt_DSPEnableOBJ(void) //Enable OBJ layer
 static inline void hrt_DSPDisableOBJ(void) //Disable OBJ layer
 {
 	REG_DISPCNT &= 0xEFFF;
+}
+
+static inline void hrt_DSPToggleOBJ(void) //Toggles OBJ layer
+{
+	REG_DISPCNT ^= 0x1000;
 }
 
 static inline void hrt_SetBGX(u8 bg, int x) //Set BG X
@@ -110,6 +120,11 @@ static inline void hrt_DSPDisableForceBlank(void) //Stop making the screen white
 	REG_DISPCNT &= 0xFF7F;
 }
 
+static inline void hrt_DSPToggleForceBlank(void) //Toggle force blank
+{
+	REG_DISPCNT ^= 0x0080;
+}
+
 static inline void hrt_EnableGreenSwap(void) //Make the screen look fuzzy
 {
 	REG_UNKNOWN0 = 1;
@@ -118,6 +133,11 @@ static inline void hrt_EnableGreenSwap(void) //Make the screen look fuzzy
 static inline void hrt_DisableGreenSwap(void) //Stop the fuzzy screen
 {
 	REG_UNKNOWN0 = 0;
+}
+
+static inline void hrt_ToggleGreenSwap(void) //Toggle fuzzy screen
+{
+	REG_UNKNOWN0 ^= 1;
 }
 
 static inline u16 hrt_GetPixelInMode3(int x, int y) //Get pixel in Mode 3
@@ -133,6 +153,11 @@ static inline void hrt_DSPEnableLinearOBJ(void) //Enable Linear OBJ Mapping
 static inline void hrt_DSPDisableLinearOBJ(void) //Disable Linear OBJ Mapping
 {
 	REG_DISPCNT &= NOT_BIT06;
+}
+
+static inline void hrt_DSPToggleLinearOBJ(void) //Toggle Linear OBJ Mapping
+{
+	REG_DISPCNT ^= BIT06;
 }
 
 static inline void hrt_BGSet16Color(u8 layer) //Set a BG to use 16 Colors
@@ -153,6 +178,11 @@ static inline void hrt_BGEnableMosaic(u8 layer) //Enable BG Mosaic
 static inline void hrt_BGDisableMosaic(u8 layer) //Disable BG Mosaic
 {
 	REG_BGxCNT(layer) &= 0xFFBF;
+}
+
+static inline void hrt_BGToggleMosaic(u8 layer) //Toggle BG Mosaic
+{
+	REG_BGxCNT(layer) ^= 0x0040;
 }
 
 static inline void hrt_BGSetSize(u8 layer, u8 size) //Set BG Size
