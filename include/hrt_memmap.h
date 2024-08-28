@@ -196,10 +196,6 @@ HEART_API u8* SRAM;
 #define REG_TMxCNT_L(x)                 (ACCESS_16(0x04000100+(x*4)))
 #define REG_TMxCNT_H(x)                 (ACCESS_16(0x04000102+(x*4)))
 
-#define UnkBIOSChecksum  0x00000000
-#define GBABIOSChecksum  0xBAAE187f
-#define NDSBIOSChecksum  0xBAAE1880
-
 HEART_API IWRAM_CODE void hrt_Memcpy32(void *dst, const void* src, uint wcount); //32-bit memory copy
 HEART_API void hrt_Memcpy16(void *dst, const void* src, uint hwcount); //16-bit memory copy
 

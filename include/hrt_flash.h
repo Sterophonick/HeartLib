@@ -13,7 +13,7 @@ extern "C" {
 HEART_API u32 hrt_GetFlashType(); //Queries the cartridge to find one of four different flash chip types.
 HEART_API void hrt_SaveToFlash(); //Saves the contents of SRAM to the Flash
 HEART_API void hrt_InitFlash(u32* ptr, u32 size); //Initializes the flash support
-HEART_API void hrt_SetFlashPointer(u32* ptr); //sets the offset of the flash. Defaults to 0x6ACFC0 (0x80x6ACFC0).
+HEART_API void hrt_SetFlashPointer(u32* ptr); //sets the offset of the flash. Defaults to 0x6ACFC0 (0x806ACFC0).
 
 //Inlines
 
