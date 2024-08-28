@@ -33,8 +33,8 @@ hrt_IntrWait:
 	bx lr
 
 .thumb_func
-.global hrt_VblankIntrWait
-hrt_VblankIntrWait:
+.global hrt_VBlankIntrWait
+hrt_VBlankIntrWait:
 	swi 5
 	bx lr
 

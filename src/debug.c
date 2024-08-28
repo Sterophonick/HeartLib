@@ -27,7 +27,7 @@ void AssertImplementation(bool expression, char* error, char* file, char* functi
 
 		while(!(REG_KEYINPUT & 0x3FF))
 		{
-			hrt_VblankIntrWait();
+			hrt_VBlankIntrWait();
 		}
 	}
 }

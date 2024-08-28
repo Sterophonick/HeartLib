@@ -131,7 +131,7 @@ HEART_API void hrt_RegisterRamReset(u8 ResetFlag);
 HEART_API void hrt_Halt(void); //SWI 2
 HEART_API void hrt_Stop(void); //SWI 3
 HEART_API void hrt_IntrWait(u32 ReturnFlag, u32 IntFlag); //Waits for an Interrupt
-HEART_API void hrt_VblankIntrWait(void); //Turns off CPU until frame is finished drawing. Must have IRQ_VBLANK enabled.
+HEART_API void hrt_VBlankIntrWait(void); //Turns off CPU until frame is finished drawing. Must have IRQ_VBLANK enabled.
 HEART_API s32  hrt_Div(s32 Number, s32 Divisor); //Performs signed integer division
 HEART_API s32  hrt_DivMod(s32 Number, s32 Divisor); //Performs signed integer division, returns modulus
 HEART_API u32  hrt_DivAbs(s32 Number, s32 Divisor); //Performs signed integer division, returns unsigned
@@ -150,10 +150,10 @@ HEART_API void hrt_BitUnPack(void* source, void* destination, BUP* data); //Bitu
 HEART_API void hrt_LZ77UnCompWRAM(const void *source, void *dest); //8-bit LZ77 Decompress
 HEART_API void hrt_LZ77UnCompVRAM(const void *source, void *dest); //16-bit LZ77 Decompress
 HEART_API void hrt_HuffUnComp(const void *source, void *dest); //32-bit Huffman Table decoding
-HEART_API void hrt_RLUnCompWram(const void *source, void *dest); //8-bit RLE Decompress
-HEART_API void hrt_RLUnCompVram(const void *source, void *dest); //16-bit RLE Decompress
-HEART_API void hrt_Diff8bitUnFilterWram(const void *source, void *dest); //8-bit Differential filter decode
-HEART_API void hrt_Diff8bitUnFilterVram(const void *source, void *dest); //16-bit 8-bit Differential filter decode
+HEART_API void hrt_RLUnCompWRAM(const void *source, void *dest); //8-bit RLE Decompress
+HEART_API void hrt_RLUnCompVRAM(const void *source, void *dest); //16-bit RLE Decompress
+HEART_API void hrt_Diff8bitUnFilterWRAM(const void *source, void *dest); //8-bit Differential filter decode
+HEART_API void hrt_Diff8bitUnFilterVRAM(const void *source, void *dest); //16-bit 8-bit Differential filter decode
 HEART_API void hrt_Diff16bitUnFilter(const void *source, void *dest); //16-bit decode of 16-bit differential filter
 HEART_API void hrt_SoundDriverInit(SoundArea *sa); //Initializes the BIOS sound driver
 HEART_API void hrt_SoundDriverMode(u32 mode); //Set BIOS Sound driver operation mode
