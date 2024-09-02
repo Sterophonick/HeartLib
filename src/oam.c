@@ -97,14 +97,14 @@ const s16 COS[360] = {  256,  255,  255,  255,  255,  255,  254,  254,  253,  25
  252,  252,  253,  254,  254,  255,  255,  255,  255,  255 };
  
 
-void hrt_SetOBJX(u8 obj, int x)
+void hrt_SetOBJX(u8 obj, s16 x)
 {
 	if(obj > 127) return;
 	OAMBuffer[obj].attr1 = OAMBuffer[obj].attr1 & 0xFE00;  //clear the old x value
 	OAMBuffer[obj].attr1 = OAMBuffer[obj].attr1 | x;
 }
 
-void hrt_SetOBJY(u8 obj, int y)
+void hrt_SetOBJY(u8 obj, s16 y)
 {
 	if(obj > 127) return;
 	OAMBuffer[obj].attr0 = OAMBuffer[obj].attr0 & 0xFF00;  //clear the old y value
@@ -169,12 +169,6 @@ void hrt_SetOBJXY(u8 obj, int x, int y)
 	if(obj > 127) return;
 	hrt_SetOBJX(obj, x);
 	hrt_SetOBJY(obj, y);
-}
-
-void hrt_CopyOBJToOAM(void)
-{
-	//TODO: cpuset
-	hrt_DMATransfer(3, (void*)OAMBuffer, (void*)OAM, 128*4, 0x80000000);
 }
 
 void hrt_SetOBJOffset(u8 spr, u16 data)
