@@ -40,12 +40,17 @@ typedef enum irqMASKS {
 extern struct IntTable IntrTable[];
 
 //Functions
-HEART_API void hrt_InitIRQ();
-HEART_API IntFn *hrt_SetIRQ(irqMASK mask, IntFn function);
-HEART_API void hrt_EnableIRQ(int mask);
-HEART_API void hrt_DisableIRQ(int mask);
-HEART_API u8 hrt_IsIRQEnabled(int mask);
-HEART_API void hrt_ToggleIRQ(int mask);
+HEART_API void hrt_InitIRQ(); //Initializes the IRQ table
+HEART_API IntFn *hrt_SetIRQ(irqMASK mask, IntFn function); //Assigns a function to a specific IRQ
+HEART_API void hrt_EnableIRQ(int mask); //Enables an IRQ
+HEART_API void hrt_DisableIRQ(int mask); //Disables an IRQ
+HEART_API void hrt_ToggleIRQ(int mask); //Toggles an IRQ
+
+//Inlines
+static inline u8 hrt_IsIRQEnabled(int mask) // Checks if an IRQ is enabled
+{
+	return REG_IE & mask;
+}
 
 #endif //HRT_INTERRUPT
 

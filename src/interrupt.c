@@ -63,11 +63,6 @@ void hrt_ToggleIRQ(int mask) {
 	REG_IME = 1;
 }
 
-u8 hrt_IsIRQEnabled(int mask)
-{
-	return REG_IE & mask;
-}
-
 void hrt_DisableIRQ(int mask) {
 	REG_IME	= 0;
 	if (mask & IRQ_VBLANK) REG_DISPSTAT &= ~LCDC_VBL;
