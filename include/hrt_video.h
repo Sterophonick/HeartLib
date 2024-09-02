@@ -25,14 +25,12 @@ HEART_API void hrt_CyclePalette(u16 start, u16 amount); // Roll a segment of the
 //Inlines
 static inline void hrt_LoadDataIntoVRAM(u16* data, u32 offset, u32 length) //Copies data into VRAM
 {
-	//TODO: Replace with CPUSet/FastSet
-	hrt_DMATransfer(3, (void*)data, ((void*)(VRAM + (offset))), length, 0x80000000);
+	hrt_CpuSet((void*)data, ((void*)(VRAM + (offset))), length & 0xFFFFF);
 }
 
 static inline void hrt_LoadDataIntoPalette(u16* data, u32 offset, u32 length) //Copies data into Palette
 {
-	//TODO: Replace with CPUSet/FastSet
-	hrt_DMATransfer(3, (void*)data, ((void*)(PALETTE + (offset))), length, 0x80000000);
+	hrt_CpuSet((void*)data, ((void*)(VRAM + (offset))), length & 0xFFFFF);
 }
 
 static inline u16 hrt_GenerateColorFromRGB(u8 red, u8 green, u8 blue) //Generates a new BGR color. r/g/b cannot be over 31
