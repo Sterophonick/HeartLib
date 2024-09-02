@@ -139,8 +139,8 @@ HEART_API s32  hrt_DivArm(s32 Divisor, s32 Number);  //SWI 0x07
 HEART_API s32  hrt_DivArmMod(s32 Divisor, s32 Number); //SWI 0x07
 HEART_API u32  hrt_DivArmAbs(s32 Divisor, s32 Number); //SWI 0x07
 HEART_API u16  hrt_Sqrt(u32 X); //Calculates unsigned integer square root
-HEART_API s16  hrt_ArcTan(s16 Tan); //Calculates signed integer square root
-HEART_API u16  hrt_ArcTan2(s16 X, s16 Y); //Calculates unsigned square root, use this in most situations
+HEART_API s16  hrt_ArcTan(s16 Tan); //Calculates signed integer inverse tan
+HEART_API u16  hrt_ArcTan2(s16 X, s16 Y); //Calculates unsigned inverse tan, use this in most situations
 HEART_API void hrt_CpuSet(const void *source, void *dest, u32 mode); //memcpy in units of four or two bytes
 HEART_API void hrt_CpuFastSet(const void *source, void *dest, u32 mode); //memcpy in units of 32 bytes
 HEART_API u32  hrt_GetBiosChecksum(void); //returns BIOS checksum.
