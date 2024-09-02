@@ -8,6 +8,7 @@ extern "C" {
 //Includes
 #include "hrt_types.h"
 #include "hrt_memmap.h"
+#include "hrt_bios.h"
 
 //Structs
 HEART_API OBJ_ATTR OAMBuffer[128];
