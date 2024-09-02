@@ -40,6 +40,9 @@ void hrt_ClearText()
 void hrt_InitTextEngine(u8 bg)
 {
 	//BitUnPack the font to the tilemap
+	//This is because to save space, we should ideally have our font be 16-color tiles
+	//a BUP object is created to make this work
+	//so we translate the 8-bit data to 16-bit
 	BUP temp;
 	temp.SrcNum = 6080;
 	temp.SrcBitNum = 8;
@@ -47,11 +50,13 @@ void hrt_InitTextEngine(u8 bg)
 	temp.DestOffset = 0;
 	temp.DestOffset0_On = 0;
 	hrt_BitUnPack((void*)font_matrixBitmap, (u16*)0x06000800, &temp);
+
 	//Set up the display mode
 	hrt_SetPaletteEntry(0, 0x0000);
 	hrt_SetPaletteEntry(1, 0x0421);
 	hrt_SetPaletteEntry(2, 0x7FFF);
 	REG_BGxCNT(bg) = 0x0000;
+
 	//Clear the existing text
 	hrt_ClearText();
 }
