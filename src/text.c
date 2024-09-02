@@ -56,6 +56,7 @@ void hrt_InitTextEngine(u8 bg)
 	hrt_SetPaletteEntry(1, 0x0421);
 	hrt_SetPaletteEntry(2, 0x7FFF);
 	REG_BGxCNT(bg) = 0x0000;
+	hrt_DSPEnableBG(bg);
 
 	//Clear the existing text
 	hrt_ClearText();
@@ -78,4 +79,14 @@ void hrt_Print(u8 tx, u8 ty, char* str, ...)
         pos += 1;
     }
 		//hrt_SetPaletteOfTiledText(__hrt_system.__hrt_tiledtext_palno);
+}
+
+void hrt_PrintFast(u8 tx, u8 ty, char* str)
+{
+	register u16 pos = 0;
+	while (*str) {
+		VRAM[(ty*32+tx+pos)%1024] = *str++;
+		VRAM[(ty*32+tx+pos)%1024] += 32;
+		pos += 1;
+	}
 }
