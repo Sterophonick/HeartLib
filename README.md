@@ -1,3 +1,6 @@
+# Project Archival
+I recently went to make a demo and realized just how much this library sucks to work with, I couldn't even perform a simple memory copy. Use tonc or libgba instead, it will save you a whole hassle.
+
 # HeartLib Game Boy Advance Development API
 Comprehensive API for Nintendo GBA inspired by HAMLib and its respective extension, HEL lib.
 
